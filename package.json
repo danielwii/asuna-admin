@@ -3,7 +3,9 @@
   "scripts": {
     "dev": "next",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook"
   },
   "dependencies": {
     "antd": "^3.0.2",
@@ -29,6 +31,9 @@
     "eslint-config-airbnb": "^16.1.0",
     "eslint-plugin-import": "^2.8.0",
     "eslint-plugin-jsx-a11y": "^6.0.3",
-    "eslint-plugin-react": "^7.5.1"
+    "eslint-plugin-react": "^7.5.1",
+    "@storybook/react": "^3.2.18",
+    "@storybook/addon-actions": "^3.2.18",
+    "@storybook/addon-links": "^3.2.18"
   }
 }
