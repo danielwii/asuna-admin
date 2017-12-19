@@ -1,5 +1,4 @@
-/* eslint-disable key-spacing */
-import { put, takeEvery } from 'redux-saga/effects';
+import { put, takeEvery, takeLatest } from 'redux-saga/effects';
 
 // --------------------------------------------------------------
 // Login actionTypes
@@ -15,7 +14,9 @@ export const actionTypes = {
 // Login actions
 // --------------------------------------------------------------
 
-// export const triggerFirst = () => dispatch => dispatch({ type: actionTypes.LOGIN });
+export const actions = {
+  login: dispatch => dispatch({ type: actionTypes.LOGIN }),
+};
 
 // --------------------------------------------------------------
 // Login sagas
@@ -23,6 +24,7 @@ export const actionTypes = {
 
 export function* loginSaga() {
   try {
+    // TODO login action
     yield put({ type: actionTypes.LOGIN_SUCCESS, data: 'done ^_^ done' });
   } catch (error) {
     yield put({ type: actionTypes.LOGIN_FAILED, error });
@@ -34,7 +36,7 @@ export function* loginSaga() {
 // }
 
 export const sagas = [
-  takeEvery(actionTypes.LOGIN, loginSaga),
+  takeLatest(actionTypes.LOGIN, loginSaga),
 ];
 
 // --------------------------------------------------------------

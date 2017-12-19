@@ -6,21 +6,18 @@
       "error",
       "never"
     ],
-    "react/jsx-filename-extension": [
-      1,
+    "key-spacing": [2, {"align": "colon"}],
+    "react/jsx-filename-extension": [1, {"extensions": [".js", ".jsx"]}],
+    "react/require-default-props": [0, {"forbidDefaultForRequired": false}],
+    "react/prop-types": [
+      2,
       {
-        "extensions": [
-          ".js",
-          ".jsx"
+        "ignore": [
+          "dispatch", //
+          "children", //
+          "form"      // supported by redux-form
         ]
       }
-    ],
-    "react/require-default-props": [
-      0,
-      {
-        "forbidDefaultForRequired": false
-      }
-    ],
-    "react/prop-types": [2, { "ignore": ["dispatch", "children"] }]
+    ]
   }
 }
