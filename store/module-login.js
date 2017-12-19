@@ -42,14 +42,16 @@ export const sagas = [
 // Login reducers
 // --------------------------------------------------------------
 
-const loginInitialState = {
+const initialState = {
   loginTime: null,
 };
 
-export const reducer = (state = loginInitialState, action) => {
+export const reducer = (previousState = initialState, action) => {
+  console.log('previousState is', previousState, 'action is', action);
   switch (action.type) {
     default:
-      return { ...state, ...action.payload };
+      return previousState;
+      // return { ...state, ...action.payload };
   }
 };
 

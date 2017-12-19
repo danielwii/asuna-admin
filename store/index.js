@@ -27,8 +27,11 @@ export const actionTypes = {
 // --------------------------------------------------------------
 
 const rootReducers = combineReducers({
-  login: LoginReducer,
-  form : formReducer,
+  login : LoginReducer,
+  form  : formReducer,
+  global: (previousState = initialState, action) => (
+    { ...previousState, ...action }
+  ),
 });
 
 // --------------------------------------------------------------
@@ -50,6 +53,7 @@ function* rootSaga() {
 const sagaMiddleware = createSagaMiddleware();
 
 export const configureStore = (state = initialState) => {
+  console.log('configure store with initial state: ', state);
   const store = createStore(
     rootReducers,
     state,
