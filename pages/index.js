@@ -2,8 +2,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import Link from 'next/link';
+import { DatePicker } from 'antd';
 
-import withAppLayout from '../components/app-layout';
+import Layout from '../layout';
 import { actionTypes, withReduxSaga } from '../store';
 
 class Home extends React.Component {
@@ -14,22 +16,38 @@ class Home extends React.Component {
   static async getInitialProps({ store }) {
   }
 
+  componentDidMount() {
+  }
+
   render() {
     const { message, dispatch } = this.props;
     return (
-      <div>
-        <h1>- Home -</h1>
-        <hr />
-        <div>Message: {message}</div>
-        <hr />
+      <Layout>
         <div>
-          <button onClick={() => dispatch({ type: actionTypes.login.LOGIN })}>hello2</button>
+          <h1>- Home -</h1>
+          <hr />
+          <div>Message: {message}</div>
+          <hr />
+          <div>
+            <button onClick={() => dispatch({ type: actionTypes.login.LOGIN })}>hello2</button>
+          </div>
+          <hr />
+          <ul>
+            <li>
+              go to{' '}
+              <Link href="/login">
+                <button>login</button>
+              </Link>
+            </li>
+          </ul>
+          <hr />
+          <DatePicker />
         </div>
-      </div>
+      </Layout>
     );
   }
 }
 
 const HomeConnector = connect(state => ({ ...state.global }))(Home);
 
-export default withReduxSaga(withAppLayout(HomeConnector));
+export default withReduxSaga(HomeConnector);

@@ -40,7 +40,6 @@ const rootReducers = combineReducers({
 
 
 function* rootSaga() {
-  console.log('init saga root...');
   yield all([
     ...LoginSagas,
   ]);
@@ -53,7 +52,6 @@ function* rootSaga() {
 const sagaMiddleware = createSagaMiddleware();
 
 export const configureStore = (state = initialState) => {
-  console.log('configure store with initial state: ', state);
   const store = createStore(
     rootReducers,
     state,

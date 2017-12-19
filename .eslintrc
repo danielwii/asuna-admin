@@ -21,6 +21,6 @@
         "forbidDefaultForRequired": false
       }
     ],
-    "react/prop-types": [2, { "ignore": ["dispatch"] }]
+    "react/prop-types": [2, { "ignore": ["dispatch", "children"] }]
   }
 }

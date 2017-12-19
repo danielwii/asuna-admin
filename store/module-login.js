@@ -22,7 +22,6 @@ export const actionTypes = {
 // --------------------------------------------------------------
 
 export function* loginSaga() {
-  console.log('------------------- all done2');
   try {
     yield put({ type: actionTypes.LOGIN_SUCCESS, data: 'done ^_^ done' });
   } catch (error) {
@@ -47,11 +46,10 @@ const initialState = {
 };
 
 export const reducer = (previousState = initialState, action) => {
-  console.log('previousState is', previousState, 'action is', action);
   switch (action.type) {
     default:
       return previousState;
-      // return { ...state, ...action.payload };
+    // return { ...state, ...action.payload };
   }
 };
 
