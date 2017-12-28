@@ -1,10 +1,10 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
-import Link from 'next/link';
+import React          from 'react';
+import { connect }    from 'react-redux';
+import PropTypes      from 'prop-types';
+import Link           from 'next/link';
 import { DatePicker } from 'antd';
 
-import Layout from '../layout';
+import { AntdLayout }                 from '../layout';
 import { actionTypes, withReduxSaga } from '../store';
 
 class Home extends React.Component {
@@ -21,7 +21,7 @@ class Home extends React.Component {
   render() {
     const { message, dispatch } = this.props;
     return (
-      <Layout>
+      <AntdLayout>
         <div>
           <h1>- Home -</h1>
           <hr />
@@ -42,7 +42,7 @@ class Home extends React.Component {
           <hr />
           <DatePicker />
         </div>
-      </Layout>
+      </AntdLayout>
     );
   }
 }

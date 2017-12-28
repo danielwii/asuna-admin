@@ -3,9 +3,13 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import { withReduxSaga } from '../store';
-import Layout            from '../layout';
+import { AntdLayout }    from '../layout';
 
-const Home = props => <Layout><div>home</div></Layout>;
+const Home = props => (
+  <AntdLayout>
+    <div>home</div>
+  </AntdLayout>
+);
 
 const mapStateToProps = state => ({
   global       : state.global,
