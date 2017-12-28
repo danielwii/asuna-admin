@@ -1,7 +1,8 @@
 import React from 'react';
+
 import { Button, Form, Icon, Input } from 'antd';
 
-import Layout from '../layout';
+import Layout           from '../layout';
 import { loginActions } from '../store/login.redux';
 
 function generateInput(form, name, required, message, placeholder, iconType) {

@@ -9,6 +9,8 @@ const actionTypes = {
   // ACTION: 'module::action'
 };
 
+const isCurrentModule = type => type.startsWith(/* module:: */);
+
 // --------------------------------------------------------------
 // Module actions
 // --------------------------------------------------------------
@@ -42,10 +44,13 @@ const initialState = {};
 const shape = PropTypes.shape({});
 
 const reducer = (previousState = initialState, action) => {
-  switch (action.type) {
-    default:
-      return previousState;
-    // return { ...state, ...action.payload };
+  if (isCurrentModule(action.type)) {
+    switch (action.type) {
+      default:
+        return { ...previousState, ...action.payload };
+    }
+  } else {
+    return previousState;
   }
 };
 

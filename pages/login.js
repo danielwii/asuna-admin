@@ -12,7 +12,6 @@ class LoginPage extends React.Component {
     notifications: notificationsShape,
   };
 
-
   // --------------------------------------------------------------
   // 1. Mounting：已插入真實的 DOM
   // --------------------------------------------------------------

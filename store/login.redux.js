@@ -15,12 +15,22 @@ const actionTypes = {
   LOGIN_SUCCESS: 'login::login_success',
 };
 
+const isCurrentModule = type => type.startsWith('login::');
+
 // --------------------------------------------------------------
 // Login actions
 // --------------------------------------------------------------
 
 const actionEvents = {
+  // -
   login: (username, password) => ({ type: actionTypes.LOGIN, payload: { username, password } }),
+
+  // -
+  loginSuccess: token =>
+    ({ type: actionTypes.LOGIN_SUCCESS, payload: { token, loginTime: new Date() } }),
+
+  // -
+  loginFailed: error => ({ type: actionTypes.LOGIN_FAILED, error }),
 };
 
 const actions = {
@@ -31,25 +41,16 @@ const actions = {
 // Login sagas
 // --------------------------------------------------------------
 
-function* loginSaga(username, password) {
+function* loginSaga({ payload: { username, password } }) {
   try {
     // TODO login action
-    // const result = yield login(username, password);
-    const result = yield call(login, username, password);
-    console.log('login is', result);
-    yield put({
-      type   : actionTypes.LOGIN_SUCCESS,
-      payload: { message: 'done ^_^ done' },
-      error  : {},
-    });
+    const { data: { token } } = yield call(login, username, password);
+    console.log('token is', token);
+    yield put(actionEvents.loginSuccess(token));
     yield put(notificationsActionEvents.notify(`'${username}' login success`));
   } catch (error) {
-    console.error('login error', error.stack);
-    yield put({
-      type   : actionTypes.LOGIN_FAILED,
-      payload: {},
-      error,
-    });
+    console.error('login error', error);
+    yield put(actionEvents.loginFailed(error));
     yield put(notificationsActionEvents.notify(error.message, notificationTypes.ERROR));
   }
 }
@@ -68,20 +69,28 @@ const sagas = [
 
 const initialState = {
   loginTime: null,
+  username : null,
+  token    : null,
 };
 
 const shape = PropTypes.shape({
   loginTime: PropTypes.instanceOf(Date),
   username : PropTypes.string,
+  token    : PropTypes.string,
 });
 
 const reducer = (previousState = initialState, action) => {
-  switch (action.type) {
-    case actionTypes.LOGIN:
-      return { ...previousState, login: action.payload.username };
-    default:
-      return previousState;
-    // return { ...state, ...action.payload };
+  if (isCurrentModule(action.type)) {
+    switch (action.type) {
+      // state 中移除 password
+      case actionTypes.LOGIN:
+      case actionTypes.LOGIN_FAILED:
+        return { username: action.payload.username };
+      default:
+        return { ...previousState, ...action.payload };
+    }
+  } else {
+    return previousState;
   }
 };
 
@@ -93,4 +102,3 @@ export {
   reducer as loginReducer,
   shape as loginShape,
 };
-
