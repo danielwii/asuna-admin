@@ -1,10 +1,13 @@
-import { put, takeEvery, takeLatest } from 'redux-saga/effects';
+import { call, put, takeLatest } from 'redux-saga/effects';
+
+import { login } from '../services/auth';
+import { notificationsActionEvents } from './module-notifications';
 
 // --------------------------------------------------------------
 // Login actionTypes
 // --------------------------------------------------------------
 
-export const actionTypes = {
+const actionTypes = {
   LOGIN        : 'login::login',
   LOGIN_FAILED : 'login::login_failed',
   LOGIN_SUCCESS: 'login::login_success',
@@ -14,20 +17,38 @@ export const actionTypes = {
 // Login actions
 // --------------------------------------------------------------
 
-export const actions = {
-  login: dispatch => dispatch({ type: actionTypes.LOGIN }),
+const actionEvents = {
+  login: (username, password) => ({ type: actionTypes.LOGIN, payload: { username, password } }),
+};
+
+const actions = {
+  login: (username, password) => dispatch => dispatch(actionEvents.login(username, password)),
 };
 
 // --------------------------------------------------------------
 // Login sagas
 // --------------------------------------------------------------
 
-export function* loginSaga() {
+function* loginSaga(username, password) {
   try {
     // TODO login action
-    yield put({ type: actionTypes.LOGIN_SUCCESS, data: 'done ^_^ done' });
+    // const result = yield login(username, password);
+    const result = yield call(login, username, password);
+    console.log('login is', result);
+    yield put({
+      type   : actionTypes.LOGIN_SUCCESS,
+      payload: { message: 'done ^_^ done' },
+      error  : {},
+    });
+    yield put(notificationsActionEvents.notify(`'${username}' login success`));
   } catch (error) {
-    yield put({ type: actionTypes.LOGIN_FAILED, error });
+    console.error('login error', error.stack);
+    yield put({
+      type   : actionTypes.LOGIN_FAILED,
+      payload: {},
+      error,
+    });
+    yield put(notificationsActionEvents.notify(error.message));
   }
 }
 
@@ -35,7 +56,7 @@ export function* loginSaga() {
 //
 // }
 
-export const sagas = [
+const sagas = [
   takeLatest(actionTypes.LOGIN, loginSaga),
 ];
 
@@ -47,11 +68,21 @@ const initialState = {
   loginTime: null,
 };
 
-export const reducer = (previousState = initialState, action) => {
+const reducer = (previousState = initialState, action) => {
   switch (action.type) {
+    case actionTypes.LOGIN:
+      return { ...previousState, login: action.payload.username };
     default:
       return previousState;
     // return { ...state, ...action.payload };
   }
+};
+
+export {
+  actionTypes as loginActionTypes,
+  actionEvents as loginActionEvents,
+  actions as loginActions,
+  sagas as loginSagas,
+  reducer as loginReducer,
 };
 

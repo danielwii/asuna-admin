@@ -7,7 +7,12 @@ import logger from 'redux-logger';
 import { reducer as formReducer } from 'redux-form';
 import { all } from 'redux-saga/effects';
 
-import { actionTypes as LoginActionTypes, reducer as LoginReducer, sagas as LoginSagas } from './module-login';
+import { loginActionTypes, loginReducer, loginSagas } from './module-login';
+
+import {
+  notificationsActionTypes, notificationsReducer,
+  notificationsSagas,
+} from './module-notifications';
 
 const initialState = {
   message: 'hello world',
@@ -18,7 +23,8 @@ const initialState = {
 // --------------------------------------------------------------
 
 export const actionTypes = {
-  login: LoginActionTypes,
+  login        : loginActionTypes,
+  notifications: notificationsActionTypes,
 };
 
 // --------------------------------------------------------------
@@ -26,9 +32,10 @@ export const actionTypes = {
 // --------------------------------------------------------------
 
 const rootReducers = combineReducers({
-  login : LoginReducer,
-  form  : formReducer,
-  global: (previousState = initialState, action) => (
+  notifications: notificationsReducer,
+  login        : loginReducer,
+  form         : formReducer,
+  global       : (previousState = initialState, action) => (
     { ...previousState, ...action }
   ),
 });
@@ -37,10 +44,10 @@ const rootReducers = combineReducers({
 // Root sagas
 // --------------------------------------------------------------
 
-
 function* rootSaga() {
   yield all([
-    ...LoginSagas,
+    ...loginSagas,
+    ...notificationsSagas,
   ]);
 }
 

@@ -16,4 +16,4 @@ import 'antd/dist/antd.css';
 import Login from '../components/Login';
 
 storiesOf('Login', module)
-  .add('default', () => <Login></Login>);
+  .add('default', () => <Login />);

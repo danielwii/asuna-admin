@@ -2,6 +2,7 @@ import React from 'react';
 import { Button, Form, Icon, Input } from 'antd';
 
 import Layout from '../layout';
+import { loginActions } from '../store/module-login';
 
 function generateInput(form, name, required, message, placeholder, iconType) {
   const decorator = form.getFieldDecorator(name, { rules: [{ required, message }] });
@@ -17,9 +18,12 @@ function generateInput(form, name, required, message, placeholder, iconType) {
 class NormalLoginForm extends React.Component {
   handleSubmit = (e) => {
     e.preventDefault();
+    console.log('Dispatch is', this.props.dispatch);
     this.props.form.validateFields((err, values) => {
       if (!err) {
         console.log('Received values of form: ', values);
+        const { username, password } = values;
+        loginActions.login(username, password)(this.props.dispatch);
       }
     });
   };
