@@ -46,7 +46,7 @@ class LoginPage extends React.Component {
   componentWillReceiveProps(nextProps, nextContext) {
     console.log('componentWillReceiveProps::nextProps is', nextProps, 'nextContext is', nextContext);
     if (nextProps.notifications && nextProps.notifications.message) {
-      notification.open({
+      notification[nextProps.notifications.type]({
         message    : nextProps.notifications.message,
         description: JSON.stringify(nextProps.notifications),
       });

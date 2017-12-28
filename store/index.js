@@ -1,12 +1,14 @@
-import { applyMiddleware, combineReducers, createStore } from 'redux';
-import createSagaMiddleware from 'redux-saga';
-import withRedux from 'next-redux-wrapper';
+import withRedux     from 'next-redux-wrapper';
 import nextReduxSaga from 'next-redux-saga';
-import { composeWithDevTools } from 'redux-devtools-extension';
-import logger from 'redux-logger';
+
+import { applyMiddleware, combineReducers, createStore } from 'redux';
+
+import createSagaMiddleware       from 'redux-saga';
+import { composeWithDevTools }    from 'redux-devtools-extension';
+import logger                     from 'redux-logger';
 import { reducer as formReducer } from 'redux-form';
-import { all } from 'redux-saga/effects';
-import PropTypes from 'prop-types';
+import { all }                    from 'redux-saga/effects';
+import PropTypes                  from 'prop-types';
 
 import { loginActionTypes, loginReducer, loginSagas } from './login.redux';
 

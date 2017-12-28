@@ -1,8 +1,9 @@
-import PropTypes from 'prop-types';
+import PropTypes                 from 'prop-types';
 import { call, put, takeLatest } from 'redux-saga/effects';
 
 import { login } from '../services/auth';
-import { notificationsActionEvents } from './notifications.redux';
+
+import { notificationsActionEvents, notificationTypes } from './notifications.redux';
 
 // --------------------------------------------------------------
 // Login actionTypes
@@ -49,7 +50,7 @@ function* loginSaga(username, password) {
       payload: {},
       error,
     });
-    yield put(notificationsActionEvents.notify(error.message));
+    yield put(notificationsActionEvents.notify(error.message, notificationTypes.ERROR));
   }
 }
 
