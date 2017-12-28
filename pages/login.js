@@ -1,16 +1,15 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import _ from 'lodash';
 import { notification } from 'antd';
-import PropTypes from 'prop-types';
 
 import Login from '../components/Login';
-import { withReduxSaga } from '../store';
-import { notificationsActions } from '../store/module-notifications';
+import { globalShape, withReduxSaga } from '../store';
+import { notificationsActions, notificationsShape } from '../store/notifications.redux';
 
 class LoginPage extends React.Component {
   static propTypes = {
-    notifications: PropTypes.array,
+    global       : globalShape,
+    notifications: notificationsShape,
   };
 
 
@@ -53,13 +52,6 @@ class LoginPage extends React.Component {
       });
       notificationsActions.notifyDone()(nextProps.dispatch);
     }
-
-    // _.every(nextProps.notifications, (n) => {
-    //   notification.open({
-    //     message    : n.message,
-    //     description: JSON.stringify(n),
-    //   });
-    // });
   }
 
   /**
@@ -94,7 +86,7 @@ class LoginPage extends React.Component {
    * @param prevContext
    */
   componentDidUpdate(prevProps, prevState, prevContext) {
-    console.log('componentDidUpdate...');
+    console.log('componentDidUpdate::prevProps is', prevProps, 'prevState is', prevState, 'prevContext is', prevContext);
   }
 
   // --------------------------------------------------------------

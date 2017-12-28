@@ -1,7 +1,8 @@
+import PropTypes from 'prop-types';
 import { call, put, takeLatest } from 'redux-saga/effects';
 
 import { login } from '../services/auth';
-import { notificationsActionEvents } from './module-notifications';
+import { notificationsActionEvents } from './notifications.redux';
 
 // --------------------------------------------------------------
 // Login actionTypes
@@ -68,6 +69,11 @@ const initialState = {
   loginTime: null,
 };
 
+const shape = PropTypes.shape({
+  loginTime: PropTypes.instanceOf(Date),
+  username : PropTypes.string,
+});
+
 const reducer = (previousState = initialState, action) => {
   switch (action.type) {
     case actionTypes.LOGIN:
@@ -84,5 +90,6 @@ export {
   actions as loginActions,
   sagas as loginSagas,
   reducer as loginReducer,
+  shape as loginShape,
 };
 

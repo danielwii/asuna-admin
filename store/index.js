@@ -6,17 +6,20 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 import logger from 'redux-logger';
 import { reducer as formReducer } from 'redux-form';
 import { all } from 'redux-saga/effects';
+import PropTypes from 'prop-types';
 
-import { loginActionTypes, loginReducer, loginSagas } from './module-login';
+import { loginActionTypes, loginReducer, loginSagas } from './login.redux';
 
 import {
   notificationsActionTypes, notificationsReducer,
   notificationsSagas,
-} from './module-notifications';
+} from './notifications.redux';
 
 const initialState = {
   message: 'hello world',
 };
+
+export const globalShape = PropTypes.shape({});
 
 // --------------------------------------------------------------
 // Types

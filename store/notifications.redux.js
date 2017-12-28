@@ -1,28 +1,34 @@
+import PropTypes from 'prop-types';
 // import { call, put, takeLatest } from 'redux-saga/effects';
 
 // --------------------------------------------------------------
-// Module actionTypes
+// Notifications actionTypes
 // --------------------------------------------------------------
 
 const actionTypes = {
   // ACTION: 'module::action'
+  NOTIFY     : 'notifications::notify',
+  NOTIFY_DONE: 'notifications::notify_done',
 };
 
 // --------------------------------------------------------------
-// Module actions
+// Notifications actions
 // --------------------------------------------------------------
 
 const actionEvents = {
-  // action: (args): ({ type, payload })
+  notify    : message => ({ type: actionTypes.NOTIFY, payload: { message } }),
+  notifyDone: () => ({ type: actionTypes.NOTIFY_DONE }),
 };
 
 const actions = {
-  // action: (args): dispatchFunction with actionEvent
+  // action: (args): dispatchFunction
+  notify    : message => dispatch => dispatch(actionEvents.notify(message)),
+  notifyDone: () => dispatch => dispatch(actionEvents.notifyDone()),
 };
 
 // --------------------------------------------------------------
-// Module sagas
-// function* actionSage(args) {
+// Notifications sagas
+//  function* actionSage(args) {
 //  yield call; yield puy({ type: actionType, payload: {} })
 // }
 // --------------------------------------------------------------
@@ -32,25 +38,32 @@ const sagas = [
 ];
 
 // --------------------------------------------------------------
-// Module reducers
+// Notifications reducers
 // action = { payload: any? }
 // --------------------------------------------------------------
 
 const initialState = {};
 
+const shape = PropTypes.shape({
+  message: PropTypes.string,
+});
+
 const reducer = (previousState = initialState, action) => {
   switch (action.type) {
+    case actionTypes.NOTIFY:
+      return { ...action.payload };
+    case actionTypes.NOTIFY_DONE:
+      return {};
     default:
       return previousState;
-    // return { ...state, ...action.payload };
   }
 };
 
 export {
-  actionTypes as moduleActionTypes,
-  actionEvents as moduleActionEvents,
-  actions as moduleActions,
-  sagas as moduleSagas,
-  reducer as moduleReducer,
+  actionTypes as notificationsActionTypes,
+  actionEvents as notificationsActionEvents,
+  actions as notificationsActions,
+  sagas as notificationsSagas,
+  reducer as notificationsReducer,
+  shape as notificationsShape,
 };
-

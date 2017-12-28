@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, Form, Icon, Input } from 'antd';
 
 import Layout from '../layout';
-import { loginActions } from '../store/module-login';
+import { loginActions } from '../store/login.redux';
 
 function generateInput(form, name, required, message, placeholder, iconType) {
   const decorator = form.getFieldDecorator(name, { rules: [{ required, message }] });
