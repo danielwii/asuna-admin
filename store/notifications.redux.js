@@ -31,7 +31,7 @@ const actionEvents = {
     ({ type: actionTypes.NOTIFY, payload: { message, type } }),
 
   // -
-  notifyDone: () => ({ type: actionTypes.NOTIFY_DONE }),
+  notifyDone: () => ({ type: actionTypes.NOTIFY_DONE, payload: {} }),
 };
 
 const actions = {
@@ -67,9 +67,9 @@ const reducer = (previousState = initialState, action) => {
   if (isCurrentModule(action.type)) {
     switch (action.type) {
       case actionTypes.NOTIFY:
-        return { ...action.payload };
       case actionTypes.NOTIFY_DONE:
-        return {};
+        return { ...action.payload };
+        // return {};
       default:
         return { ...previousState, ...action.payload };
     }

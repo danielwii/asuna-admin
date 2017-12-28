@@ -17,6 +17,8 @@ import {
   notificationsSagas,
 } from './notifications.redux';
 
+import { routerActionTypes, routerReducer, routerSagas } from './router.redux';
+
 const initialState = {
   message: 'hello world',
 };
@@ -30,6 +32,7 @@ export const globalShape = PropTypes.shape({});
 export const actionTypes = {
   login        : loginActionTypes,
   notifications: notificationsActionTypes,
+  router       : routerActionTypes,
 };
 
 // --------------------------------------------------------------
@@ -39,6 +42,7 @@ export const actionTypes = {
 const rootReducers = combineReducers({
   notifications: notificationsReducer,
   login        : loginReducer,
+  router       : routerReducer,
   form         : formReducer,
   global       : (previousState = initialState, action) => (
     { ...previousState, ...action }
@@ -53,6 +57,7 @@ function* rootSaga() {
   yield all([
     ...loginSagas,
     ...notificationsSagas,
+    ...routerSagas,
   ]);
 }
 

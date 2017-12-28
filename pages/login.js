@@ -1,9 +1,10 @@
-import React from 'react';
-import { connect } from 'react-redux';
+import React            from 'react';
+import { connect }      from 'react-redux';
 import { notification } from 'antd';
 
-import Login from '../components/Login';
+import Login                          from '../components/Login';
 import { globalShape, withReduxSaga } from '../store';
+
 import { notificationsActions, notificationsShape } from '../store/notifications.redux';
 
 class LoginPage extends React.Component {

@@ -4,6 +4,7 @@ import { call, put, takeLatest } from 'redux-saga/effects';
 import { login } from '../services/auth';
 
 import { notificationsActionEvents, notificationTypes } from './notifications.redux';
+import { routerActionEvents }                           from './router.redux';
 
 // --------------------------------------------------------------
 // Login actionTypes
@@ -30,11 +31,12 @@ const actionEvents = {
     ({ type: actionTypes.LOGIN_SUCCESS, payload: { token, loginTime: new Date() } }),
 
   // -
-  loginFailed: error => ({ type: actionTypes.LOGIN_FAILED, error }),
+  loginFailed: error => ({ type: actionTypes.LOGIN_FAILED, payload: {}, error }),
 };
 
 const actions = {
-  login: (username, password) => dispatch => dispatch(actionEvents.login(username, password)),
+  login : (username, password) => dispatch => dispatch(actionEvents.login(username, password)),
+  toHome: () => dispatch => dispatch(actionEvents.toHome()),
 };
 
 // --------------------------------------------------------------
@@ -43,11 +45,11 @@ const actions = {
 
 function* loginSaga({ payload: { username, password } }) {
   try {
-    // TODO login action
     const { data: { token } } = yield call(login, username, password);
     console.log('token is', token);
     yield put(actionEvents.loginSuccess(token));
     yield put(notificationsActionEvents.notify(`'${username}' login success`));
+    yield put(routerActionEvents.toHome());
   } catch (error) {
     console.error('login error', error);
     yield put(actionEvents.loginFailed(error));
