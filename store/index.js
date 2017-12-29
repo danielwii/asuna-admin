@@ -16,8 +16,8 @@ import {
 
 import { authActionTypes, authReducer, authSagas }       from './auth.redux';
 import { routerActionTypes, routerReducer, routerSagas } from './router.redux';
-
-import { panesActionTypes, panesReducer, panesSagas } from './panes.redux';
+import { panesActionTypes, panesReducer, panesSagas }    from './panes.redux';
+import { menuActionTypes, menuReducer, menuSagas }       from './menu.redux';
 
 const initialState = {
   message: 'hello world',
@@ -32,6 +32,7 @@ export const actionTypes = {
   notifications: notificationsActionTypes,
   router       : routerActionTypes,
   panes        : panesActionTypes,
+  menu         : menuActionTypes,
 };
 
 // --------------------------------------------------------------
@@ -43,6 +44,7 @@ const rootReducers = combineReducers({
   notifications: notificationsReducer,
   router       : routerReducer,
   panes        : panesReducer,
+  menu         : menuReducer,
   form         : formReducer,
   global       : (previousState = initialState, action) => (
     { ...previousState, ...action }
@@ -59,6 +61,7 @@ function* rootSaga() {
     ...notificationsSagas,
     ...routerSagas,
     ...panesSagas,
+    ...menuSagas,
   ]);
 }
 

@@ -6,8 +6,8 @@
 
 const actionTypes = {
   // ACTION: 'module::action'
-  NOTIFY     : 'notifications::notify',
-  NOTIFY_DONE: 'notifications::notify_done',
+  NOTIFY        : 'notifications::notify',
+  NOTIFY_SUCCESS: 'notifications::notify-success',
 };
 
 const isCurrentModule = type => type.startsWith('notifications::');
@@ -29,7 +29,7 @@ const actionEvents = {
     ({ type: actionTypes.NOTIFY, payload: { message, type } }),
 
   // -
-  notifyDone: () => ({ type: actionTypes.NOTIFY_DONE, payload: {} }),
+  notifyDone: () => ({ type: actionTypes.NOTIFY_SUCCESS, payload: {} }),
 };
 
 const actions = dispatch => ({
@@ -60,7 +60,7 @@ const reducer = (previousState = initialState, action) => {
   if (isCurrentModule(action.type)) {
     switch (action.type) {
       case actionTypes.NOTIFY:
-      case actionTypes.NOTIFY_DONE:
+      case actionTypes.NOTIFY_SUCCESS:
         return { ...action.payload };
       // return {};
       default:

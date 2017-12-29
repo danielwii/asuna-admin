@@ -1,6 +1,6 @@
-import { takeLatest } from 'redux-saga/effects';
+import { put, takeLatest } from 'redux-saga/effects';
 
-import Router from 'next/router';
+import { getMenus } from '../services/menu';
 
 // --------------------------------------------------------------
 // Module actionTypes
@@ -8,20 +8,18 @@ import Router from 'next/router';
 
 const actionTypes = {
   // ACTION: 'module::action'
-  TO_HOME: 'router::to-home',
-  GOTO   : 'router::goto',
+  INIT        : 'menu::init',
+  INIT_SUCCESS: 'menu::init-success',
 };
 
-const isCurrentModule = type => type.startsWith('router::');
+const isCurrentModule = type => type.startsWith('menu::');
 
 // --------------------------------------------------------------
 // Module actions
 // --------------------------------------------------------------
 
 const actions = {
-  // action: (args): ({ type, payload })
-  toHome: () => ({ type: actionTypes.TO_HOME, payload: { path: '/home' } }),
-  goto  : path => ({ type: actionTypes.GOTO, payload: { path } }),
+  init: () => ({ type: actionTypes.INIT }),
 };
 
 // --------------------------------------------------------------
@@ -31,14 +29,14 @@ const actions = {
 // }
 // --------------------------------------------------------------
 
-async function goto({ payload: { path } }) {
-  await Router.replace(path);
-}
+const init = async () => {
+  const { menus } = await getMenus();
+  await put({ type: actionTypes.INIT_SUCCESS, payload: { menus } });
+};
 
 const sagas = [
   // takeLatest / takeEvery (actionType, actionSage)
-  takeLatest(actionTypes.TO_HOME, goto),
-  takeLatest(actionTypes.GOTO, goto),
+  takeLatest(actionTypes.INIT, init),
 ];
 
 // --------------------------------------------------------------
@@ -47,14 +45,16 @@ const sagas = [
 // --------------------------------------------------------------
 
 const initialState = {
-  path: null,
+  // openKey  : null,
+  // activeKey: null,
+  menus: [],
 };
 
 const reducer = (previousState = initialState, action) => {
   if (isCurrentModule(action.type)) {
     switch (action.type) {
       default:
-        return { ...action.payload };
+        return { ...previousState, ...action.payload };
     }
   } else {
     return previousState;
@@ -62,8 +62,8 @@ const reducer = (previousState = initialState, action) => {
 };
 
 export {
-  actionTypes as routerActionTypes,
-  actions as routerActions,
-  sagas as routerSagas,
-  reducer as routerReducer,
+  actionTypes as menuActionTypes,
+  actions as menuActions,
+  sagas as menuSagas,
+  reducer as menuReducer,
 };

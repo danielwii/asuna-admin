@@ -11,6 +11,7 @@ import { Button, Welcome } from '@storybook/react/demo';
 import './login.story'
 import './layout.story'
 import './panes.story'
+import './side-menu.story'
 
 storiesOf('Welcome', module).add('to Storybook', () => <Welcome showApp={linkTo('Button')} />);
 

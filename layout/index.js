@@ -6,6 +6,8 @@ import { Breadcrumb, Icon, Layout, Menu } from 'antd';
 
 import logoFile from '../static/logo.png';
 
+import PanesContainer from '../containers/Panes';
+
 const StyledLogoImg = styled.img`
   width: 120px;
   height: 32px;
@@ -15,7 +17,7 @@ const StyledLogoImg = styled.img`
 
 const StyledContentDiv = styled.div`
   background: #fff;
-  padding: 24px;
+  padding: .5rem;
   margin: 0;
   min-height: 280px;
 `;
@@ -23,7 +25,7 @@ const StyledContentDiv = styled.div`
 const { SubMenu }                = Menu;
 const { Header, Content, Sider } = Layout;
 
-const AntdLayout = ({ children }) => (
+export const AntdLayout = ({ children }) => (
   <div>
     <NextHead>
       <link rel="icon" type="image/png" sizes="32x32" href="/static/icons/favicon-32x32.png" />
@@ -34,7 +36,8 @@ const AntdLayout = ({ children }) => (
   </div>
 );
 
-const MainLayout = ({ children }) => (
+// TODO MainLayout is the main app now, move it to container folder later
+export const MainLayout = ({ children }) => (
   <Layout>
     <Header className="header">
       <div className="logo">
@@ -47,8 +50,6 @@ const MainLayout = ({ children }) => (
         style={{ lineHeight: '64px' }}
       >
         <Menu.Item key="1">Home</Menu.Item>
-        <Menu.Item key="2">Models</Menu.Item>
-        <Menu.Item key="3">nav 3</Menu.Item>
       </Menu>
     </Header>
     <Layout>
@@ -79,22 +80,11 @@ const MainLayout = ({ children }) => (
           </SubMenu>
         </Menu>
       </Sider>
-      <Layout style={{ padding: '0 24px 24px' }}>
-        <Breadcrumb style={{ margin: '16px 0' }}>
-          <Breadcrumb.Item>Home</Breadcrumb.Item>
-          <Breadcrumb.Item>List</Breadcrumb.Item>
-          <Breadcrumb.Item>App</Breadcrumb.Item>
-        </Breadcrumb>
+      <Layout style={{ padding: '1rem' }}>
         <StyledContentDiv>
-          <Content>
-            Content
-            <hr />
-            {children}
-          </Content>
+          <PanesContainer />
         </StyledContentDiv>
       </Layout>
     </Layout>
   </Layout>
 );
-
-export { AntdLayout, MainLayout };

@@ -6,6 +6,4 @@ const instance = axios.create({
   // headers: { 'X-Custom-Header': '' },
 });
 
-export function login(username, password) {
-  return instance.post('/auth/login', { username, password });
-}
+export const login = (username, password) => instance.post('/auth/login', { username, password });

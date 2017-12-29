@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 // import { call, put, takeLatest } from 'redux-saga/effects';
 
 // --------------------------------------------------------------
@@ -15,14 +14,9 @@ const isCurrentModule = type => type.startsWith(/* module:: */);
 // Module actions
 // --------------------------------------------------------------
 
-const actionEvents = {
+const actions = {
   // action: (args): ({ type, payload })
 };
-
-// eslint-disable-next-line no-unused-vars
-const actions = dispatch => ({
-  // action: (args): dispatchFunction with actionEvent
-});
 
 // --------------------------------------------------------------
 // Module sagas
@@ -42,8 +36,6 @@ const sagas = [
 
 const initialState = {};
 
-const shape = PropTypes.shape({});
-
 const reducer = (previousState = initialState, action) => {
   if (isCurrentModule(action.type)) {
     switch (action.type) {
@@ -57,9 +49,7 @@ const reducer = (previousState = initialState, action) => {
 
 export {
   actionTypes as moduleActionTypes,
-  actionEvents as moduleActionEvents,
   actions as moduleActions,
   sagas as moduleSagas,
   reducer as moduleReducer,
-  shape as moduleShape,
 };
