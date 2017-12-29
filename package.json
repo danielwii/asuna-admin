@@ -1,5 +1,5 @@
 {
-  "name": "create-next-example-app",
+  "name": "mast-admin",
   "scripts": {
     "autod": "autod",
     "dev": "node $NODE_DEBUG_OPTION server.js",
@@ -20,6 +20,7 @@
     "node-buffs": "../node-buffs",
     "polished": "^1.9.0",
     "prop-types": "^15.6.0",
+    "ramda": "^0.25.0",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "react-redux": "^5.0.6",
@@ -35,6 +36,7 @@
     "@storybook/addon-links": "^3.2.18",
     "@storybook/react": "^3.2.18",
     "@types/lodash": "^4.14.91",
+    "@types/ramda": "^0.25.12",
     "autod": "^3.0.1",
     "babel-eslint": "^8.0.3",
     "eslint": "^4.13.1",

@@ -1,7 +1,6 @@
-import PropTypes from 'prop-types';
-import Router    from 'next/router';
-
 import { takeLatest } from 'redux-saga/effects';
+
+import Router from 'next/router';
 
 // --------------------------------------------------------------
 // Module actionTypes
@@ -23,10 +22,10 @@ const actionEvents = {
   toHome: () => ({ type: actionTypes.TO_HOME, payload: { path: '/home' } }),
 };
 
-const actions = {
+const actions = dispatch => ({
   // action: (args): dispatchFunction with actionEvent
-  toHome: () => dispatch => dispatch(actionEvents.toHome()),
-};
+  toHome: () => dispatch(actionEvents.toHome()),
+});
 
 // --------------------------------------------------------------
 // Module sagas
@@ -53,10 +52,6 @@ const initialState = {
   path: null,
 };
 
-const shape = PropTypes.shape({
-  path: PropTypes.string,
-});
-
 const reducer = (previousState = initialState, action) => {
   if (isCurrentModule(action.type)) {
     switch (action.type) {
@@ -74,6 +69,4 @@ export {
   actions as routerActions,
   sagas as routerSagas,
   reducer as routerReducer,
-  shape as routerShape,
 };
-

@@ -1,4 +1,3 @@
-import PropTypes                 from 'prop-types';
 import { call, put, takeLatest } from 'redux-saga/effects';
 
 import { login } from '../services/auth';
@@ -11,12 +10,12 @@ import { routerActionEvents }                           from './router.redux';
 // --------------------------------------------------------------
 
 const actionTypes = {
-  LOGIN        : 'login::login',
-  LOGIN_FAILED : 'login::login_failed',
-  LOGIN_SUCCESS: 'login::login_success',
+  LOGIN        : 'auth::login',
+  LOGIN_FAILED : 'auth::login_failed',
+  LOGIN_SUCCESS: 'auth::login_success',
 };
 
-const isCurrentModule = type => type.startsWith('login::');
+const isCurrentModule = type => type.startsWith('auth::');
 
 // --------------------------------------------------------------
 // Login actions
@@ -34,10 +33,10 @@ const actionEvents = {
   loginFailed: error => ({ type: actionTypes.LOGIN_FAILED, payload: {}, error }),
 };
 
-const actions = {
-  login : (username, password) => dispatch => dispatch(actionEvents.login(username, password)),
-  toHome: () => dispatch => dispatch(actionEvents.toHome()),
-};
+const actions = dispatch => ({
+  login : (username, password) => dispatch(actionEvents.login(username, password)),
+  toHome: () => dispatch(actionEvents.toHome()),
+});
 
 // --------------------------------------------------------------
 // Login sagas
@@ -75,12 +74,6 @@ const initialState = {
   token    : null,
 };
 
-const shape = PropTypes.shape({
-  loginTime: PropTypes.instanceOf(Date),
-  username : PropTypes.string,
-  token    : PropTypes.string,
-});
-
 const reducer = (previousState = initialState, action) => {
   if (isCurrentModule(action.type)) {
     switch (action.type) {
@@ -97,10 +90,9 @@ const reducer = (previousState = initialState, action) => {
 };
 
 export {
-  actionTypes as loginActionTypes,
-  actionEvents as loginActionEvents,
-  actions as loginActions,
-  sagas as loginSagas,
-  reducer as loginReducer,
-  shape as loginShape,
+  actionTypes as authActionTypes,
+  actionEvents as authActionEvents,
+  actions as authActions,
+  sagas as authSagas,
+  reducer as authReducer,
 };

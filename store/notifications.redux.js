@@ -1,5 +1,3 @@
-import PropTypes from 'prop-types';
-import _         from 'lodash';
 // import { call, put, takeLatest } from 'redux-saga/effects';
 
 // --------------------------------------------------------------
@@ -34,11 +32,11 @@ const actionEvents = {
   notifyDone: () => ({ type: actionTypes.NOTIFY_DONE, payload: {} }),
 };
 
-const actions = {
+const actions = dispatch => ({
   // action: (args): dispatchFunction
-  notify    : (message, type) => dispatch => dispatch(actionEvents.notify(message, type)),
-  notifyDone: () => dispatch => dispatch(actionEvents.notifyDone()),
-};
+  notify    : (message, type) => dispatch(actionEvents.notify(message, type)),
+  notifyDone: () => dispatch(actionEvents.notifyDone()),
+});
 
 // --------------------------------------------------------------
 // Notifications sagas
@@ -58,18 +56,13 @@ const sagas = [
 
 const initialState = {};
 
-const shape = PropTypes.shape({
-  message: PropTypes.string,
-  type   : PropTypes.oneOf(_.values(notificationTypes)),
-});
-
 const reducer = (previousState = initialState, action) => {
   if (isCurrentModule(action.type)) {
     switch (action.type) {
       case actionTypes.NOTIFY:
       case actionTypes.NOTIFY_DONE:
         return { ...action.payload };
-        // return {};
+      // return {};
       default:
         return { ...previousState, ...action.payload };
     }
@@ -84,5 +77,4 @@ export {
   actions as notificationsActions,
   sagas as notificationsSagas,
   reducer as notificationsReducer,
-  shape as notificationsShape,
 };

@@ -20,7 +20,8 @@
     }],
     "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
     "react/require-default-props": [0, { "forbidDefaultForRequired": false }],
-    "no-multi-spaces": [2, { "exceptions": { "VariableDeclarator": true, "ImportDeclaration": true } }],
+//    "no-multi-spaces": [2, { "exceptions": { "VariableDeclarator": true, "ImportDeclaration": true } }],
+    "no-multi-spaces": 0,
     "class-methods-use-this": 0,
     "react/prop-types": [2, {
       "ignore": [

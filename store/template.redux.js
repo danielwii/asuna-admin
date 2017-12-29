@@ -19,9 +19,10 @@ const actionEvents = {
   // action: (args): ({ type, payload })
 };
 
-const actions = {
+// eslint-disable-next-line no-unused-vars
+const actions = dispatch => ({
   // action: (args): dispatchFunction with actionEvent
-};
+});
 
 // --------------------------------------------------------------
 // Module sagas
@@ -62,4 +63,3 @@ export {
   reducer as moduleReducer,
   shape as moduleShape,
 };
-

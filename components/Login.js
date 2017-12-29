@@ -2,8 +2,9 @@ import React from 'react';
 
 import { Button, Form, Icon, Input } from 'antd';
 
-import Layout           from '../layout';
-import { loginActions } from '../store/login.redux';
+// TODO move layout to pages
+import { AntdLayout }  from '../layout';
+import { authActions } from '../store/auth.redux';
 
 function generateInput(form, name, required, message, placeholder, iconType) {
   const decorator = form.getFieldDecorator(name, { rules: [{ required, message }] });
@@ -24,7 +25,7 @@ class NormalLoginForm extends React.Component {
       if (!err) {
         console.log('Received values of form: ', values);
         const { username, password } = values;
-        loginActions.login(username, password)(this.props.dispatch);
+        authActions(this.props.dispatch).login(username, password);
       }
     });
   };
@@ -36,7 +37,7 @@ class NormalLoginForm extends React.Component {
     const passwordInput = generateInput(form, 'password', true, 'Please input your Password!', 'Password', 'lock');
 
     return (
-      <Layout>
+      <AntdLayout>
         <Form onSubmit={this.handleSubmit} className="login-form">
           <Form.Item>
             {usernameInput}
@@ -50,7 +51,7 @@ class NormalLoginForm extends React.Component {
             </Button>
           </Form.Item>
         </Form>
-      </Layout>
+      </AntdLayout>
     );
   }
 }

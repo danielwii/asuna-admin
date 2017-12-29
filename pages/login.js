@@ -1,16 +1,21 @@
 import React            from 'react';
 import { connect }      from 'react-redux';
+import PropTypes        from 'prop-types';
 import { notification } from 'antd';
+import _                from 'lodash';
 
-import Login                          from '../components/Login';
-import { globalShape, withReduxSaga } from '../store';
+import Login             from '../components/Login';
+import { withReduxSaga } from '../store';
 
-import { notificationsActions, notificationsShape } from '../store/notifications.redux';
+import { notificationsActions, notificationTypes } from '../store/notifications.redux';
 
 class LoginPage extends React.Component {
   static propTypes = {
-    global       : globalShape,
-    notifications: notificationsShape,
+    global       : PropTypes.shape(),
+    notifications: {
+      message: PropTypes.string,
+      type   : PropTypes.oneOf(_.values(notificationTypes)),
+    },
   };
 
   // --------------------------------------------------------------
@@ -50,7 +55,7 @@ class LoginPage extends React.Component {
         message    : nextProps.notifications.message,
         description: JSON.stringify(nextProps.notifications),
       });
-      notificationsActions.notifyDone()(nextProps.dispatch);
+      notificationsActions(nextProps.dispatch).notifyDone();
     }
   }
 

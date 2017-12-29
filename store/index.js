@@ -8,31 +8,30 @@ import { composeWithDevTools }    from 'redux-devtools-extension';
 import logger                     from 'redux-logger';
 import { reducer as formReducer } from 'redux-form';
 import { all }                    from 'redux-saga/effects';
-import PropTypes                  from 'prop-types';
-
-import { loginActionTypes, loginReducer, loginSagas } from './login.redux';
 
 import {
   notificationsActionTypes, notificationsReducer,
   notificationsSagas,
 } from './notifications.redux';
 
+import { authActionTypes, authReducer, authSagas }       from './auth.redux';
 import { routerActionTypes, routerReducer, routerSagas } from './router.redux';
+
+import { panesActionTypes, panesReducer, panesSagas } from './panes.redux';
 
 const initialState = {
   message: 'hello world',
 };
-
-export const globalShape = PropTypes.shape({});
 
 // --------------------------------------------------------------
 // Types
 // --------------------------------------------------------------
 
 export const actionTypes = {
-  login        : loginActionTypes,
+  auth         : authActionTypes,
   notifications: notificationsActionTypes,
   router       : routerActionTypes,
+  panes        : panesActionTypes,
 };
 
 // --------------------------------------------------------------
@@ -40,9 +39,10 @@ export const actionTypes = {
 // --------------------------------------------------------------
 
 const rootReducers = combineReducers({
+  auth         : authReducer,
   notifications: notificationsReducer,
-  login        : loginReducer,
   router       : routerReducer,
+  panes        : panesReducer,
   form         : formReducer,
   global       : (previousState = initialState, action) => (
     { ...previousState, ...action }
@@ -55,9 +55,10 @@ const rootReducers = combineReducers({
 
 function* rootSaga() {
   yield all([
-    ...loginSagas,
+    ...authSagas,
     ...notificationsSagas,
     ...routerSagas,
+    ...panesSagas,
   ]);
 }
 

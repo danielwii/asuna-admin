@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { withReduxSaga } from '../store';
 import { AntdLayout }    from '../layout';
 
+// eslint-disable-next-line no-unused-vars
 const Home = props => (
   <AntdLayout>
     <div>home</div>
