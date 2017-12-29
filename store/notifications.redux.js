@@ -32,6 +32,7 @@ const actionEvents = {
   notifyDone: () => ({ type: actionTypes.NOTIFY_SUCCESS, payload: {} }),
 };
 
+// TODO remove actions and rename actionEvents to actions
 const actions = dispatch => ({
   // action: (args): dispatchFunction
   notify    : (message, type) => dispatch(actionEvents.notify(message, type)),

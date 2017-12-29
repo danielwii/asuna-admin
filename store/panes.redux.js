@@ -26,6 +26,7 @@ const actionEvents = {
   close: key => ({ type: actionTypes.CLOSE, payload: { key } }),
 };
 
+// TODO remove actions and rename actionEvents to actions
 const actions = dispatch => ({
   // action: (args): dispatchFunction with actionEvent
   add  : pane => dispatch(actionEvents.add(pane)),

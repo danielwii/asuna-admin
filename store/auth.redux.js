@@ -22,22 +22,17 @@ const isCurrentModule = type => type.startsWith('auth::');
 // Login actions
 // --------------------------------------------------------------
 
-const actionEvents = {
-  // -
-  login: (username, password) => ({ type: actionTypes.LOGIN, payload: { username, password } }),
-
-  // -
-  loginSuccess: token =>
-    ({ type: actionTypes.LOGIN_SUCCESS, payload: { token, loginTime: new Date() } }),
-
-  // -
-  loginFailed: error => ({ type: actionTypes.LOGIN_FAILED, payload: {}, error }),
+const actions = {
+  login       : (username, password) => ({
+    type: actionTypes.LOGIN, payload: { username, password },
+  }),
+  loginSuccess: token => ({
+    type: actionTypes.LOGIN_SUCCESS, payload: { token, loginTime: new Date() },
+  }),
+  loginFailed : error => ({
+    type: actionTypes.LOGIN_FAILED, error,
+  }),
 };
-
-const actions = dispatch => ({
-  login : (username, password) => dispatch(actionEvents.login(username, password)),
-  toHome: () => dispatch(actionEvents.toHome()),
-});
 
 // --------------------------------------------------------------
 // Login sagas
@@ -47,12 +42,12 @@ function* loginSaga({ payload: { username, password } }) {
   try {
     const { data: { token } } = yield call(login, username, password);
     console.log('token is', token);
-    yield put(actionEvents.loginSuccess(token));
+    yield put(actions.loginSuccess(token));
     yield put(notificationsActionEvents.notify(`'${username}' login success`));
     yield put(routerActions.toHome());
   } catch (error) {
     console.error('login error', error);
-    yield put(actionEvents.loginFailed(error));
+    yield put(actions.loginFailed(error));
     yield put(notificationsActionEvents.notify(error.message, notificationTypes.ERROR));
   }
 }
@@ -80,8 +75,9 @@ const reducer = (previousState = initialState, action) => {
     switch (action.type) {
       // state 中移除 password
       case actionTypes.LOGIN:
-      case actionTypes.LOGIN_FAILED:
         return { username: action.payload.username };
+      case actionTypes.LOGIN_FAILED:
+        return { username: action.payload.username, payload: {} };
       default:
         return { ...previousState, ...action.payload };
     }
@@ -92,7 +88,6 @@ const reducer = (previousState = initialState, action) => {
 
 export {
   actionTypes as authActionTypes,
-  actionEvents as authActionEvents,
   actions as authActions,
   sagas as authSagas,
   reducer as authReducer,
