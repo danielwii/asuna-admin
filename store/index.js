@@ -19,9 +19,7 @@ import { routerActionTypes, routerReducer, routerSagas } from './router.redux';
 import { panesActionTypes, panesReducer, panesSagas }    from './panes.redux';
 import { menuActionTypes, menuReducer, menuSagas }       from './menu.redux';
 
-const initialState = {
-  message: 'hello world',
-};
+const initialState = {};
 
 // --------------------------------------------------------------
 // Types

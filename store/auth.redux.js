@@ -1,7 +1,8 @@
 import { call, put, takeLatest } from 'redux-saga/effects';
 
-import { login } from '../services/auth';
+import _ from 'lodash';
 
+import { login }         from '../services/auth';
 import { routerActions } from './router.redux';
 
 import { notificationsActionEvents, notificationTypes } from './notifications.redux';
@@ -24,13 +25,13 @@ const isCurrentModule = type => type.startsWith('auth::');
 
 const actions = {
   login       : (username, password) => ({
-    type: actionTypes.LOGIN, payload: { username, password },
+    type: actionTypes.LOGIN, payload: { username, password }, error: null,
   }),
   loginSuccess: token => ({
-    type: actionTypes.LOGIN_SUCCESS, payload: { token, loginTime: new Date() },
+    type: actionTypes.LOGIN_SUCCESS, payload: { token, loginTime: new Date() }, error: null,
   }),
   loginFailed : error => ({
-    type: actionTypes.LOGIN_FAILED, error,
+    type: actionTypes.LOGIN_FAILED, payload: {}, error,
   }),
 };
 
@@ -74,12 +75,11 @@ const reducer = (previousState = initialState, action) => {
   if (isCurrentModule(action.type)) {
     switch (action.type) {
       // state 中移除 password
-      case actionTypes.LOGIN:
-        return { username: action.payload.username };
-      case actionTypes.LOGIN_FAILED:
-        return { username: action.payload.username, payload: {} };
+      // case actionTypes.LOGIN:
+      // case actionTypes.LOGIN_FAILED:
+      //   return { username: action.payload.username };
       default:
-        return { ...previousState, ...action.payload };
+        return { ...previousState, ..._.omit(action.payload, 'password') };
     }
   } else {
     return previousState;

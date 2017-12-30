@@ -29,10 +29,12 @@ const actions = {
 // }
 // --------------------------------------------------------------
 
-const init = async () => {
-  const { menus } = await getMenus();
-  await put({ type: actionTypes.INIT_SUCCESS, payload: { menus } });
-};
+function* init() {
+  console.log('menu init sage, call getMenus...');
+  const { menus } = yield getMenus();
+  console.log('menu init sage, menus is', menus);
+  yield put({ type: actionTypes.INIT_SUCCESS, payload: { menus } });
+}
 
 const sagas = [
   // takeLatest / takeEvery (actionType, actionSage)

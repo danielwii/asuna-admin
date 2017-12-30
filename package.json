@@ -39,6 +39,7 @@
     "@types/ramda": "^0.25.12",
     "autod": "^3.0.1",
     "babel-eslint": "^8.0.3",
+    "babel-plugin-styled-components": "^1.4.0",
     "eslint": "^4.13.1",
     "eslint-config-airbnb": "^16.1.0",
     "eslint-plugin-import": "^2.8.0",

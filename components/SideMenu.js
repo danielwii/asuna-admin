@@ -11,7 +11,15 @@ const { Sider }   = Layout;
 export default class extends React.Component {
   static propTypes = {
     goto : PropTypes.func.isRequired,
-    menus: PropTypes.shape(PropTypes.array),
+    menus: PropTypes.arrayOf(PropTypes.shape({
+      key     : PropTypes.string.isRequired,
+      title   : PropTypes.string.isRequired,
+      subMenus: PropTypes.arrayOf(PropTypes.shape({
+        key   : PropTypes.string.isRequired,
+        title : PropTypes.string.isRequired,
+        linkTo: PropTypes.string.isRequired,
+      })).isRequired,
+    })).isRequired,
   };
 
   constructor(props) {

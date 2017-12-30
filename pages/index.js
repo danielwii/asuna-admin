@@ -1,52 +1,22 @@
-import React          from 'react';
-import { connect }    from 'react-redux';
-import PropTypes      from 'prop-types';
-import Link           from 'next/link';
-import { DatePicker } from 'antd';
+import React       from 'react';
+import { connect } from 'react-redux';
 
-import { AntdLayout }                 from '../layout';
-import { actionTypes, withReduxSaga } from '../store';
+import { MainLayout }    from '../layout';
+import { withReduxSaga } from '../store';
+import { menuActions }   from '../store/menu.redux';
 
-class Home extends React.Component {
-  static propTypes = {
-    message: PropTypes.string.isRequired,
-  };
-
-  static async getInitialProps({ store }) {
-  }
-
-  componentDidMount() {
+class Index extends React.Component {
+  componentWillMount() {
+    console.log('componentWillMount...');
+    const { dispatch } = this.props;
+    dispatch(menuActions.init());
   }
 
   render() {
-    const { message, dispatch } = this.props;
     return (
-      <AntdLayout>
-        <div>
-          <h1>- Home -</h1>
-          <hr />
-          <div>Message: {message}</div>
-          <hr />
-          <div>
-            <button onClick={() => dispatch({ type: actionTypes.login.LOGIN })}>hello2</button>
-          </div>
-          <hr />
-          <ul>
-            <li>
-              go to{' '}
-              <Link href="/login">
-                <button>login</button>
-              </Link>
-            </li>
-          </ul>
-          <hr />
-          <DatePicker />
-        </div>
-      </AntdLayout>
+      <MainLayout />
     );
   }
 }
 
-const HomeConnector = connect(state => ({ ...state.global }))(Home);
-
-export default withReduxSaga(HomeConnector);
+export default withReduxSaga(connect()(Index));

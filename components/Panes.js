@@ -1,5 +1,6 @@
 import React     from 'react';
 import PropTypes from 'prop-types';
+import _         from 'lodash';
 
 import { Tabs } from 'antd';
 
@@ -7,7 +8,7 @@ const { TabPane } = Tabs;
 
 class Panes extends React.Component {
   static propTypes = {
-    activeKey: PropTypes.string.isRequired,
+    activeKey: PropTypes.string,
     open     : PropTypes.func.isRequired,
     close    : PropTypes.func.isRequired,
     panes    : PropTypes.shape({
