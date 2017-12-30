@@ -1,7 +1,6 @@
 import React     from 'react';
 import PropTypes from 'prop-types';
 import _         from 'lodash';
-import * as R    from 'ramda';
 
 import { Layout, Menu } from 'antd';
 
@@ -10,7 +9,7 @@ const { Sider }   = Layout;
 
 export default class extends React.Component {
   static propTypes = {
-    goto : PropTypes.func.isRequired,
+    add  : PropTypes.func.isRequired,
     menus: PropTypes.arrayOf(PropTypes.shape({
       key     : PropTypes.string.isRequired,
       title   : PropTypes.string.isRequired,
@@ -25,20 +24,19 @@ export default class extends React.Component {
   constructor(props) {
     super(props);
 
-    this.goto = this.goto.bind(this);
+    this.open = this.open.bind(this);
   }
 
-  goto({ key }) {
-    const { goto } = this.props;
-    const linkTo   = R.compose(R.last, R.split('::'))(key);
-    goto(linkTo);
+  open({ key, item: { props: { title } } }) {
+    const { add } = this.props;
+    add({ key, title });
   }
 
   buildSubMenu(subMenu) {
     return (
       <SubMenu key={subMenu.key} title={subMenu.title}>
         {_.map(subMenu.subMenus, menu => (
-          <Menu.Item key={`${menu.key}::${menu.linkTo}`}>{menu.title}</Menu.Item>
+          <Menu.Item key={menu.key} title={menu.title}>{menu.title}</Menu.Item>
         ))}
       </SubMenu>
     );
@@ -51,7 +49,7 @@ export default class extends React.Component {
       <Sider width={200} style={{ background: '#fff' }}>
         <Menu
           mode="inline"
-          onClick={this.goto}
+          onClick={this.open}
           // defaultSelectedKeys={['1']}
           defaultOpenKeys={['models']}
           style={{ height: '100%', borderRight: 0 }}

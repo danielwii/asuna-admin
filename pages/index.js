@@ -1,9 +1,17 @@
 import React       from 'react';
 import { connect } from 'react-redux';
+import dynamic     from 'next/dynamic';
 
-import { MainLayout }    from '../layout';
 import { withReduxSaga } from '../store';
 import { menuActions }   from '../store/menu.redux';
+
+const DynamicMainLayoutLoading = dynamic(
+  import('../layout/main'),
+  {
+    loading: () => <p>loading...</p>,
+  },
+);
+
 
 class Index extends React.Component {
   componentWillMount() {
@@ -14,7 +22,7 @@ class Index extends React.Component {
 
   render() {
     return (
-      <MainLayout />
+      <DynamicMainLayoutLoading />
     );
   }
 }

@@ -4,6 +4,8 @@ import _         from 'lodash';
 
 import { Tabs } from 'antd';
 
+import ModulesLoader from '../modules';
+
 const { TabPane } = Tabs;
 
 class Panes extends React.Component {
@@ -49,9 +51,13 @@ class Panes extends React.Component {
         >
           {_.map(panes, pane => (
             <TabPane tab={pane.title} key={pane.key}>
-              {pane.composed.component}
-              {/* <hr /> */}
-              {/* <pre>{JSON.stringify(pane, null, 2)}</pre> */}
+              {activeKey} - {pane.key}
+              <br />
+              {`${activeKey === pane.key}`}
+              <br />
+              {activeKey === pane.key && <ModulesLoader module={activeKey} />}
+              <hr />
+              <pre>{JSON.stringify(pane, null, 2)}</pre>
             </TabPane>
           ))}
         </Tabs>
