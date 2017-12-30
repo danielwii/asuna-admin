@@ -16,12 +16,5 @@ export default dynamic({
 
     return { Component };
   },
-  render : (props, { Component }) => (
-    <div>
-      <h1>
-        {props.key} - {props.title}
-      </h1>
-      <Component />
-    </div>
-  ),
+  render : (props, { Component }) => <Component />,
 });

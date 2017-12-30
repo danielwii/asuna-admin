@@ -3,7 +3,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import { withReduxSaga } from '../store';
-import { AntdLayout }    from '../layout';
+import AntdLayout        from '../layout/antd';
 
 // eslint-disable-next-line no-unused-vars
 const Home = props => (

@@ -45,6 +45,10 @@ export default class extends React.Component {
   render() {
     const { menus } = this.props;
 
+    if (!menus) {
+      return <div>loading menus...</div>;
+    }
+
     return (
       <Sider width={200} style={{ background: '#fff' }}>
         <Menu

@@ -4,7 +4,7 @@ import PropTypes      from 'prop-types';
 import Link           from 'next/link';
 import { DatePicker } from 'antd';
 
-import { AntdLayout }                 from '../layout';
+import AntdLayout                     from '../layout/antd';
 import { actionTypes, withReduxSaga } from '../store';
 
 class Home extends React.Component {

@@ -40,6 +40,11 @@ class Panes extends React.Component {
 
   render() {
     const { activeKey, panes, open } = this.props;
+
+    if (!activeKey) {
+      return <div>^_^ - panes</div>;
+    }
+
     return (
       <div>
         <Tabs
@@ -52,15 +57,12 @@ class Panes extends React.Component {
           {_.map(panes, pane => (
             <TabPane tab={pane.title} key={pane.key}>
               {activeKey} - {pane.key}
-              <br />
-              {`${activeKey === pane.key}`}
-              <br />
-              {activeKey === pane.key && <ModulesLoader module={activeKey} />}
-              <hr />
               <pre>{JSON.stringify(pane, null, 2)}</pre>
             </TabPane>
           ))}
         </Tabs>
+        <hr />
+        <ModulesLoader module={activeKey} />
       </div>
     );
   }

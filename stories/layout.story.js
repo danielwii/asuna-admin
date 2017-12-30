@@ -1,11 +1,9 @@
-import React                  from 'react';
-import { connect, Provider }  from 'react-redux';
-import { bindActionCreators } from 'redux';
-
+import React        from 'react';
+import { Provider } from 'react-redux';
 
 import { storiesOf } from "@storybook/react";
 
-import { MainLayout }     from '../layout';
+import MainLayout         from '../layout/main';
 import { configureStore } from '../store';
 
 const initialState = {

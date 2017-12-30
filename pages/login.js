@@ -4,6 +4,7 @@ import PropTypes        from 'prop-types';
 import { notification } from 'antd';
 import _                from 'lodash';
 
+import AntdLayout        from '../layout/antd';
 import Login             from '../components/Login';
 import { withReduxSaga } from '../store';
 
@@ -110,7 +111,11 @@ class LoginPage extends React.Component {
   }
 
   render() {
-    return <Login {...this.props} />;
+    return (
+      <AntdLayout>
+        <Login {...this.props} />
+      </AntdLayout>
+    );
   }
 }
 

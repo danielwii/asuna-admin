@@ -2,8 +2,6 @@ import React from 'react';
 
 import { Button, Form, Icon, Input } from 'antd';
 
-// TODO move layout to pages
-import { AntdLayout }  from '../layout';
 import { authActions } from '../store/auth.redux';
 
 function generateInput(form, name, required, message, placeholder, iconType) {
@@ -37,21 +35,19 @@ class NormalLoginForm extends React.Component {
     const passwordInput = generateInput(form, 'password', true, 'Please input your Password!', 'Password', 'lock');
 
     return (
-      <AntdLayout>
-        <Form onSubmit={this.handleSubmit} className="login-form">
-          <Form.Item>
-            {usernameInput}
-          </Form.Item>
-          <Form.Item>
-            {passwordInput}
-          </Form.Item>
-          <Form.Item>
-            <Button type="primary" htmlType="submit" className="login-form-button">
-              Log in
-            </Button>
-          </Form.Item>
-        </Form>
-      </AntdLayout>
+      <Form onSubmit={this.handleSubmit} className="login-form">
+        <Form.Item>
+          {usernameInput}
+        </Form.Item>
+        <Form.Item>
+          {passwordInput}
+        </Form.Item>
+        <Form.Item>
+          <Button type="primary" htmlType="submit" className="login-form-button">
+            Log in
+          </Button>
+        </Form.Item>
+      </Form>
     );
   }
 }

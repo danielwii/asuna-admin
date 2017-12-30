@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import { Layout, Menu } from 'antd';
 
-import { AntdLayout }    from './index';
+import AntdLayout        from './antd';
 import PanesContainer    from '../containers/Panes';
 import SideMenuContainer from '../containers/SideMenu';
 
