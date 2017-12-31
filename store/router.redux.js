@@ -8,8 +8,10 @@ import Router from 'next/router';
 
 const actionTypes = {
   // ACTION: 'module::action'
-  TO_HOME: 'router::to-home',
-  GOTO   : 'router::goto',
+  TO_INDEX: 'router::to-index',
+  TO_HOME : 'router::to-home',
+  TO_LOGIN: 'router::to-login',
+  GOTO    : 'router::goto',
 };
 
 const isCurrentModule = type => type.startsWith('router::');
@@ -20,8 +22,10 @@ const isCurrentModule = type => type.startsWith('router::');
 
 const actions = {
   // action: (args): ({ type, payload })
-  toHome: () => ({ type: actionTypes.TO_HOME, payload: { path: '/home' } }),
-  goto  : path => ({ type: actionTypes.GOTO, payload: { path } }),
+  toIndex: () => ({ type: actionTypes.TO_INDEX, payload: { path: '/' } }),
+  toHome : () => ({ type: actionTypes.TO_HOME, payload: { path: '/home' } }),
+  toLogin: () => ({ type: actionTypes.TO_LOGIN, payload: { path: '/login' } }),
+  goto   : path => ({ type: actionTypes.GOTO, payload: { path } }),
 };
 
 // --------------------------------------------------------------
@@ -37,7 +41,9 @@ async function goto({ payload: { path } }) {
 
 const sagas = [
   // takeLatest / takeEvery (actionType, actionSage)
+  takeLatest(actionTypes.TO_INDEX, goto),
   takeLatest(actionTypes.TO_HOME, goto),
+  takeLatest(actionTypes.TO_LOGIN, goto),
   takeLatest(actionTypes.GOTO, goto),
 ];
 

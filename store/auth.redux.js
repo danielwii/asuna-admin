@@ -1,11 +1,11 @@
-import { call, put, takeLatest } from 'redux-saga/effects';
+import { call, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
 
 import _ from 'lodash';
 
 import { login }         from '../services/auth';
 import { routerActions } from './router.redux';
 
-import { notificationsActionEvents, notificationTypes } from './notifications.redux';
+import { notificationsActions, notificationTypes } from './notifications.redux';
 
 // --------------------------------------------------------------
 // Login actionTypes
@@ -42,23 +42,31 @@ const actions = {
 function* loginSaga({ payload: { username, password } }) {
   try {
     const { data: { token } } = yield call(login, username, password);
-    console.log('token is', token);
+    // console.log('token is', token);
     yield put(actions.loginSuccess(token));
-    yield put(notificationsActionEvents.notify(`'${username}' login success`));
-    yield put(routerActions.toHome());
+    yield put(notificationsActions.notify(`'${username}' login success`));
+    yield put(routerActions.toIndex());
   } catch (error) {
-    console.error('login error', error);
+    // console.error('login error', error);
     yield put(actions.loginFailed(error));
-    yield put(notificationsActionEvents.notify(error.message, notificationTypes.ERROR));
+    yield put(notificationsActions.notify(error.message, notificationTypes.ERROR));
   }
 }
 
-// function* loginSagaWatcher() {
-//
-// }
+/**
+ * 未找到可用 token 时重定向到登录页面
+ */
+function* tokenWatcher() {
+  // const action = yield take('*');
+  const { auth: { token }, router: { path } } = yield select();
+  if (!token && path !== '/login') {
+    yield put(routerActions.toLogin());
+  }
+}
 
 const sagas = [
   takeLatest(actionTypes.LOGIN, loginSaga),
+  takeEvery('*', tokenWatcher),
 ];
 
 // --------------------------------------------------------------

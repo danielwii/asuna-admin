@@ -8,10 +8,12 @@ import 'antd/dist/antd.css';
 
 import { Button, Welcome } from '@storybook/react/demo';
 
-import './login.story'
-import './layout.story'
-import './panes.story'
-import './side-menu.story'
+import './login.story';
+import './layout.story';
+import './panes.story';
+import './side-menu.story';
+import './dynamic-form.story';
+import './modules-models.story';
 
 storiesOf('Welcome', module).add('to Storybook', () => <Welcome showApp={linkTo('Button')} />);
 

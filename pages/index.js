@@ -5,6 +5,10 @@ import dynamic     from 'next/dynamic';
 import { withReduxSaga } from '../store';
 import { menuActions }   from '../store/menu.redux';
 
+// --------------------------------------------------------------
+// Define main app dynamic loader
+// --------------------------------------------------------------
+
 const DynamicMainLayoutLoading = dynamic(
   import('../layout/main'),
   {
@@ -12,6 +16,9 @@ const DynamicMainLayoutLoading = dynamic(
   },
 );
 
+// --------------------------------------------------------------
+// Index Component
+// --------------------------------------------------------------
 
 class Index extends React.Component {
   componentWillMount() {

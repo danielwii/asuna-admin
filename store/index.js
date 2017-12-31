@@ -19,6 +19,8 @@ import { routerActionTypes, routerReducer, routerSagas } from './router.redux';
 import { panesActionTypes, panesReducer, panesSagas }    from './panes.redux';
 import { menuActionTypes, menuReducer, menuSagas }       from './menu.redux';
 
+import { modModelsActionTypes, modModelsReducer, modModelsSagas } from './modules/models.redux';
+
 const initialState = {};
 
 // --------------------------------------------------------------
@@ -31,6 +33,7 @@ export const actionTypes = {
   router       : routerActionTypes,
   panes        : panesActionTypes,
   menu         : menuActionTypes,
+  mod_models   : modModelsActionTypes,
 };
 
 // --------------------------------------------------------------
@@ -43,6 +46,7 @@ const rootReducers = combineReducers({
   router       : routerReducer,
   panes        : panesReducer,
   menu         : menuReducer,
+  mod_models   : modModelsReducer,
   form         : formReducer,
   global       : (previousState = initialState, action) => (
     { ...previousState, ...action }
@@ -60,6 +64,7 @@ function* rootSaga() {
     ...routerSagas,
     ...panesSagas,
     ...menuSagas,
+    ...modModelsSagas,
   ]);
 }
 

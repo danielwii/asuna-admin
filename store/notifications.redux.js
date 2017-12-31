@@ -1,4 +1,6 @@
-// import { call, put, takeLatest } from 'redux-saga/effects';
+import { put, takeEvery } from 'redux-saga/effects';
+
+import { notification } from 'antd';
 
 // --------------------------------------------------------------
 // Notifications actionTypes
@@ -23,21 +25,13 @@ export const notificationTypes = {
 // Notifications actions
 // --------------------------------------------------------------
 
-const actionEvents = {
-  // -
-  notify: (message, type = notificationTypes.INFO) =>
-    ({ type: actionTypes.NOTIFY, payload: { message, type } }),
-
-  // -
+const actions = {
+  notify    : (message, type = notificationTypes.INFO) => ({
+    type   : actionTypes.NOTIFY,
+    payload: { message, type },
+  }),
   notifyDone: () => ({ type: actionTypes.NOTIFY_SUCCESS, payload: {} }),
 };
-
-// TODO remove actions and rename actionEvents to actions
-const actions = dispatch => ({
-  // action: (args): dispatchFunction
-  notify    : (message, type) => dispatch(actionEvents.notify(message, type)),
-  notifyDone: () => dispatch(actionEvents.notifyDone()),
-});
 
 // --------------------------------------------------------------
 // Notifications sagas
@@ -46,8 +40,37 @@ const actions = dispatch => ({
 // }
 // --------------------------------------------------------------
 
+/**
+ * 采用 antd 的 notification 方法发起通知
+ * 暂时没有必要做更高级别的抽象
+ * @param message
+ * @param type
+ */
+function* notify({ payload: { message, type } }) {
+  if (type !== notificationTypes.ERROR) {
+    // 普通模式下只显示通知信息
+    notification[type]({ message });
+  } else {
+    // message 为 error 时，解构是否为服务端错误
+    const { response: { data: serverError } } = message;
+    if (serverError) {
+      notification[type]({
+        message    : message.message,
+        description: JSON.stringify(serverError),
+      });
+    } else {
+      notification[type]({
+        message    : message.message,
+        description: JSON.stringify(message),
+      });
+    }
+  }
+  yield put(actions.notifyDone());
+}
+
 const sagas = [
   // takeLatest / takeEvery (actionType, actionSage)
+  takeEvery(actionTypes.NOTIFY, notify),
 ];
 
 // --------------------------------------------------------------
@@ -74,7 +97,6 @@ const reducer = (previousState = initialState, action) => {
 
 export {
   actionTypes as notificationsActionTypes,
-  actionEvents as notificationsActionEvents,
   actions as notificationsActions,
   sagas as notificationsSagas,
   reducer as notificationsReducer,

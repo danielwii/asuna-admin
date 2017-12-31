@@ -1,22 +1,37 @@
-import React            from 'react';
-import { connect }      from 'react-redux';
-import PropTypes        from 'prop-types';
-import { notification } from 'antd';
-import _                from 'lodash';
+import React       from 'react';
+import { connect } from 'react-redux';
+import PropTypes   from 'prop-types';
+import _           from 'lodash';
+import styled      from 'styled-components';
 
 import AntdLayout        from '../layout/antd';
 import Login             from '../components/Login';
 import { withReduxSaga } from '../store';
 
-import { notificationsActions, notificationTypes } from '../store/notifications.redux';
+import { notificationTypes } from '../store/notifications.redux';
+
+const StyledFullFlexContainer = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const StyledLoginWrapper = styled.div`
+  width: 20rem;
+`;
 
 class LoginPage extends React.Component {
   static propTypes = {
     global       : PropTypes.shape(),
-    notifications: {
+    notifications: PropTypes.shape({
       message: PropTypes.string,
       type   : PropTypes.oneOf(_.values(notificationTypes)),
-    },
+    }),
   };
 
   // --------------------------------------------------------------
@@ -51,13 +66,6 @@ class LoginPage extends React.Component {
    */
   componentWillReceiveProps(nextProps, nextContext) {
     console.log('componentWillReceiveProps::nextProps is', nextProps, 'nextContext is', nextContext);
-    if (nextProps.notifications && nextProps.notifications.message) {
-      notification[nextProps.notifications.type]({
-        message    : nextProps.notifications.message,
-        description: JSON.stringify(nextProps.notifications),
-      });
-      notificationsActions(nextProps.dispatch).notifyDone();
-    }
   }
 
   /**
@@ -113,7 +121,12 @@ class LoginPage extends React.Component {
   render() {
     return (
       <AntdLayout>
-        <Login {...this.props} />
+        <StyledFullFlexContainer>
+          <StyledLoginWrapper>
+            <Login {...this.props} />
+          </StyledLoginWrapper>
+        </StyledFullFlexContainer>
+
       </AntdLayout>
     );
   }

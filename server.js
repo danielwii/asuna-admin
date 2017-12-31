@@ -18,7 +18,7 @@ app.prepare().then(() => {
     const { pathname } = parsedUrl;
 
     if (pathname.startsWith('/api/')) {
-      req.url = req.url.slice('/api/'.length);
+      // req.url = req.url.slice('/api/'.length);
       proxy.web(req, res, { target: configurator.loadConfig('PROXY_API') }, (e) => {
         console.error('PROXY_API ERROR!', e.stack);
       });
