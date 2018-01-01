@@ -10,8 +10,9 @@ import { notificationsActions, notificationTypes } from '../notifications.redux'
 
 const actionTypes = {
   // ACTION: 'module::action'
-  SAVE   : 'mod::models::save',
-  REFRESH: 'mod::models::refresh',
+  SAVE                  : 'mod::models::save',
+  REFRESH_MODELS        : 'mod::models::refresh-models',
+  REFRESH_MODELS_SUCCESS: 'mod::models::refresh-models-success',
 };
 
 const isCurrentModule = type => type.startsWith('mod::models');
@@ -22,8 +23,12 @@ const isCurrentModule = type => type.startsWith('mod::models');
 
 const actions = {
   // action: (args): ({ type, payload })
-  save   : name => ({ type: actionTypes.SAVE, payload: { name } }),
-  refresh: pageable => ({ type: actionTypes.REFRESH, payload: { pageable } }),
+  save                : name => ({ type: actionTypes.SAVE, payload: { name } }),
+  refreshModels       : pageable => ({ type: actionTypes.REFRESH_MODELS, payload: { pageable } }),
+  refreshModelsSuccess: models => ({
+    type   : actionTypes.REFRESH_MODELS_SUCCESS,
+    payload: { models },
+  }),
 };
 
 // --------------------------------------------------------------
@@ -40,6 +45,7 @@ function* save({ payload: { name } }) {
     try {
       const response = yield call(modelsApi.save, { token }, { name });
       yield put(notificationsActions.notify(`save model '${name}' success`, notificationTypes.SUCCESS));
+      yield put(actions.refreshModels());
       console.log('saved model is', response, response.data);
     } catch (e) {
       yield put(notificationsActions.notify(e, notificationTypes.ERROR));
@@ -48,14 +54,22 @@ function* save({ payload: { name } }) {
   }
 }
 
-function* refresh(pageable) {
-  const { token } = yield select(state => state.auth);
+function* refreshModels() {
+  const { token }    = yield select(state => state.auth);
+  const { pageable } = yield select(state => state.mod_models);
   if (token) {
-    console.log('refresh model');
+    console.log('--> refreshModels model', pageable);
+    yield put(notificationsActions.notify('loading models...'));
     try {
-      yield modelsApi.refresh({ token }, pageable);
+      const response = yield call(modelsApi.refreshModels, { token }, pageable);
+
+      const { data, data: { totalElements } } = response;
+      yield put(actions.refreshModelsSuccess(data));
+      yield put(notificationsActions.notify(`loading models success, ${totalElements} in total.`, notificationTypes.SUCCESS));
+      console.log('models is', response, response.data);
     } catch (e) {
-      console.warn(e);
+      yield put(notificationsActions.notify(e, notificationTypes.ERROR));
+      console.warn('loading models', e);
     }
   }
 }
@@ -63,7 +77,7 @@ function* refresh(pageable) {
 const sagas = [
   // takeLatest / takeEvery (actionType, actionSage)
   takeLatest(actionTypes.SAVE, save),
-  takeLatest(actionTypes.REFRESH, refresh),
+  takeLatest(actionTypes.REFRESH_MODELS, refreshModels),
 ];
 
 // --------------------------------------------------------------
@@ -71,7 +85,9 @@ const sagas = [
 // action = { payload: any? }
 // --------------------------------------------------------------
 
-const initialState = {};
+const initialState = {
+  models: null,
+};
 
 const reducer = (previousState = initialState, action) => {
   if (isCurrentModule(action.type)) {

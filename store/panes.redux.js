@@ -19,20 +19,12 @@ const isCurrentModule = type => type.startsWith('panes::');
 // Module actions
 // --------------------------------------------------------------
 
-const actionEvents = {
+const actions = {
   // action: (args): ({ type, payload })
   add  : pane => ({ type: actionTypes.ADD, payload: { pane } }),
   open : key => ({ type: actionTypes.OPEN, payload: { key } }),
   close: key => ({ type: actionTypes.CLOSE, payload: { key } }),
 };
-
-// TODO remove actions and rename actionEvents to actions
-const actions = dispatch => ({
-  // action: (args): dispatchFunction with actionEvent
-  add  : pane => dispatch(actionEvents.add(pane)),
-  open : key => dispatch(actionEvents.open(key)),
-  close: key => dispatch(actionEvents.close(key)),
-});
 
 // --------------------------------------------------------------
 // Module sagas
@@ -90,7 +82,6 @@ const reducer = (previousState = initialState, action) => {
 
 export {
   actionTypes as panesActionTypes,
-  actionEvents as panesActionEvents,
   actions as panesActions,
   sagas as panesSagas,
   reducer as panesReducer,

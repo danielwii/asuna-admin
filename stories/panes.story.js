@@ -10,7 +10,7 @@ import { configureStore } from '../store';
 import Panes              from '../components/Panes';
 import PanesContainer     from '../containers/Panes';
 
-import { panesActionEvents, panesActionTypes, panesReducer } from '../store/panes.redux';
+import { panesActions, panesActionTypes, panesReducer } from '../store/panes.redux';
 
 const StyledButtonsDiv = styled.div`
   margin-bottom: 16px;
@@ -88,7 +88,7 @@ storiesOf('Panes', module)
 
     const PanesContainerWrapperConnector = connect(
       state => state,
-      dispatch => bindActionCreators(panesActionEvents, dispatch),
+      dispatch => bindActionCreators(panesActions, dispatch),
     )(PanesContainerWrapper);
 
     return <PanesContainerWrapperConnector />

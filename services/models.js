@@ -1,37 +1,33 @@
-import axios from 'axios';
+import axios  from 'axios';
+import moment from 'moment';
+
+moment.locale('zh-cn');
 
 const instance = axios.create({
   baseURL: '/api/admin',
   timeout: 60000,
 });
 
-export const modelsColumns = [
+export const modelsColumns = actions => [
   {
-    title    : '姓名',
+    title    : 'ID',
+    dataIndex: 'id',
+    key      : 'id',
+  }, {
+    title    : '名称',
     dataIndex: 'name',
     key      : 'name',
   }, {
-    title    : '年龄',
-    dataIndex: 'age',
-    key      : 'age',
+    title    : '创建时间',
+    dataIndex: 'createdAt',
+    key      : 'createdAt',
+    render   : text => moment(text).calendar(),
   }, {
-    title    : '住址',
-    dataIndex: 'address',
-    key      : 'address',
+    title : 'Action',
+    key   : 'action',
+    render: actions,
   },
 ];
-
-export const apiModelsDataSource = () => [{
-  key    : '1',
-  name   : '胡彦斌',
-  age    : 32,
-  address: '西湖区湖底公园1号',
-}, {
-  key    : '2',
-  name   : '胡彦祖',
-  age    : 42,
-  address: '西湖区湖底公园1号',
-}];
 
 export const authHeader = token => ({ headers: { Authorization: `Bearer ${token}` } });
 
@@ -39,7 +35,7 @@ export const modelsApi = {
   save({ token }, { name }) {
     return instance.post('/content/models', { name }, authHeader(token));
   },
-  refresh({ token }, pageable) {
-    return instance.get('/content/models', pageable, authHeader(token));
+  refreshModels({ token }, pageable = {}) {
+    return instance.get('/content/models', { params: pageable, ...authHeader(token) });
   },
 };

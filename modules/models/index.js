@@ -1,12 +1,19 @@
 import React       from 'react';
+import PropTypes   from 'prop-types';
 import { connect } from 'react-redux';
+import _           from 'lodash';
 
-import { Button, Input, Modal, Table } from 'antd';
+import { Button, Divider, Input, Modal, Table } from 'antd';
 
-import { apiModelsDataSource, modelsColumns } from '../../services/models';
-import { modModelsActions }                   from '../../store/modules/models.redux';
+import { toPagination }     from '../../services/utils';
+import { modelsColumns }    from '../../services/models';
+import { modModelsActions } from '../../store/modules/models.redux';
 
 class ModelsIndex extends React.Component {
+  static propTypes = {
+    models: PropTypes.shape({}),
+  };
+
   constructor(props) {
     super(props);
 
@@ -28,8 +35,21 @@ class ModelsIndex extends React.Component {
   }
 
   componentWillMount() {
-    // FIXME using init action instead
-    this.setState({ dataSource: apiModelsDataSource(), columns: modelsColumns });
+    const actions = (text, record) => (
+      <span>
+
+        {/* <a href="#">Action 一 {record.name}</a> */}
+        <Divider type="vertical" />
+        {/* <a href="#">Delete</a> */}
+        <Divider type="vertical" />
+        {/* <a href="#" className="ant-dropdown-link"> */}
+        {/* More actions <Icon type="down" /> */}
+        {/* </a> */}
+      </span>
+    );
+    this.setState({ columns: modelsColumns(actions) });
+    const { dispatch } = this.props;
+    dispatch(modModelsActions.refreshModels());
   }
 
   openCreate() {
@@ -41,6 +61,7 @@ class ModelsIndex extends React.Component {
     const { dispatch }                     = this.props;
     console.log('try saving model by name', name);
     dispatch(modModelsActions.save(name));
+    this.setState({ models: { create: { visible: false } } });
   }
 
   createModalInputOnChange(event) {
@@ -53,14 +74,20 @@ class ModelsIndex extends React.Component {
   }
 
   render() {
-    const { dataSource, columns, models: { create: { visible } } } = this.state;
+    const { columns, models: { create: { visible } } } = this.state;
+
+    const { models } = this.props;
+    const dataSource = _.get(models, 'content', []);
+
+    const pagination = toPagination(models);
 
     return (
       <div>
         <Button onClick={this.openCreate}>新增</Button>
-        <Button>刷新</Button>
+        <Divider type="vertical" />
+        <Button onClick={() => this.props.dispatch(modModelsActions.refreshModels())}>刷新</Button>
         <hr />
-        <Table dataSource={dataSource} columns={columns} />
+        <Table dataSource={dataSource} columns={columns} pagination={pagination} />
 
         <Modal name="新增模型" visible={visible} onOk={this.create} onCancel={this.cancel}>
           <Input placeholder="输入模型名称" onChange={this.createModalInputOnChange} />

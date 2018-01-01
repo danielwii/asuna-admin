@@ -56,12 +56,11 @@ class Panes extends React.Component {
         >
           {_.map(panes, pane => (
             <TabPane tab={pane.title} key={pane.key}>
-              {activeKey} - {pane.key}
-              <pre>{JSON.stringify(pane, null, 2)}</pre>
+              {/*{activeKey} - {pane.key}*/}
+              {/*<pre>{JSON.stringify(pane, null, 2)}</pre>*/}
             </TabPane>
           ))}
         </Tabs>
-        <hr />
         <ModulesLoader module={activeKey} />
       </div>
     );
