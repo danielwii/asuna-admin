@@ -8,9 +8,9 @@ import * as R from 'ramda';
 
 const actionTypes = {
   // ACTION: 'module::action'
-  ADD  : 'panes::add',
-  OPEN : 'panes::open',
-  CLOSE: 'panes::close',
+  OPEN  : 'panes::open',
+  ACTIVE: 'panes::active',
+  CLOSE : 'panes::close',
 };
 
 const isCurrentModule = type => type.startsWith('panes::');
@@ -21,9 +21,9 @@ const isCurrentModule = type => type.startsWith('panes::');
 
 const actions = {
   // action: (args): ({ type, payload })
-  add  : pane => ({ type: actionTypes.ADD, payload: { pane } }),
-  open : key => ({ type: actionTypes.OPEN, payload: { key } }),
-  close: key => ({ type: actionTypes.CLOSE, payload: { key } }),
+  open  : pane => ({ type: actionTypes.OPEN, payload: { pane } }),
+  active: key => ({ type: actionTypes.ACTIVE, payload: { key } }),
+  close : key => ({ type: actionTypes.CLOSE, payload: { key } }),
 };
 
 // --------------------------------------------------------------
@@ -50,11 +50,11 @@ const initialState = {
 const reducer = (previousState = initialState, action) => {
   if (isCurrentModule(action.type)) {
     switch (action.type) {
-      case actionTypes.ADD: {
+      case actionTypes.OPEN: {
         const { payload: { pane } } = action;
         return { activeKey: pane.key, panes: { ...previousState.panes, [pane.key]: pane } };
       }
-      case actionTypes.OPEN: {
+      case actionTypes.ACTIVE: {
         const { payload: { key } } = action;
         return { ...previousState, activeKey: key };
       }

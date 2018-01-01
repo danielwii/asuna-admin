@@ -9,8 +9,8 @@ const { Sider }   = Layout;
 
 export default class extends React.Component {
   static propTypes = {
-    add  : PropTypes.func.isRequired,
-    menus: PropTypes.arrayOf(PropTypes.shape({
+    onOpen: PropTypes.func.isRequired,
+    menus : PropTypes.arrayOf(PropTypes.shape({
       key     : PropTypes.string.isRequired,
       title   : PropTypes.string.isRequired,
       subMenus: PropTypes.arrayOf(PropTypes.shape({
@@ -28,8 +28,8 @@ export default class extends React.Component {
   }
 
   open({ key, item: { props: { title } } }) {
-    const { add } = this.props;
-    add({ key, title });
+    const { onOpen } = this.props;
+    onOpen({ key, title });
   }
 
   buildSubMenu(subMenu) {

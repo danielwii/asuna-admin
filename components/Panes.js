@@ -11,8 +11,8 @@ const { TabPane } = Tabs;
 class Panes extends React.Component {
   static propTypes = {
     activeKey: PropTypes.string,
-    open     : PropTypes.func.isRequired,
-    close    : PropTypes.func.isRequired,
+    onActive : PropTypes.func.isRequired,
+    onClose  : PropTypes.func.isRequired,
     panes    : PropTypes.shape({
       key: PropTypes.shape({
         title   : PropTypes.string,
@@ -31,15 +31,15 @@ class Panes extends React.Component {
   }
 
   onEdit = (targetKey, action) => {
-    const { close } = this.props;
+    const { onClose } = this.props;
     console.log('targetKey is', targetKey, 'action is', action);
     if (action === 'remove') {
-      close(targetKey);
+      onClose(targetKey);
     }
   };
 
   render() {
-    const { activeKey, panes, open } = this.props;
+    const { activeKey, panes, onActive } = this.props;
 
     if (!activeKey) {
       return <div>^_^ - panes</div>;
@@ -49,7 +49,7 @@ class Panes extends React.Component {
       <div>
         <Tabs
           hideAdd
-          onChange={open}
+          onChange={onActive}
           activeKey={activeKey}
           type="editable-card"
           onEdit={this.onEdit}

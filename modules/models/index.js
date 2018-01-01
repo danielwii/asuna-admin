@@ -8,6 +8,7 @@ import { Button, Divider, Input, Modal, Table } from 'antd';
 import { toPagination }     from '../../services/utils';
 import { modelsColumns }    from '../../services/models';
 import { modModelsActions } from '../../store/modules/models.redux';
+import { panesActions }     from '../../store/panes.redux';
 
 class ModelsIndex extends React.Component {
   static propTypes = {
@@ -28,8 +29,9 @@ class ModelsIndex extends React.Component {
       },
     };
 
-    this.openCreate               = this.openCreate.bind(this);
     this.createModalInputOnChange = this.createModalInputOnChange.bind(this);
+    this.openCreate               = this.openCreate.bind(this);
+    this.openSetup                = this.openSetup.bind(this);
     this.create                   = this.create.bind(this);
     this.cancel                   = this.cancel.bind(this);
   }
@@ -37,19 +39,21 @@ class ModelsIndex extends React.Component {
   componentWillMount() {
     const actions = (text, record) => (
       <span>
-
-        {/* <a href="#">Action 一 {record.name}</a> */}
+        <Button size="small" type="dashed" onClick={() => this.openSetup(record)}>配置</Button>
         <Divider type="vertical" />
-        {/* <a href="#">Delete</a> */}
-        <Divider type="vertical" />
-        {/* <a href="#" className="ant-dropdown-link"> */}
-        {/* More actions <Icon type="down" /> */}
-        {/* </a> */}
       </span>
     );
     this.setState({ columns: modelsColumns(actions) });
     const { dispatch } = this.props;
     dispatch(modModelsActions.refreshModels());
+  }
+
+  openSetup(record) {
+    const { dispatch } = this.props;
+    dispatch(panesActions.open({
+      key  : `models::setup::${record.id}`,
+      title: `配置模型 '${record.name}'`,
+    }));
   }
 
   openCreate() {
@@ -87,7 +91,7 @@ class ModelsIndex extends React.Component {
         <Divider type="vertical" />
         <Button onClick={() => this.props.dispatch(modModelsActions.refreshModels())}>刷新</Button>
         <hr />
-        <Table dataSource={dataSource} columns={columns} pagination={pagination} />
+        <Table dataSource={dataSource} rowKey="id" columns={columns} pagination={pagination} />
 
         <Modal name="新增模型" visible={visible} onOk={this.create} onCancel={this.cancel}>
           <Input placeholder="输入模型名称" onChange={this.createModalInputOnChange} />

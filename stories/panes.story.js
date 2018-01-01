@@ -123,7 +123,7 @@ storiesOf('Panes', module)
         const index = counter++;
         const key   = `t-${index}`;
         this.setState(panesReducer(this.state, {
-          type   : panesActionTypes.ADD,
+          type   : panesActionTypes.OPEN,
           payload: {
             pane: {
               key,
