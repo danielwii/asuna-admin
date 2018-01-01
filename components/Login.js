@@ -4,6 +4,8 @@ import { Button, Form, Icon, Input } from 'antd';
 
 import { authActions } from '../store/auth.redux';
 
+
+// TODO using DynamicForm's component instead
 function generateInput(form, name, required, message, placeholder, iconType) {
   const decorator = form.getFieldDecorator(name, { rules: [{ required, message }] });
   if (iconType) {

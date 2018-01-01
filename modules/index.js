@@ -26,5 +26,5 @@ export default dynamic({
 
     return { Component: components.default };
   },
-  render : (props, { Component }) => <Component />,
+  render : (props, { Component }) => <Component {...props} />,
 });

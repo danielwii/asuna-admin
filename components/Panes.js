@@ -61,7 +61,7 @@ class Panes extends React.Component {
             </TabPane>
           ))}
         </Tabs>
-        <ModulesLoader module={activeKey} />
+        <ModulesLoader module={activeKey}  />
       </div>
     );
   }

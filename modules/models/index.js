@@ -44,6 +44,7 @@ class ModelsIndex extends React.Component {
       </span>
     );
     this.setState({ columns: modelsColumns(actions) });
+
     const { dispatch } = this.props;
     dispatch(modModelsActions.refreshModels());
   }
@@ -53,6 +54,7 @@ class ModelsIndex extends React.Component {
     dispatch(panesActions.open({
       key  : `models::setup::${record.id}`,
       title: `配置模型 '${record.name}'`,
+      data : record,
     }));
   }
 
@@ -90,6 +92,7 @@ class ModelsIndex extends React.Component {
         <Button onClick={this.openCreate}>新增</Button>
         <Divider type="vertical" />
         <Button onClick={() => this.props.dispatch(modModelsActions.refreshModels())}>刷新</Button>
+
         <hr />
         <Table dataSource={dataSource} rowKey="id" columns={columns} pagination={pagination} />
 
