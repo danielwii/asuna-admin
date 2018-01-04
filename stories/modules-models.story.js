@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 import { storiesOf } from "@storybook/react";
 
 import ModelsIndex        from '../modules/models'
-import ModelsCreate       from '../modules/models/create'
+import ModelsSetup        from '../modules/models/setup'
 import { configureStore } from '../store';
 
 const initialState = {};
@@ -15,9 +15,9 @@ storiesOf('Modules::Models', module)
       {getStory()}
     </Provider>
   ))
-  .add('create', () => (
-    <ModelsCreate />
+  .add('index', () => (
+    <ModelsIndex />
   ))
   .add('setup', () => (
-    <ModelsIndex />
+    <ModelsSetup />
   ));

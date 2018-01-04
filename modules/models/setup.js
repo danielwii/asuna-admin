@@ -19,11 +19,11 @@ class ModelsSetup extends React.Component {
 
     // --------------------------------------------------------------
 
-    const basicForm3Fields = model => ({
+    const basicFormFields = model => ({
       name: { name: 'Name', type: DynamicFormTypes.Input, value: model.name },
     });
 
-    const BasicForm3 = Form.create({
+    const BasicForm = Form.create({
       mapPropsToFields({ fields }) {
         return {
           name: Form.createFormField({ ...fields.name }),
@@ -38,7 +38,7 @@ class ModelsSetup extends React.Component {
         {generatePlain({ label: 'ID', text: pane.data.id })}
 
         <Divider dashed>Basic</Divider>
-        <BasicForm3 fields={basicForm3Fields(pane.data)} />
+        <BasicForm fields={basicFormFields(pane.data)} />
 
         <Divider dashed>Properties</Divider>
       </div>

@@ -13,6 +13,7 @@ import './layout.story';
 import './panes.story';
 import './side-menu.story';
 import './dynamic-form.story';
+import './dynamic-property.story';
 import './modules-models.story';
 
 storiesOf('Welcome', module).add('to Storybook', () => <Welcome showApp={linkTo('Button')} />);
