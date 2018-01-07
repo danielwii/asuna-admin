@@ -6,7 +6,8 @@
     "build": "next build",
     "start": "NODE_ENV=production node server.js",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook",
+    "collect": "./bin/collect.sh"
   },
   "dependencies": {
     "antd": "^3.0.2",
