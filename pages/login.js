@@ -6,6 +6,8 @@ import styled      from 'styled-components';
 
 import AntdLayout        from '../layout/antd';
 import Login             from '../components/Login';
+import Snow              from '../components/Snow';
+import LogoCanvas        from '../components/LogoCanvas';
 import { withReduxSaga } from '../store';
 
 import { notificationTypes } from '../store/notifications.redux';
@@ -23,6 +25,12 @@ const StyledFullFlexContainer = styled.div`
 
 const StyledLoginWrapper = styled.div`
   width: 20rem;
+`;
+
+const StyledLogoWrapper = styled.div`
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
 `;
 
 class LoginPage extends React.Component {
@@ -122,11 +130,14 @@ class LoginPage extends React.Component {
     return (
       <AntdLayout>
         <StyledFullFlexContainer>
+          <Snow />
+          <StyledLogoWrapper>
+            <LogoCanvas />
+          </StyledLogoWrapper>
           <StyledLoginWrapper>
             <Login {...this.props} />
           </StyledLoginWrapper>
         </StyledFullFlexContainer>
-
       </AntdLayout>
     );
   }
