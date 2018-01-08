@@ -12,6 +12,20 @@ import { withReduxSaga } from '../store';
 
 import { notificationTypes } from '../store/notifications.redux';
 
+import * as auth from '../services/auth';
+
+// --------------------------------------------------------------
+// Setup context
+// --------------------------------------------------------------
+
+global.context = {
+  auth,
+};
+
+// --------------------------------------------------------------
+// Main
+// --------------------------------------------------------------
+
 const StyledFullFlexContainer = styled.div`
   position: absolute;
   top: 0;

@@ -1,11 +1,12 @@
+/* eslint-disable no-undef */
 import { call, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
 
 import _ from 'lodash';
 
-import { login }         from '../services/auth';
-import { routerActions } from './router.redux';
+import { jwtAuthAdapter } from '../adapters/auth';
 
-import { notificationsActions, notificationTypes } from './notifications.redux';
+import { routerActions }        from './router.redux';
+import { notificationsActions } from './notifications.redux';
 
 // --------------------------------------------------------------
 // Login actionTypes
@@ -41,7 +42,8 @@ const actions = {
 
 function* loginSaga({ payload: { username, password } }) {
   try {
-    const { data: { token } } = yield call(login, username, password);
+    console.log('--> using context', context, context.auth);
+    const { data: { token } } = yield call(jwtAuthAdapter.login, username, password);
     // console.log('token is', token);
     yield put(actions.loginSuccess(token));
     yield put(notificationsActions.notify(`'${username}' login success`));
@@ -49,7 +51,7 @@ function* loginSaga({ payload: { username, password } }) {
   } catch (error) {
     // console.error('login error', error);
     yield put(actions.loginFailed(error));
-    yield put(notificationsActions.notify(error.message, notificationTypes.ERROR));
+    yield put(notificationsActions.notifyError(error));
   }
 }
 

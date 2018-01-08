@@ -34,7 +34,7 @@ const actions = {
 // --------------------------------------------------------------
 // Module sagas
 // function* actionSage(args) {
-//  yield call; yield puy({ type: actionType, payload: {} })
+//   yield call; yield puy({ type: actionType, payload: {} })
 // }
 // --------------------------------------------------------------
 

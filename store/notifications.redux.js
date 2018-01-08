@@ -1,5 +1,6 @@
 import { put, takeEvery } from 'redux-saga/effects';
 
+import _                from 'lodash';
 import { notification } from 'antd';
 
 // --------------------------------------------------------------
@@ -26,17 +27,21 @@ export const notificationTypes = {
 // --------------------------------------------------------------
 
 const actions = {
-  notify    : (message, type = notificationTypes.INFO) => ({
+  notifyError: error => ({
+    type   : actionTypes.NOTIFY,
+    payload: { message: error, type: notificationTypes.ERROR },
+  }),
+  notify     : (message, type = notificationTypes.INFO) => ({
     type   : actionTypes.NOTIFY,
     payload: { message, type },
   }),
-  notifyDone: () => ({ type: actionTypes.NOTIFY_SUCCESS, payload: {} }),
+  notifyDone : () => ({ type: actionTypes.NOTIFY_SUCCESS, payload: {} }),
 };
 
 // --------------------------------------------------------------
 // Notifications sagas
-//  function* actionSage(args) {
-//  yield call; yield puy({ type: actionType, payload: {} })
+// function* actionSage(args) {
+//   yield call; yield puy({ type: actionType, payload: {} })
 // }
 // --------------------------------------------------------------
 
@@ -52,16 +57,19 @@ function* notify({ payload: { message, type } }) {
     notification[type]({ message });
   } else {
     // message 为 error 时，解构是否为服务端错误
-    const { response: { data: serverError } } = message;
+    // const { response: { data: serverError } } = message;
+    const serverError = _.get(message, 'response.data');
     if (serverError) {
       notification[type]({
         message    : message.message,
         description: JSON.stringify(serverError),
       });
+    } else if (_.isString(message)) {
+      notification[type]({ message });
     } else {
+      console.error(message);
       notification[type]({
-        message    : message.message,
-        description: JSON.stringify(message),
+        message: message.message,
       });
     }
   }

@@ -5,6 +5,16 @@ import dynamic     from 'next/dynamic';
 import { withReduxSaga } from '../store';
 import { menuActions }   from '../store/menu.redux';
 
+import auth from '../services/auth';
+
+// --------------------------------------------------------------
+// Setup context
+// --------------------------------------------------------------
+
+const context = {
+  auth,
+};
+
 // --------------------------------------------------------------
 // Define main app dynamic loader
 // --------------------------------------------------------------
