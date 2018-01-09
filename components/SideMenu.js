@@ -17,8 +17,8 @@ export default class extends React.Component {
         key   : PropTypes.string.isRequired,
         title : PropTypes.string.isRequired,
         linkTo: PropTypes.string.isRequired,
-      })).isRequired,
-    })).isRequired,
+      })),
+    })),
   };
 
   constructor(props) {
@@ -27,16 +27,27 @@ export default class extends React.Component {
     this.open = this.open.bind(this);
   }
 
-  open({ key, item: { props: { title } } }) {
+  /**
+   * item's props contains all properties set in menu item
+   * @param key
+   * @param title
+   * @param linkTo
+   */
+  open({ key, item: { props: { title, linkTo } } }) {
     const { onOpen } = this.props;
-    onOpen({ key, title });
+    onOpen({ key, title, linkTo });
   }
 
-  buildSubMenu(subMenu) {
+  buildSubMenu(menu) {
     return (
-      <SubMenu key={subMenu.key} title={subMenu.title}>
-        {_.map(subMenu.subMenus, menu => (
-          <Menu.Item key={menu.key} title={menu.title}>{menu.title}</Menu.Item>
+      <SubMenu key={menu.key} title={menu.title}>
+        {_.map(menu.subMenus, subMenu => (
+          <Menu.Item
+            key={`${menu.key}::${subMenu.key}`}
+            title={subMenu.title}
+            linkTo={subMenu.linkTo}
+          >{subMenu.title}
+          </Menu.Item>
         ))}
       </SubMenu>
     );
@@ -46,7 +57,11 @@ export default class extends React.Component {
     const { menus } = this.props;
 
     if (!menus) {
-      return <div>loading menus...</div>;
+      return (
+        <Sider width={200} style={{ background: '#fff' }}>
+          <div>loading menus...</div>
+        </Sider>
+      );
     }
 
     return (

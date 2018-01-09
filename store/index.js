@@ -82,7 +82,7 @@ export const configureStore = (state = initialState) => {
   const store = createStore(
     rootReducers,
     state,
-    composeWithDevTools(applyMiddleware(sagaMiddleware, /*logger*/)),
+    composeWithDevTools(applyMiddleware(sagaMiddleware, logger)),
   );
 
   store.sagaTask = sagaMiddleware.run(rootSaga);

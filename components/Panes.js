@@ -45,6 +45,9 @@ class Panes extends React.Component {
       return <div>^_^ - panes</div>;
     }
 
+    const current = _.find(panes, pane => pane.key === activeKey);
+    const module  = current.linkTo || activeKey;
+
     return (
       <div>
         <Tabs
@@ -56,12 +59,12 @@ class Panes extends React.Component {
         >
           {_.map(panes, pane => (
             <TabPane tab={pane.title} key={pane.key}>
-              {/*{activeKey} - {pane.key}*/}
-              {/*<pre>{JSON.stringify(pane, null, 2)}</pre>*/}
+              {/* {activeKey} - {pane.key} */}
+              {/* <pre>{JSON.stringify(pane, null, 2)}</pre> */}
             </TabPane>
           ))}
         </Tabs>
-        <ModulesLoader module={activeKey}  />
+        <ModulesLoader module={module} />
       </div>
     );
   }

@@ -1,5 +1,7 @@
 import { all, put, select, takeLatest } from 'redux-saga/effects';
 
+import _ from 'lodash';
+
 import { notificationsActions, notificationTypes } from '../store/notifications.redux';
 
 import { modelsProxy } from '../adapters/models';
@@ -16,7 +18,6 @@ const actionTypes = {
   LOAD_ALL_OPTIONS        : 'models::load-all-options',
   LOAD_ALL_OPTIONS_FAILED : 'models::load-all-options-failed',
   LOAD_ALL_OPTIONS_SUCCESS: 'models::load-all-options-success',
-  SAVE_MODEL_OPTIONS      : 'models::save-model-options',
 };
 
 const isCurrent = type => type.startsWith('models::');
@@ -45,11 +46,6 @@ const actions = {
     payload: {},
     error,
   }),
-  saveModelOptions     : options => ({
-    type   : actionTypes.SAVE_MODEL_OPTIONS,
-    payload: { options },
-    error  : null,
-  }),
 };
 
 // --------------------------------------------------------------
@@ -65,11 +61,15 @@ function* loadAllOptionsSaga() {
   if (token) {
     yield put(notificationsActions.notify('load all options...'));
     try {
-      const effects = modelsProxy.loadAllOptions({ token });
-      const options = yield all(effects);
+      const effects     = modelsProxy.loadAllOptions({ token });
+      const allResponse = yield all(effects);
 
+      const options = Object.assign(..._.map(
+        allResponse,
+        (response, name) => ({ [name]: response.data }),
+      ));
       yield put(notificationsActions.notify('load all options success', notificationTypes.SUCCESS));
-      yield put(actions.saveModelOptions(options));
+      yield put(actions.loadAllOptionsSuccess(options));
       console.log('load all model options', effects, options);
     } catch (e) {
       yield put(notificationsActions.notify(e, notificationTypes.ERROR));

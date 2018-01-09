@@ -5,9 +5,10 @@ import _       from 'lodash';
 export default dynamic({
   modules: ({ module }) => {
     const components = {
-      'models::index': import('./models'),
-      'models::setup': import('./models/setup'),
-      default        : import('./undefined'),
+      'models::index' : import('./models'),
+      'models::setup' : import('./models/setup'),
+      'content::index': import('./content'),
+      default         : import('./undefined'),
     };
 
     console.log('looking for module', module);

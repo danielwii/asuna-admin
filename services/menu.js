@@ -1,3 +1,4 @@
+// TODO @deprecated
 export const getMenus = () => ({
   menus: [
     {
@@ -10,3 +11,6 @@ export const getMenus = () => ({
     },
   ],
 });
+
+
+export const menuService = {};
