@@ -1,9 +1,8 @@
-/* eslint-disable no-undef */
 import { call, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
 
 import _ from 'lodash';
 
-import { jwtAuthAdapter } from '../adapters/auth';
+import { jwtAuthProxy } from '../adapters/auth';
 
 import { routerActions }        from './router.redux';
 import { notificationsActions } from './notifications.redux';
@@ -18,7 +17,7 @@ const actionTypes = {
   LOGIN_SUCCESS: 'auth::login-success',
 };
 
-const isCurrentModule = type => type.startsWith('auth::');
+const isCurrent = type => type.startsWith('auth::');
 
 // --------------------------------------------------------------
 // Login actions
@@ -42,8 +41,7 @@ const actions = {
 
 function* loginSaga({ payload: { username, password } }) {
   try {
-    console.log('--> using context', context, context.auth);
-    const { data: { token } } = yield call(jwtAuthAdapter.login, username, password);
+    const { data: { token } } = yield call(jwtAuthProxy.login, username, password);
     // console.log('token is', token);
     yield put(actions.loginSuccess(token));
     yield put(notificationsActions.notify(`'${username}' login success`));
@@ -82,7 +80,7 @@ const initialState = {
 };
 
 const reducer = (previousState = initialState, action) => {
-  if (isCurrentModule(action.type)) {
+  if (isCurrent(action.type)) {
     switch (action.type) {
       // state 中移除 password
       // case actionTypes.LOGIN:

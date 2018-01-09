@@ -13,7 +13,7 @@ const actionTypes = {
   CLOSE : 'panes::close',
 };
 
-const isCurrentModule = type => type.startsWith('panes::');
+const isCurrent = type => type.startsWith('panes::');
 
 // --------------------------------------------------------------
 // Module actions
@@ -48,7 +48,7 @@ const initialState = {
 };
 
 const reducer = (previousState = initialState, action) => {
-  if (isCurrentModule(action.type)) {
+  if (isCurrent(action.type)) {
     switch (action.type) {
       case actionTypes.OPEN: {
         const { payload: { pane } } = action;

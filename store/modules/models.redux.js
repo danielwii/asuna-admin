@@ -15,7 +15,7 @@ const actionTypes = {
   REFRESH_MODELS_SUCCESS: 'mod::models::refresh-models-success',
 };
 
-const isCurrentModule = type => type.startsWith('mod::models');
+const isCurrent = type => type.startsWith('mod::models');
 
 // --------------------------------------------------------------
 // Module actions
@@ -90,7 +90,7 @@ const initialState = {
 };
 
 const reducer = (previousState = initialState, action) => {
-  if (isCurrentModule(action.type)) {
+  if (isCurrent(action.type)) {
     switch (action.type) {
       case actionTypes.SAVE:
         return previousState; // do not have to persist model name in store

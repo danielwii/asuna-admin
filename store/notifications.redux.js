@@ -13,7 +13,7 @@ const actionTypes = {
   NOTIFY_SUCCESS: 'notifications::notify-success',
 };
 
-const isCurrentModule = type => type.startsWith('notifications::');
+const isCurrent = type => type.startsWith('notifications::');
 
 export const notificationTypes = {
   SUCCESS: 'success',
@@ -89,7 +89,7 @@ const sagas = [
 const initialState = {};
 
 const reducer = (previousState = initialState, action) => {
-  if (isCurrentModule(action.type)) {
+  if (isCurrent(action.type)) {
     switch (action.type) {
       case actionTypes.NOTIFY:
       case actionTypes.NOTIFY_SUCCESS:

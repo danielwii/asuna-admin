@@ -4,8 +4,8 @@ import moment from 'moment';
 moment.locale('zh-cn');
 
 const instance = axios.create({
-  baseURL: '/api/admin',
-  timeout: 60000,
+  baseURL: '/sys/',
+  timeout: 10000,
 });
 
 export const modelsColumns = actions => [
@@ -31,11 +31,14 @@ export const modelsColumns = actions => [
 
 export const authHeader = token => ({ headers: { Authorization: `Bearer ${token}` } });
 
-export const modelsApi = {
-  save({ token }, { name }) {
-    return instance.post('/content/models', { name }, authHeader(token));
-  },
-  refreshModels({ token }, pageable = {}) {
-    return instance.get('/content/models', { params: pageable, ...authHeader(token) });
+export const modelsService = {
+  // save({ token }, { name }) {
+  //   return instance.post('/content/models', { name }, authHeader(token));
+  // },
+  // refreshModels({ token }, pageable = {}) {
+  //   return instance.get('/content/models', { params: pageable, ...authHeader(token) });
+  // },
+  loadOptions({ token }, { name }) {
+    return instance.options(name, authHeader(token));
   },
 };

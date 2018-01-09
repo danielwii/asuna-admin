@@ -8,7 +8,7 @@ const actionTypes = {
   // ACTION: 'module::action'
 };
 
-const isCurrentModule = type => type.startsWith(/* module:: */);
+const isCurrent = type => type.startsWith(/* module:: */);
 
 // --------------------------------------------------------------
 // Module actions
@@ -37,7 +37,7 @@ const sagas = [
 const initialState = {};
 
 const reducer = (previousState = initialState, action) => {
-  if (isCurrentModule(action.type)) {
+  if (isCurrent(action.type)) {
     switch (action.type) {
       default:
         return { ...previousState, ...action.payload };

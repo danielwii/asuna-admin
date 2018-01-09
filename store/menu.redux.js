@@ -12,7 +12,7 @@ const actionTypes = {
   INIT_SUCCESS: 'menu::init-success',
 };
 
-const isCurrentModule = type => type.startsWith('menu::');
+const isCurrent = type => type.startsWith('menu::');
 
 // --------------------------------------------------------------
 // Module actions
@@ -53,7 +53,7 @@ const initialState = {
 };
 
 const reducer = (previousState = initialState, action) => {
-  if (isCurrentModule(action.type)) {
+  if (isCurrent(action.type)) {
     switch (action.type) {
       default:
         return { ...previousState, ...action.payload };

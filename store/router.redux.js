@@ -14,7 +14,7 @@ const actionTypes = {
   GOTO    : 'router::goto',
 };
 
-const isCurrentModule = type => type.startsWith('router::');
+const isCurrent = type => type.startsWith('router::');
 
 // --------------------------------------------------------------
 // Module actions
@@ -57,7 +57,7 @@ const initialState = {
 };
 
 const reducer = (previousState = initialState, action) => {
-  if (isCurrentModule(action.type)) {
+  if (isCurrent(action.type)) {
     switch (action.type) {
       default:
         return { ...action.payload };

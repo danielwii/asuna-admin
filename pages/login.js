@@ -12,15 +12,18 @@ import { withReduxSaga } from '../store';
 
 import { notificationTypes } from '../store/notifications.redux';
 
-import * as auth from '../services/auth';
+import * as authService   from '../services/auth';
+import { JwtAuthAdapter } from '../adapters/auth';
 
 // --------------------------------------------------------------
 // Setup context
 // --------------------------------------------------------------
 
-global.context = {
-  auth,
-};
+global.context = _.assign(global.context, {
+  auth: new JwtAuthAdapter(authService),
+});
+
+console.log('1--> global context is', global.context);
 
 // --------------------------------------------------------------
 // Main
