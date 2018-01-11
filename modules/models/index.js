@@ -83,8 +83,8 @@ class ModelsIndex extends React.Component {
     const { columns, models: { create: { visible } } } = this.state;
 
     const { models } = this.props;
-    const dataSource = _.get(models, 'content', []);
 
+    const dataSource = _.get(models, 'content', []);
     const pagination = toPagination(models);
 
     return (

@@ -15,7 +15,7 @@ const isCurrent = type => type.startsWith(/* module:: */);
 // --------------------------------------------------------------
 
 const actions = {
-  // action: (args): ({ type, payload })
+  // action: (args) => ({ type, payload })
 };
 
 // --------------------------------------------------------------

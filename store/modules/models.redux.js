@@ -22,7 +22,7 @@ const isCurrent = type => type.startsWith('mod::models');
 // --------------------------------------------------------------
 
 const actions = {
-  // action: (args): ({ type, payload })
+  // action: (args) => ({ type, payload })
   save                : name => ({ type: actionTypes.SAVE, payload: { name } }),
   refreshModels       : pageable => ({ type: actionTypes.REFRESH_MODELS, payload: { pageable } }),
   refreshModelsSuccess: models => ({

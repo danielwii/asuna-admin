@@ -21,7 +21,7 @@ const isCurrent = type => type.startsWith('router::');
 // --------------------------------------------------------------
 
 const actions = {
-  // action: (args): ({ type, payload })
+  // action: (args) => ({ type, payload })
   toIndex: () => ({ type: actionTypes.TO_INDEX, payload: { path: '/' } }),
   toHome : () => ({ type: actionTypes.TO_HOME, payload: { path: '/home' } }),
   toLogin: () => ({ type: actionTypes.TO_LOGIN, payload: { path: '/login' } }),

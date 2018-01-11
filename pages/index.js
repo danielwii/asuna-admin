@@ -2,6 +2,7 @@ import React       from 'react';
 import { connect } from 'react-redux';
 import dynamic     from 'next/dynamic';
 import _           from 'lodash';
+import moment      from 'moment';
 
 import { withReduxSaga } from '../store';
 import { menuActions }   from '../store/menu.redux';
@@ -15,17 +16,23 @@ import { JwtAuthAdapter } from '../adapters/auth';
 import { ModelsAdapter }  from '../adapters/models';
 import { MenuAdapter }    from '../adapters/menu';
 
+import { modelColumns } from '../services/table-columns';
+
 // --------------------------------------------------------------
 // Setup context
 // --------------------------------------------------------------
 
+moment.locale('zh-cn');
+
 global.context = _.assign(global.context, {
   auth  : new JwtAuthAdapter(authService),
-  models: new ModelsAdapter(modelsService, ['colleges']),
+  models: new ModelsAdapter(modelsService, {
+    colleges: { columns: modelColumns.colleges },
+  }),
   menu  : new MenuAdapter(menuService, [
     {
-      key  : 'content',
-      title: '内容管理',
+      key     : 'content',
+      title   : '内容管理',
       subMenus: [
         { key: 'colleges', title: '院校管理', linkTo: 'content::index' },
       ],

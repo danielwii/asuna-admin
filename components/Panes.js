@@ -64,7 +64,7 @@ class Panes extends React.Component {
             </TabPane>
           ))}
         </Tabs>
-        <ModulesLoader module={module} />
+        <ModulesLoader module={module} context={{ pane: current }} />
       </div>
     );
   }

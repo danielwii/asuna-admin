@@ -20,7 +20,7 @@ const isCurrent = type => type.startsWith('panes::');
 // --------------------------------------------------------------
 
 const actions = {
-  // action: (args): ({ type, payload })
+  // action: (args) => ({ type, payload })
   open  : pane => ({ type: actionTypes.OPEN, payload: { pane } }),
   active: key => ({ type: actionTypes.ACTIVE, payload: { key } }),
   close : key => ({ type: actionTypes.CLOSE, payload: { key } }),

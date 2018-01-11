@@ -14,12 +14,12 @@ import {
   notificationsSagas,
 } from './notifications.redux';
 
-import { authActionTypes, authReducer, authSagas }       from './auth.redux';
-import { routerActionTypes, routerReducer, routerSagas } from './router.redux';
-import { panesActionTypes, panesReducer, panesSagas }    from './panes.redux';
-import { menuActionTypes, menuReducer, menuSagas }       from './menu.redux';
-import { modelsActionTypes, modelsReducer, modelsSagas } from './models.redux';
-
+import { authActionTypes, authReducer, authSagas }                from './auth.redux';
+import { routerActionTypes, routerReducer, routerSagas }          from './router.redux';
+import { panesActionTypes, panesReducer, panesSagas }             from './panes.redux';
+import { menuActionTypes, menuReducer, menuSagas }                from './menu.redux';
+import { modelsActionTypes, modelsReducer, modelsSagas }          from './models.redux';
+import { contentActionTypes, contentReducer, contentSagas }       from './content.redux';
 import { modModelsActionTypes, modModelsReducer, modModelsSagas } from './modules/models.redux';
 
 const initialState = {};
@@ -35,6 +35,7 @@ export const actionTypes = {
   panes        : panesActionTypes,
   menu         : menuActionTypes,
   models       : modelsActionTypes,
+  content      : contentActionTypes,
   mod_models   : modModelsActionTypes,
 };
 
@@ -49,6 +50,7 @@ const rootReducers = combineReducers({
   panes        : panesReducer,
   menu         : menuReducer,
   models       : modelsReducer,
+  content      : contentReducer,
   mod_models   : modModelsReducer,
   form         : formReducer,
   global       : (previousState = initialState, action) => (
@@ -68,6 +70,7 @@ function* rootSaga() {
     ...panesSagas,
     ...menuSagas,
     ...modelsSagas,
+    ...contentSagas,
     ...modModelsSagas,
   ]);
 }
@@ -82,7 +85,7 @@ export const configureStore = (state = initialState) => {
   const store = createStore(
     rootReducers,
     state,
-    composeWithDevTools(applyMiddleware(sagaMiddleware, logger)),
+    composeWithDevTools(applyMiddleware(sagaMiddleware, /* logger */)),
   );
 
   store.sagaTask = sagaMiddleware.run(rootSaga);

@@ -1,6 +1,7 @@
 import { all, put, select, takeLatest } from 'redux-saga/effects';
 
-import _ from 'lodash';
+import { reduxAction } from 'node-buffs';
+import _               from 'lodash';
 
 import { notificationsActions, notificationTypes } from '../store/notifications.redux';
 
@@ -12,9 +13,9 @@ import { modelsProxy } from '../adapters/models';
 
 const actionTypes = {
   // ACTION: 'module::action'
-  LOAD_OPTIONS            : 'models::load-options',
-  LOAD_OPTIONS_FAILED     : 'models::load-options-failed',
-  LOAD_OPTIONS_SUCCESS    : 'models::load-options-success',
+  // LOAD_OPTIONS            : 'models::load-options',
+  // LOAD_OPTIONS_FAILED     : 'models::load-options-failed',
+  // LOAD_OPTIONS_SUCCESS    : 'models::load-options-success',
   LOAD_ALL_OPTIONS        : 'models::load-all-options',
   LOAD_ALL_OPTIONS_FAILED : 'models::load-all-options-failed',
   LOAD_ALL_OPTIONS_SUCCESS: 'models::load-all-options-success',
@@ -27,25 +28,13 @@ const isCurrent = type => type.startsWith('models::');
 // --------------------------------------------------------------
 
 const actions = {
-  // action: (args): ({ type, payload })
-  loadOptions          : () => ({ type: actionTypes.LOAD_OPTIONS, payload: {}, error: null }),
-  loadOptionsSuccess   : options => ({
-    type   : actionTypes.LOAD_OPTIONS_SUCCESS,
-    payload: { options },
-    error  : null,
-  }),
-  loadOptionsFailed    : error => ({ type: actionTypes.LOAD_OPTIONS_FAILED, payload: {}, error }),
-  loadAllOptions       : () => ({ type: actionTypes.LOAD_ALL_OPTIONS, payload: {}, error: null }),
-  loadAllOptionsSuccess: options => ({
-    type   : actionTypes.LOAD_ALL_OPTIONS_SUCCESS,
-    payload: { options },
-    error  : null,
-  }),
-  loadAllOptionsFailed : error => ({
-    type   : actionTypes.LOAD_ALL_OPTIONS_FAILED,
-    payload: {},
-    error,
-  }),
+  // action: (args) => ({ type, payload })
+  // loadOptions          : () => reduxAction(actionTypes.LOAD_OPTIONS),
+  // loadOptionsFailed    : error => reduxAction(actionTypes.LOAD_OPTIONS_FAILED, {}, error),
+  // loadOptionsSuccess   : options => reduxAction(actionTypes.LOAD_OPTIONS_SUCCESS, { options }),
+  loadAllOptions       : () => reduxAction(actionTypes.LOAD_ALL_OPTIONS),
+  // loadAllOptionsFailed : error => reduxAction(actionTypes.LOAD_ALL_OPTIONS_FAILED, {}, error),
+  loadAllOptionsSuccess: options => reduxAction(actionTypes.LOAD_ALL_OPTIONS_SUCCESS, { options }),
 };
 
 // --------------------------------------------------------------
