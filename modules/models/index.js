@@ -1,14 +1,13 @@
 import React       from 'react';
 import PropTypes   from 'prop-types';
 import { connect } from 'react-redux';
-import _           from 'lodash';
 
 import { Button, Divider, Input, Modal, Table } from 'antd';
 
-import { toPagination }     from '../../services/utils';
-import { modelsColumns }    from '../../services/models';
-import { modModelsActions } from '../../store/modules/models.redux';
-import { panesActions }     from '../../store/panes.redux';
+import { modelsColumns }         from '../../services/models';
+import { SpringResponseAdapter } from '../../adapters/response';
+import { modModelsActions }      from '../../store/modules/models.redux';
+import { panesActions }          from '../../store/panes.redux';
 
 class ModelsIndex extends React.Component {
   static propTypes = {
@@ -84,8 +83,8 @@ class ModelsIndex extends React.Component {
 
     const { models } = this.props;
 
-    const dataSource = _.get(models, 'content', []);
-    const pagination = toPagination(models);
+    // const dataSource     = _.get(models, 'content', []);
+    const { items: dataSource, pagination } = new SpringResponseAdapter().extract(models);
 
     return (
       <div>

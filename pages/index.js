@@ -16,6 +16,8 @@ import { JwtAuthAdapter } from '../adapters/auth';
 import { ModelsAdapter }  from '../adapters/models';
 import { MenuAdapter }    from '../adapters/menu';
 
+import { PyResponseAdapter } from '../adapters/response';
+
 import { modelColumns } from '../services/table-columns';
 
 // --------------------------------------------------------------
@@ -25,11 +27,12 @@ import { modelColumns } from '../services/table-columns';
 moment.locale('zh-cn');
 
 global.context = _.assign(global.context, {
-  auth  : new JwtAuthAdapter(authService),
-  models: new ModelsAdapter(modelsService, {
+  auth    : new JwtAuthAdapter(authService),
+  response: new PyResponseAdapter(),
+  models  : new ModelsAdapter(modelsService, {
     colleges: { columns: modelColumns.colleges },
   }),
-  menu  : new MenuAdapter(menuService, [
+  menu    : new MenuAdapter(menuService, [
     {
       key     : 'content',
       title   : '内容管理',
@@ -62,7 +65,7 @@ class Index extends React.Component {
     console.log('componentWillMount...');
     const { dispatch } = this.props;
     dispatch(menuActions.init());
-    dispatch(modelsActions.loadAllOptions());
+    // dispatch(modelsActions.loadAllOptions());
   }
 
   render() {

@@ -4,7 +4,7 @@ import moment from 'moment';
 moment.locale('zh-cn');
 
 const instance = axios.create({
-  baseURL: '/sys/',
+  baseURL: '/rest/',
   timeout: 10000,
 });
 
