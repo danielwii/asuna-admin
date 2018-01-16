@@ -6,7 +6,6 @@ import moment      from 'moment';
 
 import { withReduxSaga } from '../store';
 import { menuActions }   from '../store/menu.redux';
-import { modelsActions } from '../store/models.redux';
 
 import * as authService  from '../services/auth';
 import { modelsService } from '../services/models';
@@ -18,7 +17,7 @@ import { MenuAdapter }    from '../adapters/menu';
 
 import { PyResponseAdapter } from '../adapters/response';
 
-import { modelColumns } from '../services/table-columns';
+import { modelColumns, tableColumns } from '../services/definations';
 
 // --------------------------------------------------------------
 // Setup context
@@ -30,7 +29,7 @@ global.context = _.assign(global.context, {
   auth    : new JwtAuthAdapter(authService),
   response: new PyResponseAdapter(),
   models  : new ModelsAdapter(modelsService, {
-    colleges: { columns: modelColumns.colleges },
+    colleges: { table: tableColumns.colleges, model: modelColumns.colleges },
   }),
   menu    : new MenuAdapter(menuService, [
     {

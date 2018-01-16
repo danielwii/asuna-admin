@@ -38,6 +38,10 @@ class Panes extends React.Component {
     }
   };
 
+  onTitleChange = (key, title) => {
+    console.log('onTitleChange', key, title);
+  };
+
   render() {
     const { activeKey, panes, onActive } = this.props;
 
@@ -64,7 +68,11 @@ class Panes extends React.Component {
             </TabPane>
           ))}
         </Tabs>
-        <ModulesLoader module={module} context={{ pane: current }} />
+        <ModulesLoader
+          module={module}
+          context={{ pane: current }}
+          onTitleChange={title => this.onTitleChange(activeKey, title)}
+        />
       </div>
     );
   }

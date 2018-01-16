@@ -38,7 +38,7 @@ export const generateInput = (form, {
   iconType,
   label,
 }, formItemLayout = defaultFormItemLayout) => {
-  console.log('generateInput', arguments);
+  console.log('generateInput', key, name, label);
   const fieldName = key || name;
   if (name) {
     const decorator = form.getFieldDecorator(fieldName, { rules: [{ required, requiredMessage }] });

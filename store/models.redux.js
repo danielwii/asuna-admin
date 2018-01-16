@@ -50,16 +50,16 @@ function* loadAllOptionsSaga() {
   if (token) {
     yield put(notificationsActions.notify('load all options...'));
     try {
-      const effects     = modelsProxy.loadAllOptions({ token });
+      const effects     = modelsProxy.loadAllSchemas({ token });
       const allResponse = yield all(effects);
 
-      const options = Object.assign(..._.map(
+      const schemas = Object.assign(..._.map(
         allResponse,
         (response, name) => ({ [name]: response.data }),
       ));
-      yield put(notificationsActions.notify('load all options success', notificationTypes.SUCCESS));
-      yield put(actions.loadAllOptionsSuccess(options));
-      console.log('load all model options', effects, options);
+      yield put(notificationsActions.notify('load all schemas success', notificationTypes.SUCCESS));
+      yield put(actions.loadAllOptionsSuccess(schemas));
+      console.log('load all model schemas', effects, schemas);
     } catch (e) {
       yield put(notificationsActions.notify(e, notificationTypes.ERROR));
       console.warn('CATCH -> load all options error occurred', e);
