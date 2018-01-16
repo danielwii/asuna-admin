@@ -47,7 +47,7 @@ class ContentIndex extends React.Component {
     const { dispatch } = this.props;
     dispatch(panesActions.open({
       key   : `content::create::colleges::${Date.now()}`,
-      title : '新增院校',
+      title : '新增',
       linkTo: 'content::create',
     }));
   };

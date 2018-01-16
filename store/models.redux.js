@@ -13,12 +13,12 @@ import { modelsProxy } from '../adapters/models';
 
 const actionTypes = {
   // ACTION: 'module::action'
-  // LOAD_OPTIONS            : 'models::load-options',
-  // LOAD_OPTIONS_FAILED     : 'models::load-options-failed',
-  // LOAD_OPTIONS_SUCCESS    : 'models::load-options-success',
-  LOAD_ALL_OPTIONS        : 'models::load-all-options',
-  LOAD_ALL_OPTIONS_FAILED : 'models::load-all-options-failed',
-  LOAD_ALL_OPTIONS_SUCCESS: 'models::load-all-options-success',
+  // LOAD_SCHEMA            : 'models::load-schema',
+  // LOAD_SCHEMA_FAILED     : 'models::load-schema-failed',
+  // LOAD_SCHEMA_SUCCESS    : 'models::load-schema-success',
+  LOAD_ALL_SCHEMAS        : 'models::load-all-schemas',
+  LOAD_ALL_SCHEMAS_FAILED : 'models::load-all-schemas-failed',
+  LOAD_ALL_SCHEMAS_SUCCESS: 'models::load-all-schemas-success',
 };
 
 const isCurrent = type => type.startsWith('models::');
@@ -29,12 +29,12 @@ const isCurrent = type => type.startsWith('models::');
 
 const actions = {
   // action: (args) => ({ type, payload })
-  // loadOptions          : () => reduxAction(actionTypes.LOAD_OPTIONS),
-  // loadOptionsFailed    : error => reduxAction(actionTypes.LOAD_OPTIONS_FAILED, {}, error),
-  // loadOptionsSuccess   : options => reduxAction(actionTypes.LOAD_OPTIONS_SUCCESS, { options }),
-  loadAllOptions       : () => reduxAction(actionTypes.LOAD_ALL_OPTIONS),
-  // loadAllOptionsFailed : error => reduxAction(actionTypes.LOAD_ALL_OPTIONS_FAILED, {}, error),
-  loadAllOptionsSuccess: options => reduxAction(actionTypes.LOAD_ALL_OPTIONS_SUCCESS, { options }),
+  // loadSchema          : () => reduxAction(actionTypes.LOAD_SCHEMAS),
+  // loadSchemaFailed    : error => reduxAction(actionTypes.LOAD_SCHEMAS_FAILED, {}, error),
+  // loadSchemaSuccess   : options => reduxAction(actionTypes.LOAD_SCHEMAS_SUCCESS, { options }),
+  loadAllSchemas       : () => reduxAction(actionTypes.LOAD_ALL_SCHEMAS),
+  // loadAllSchemasFailed : error => reduxAction(actionTypes.LOAD_ALL_SCHEMAS_FAILED, {}, error),
+  loadAllSchemasSuccess: schemas => reduxAction(actionTypes.LOAD_ALL_SCHEMAS_SUCCESS, { schemas }),
 };
 
 // --------------------------------------------------------------
@@ -44,7 +44,7 @@ const actions = {
 // }
 // --------------------------------------------------------------
 
-function* loadAllOptionsSaga() {
+function* loadAllSchemasSaga() {
   console.log('load all options in saga');
   const { token } = yield select(state => state.auth);
   if (token) {
@@ -58,7 +58,7 @@ function* loadAllOptionsSaga() {
         (response, name) => ({ [name]: response.data }),
       ));
       yield put(notificationsActions.notify('load all schemas success', notificationTypes.SUCCESS));
-      yield put(actions.loadAllOptionsSuccess(schemas));
+      yield put(actions.loadAllSchemasSuccess(schemas));
       console.log('load all model schemas', effects, schemas);
     } catch (e) {
       yield put(notificationsActions.notify(e, notificationTypes.ERROR));
@@ -69,7 +69,7 @@ function* loadAllOptionsSaga() {
 
 const sagas = [
   // takeLatest / takeEvery (actionType, actionSage)
-  takeLatest(actionTypes.LOAD_ALL_OPTIONS, loadAllOptionsSaga),
+  takeLatest(actionTypes.LOAD_ALL_SCHEMAS, loadAllSchemasSaga),
 ];
 
 // --------------------------------------------------------------

@@ -3,8 +3,6 @@ import * as R from 'ramda';
 
 import { DynamicFormTypes } from '../components/DynamicForm';
 
-moment.locale('zh-cn');
-
 export const tableColumns = {
   colleges: actions => ([
     {
@@ -40,22 +38,6 @@ export const tableColumns = {
 export const modelColumns = {
   colleges: (fields, actions) => ({
     fields: {
-      name   : {
-        name   : 'name',
-        type   : DynamicFormTypes.Input,
-        value  : R.path(['name', 'value'])(fields),
-        options: {
-          label: '名称',
-        },
-      },
-      name_en: {
-        name   : 'name_en',
-        type   : DynamicFormTypes.Input,
-        value  : R.path(['name_en', 'value'])(fields),
-        options: {
-          label: '英文名称',
-        },
-      },
     },
     actions,
   }),

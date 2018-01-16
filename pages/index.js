@@ -2,10 +2,11 @@ import React       from 'react';
 import { connect } from 'react-redux';
 import dynamic     from 'next/dynamic';
 import _           from 'lodash';
-import moment      from 'moment';
+import 'moment/locale/zh-cn';
 
 import { withReduxSaga } from '../store';
 import { menuActions }   from '../store/menu.redux';
+import { modelsActions } from '../store/models.redux';
 
 import * as authService  from '../services/auth';
 import { modelsService } from '../services/models';
@@ -22,8 +23,6 @@ import { modelColumns, tableColumns } from '../services/definations';
 // --------------------------------------------------------------
 // Setup context
 // --------------------------------------------------------------
-
-moment.locale('zh-cn');
 
 global.context = _.assign(global.context, {
   auth    : new JwtAuthAdapter(authService),
@@ -64,7 +63,7 @@ class Index extends React.Component {
     console.log('componentWillMount...');
     const { dispatch } = this.props;
     dispatch(menuActions.init());
-    // dispatch(modelsActions.loadAllOptions());
+    dispatch(modelsActions.loadAllSchemas());
   }
 
   render() {

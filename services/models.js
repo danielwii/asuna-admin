@@ -1,7 +1,4 @@
-import axios  from 'axios';
-import moment from 'moment';
-
-moment.locale('zh-cn');
+import axios from 'axios';
 
 const instance = axios.create({
   baseURL: '/rest/',
@@ -21,7 +18,7 @@ export const modelsService = {
     console.log('call', name);
     return instance.get(name, { params: pageable, ...authHeader(token) });
   },
-  loadOptions({ token }, { name }) {
+  loadSchema({ token }, { name }) {
     return instance.options(name, authHeader(token));
   },
 };
