@@ -2,6 +2,7 @@ import { all, call, put, select, takeLatest } from 'redux-saga/effects';
 
 import { reduxAction } from 'node-buffs';
 import _               from 'lodash';
+import * as R          from 'ramda';
 
 import { notificationsActions, notificationTypes } from '../store/notifications.redux';
 
@@ -14,6 +15,8 @@ import { logger }      from '../adapters/logger';
 
 const actionTypes = {
   // ACTION: 'module::action'
+  FETCH                   : 'models::fetch',
+  FETCH_SUCCESS           : 'models::fetch-success',
   UPSERT                  : 'models::upsert',
   LOAD_ALL_SCHEMAS        : 'models::load-all-schemas',
   LOAD_ALL_SCHEMAS_SUCCESS: 'models::load-all-schemas-success',
@@ -27,11 +30,16 @@ const isCurrent = type => type.startsWith('models::');
 
 const actions = {
   // action: (args) => ({ type, payload })
-  upsert: (model, data) => reduxAction(actionTypes.UPSERT, { model, data }),
+  fetch       : (modelName, data) => reduxAction(actionTypes.FETCH, { modelName, data }),
+  fetchSuccess: (modelName, response) => reduxAction(actionTypes.FETCH_SUCCESS, {
+    modelName,
+    response,
+  }),
+
+  upsert: (modelName, data) => reduxAction(actionTypes.UPSERT, { modelName, data }),
 
   loadAllSchemas       : () => reduxAction(actionTypes.LOAD_ALL_SCHEMAS),
   loadAllSchemasSuccess: schemas => reduxAction(actionTypes.LOAD_ALL_SCHEMAS_SUCCESS, { schemas }),
-
 };
 
 // --------------------------------------------------------------
@@ -41,14 +49,32 @@ const actions = {
 // }
 // --------------------------------------------------------------
 
-function* upsert({ payload: { model, data } }) {
+function* fetch({ payload: { modelName, data } }) {
   const { token } = yield select(state => state.auth);
   if (token) {
-    yield put(notificationsActions.notify(`upsert model '${model}'...`));
+    yield put(notificationsActions.notify(`fetch model '${modelName}'...`));
     try {
-      const response = yield call(modelsProxy.upsert, { token }, model, data);
-      yield put(notificationsActions.notify(`upsert model '${model}' success!`, notificationTypes.SUCCESS));
+      const response = yield call(modelsProxy.fetch, { token }, modelName, data);
+      yield put(notificationsActions.notify(`fetch model '${modelName}' success!`, notificationTypes.SUCCESS));
+      logger.log('response of fetch model is', response);
+      yield put(actions.fetchSuccess(modelName, response.data));
+    } catch (e) {
+      yield put(notificationsActions.notify(e, notificationTypes.ERROR));
+      logger.warn('CATCH -> fetch model error', e);
+    }
+  }
+}
+
+function* upsert({ payload: { modelName, data } }) {
+  const { token } = yield select(state => state.auth);
+  if (token) {
+    yield put(notificationsActions.notify(`upsert model '${modelName}'...`));
+    try {
+      const response = yield call(modelsProxy.upsert, { token }, modelName, data);
+      yield put(notificationsActions.notify(`upsert model '${modelName}' success!`, notificationTypes.SUCCESS));
       logger.log('response of upsert model is', response);
+      // save model data when upsert is success
+      yield put(actions.fetchSuccess(modelName, response.data));
     } catch (e) {
       yield put(notificationsActions.notify(e, notificationTypes.ERROR));
       logger.warn('CATCH -> upsert model error', e);
@@ -83,6 +109,7 @@ const sagas = [
   // takeLatest / takeEvery (actionType, actionSage)
   takeLatest(actionTypes.LOAD_ALL_SCHEMAS, loadAllSchemasSaga),
   takeLatest(actionTypes.UPSERT, upsert),
+  takeLatest(actionTypes.FETCH, fetch),
 ];
 
 // --------------------------------------------------------------
@@ -95,6 +122,14 @@ const initialState = {};
 const reducer = (previousState = initialState, action) => {
   if (isCurrent(action.type)) {
     switch (action.type) {
+      case actionTypes.FETCH_SUCCESS: {
+        const { modelName, response } = action.payload;
+
+        const models = R.mergeDeepRight(previousState.models, {
+          [modelName]: { [response.id]: response },
+        });
+        return { ...previousState, models };
+      }
       default:
         return { ...previousState, ...action.payload };
     }

@@ -9,6 +9,7 @@ import { panesActions }   from '../../store/panes.redux';
 import { contentActions } from '../../store/content.redux';
 import { modelsProxy }    from '../../adapters/models';
 import { responseProxy }  from '../../adapters/response';
+import { logger }         from '../../adapters/logger';
 
 class ContentIndex extends React.Component {
   static propTypes = {
@@ -32,42 +33,51 @@ class ContentIndex extends React.Component {
       </span>
     );
 
-    // content::colleges => colleges
+    // content::name => name
     const model   = R.compose(R.nth(1), R.split(/::/), R.path(['pane', 'key']))(context);
     const configs = modelsProxy.modelConfigs(model);
     const columns = R.prop('table')(configs)(actions);
 
-    this.state = { current: model, columns };
+    this.state = { model, columns };
 
-    console.log('current model is', model);
+    logger.log('current model is', model);
     dispatch(contentActions.loadModels(model));
   }
 
   create = () => {
+    const { model }    = this.state;
     const { dispatch } = this.props;
     dispatch(panesActions.open({
-      key   : `content::create::colleges::${Date.now()}`,
+      key   : `content::upsert::${model}::${Date.now()}`,
       title : '新增',
-      linkTo: 'content::create',
+      linkTo: 'content::upsert',
     }));
   };
 
   edit = (text, record) => {
-    console.log('edit', record);
+    logger.log('edit', record);
+    const { model }    = this.state;
+    const { dispatch } = this.props;
+    dispatch(panesActions.open({
+      key   : `content::upsert::${model}::${Date.now()}`,
+      title : '更新',
+      linkTo: 'content::upsert',
+      data  : { model, record },
+    }));
   };
 
   render() {
-    const { current, columns } = this.state;
-    const { context, models }  = this.props;
+    const { model, columns }  = this.state;
+    const { context, models } = this.props;
 
-    // const dataSource = _.get(models, `${current}.data`, []);
-    const response = R.pathOr([], [current, 'data'])(models);
+    // const dataSource = _.get(models, `${model}.data`, []);
+    const response = R.pathOr([], [model, 'data'])(models);
 
     const { items: dataSource, pagination } = responseProxy.extract(response);
 
-    console.log('dataSource is', dataSource);
-    console.log('columns is', columns);
-    console.log('pagination is', pagination);
+    logger.log('dataSource is', dataSource);
+    logger.log('columns is', columns);
+    logger.log('pagination is', pagination);
 
     return (
       <div>
