@@ -17,8 +17,8 @@ export const modelsService = {
   fetch({ token }, modelName, { id, profile }) {
     return instance.get(`${modelName}/${id}`, { params: { profile }, ...authHeader(token) });
   },
-  loadModels({ token }, { name }, pageable = {}) {
-    return instance.get(name, { params: pageable, ...authHeader(token) });
+  loadModels({ token }, { name }, { pagination, filters, sorter }) {
+    return instance.get(name, { params: pagination, ...authHeader(token) });
   },
   loadSchema({ token }, { name }) {
     return instance.options(name, authHeader(token));

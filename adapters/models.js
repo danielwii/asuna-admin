@@ -11,9 +11,10 @@ export const modelsProxy = {
    * load schema list
    * @param token
    * @param name
+   * @param data - { pagination, filters, sorter }
    * @returns {*}
    */
-  loadModels: ({ token }, { name }) => global.context.models.loadModels({ token }, { name }),
+  loadModels: ({ token }, { name }, data = {}) => global.context.models.loadModels({ token }, { name }, data),
 
   /**
    * load definition of schema
@@ -86,8 +87,13 @@ export class ModelsAdapter {
     )(schema);
   };
 
-  loadModels     = ({ token }, { name }) => this.service.loadModels({ token }, { name });
-  loadSchema     = ({ token }, { name }) => this.service.loadSchema({ token }, { name });
+  loadModels = ({ token }, { name }, { pagination = {}, filters, sorter }) => {
+    const { current: page, pageSize: size } = pagination;
+    return this.service.loadModels({ token }, { name }, { pagination: { page, size } });
+  };
+
+  loadSchema = ({ token }, { name }) => this.service.loadSchema({ token }, { name });
+
   // eslint-disable-next-line function-paren-newline
   loadAllSchemas = ({ token }) => Object.assign(
     ...this.allModels.map(name => ({ [name]: this.loadSchema({ token }, { name }) })))

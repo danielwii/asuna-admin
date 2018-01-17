@@ -66,6 +66,13 @@ class ContentIndex extends React.Component {
     }));
   };
 
+  handleTableChange = (pagination, filters, sorter) => {
+    console.log(pagination, filters, sorter);
+    const { model }    = this.state;
+    const { dispatch } = this.props;
+    dispatch(contentActions.loadModels(model, { pagination, filters, sorter }));
+  };
+
   render() {
     const { model, columns }  = this.state;
     const { context, models } = this.props;
@@ -90,7 +97,13 @@ class ContentIndex extends React.Component {
 
         <hr />
 
-        <Table dataSource={dataSource} rowKey="id" columns={columns} pagination={pagination} />
+        <Table
+          dataSource={dataSource}
+          rowKey="id"
+          columns={columns}
+          pagination={pagination}
+          onChange={this.handleTableChange}
+        />
 
         {/* <pre>{JSON.stringify(dataSource, null, 2)}</pre> */}
         <pre>{JSON.stringify(context, null, 2)}</pre>

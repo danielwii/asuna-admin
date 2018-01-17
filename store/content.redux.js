@@ -25,7 +25,7 @@ const isCurrent = type => type.startsWith('content::');
 
 const actions = {
   // action: (args) => ({ type, payload })
-  loadModels       : name => reduxAction(actionTypes.CONTENT_LOAD_MODELS, { name }),
+  loadModels       : (name, data) => reduxAction(actionTypes.CONTENT_LOAD_MODELS, { name, data }),
   loadModelsSuccess: data => reduxAction(actionTypes.CONTENT_LOAD_MODELS_SUCCESS, { models: data }),
   // loadModelsFailed : error => reduxAction(actionTypes.CONTENT_LOAD_MODELS_FAILED, {}, error),
 };
@@ -37,13 +37,13 @@ const actions = {
 // }
 // --------------------------------------------------------------
 
-function* loadModels({ payload: { name } }) {
+function* loadModels({ payload: { name, data } }) {
   const { token } = yield select(state => state.auth);
   if (token) {
     yield put(notificationsActions.notify(`load content '${name}'...`));
     try {
       console.log('modelsProxy is', modelsProxy);
-      const response = yield call(modelsProxy.loadModels, { token }, { name });
+      const response = yield call(modelsProxy.loadModels, { token }, { name }, data);
       yield put(notificationsActions.notify(`load content '${name}' success`, notificationTypes.SUCCESS));
       yield put(actions.loadModelsSuccess({ [name]: { data: response.data } }));
       console.log('load content', name, response.data);
