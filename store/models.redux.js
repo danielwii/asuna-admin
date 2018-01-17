@@ -6,8 +6,10 @@ import * as R          from 'ramda';
 
 import { notificationsActions, notificationTypes } from '../store/notifications.redux';
 
-import { modelsProxy } from '../adapters/models';
-import { logger }      from '../adapters/logger';
+import { modelsProxy }  from '../adapters/models';
+import { createLogger } from '../adapters/logger';
+
+const logger = createLogger('store:models');
 
 // --------------------------------------------------------------
 // Module actionTypes

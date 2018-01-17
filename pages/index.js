@@ -12,13 +12,15 @@ import * as authService  from '../services/auth';
 import { modelsService } from '../services/models';
 import { menuService }   from '../services/menu';
 
-import { JwtAuthAdapter } from '../adapters/auth';
-import { ModelsAdapter }  from '../adapters/models';
-import { MenuAdapter }    from '../adapters/menu';
-
-import { PyResponseAdapter } from '../adapters/response';
+import { JwtAuthAdapter }          from '../adapters/auth';
+import { ModelsAdapter }           from '../adapters/models';
+import { MenuAdapter }             from '../adapters/menu';
+import { PyResponseAdapter }       from '../adapters/response';
+import { createLogger, initDebug } from '../adapters/logger';
 
 import { modelColumns, tableColumns } from '../services/definations';
+
+const logger = createLogger('pages:index');
 
 // --------------------------------------------------------------
 // Setup context
@@ -41,7 +43,7 @@ global.context = _.assign(global.context, {
   ]),
 });
 
-console.log('2--> global context is', global.context);
+logger.log('2--> global context is', global.context);
 
 // --------------------------------------------------------------
 // Define main app dynamic loader
@@ -60,10 +62,15 @@ const DynamicMainLayoutLoading = dynamic(
 
 class Index extends React.Component {
   componentWillMount() {
-    console.log('componentWillMount...');
+    logger.log('componentWillMount...');
     const { dispatch } = this.props;
     dispatch(menuActions.init());
     dispatch(modelsActions.loadAllSchemas());
+  }
+
+
+  componentDidMount(): void {
+    initDebug();
   }
 
   render() {

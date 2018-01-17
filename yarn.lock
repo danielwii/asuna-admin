@@ -702,7 +702,7 @@ async-validator@1.x:
   dependencies:
     babel-runtime "6.x"
 
-async@^1.0.0, async@^1.4.0, async@~1.5.2:
+async@^1.4.0, async@~1.5.2:
   version "1.5.2"
   resolved "https://registry.yarnpkg.com/async/-/async-1.5.2.tgz#ec6a61ae56480c0c3cb241c95618e20892f9672a"
 
@@ -2249,10 +2249,6 @@ codeclimate-test-reporter@^0.5.0:
     lcov-parse "0.0.10"
     request "~2.79.0"
 
-color-convert@^0.5.0:
-  version "0.5.3"
-  resolved "https://registry.yarnpkg.com/color-convert/-/color-convert-0.5.3.tgz#bdb6c69ce660fadffe0b0007cc447e1b9f7282bd"
-
 color-convert@^1.3.0, color-convert@^1.9.0:
   version "1.9.1"
   resolved "https://registry.yarnpkg.com/color-convert/-/color-convert-1.9.1.tgz#c1261107aeb2f294ebffec9ed9ecad529a6097ed"
@@ -2268,13 +2264,6 @@ color-string@^0.3.0:
   resolved "https://registry.yarnpkg.com/color-string/-/color-string-0.3.0.tgz#27d46fb67025c5c2fa25993bfbf579e47841b991"
   dependencies:
     color-name "^1.0.0"
-
-color@0.8.x:
-  version "0.8.0"
-  resolved "https://registry.yarnpkg.com/color/-/color-0.8.0.tgz#890c07c3fd4e649537638911cf691e5458b6fca5"
-  dependencies:
-    color-convert "^0.5.0"
-    color-string "^0.3.0"
 
 color@^0.11.0:
   version "0.11.4"
@@ -2292,20 +2281,9 @@ colormin@^1.0.5:
     css-color-names "0.0.4"
     has "^1.0.1"
 
-colornames@0.0.2:
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/colornames/-/colornames-0.0.2.tgz#d811fd6c84f59029499a8ac4436202935b92be31"
-
 colors@^1.1.2, colors@~1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/colors/-/colors-1.1.2.tgz#168a4701756b6a7f51a12ce0c97bfa28c084ed63"
-
-colorspace@1.0.x:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/colorspace/-/colorspace-1.0.1.tgz#c99c796ed31128b9876a52e1ee5ee03a4a719749"
-  dependencies:
-    color "0.8.x"
-    text-hex "0.0.x"
 
 combined-stream@^1.0.5, combined-stream@~1.0.5:
   version "1.0.5"
@@ -2902,14 +2880,6 @@ detect-libc@^1.0.2:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/detect-libc/-/detect-libc-1.0.3.tgz#fa137c4bd698edf55cd5cd02ac559f91a4c4ba9b"
 
-diagnostics@^1.0.1:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/diagnostics/-/diagnostics-1.1.0.tgz#e1090900b49523e8527be20f081275205f2ae36a"
-  dependencies:
-    colorspace "1.0.x"
-    enabled "1.0.x"
-    kuler "0.0.x"
-
 diffie-hellman@^5.0.0:
   version "5.0.2"
   resolved "https://registry.yarnpkg.com/diffie-hellman/-/diffie-hellman-5.0.2.tgz#b5835739270cfe26acf632099fded2a07f209e5e"
@@ -3102,12 +3072,6 @@ emojis-list@^2.0.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/emojis-list/-/emojis-list-2.1.0.tgz#4daa4d9db00f9819880c79fa457ae5b09a1fd389"
 
-enabled@1.0.x:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/enabled/-/enabled-1.0.2.tgz#965f6513d2c2d1c5f4652b64a2e3396467fc2f93"
-  dependencies:
-    env-variable "0.0.x"
-
 encodeurl@~1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/encodeurl/-/encodeurl-1.0.1.tgz#79e3d58655346909fe6f0f45a5de68103b294d20"
@@ -3179,10 +3143,6 @@ enquire.js@^2.1.1, enquire.js@^2.1.6:
 entities@^1.1.1, entities@~1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/entities/-/entities-1.1.1.tgz#6e5c2d0a5621b5dadaecef80b90edfb5cd7772f0"
-
-env-variable@0.0.x:
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/env-variable/-/env-variable-0.0.3.tgz#b86c1641be5610267d506f18071ea76d707097cb"
 
 errno@^0.1.2, errno@^0.1.3, errno@^0.1.4:
   version "0.1.6"
@@ -3656,10 +3616,6 @@ fbjs@^0.8.12, fbjs@^0.8.15, fbjs@^0.8.16, fbjs@^0.8.5, fbjs@^0.8.9:
     promise "^7.1.1"
     setimmediate "^1.0.5"
     ua-parser-js "^0.7.9"
-
-fecha@^2.3.2:
-  version "2.3.2"
-  resolved "https://registry.yarnpkg.com/fecha/-/fecha-2.3.2.tgz#360f035dd6edd954bc9581f95f2a4a7f2a3505c1"
 
 figures@^2.0.0:
   version "2.0.0"
@@ -4854,7 +4810,7 @@ isomorphic-fetch@^2.1.1:
     node-fetch "^1.0.1"
     whatwg-fetch ">=0.10.0"
 
-isstream@0.1.x, isstream@~0.1.2:
+isstream@~0.1.2:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/isstream/-/isstream-0.1.2.tgz#47e63f7af55afa6f92e1500e690eb8b8529c099a"
 
@@ -4997,12 +4953,6 @@ kind-of@^4.0.0:
   resolved "https://registry.yarnpkg.com/kind-of/-/kind-of-4.0.0.tgz#20813df3d712928b207378691a45066fae72dd57"
   dependencies:
     is-buffer "^1.1.5"
-
-kuler@0.0.x:
-  version "0.0.0"
-  resolved "https://registry.yarnpkg.com/kuler/-/kuler-0.0.0.tgz#b66bb46b934e550f59d818848e0abba4f7f5553c"
-  dependencies:
-    colornames "0.0.2"
 
 lazy-cache@^1.0.3:
   version "1.0.4"
@@ -5211,13 +5161,6 @@ lodash@4.x.x, lodash@^4.0.0, lodash@^4.14.0, lodash@^4.16.5, lodash@^4.17.3, lod
 lodash@^3.10.1:
   version "3.10.1"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-3.10.1.tgz#5bf45e8e49ba4189e17d482789dfd15bd140b7b6"
-
-logform@^1.2.1:
-  version "1.2.2"
-  resolved "https://registry.yarnpkg.com/logform/-/logform-1.2.2.tgz#7be8847684de07185029ed09c65b11d06191ef93"
-  dependencies:
-    colors "^1.1.2"
-    fecha "^2.3.2"
 
 longest@^1.0.1:
   version "1.0.1"
@@ -5897,10 +5840,6 @@ once@~1.3.0:
   resolved "https://registry.yarnpkg.com/once/-/once-1.3.3.tgz#b2e261557ce4c314ec8304f3fa82663e4297ca20"
   dependencies:
     wrappy "1"
-
-one-time@0.0.4:
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/one-time/-/one-time-0.0.4.tgz#f8cdf77884826fe4dff93e3a9cc37b1e4480742e"
 
 onetime@^2.0.0:
   version "2.0.1"
@@ -8070,10 +8009,6 @@ ssri@^5.0.0:
   dependencies:
     safe-buffer "^5.1.0"
 
-stack-trace@0.0.x:
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/stack-trace/-/stack-trace-0.0.10.tgz#547c70b347e8d32b4e108ea1a2a159e5fdde19c0"
-
 stackframe@^0.3.1:
   version "0.3.1"
   resolved "https://registry.yarnpkg.com/stackframe/-/stackframe-0.3.1.tgz#33aa84f1177a5548c8935533cbfeb3420975f5a4"
@@ -8343,10 +8278,6 @@ text-extensions@^1.0.0:
   version "1.7.0"
   resolved "https://registry.yarnpkg.com/text-extensions/-/text-extensions-1.7.0.tgz#faaaba2625ed746d568a23e4d0aacd9bf08a8b39"
 
-text-hex@0.0.x:
-  version "0.0.0"
-  resolved "https://registry.yarnpkg.com/text-hex/-/text-hex-0.0.0.tgz#578fbc85a6a92636e42dd17b41d0218cce9eb2b3"
-
 text-table@~0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/text-table/-/text-table-0.2.0.tgz#7f5ee823ae805207c00af2df4a84ec3fcfa570b4"
@@ -8451,10 +8382,6 @@ trim-off-newlines@^1.0.0:
 trim-right@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/trim-right/-/trim-right-1.0.1.tgz#cb2e1203067e0c8de1f614094b9fe45704ea6003"
-
-triple-beam@^1.0.1:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/triple-beam/-/triple-beam-1.1.0.tgz#2ac387c8c4bd04bd26c61df891a6079f8592fe10"
 
 tty-browserify@0.0.0:
   version "0.0.0"
@@ -8925,23 +8852,6 @@ win-release@^1.0.0:
 window-size@0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/window-size/-/window-size-0.1.0.tgz#5438cd2ea93b202efa3a19fe8887aee7c94f9c9d"
-
-winston-transport@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/winston-transport/-/winston-transport-3.0.1.tgz#8008b15eef5660c4fb3fa094d58ccbd08528c58d"
-
-winston@^3.0.0-rc1:
-  version "3.0.0-rc1"
-  resolved "https://registry.yarnpkg.com/winston/-/winston-3.0.0-rc1.tgz#982bc0ad4ef5c53000ca68036d78a3deaa28cac5"
-  dependencies:
-    async "^1.0.0"
-    diagnostics "^1.0.1"
-    isstream "0.1.x"
-    logform "^1.2.1"
-    one-time "0.0.4"
-    stack-trace "0.0.x"
-    triple-beam "^1.0.1"
-    winston-transport "^3.0.1"
 
 wordwrap@0.0.2:
   version "0.0.2"

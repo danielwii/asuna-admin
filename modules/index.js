@@ -2,7 +2,9 @@ import React   from 'react';
 import dynamic from 'next/dynamic';
 import _       from 'lodash';
 
-import { logger } from '../adapters/logger';
+import { createLogger } from '../adapters/logger';
+
+const logger = createLogger('modules:index');
 
 export default dynamic({
   modules: ({ module }) => {

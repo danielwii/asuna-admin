@@ -14,6 +14,9 @@ import { notificationTypes } from '../store/notifications.redux';
 
 import * as authService   from '../services/auth';
 import { JwtAuthAdapter } from '../adapters/auth';
+import { createLogger } from '../adapters/logger';
+
+const logger = createLogger('pages:login');
 
 // --------------------------------------------------------------
 // Setup context
@@ -23,7 +26,7 @@ global.context = _.assign(global.context, {
   auth: new JwtAuthAdapter(authService),
 });
 
-console.log('1--> global context is', global.context);
+logger.log('1--> global context is', global.context);
 
 // --------------------------------------------------------------
 // Main
@@ -68,7 +71,7 @@ class LoginPage extends React.Component {
    * 由于这个方法始终只执行一次，所以如果在这里定义了setState方法之后，页面永远都只会在加载前更新一次。
    */
   componentWillMount() {
-    console.log('componentWillMount...');
+    logger.log('componentWillMount...');
   }
 
   /**
@@ -76,7 +79,7 @@ class LoginPage extends React.Component {
    * 在这个时候之后组件已经生成了对应的DOM结构，可以通过this.getDOMNode()来进行访问。
    */
   componentDidMount() {
-    console.log('componentDidMount...');
+    logger.log('componentDidMount...');
   }
 
   // --------------------------------------------------------------
@@ -90,7 +93,7 @@ class LoginPage extends React.Component {
    * @param nextContext
    */
   componentWillReceiveProps(nextProps, nextContext) {
-    console.log('componentWillReceiveProps::nextProps is', nextProps, 'nextContext is', nextContext);
+    logger.log('componentWillReceiveProps::nextProps is', nextProps, 'nextContext is', nextContext);
   }
 
   /**
@@ -102,7 +105,7 @@ class LoginPage extends React.Component {
    * @param nextState
    */
   shouldComponentUpdate(nextProps, nextState, nextContext) {
-    console.log('shouldComponentUpdate::nextProps is', nextProps, 'nextState is', nextState, 'nextContext is', nextContext);
+    logger.log('shouldComponentUpdate::nextProps is', nextProps, 'nextState is', nextState, 'nextContext is', nextContext);
     return true;
   }
 
@@ -114,7 +117,7 @@ class LoginPage extends React.Component {
    * @param nextContext
    */
   componentWillUpdate(nextProps, nextState, nextContext) {
-    console.log('componentWillUpdate::nextProps is', nextProps, 'nextState is', nextState, 'nextContext is', nextContext);
+    logger.log('componentWillUpdate::nextProps is', nextProps, 'nextState is', nextState, 'nextContext is', nextContext);
   }
 
   /**
@@ -125,7 +128,7 @@ class LoginPage extends React.Component {
    * @param prevContext
    */
   componentDidUpdate(prevProps, prevState, prevContext) {
-    console.log('componentDidUpdate::prevProps is', prevProps, 'prevState is', prevState, 'prevContext is', prevContext);
+    logger.log('componentDidUpdate::prevProps is', prevProps, 'prevState is', prevState, 'prevContext is', prevContext);
   }
 
   // --------------------------------------------------------------
@@ -136,11 +139,11 @@ class LoginPage extends React.Component {
    * 在组件从 DOM unmount 后立即执行.
    */
   componentWillUnmount() {
-    console.log('componentWillUnmount...');
+    logger.log('componentWillUnmount...');
   }
 
   componentDidCatch(error, errorInfo) {
-    console.log('componentDidCatch...', error, errorInfo);
+    logger.log('componentDidCatch...', error, errorInfo);
   }
 
   render() {

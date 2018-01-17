@@ -7,8 +7,10 @@ import { Form } from 'antd';
 
 import { DynamicForm2, DynamicFormTypes } from '../../components/DynamicForm';
 import { modelsProxy }                    from '../../adapters/models';
-import { logger }                         from '../../adapters/logger';
+import { createLogger }                   from '../../adapters/logger';
 import { modelsActions }                  from '../../store/models.redux';
+
+const logger = createLogger('modules:content:upsert', '-modules:content:upsert:*');
 
 // --------------------------------------------------------------
 // Build Form
@@ -17,12 +19,12 @@ import { modelsActions }                  from '../../store/models.redux';
 const ContentForm = Form.create({
   mapPropsToFields({ fields }) {
     const mappedFields = R.map(field => Form.createFormField({ ...field }))(fields);
-    logger.log('fields is', fields);
-    logger.log('mapped fields is', mappedFields);
+    logger.debug('fields is', fields);
+    logger.debug('mapped fields is', mappedFields);
     return mappedFields;
   },
   onFieldsChange(props, changedFields) {
-    logger.log('onFieldsChange', props, changedFields);
+    logger.debug('onFieldsChange', props, changedFields);
     props.onChange(changedFields);
   },
 })(DynamicForm2);
@@ -43,7 +45,7 @@ class ContentUpsert extends React.Component {
       }),
     }),
     schemas: PropTypes.shape({}),
-    models : PropTypes.arrayOf(PropTypes.shape({})),
+    models : PropTypes.shape(PropTypes.object),
   };
 
   constructor(props) {
@@ -58,13 +60,13 @@ class ContentUpsert extends React.Component {
 
     const record = R.path(['pane', 'data', 'record'])(context);
     if (record) {
-      logger.log('update mode...');
+      logger.debug('update mode...');
       isInsertMode = false;
       dispatch(modelsActions.fetch(modelName, { id: record.id, profile: 'detail' }));
     }
 
     const allFields = modelsProxy.formFields(schemas[modelName], modelName);
-    logger.log('--> form fields is', allFields);
+    logger.debug('--> form fields is', allFields);
 
     if (R.has('id')(allFields)) {
       allFields.id.type = DynamicFormTypes.Plain;
@@ -80,13 +82,13 @@ class ContentUpsert extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log('call componentWillReceiveProps...');
+    logger.debug('call componentWillReceiveProps...');
     const { isInsertMode, modelName } = this.state;
     if (!isInsertMode) {
       const { models, context: { pane: { data: { record } } } } = nextProps;
 
       const fieldValues = R.path([modelName, record.id])(models) || {};
-      console.log('field values is', fieldValues);
+      logger.debug('field values is', fieldValues);
       this.handleFormChange(R.map(value => ({ value }))(fieldValues));
     }
   }
@@ -96,12 +98,12 @@ class ContentUpsert extends React.Component {
    * @param changedFields
    */
   handleFormChange = (changedFields) => {
-    logger.log('handleFormChange', changedFields);
+    logger.debug('handleFormChange', changedFields);
 
     const fields            = R.map(field => R.pick(['value'])(field))(changedFields);
     const changedFieldsList = R.mergeDeepRight(this.state.modelFields, fields);
-    logger.log('new fields is', fields);
-    logger.log('new changedFieldsList is', changedFieldsList);
+    logger.debug('new fields is', fields);
+    logger.debug('new changedFieldsList is', changedFieldsList);
 
     this.setState({
       modelFields: { ...this.state.modelFields, ...changedFieldsList },
@@ -109,10 +111,10 @@ class ContentUpsert extends React.Component {
   };
 
   handleFormSubmit = (e) => {
-    logger.log('handleFormSubmit', e);
+    logger.debug('handleFormSubmit', e);
     e.preventDefault();
     const fieldPairs = R.map(R.prop('value'))(this.state.modelFields);
-    logger.log('all fieldPairs waiting for submit is', fieldPairs);
+    logger.debug('all fieldPairs waiting for submit is', fieldPairs);
 
     const { dispatch }  = this.props;
     const { modelName } = this.state;

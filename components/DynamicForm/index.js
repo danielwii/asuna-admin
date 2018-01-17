@@ -9,7 +9,9 @@ import {
   generateInputNumber, generatePlain, generateSwitch, generateTextArea,
 } from './elements';
 
-import { logger } from '../../adapters/logger';
+import { createLogger } from '../../adapters/logger';
+
+const logger = createLogger('components:dynamic-form');
 
 // FIXME remove it
 export const buildForm = (form, definitions) => definitions.map((definition) => {

@@ -6,7 +6,9 @@ import {
   TimePicker,
 } from 'antd';
 
-import { logger } from '../../adapters/logger';
+import { createLogger } from '../../adapters/logger';
+
+const logger = createLogger('components:dynamic-form:elements', '-components:dynamic-form:elements:*');
 
 const defaultFormItemLayout = {
   // labelCol  : { offset: 0, span: 4 },
@@ -19,7 +21,7 @@ const defaultFormItemLayout = {
 // export const generate = (form, {
 //   key, name, label,
 // }, formItemLayout = defaultFormItemLayout) => {
-// //   logger.log('generate', key, name);
+// //   logger.debug('generate', key, name);
 //   const fieldName = key || name;
 //   const labelName = label || name || key;
 //   if (name) {
@@ -38,7 +40,7 @@ const defaultFormItemLayout = {
 
 // eslint-disable-next-line react/prop-types
 export const generatePlain = ({ label, text }, formItemLayout = defaultFormItemLayout) => {
-  logger.log('generatePlain', label, text);
+  logger.debug('generatePlain', label, text);
   return <Form.Item {...formItemLayout} label={label}>{text}</Form.Item>;
 };
 
@@ -58,7 +60,7 @@ const generateComponent = (form,
 };
 
 export const generateHidden = (form, { key, name }) => {
-  // logger.log('generateHidden', key, name);
+  logger.debug('generateHidden', key, name);
   const fieldName = key || name;
   if (name) {
     return (
@@ -88,7 +90,7 @@ export const generateCheckbox = (form, {
 export const generateCheckbox2 = (form, {
   key, name, label,
 }, formItemLayout = defaultFormItemLayout) => {
-  // logger.log('generateCheckbox', key, name);
+  logger.debug('generateCheckbox', key, name);
   const fieldName = key || name;
   if (name) {
     const decorator = form.getFieldDecorator(fieldName, {
@@ -111,7 +113,7 @@ export const generateCheckbox2 = (form, {
 export const generateButton = (form, {
   key, name, label, type, htmlType, onClick,
 }, formItemLayout = defaultFormItemLayout) => {
-  // logger.log('generateButton', key, name);
+  logger.debug('generateButton', key, name);
   const fieldName = key || name;
   if (name) {
     return (
@@ -133,7 +135,7 @@ export const generateButton = (form, {
 export const generateInputNumber = (form, {
   key, name, label,
 }, formItemLayout = defaultFormItemLayout) => {
-  // logger.log('generateInputNumber', key, name);
+  logger.debug('generateInputNumber', key, name);
   const fieldName = key || name;
   if (name) {
     return (
@@ -197,7 +199,7 @@ export const generateDateTime = (form, {
   key, name, label,
   mode = '',
 }, formItemLayout = defaultFormItemLayout) => {
-  // logger.log('generateDateTime', key, name);
+  logger.debug('generateDateTime', key, name);
   const fieldName = key || name;
   const labelName = label || name || key;
 
@@ -227,7 +229,7 @@ export const generateDateTime = (form, {
 export const generateSwitch = (form, {
   key, name, label,
 }, formItemLayout = defaultFormItemLayout) => {
-  // logger.log('generateSwitch', key, name);
+  logger.debug('generateSwitch', key, name);
   const fieldName = key || name;
   const labelName = label || name || key;
   if (name) {

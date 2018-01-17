@@ -1,7 +1,9 @@
 import * as R from 'ramda';
 
 import { DynamicFormTypes } from '../components/DynamicForm';
-import { logger }           from '../adapters/logger';
+import { createLogger }           from '../adapters/logger';
+
+const logger = createLogger('adapters:models');
 
 export const modelsProxy = {
   modelConfigs: name => global.context.models.modelConfigs(name),

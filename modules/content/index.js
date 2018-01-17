@@ -9,7 +9,9 @@ import { panesActions }   from '../../store/panes.redux';
 import { contentActions } from '../../store/content.redux';
 import { modelsProxy }    from '../../adapters/models';
 import { responseProxy }  from '../../adapters/response';
-import { logger }         from '../../adapters/logger';
+import { createLogger }         from '../../adapters/logger';
+
+const logger = createLogger('modules:content:index');
 
 class ContentIndex extends React.Component {
   static propTypes = {

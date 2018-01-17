@@ -5,6 +5,9 @@ import { reduxAction } from 'node-buffs';
 import { notificationsActions, notificationTypes } from '../store/notifications.redux';
 
 import { modelsProxy } from '../adapters/models';
+import { createLogger } from '../adapters/logger';
+
+const logger = createLogger('store:content');
 
 // --------------------------------------------------------------
 // Module actionTypes
@@ -42,14 +45,14 @@ function* loadModels({ payload: { name, data } }) {
   if (token) {
     yield put(notificationsActions.notify(`load content '${name}'...`));
     try {
-      console.log('modelsProxy is', modelsProxy);
+      logger.log('modelsProxy is', modelsProxy);
       const response = yield call(modelsProxy.loadModels, { token }, { name }, data);
       yield put(notificationsActions.notify(`load content '${name}' success`, notificationTypes.SUCCESS));
       yield put(actions.loadModelsSuccess({ [name]: { data: response.data } }));
-      console.log('load content', name, response.data);
+      logger.log('load content', name, response.data);
     } catch (e) {
       yield put(notificationsActions.notify(e, notificationTypes.ERROR));
-      console.warn('CATCH ->', e);
+      logger.warn('CATCH ->', e);
     }
   }
 }

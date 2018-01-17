@@ -1,7 +1,9 @@
 import { put, takeLatest } from 'redux-saga/effects';
 
-// import { getMenus } from '../services/menu';
-import { menuProxy } from '../adapters/menu';
+import { menuProxy }    from '../adapters/menu';
+import { createLogger } from '../adapters/logger';
+
+const logger = createLogger('store:menu');
 
 // --------------------------------------------------------------
 // Module actionTypes
@@ -31,9 +33,9 @@ const actions = {
 // --------------------------------------------------------------
 
 function* init() {
-  console.log('menu init sage, call getMenus...');
+  logger.log('menu init sage, call getMenus...');
   const menus = yield menuProxy.init();
-  console.log('menu init sage, menus is', menus);
+  logger.log('menu init sage, menus is', menus);
   yield put({ type: actionTypes.INIT_SUCCESS, payload: { menus } });
 }
 

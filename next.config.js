@@ -4,9 +4,7 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
 module.exports = {
   webpack: (config) => {
     // Fixes npm packages that depend on `fs` module
-    config.node = {
-      fs: 'empty',
-    };
+    config.node = { fs: 'empty' };
 
     config.plugins = config.plugins || [];
     config.plugins.push(new Jarvis({ port: 1337 }));
