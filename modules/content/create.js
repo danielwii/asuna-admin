@@ -7,17 +7,18 @@ import { Form } from 'antd';
 
 import { DynamicForm2, DynamicFormTypes } from '../../components/DynamicForm';
 import { modelsProxy }                    from '../../adapters/models';
+import { logger }                         from '../../adapters/logger';
+import { modelsActions }                  from '../../store/models.redux';
 
 const ContentForm = Form.create({
-  mapPropsToFields({ fields, values }) {
+  mapPropsToFields({ fields }) {
     const mappedFields = R.map(field => Form.createFormField({ ...field }))(fields);
-    console.log('fields is', fields);
-    console.log('values is', values);
-    console.log('mapped fields is', mappedFields);
+    logger.log('fields is', fields);
+    logger.log('mapped fields is', mappedFields);
     return mappedFields;
   },
   onFieldsChange(props, changedFields) {
-    console.log('onFieldsChange', props, changedFields);
+    logger.log('onFieldsChange', props, changedFields);
     props.onChange(changedFields);
   },
 })(DynamicForm2);
@@ -37,16 +38,11 @@ class ContentCreate extends React.Component {
 
     const { context, schemas } = this.props;
 
-    const actions = null;
-
     // content::create::name::timestamp => name
-    const model       = R.compose(R.nth(2), R.split(/::/), R.path(['pane', 'key']))(context);
-    const configs     = modelsProxy.modelConfigs(model);
-    const modelConfig = R.prop('model')(configs)(actions);
-    console.log('--> modelFields in config is', modelConfig);
+    const model = R.compose(R.nth(2), R.split(/::/), R.path(['pane', 'key']))(context);
 
     const allFields = modelsProxy.formFields(schemas[model], model);
-    console.log('--> form fields is', allFields);
+    logger.log('--> form fields is', allFields);
 
     if (R.has('id')(allFields)) {
       allFields.id.type = DynamicFormTypes.Plain;
@@ -55,16 +51,38 @@ class ContentCreate extends React.Component {
     const formFields = R.omit(['created_at', 'updated_at'])(allFields);
 
     this.state = {
-      modelFields: formFields || modelConfig.fields,
-      fieldValues: {},
+      model,
+      modelFields: { name: formFields.name, introduction: formFields.introduction },
     };
   }
 
+  /**
+   * Saving changed field values in props
+   * @param changedFields
+   */
   handleFormChange = (changedFields) => {
-    console.log('handleFormChange', changedFields);
+    logger.log('handleFormChange', changedFields);
+
+    const fields            = R.map(field => R.pick(['value'])(field))(changedFields);
+    const changedFieldsList = R.mergeDeepRight(this.state.modelFields, fields);
+    logger.log('new fields is', fields);
+    logger.log('new changedFieldsList is', changedFieldsList);
+
     this.setState({
-      fieldValues: { ...this.state.fields, ...changedFields },
+      modelFields: { ...this.state.modelFields, ...changedFieldsList },
     });
+  };
+
+  handleFormSubmit = (e) => {
+    logger.log('handleFormSubmit', e);
+    e.preventDefault();
+    const fieldPairs = R.map(R.prop('value'))(this.state.modelFields);
+    logger.log('all fieldPairs waiting for submit is', fieldPairs);
+
+    const { dispatch } = this.props;
+    const { model }    = this.state;
+
+    dispatch(modelsActions.upsert(model, fieldPairs));
   };
 
   render() {
@@ -75,9 +93,13 @@ class ContentCreate extends React.Component {
       <div>
         <h1>hello, kitty. ^_^</h1>
         <hr />
-        <ContentForm fields={modelFields} values={fieldValues} onChange={this.handleFormChange} />
+        <ContentForm
+          fields={modelFields}
+          onChange={this.handleFormChange}
+          onSubmit={this.handleFormSubmit}
+        />
         <hr />
-        {/* <pre>{JSON.stringify(modelFields, null, 2)}</pre> */}
+        <pre>{JSON.stringify(modelFields, null, 2)}</pre>
         <pre>{JSON.stringify(fieldValues, null, 2)}</pre>
         <hr />
         <pre>{JSON.stringify(context, null, 2)}</pre>

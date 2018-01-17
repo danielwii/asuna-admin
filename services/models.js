@@ -21,4 +21,10 @@ export const modelsService = {
   loadSchema({ token }, { name }) {
     return instance.options(name, authHeader(token));
   },
+  insert({ token }, model, data) {
+    return instance.post(model, data, authHeader(token));
+  },
+  update({ token }, model, data) {
+    return instance.put(model, data, authHeader(token));
+  },
 };

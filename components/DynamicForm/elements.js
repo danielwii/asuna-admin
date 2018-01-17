@@ -1,77 +1,64 @@
+/* eslint-disable indent,function-paren-newline */
 import React from 'react';
 
-import { Button, Checkbox, Form, Icon, Input, InputNumber, DatePicker, TimePicker, Switch } from 'antd';
+import {
+  Button, Checkbox, DatePicker, Form, Icon, Input, InputNumber, Switch,
+  TimePicker,
+} from 'antd';
+
+import { logger } from '../../adapters/logger';
 
 const defaultFormItemLayout = {
   // labelCol  : { offset: 0, span: 4 },
   // wrapperCol: { offset: 0, span: 20 },
 };
 
+// --------------------------------------------------------------
+// # Component Generator Template
+//
 // export const generate = (form, {
 //   key, name, label,
 // }, formItemLayout = defaultFormItemLayout) => {
-//   console.log('generate', key, name);
+// //   logger.log('generate', key, name);
 //   const fieldName = key || name;
 //   const labelName = label || name || key;
 //   if (name) {
+//     const decorator = form.getFieldDecorator(fieldName, {});
+//     const decorated = decorator(<div></div>);
 //     return (
 //       <Form.Item key={fieldName} {...formItemLayout} label={labelName}>
+//         {decorated}
 //       </Form.Item>
 //     );
 //   }
-//   console.error('name is required in generate');
+//   logger.error('name is required in generate');
 //   return null;
 // };
+// --------------------------------------------------------------
 
 // eslint-disable-next-line react/prop-types
 export const generatePlain = ({ label, text }, formItemLayout = defaultFormItemLayout) => {
-  console.log('generatePlain', label, text);
+  logger.log('generatePlain', label, text);
   return <Form.Item {...formItemLayout} label={label}>{text}</Form.Item>;
 };
 
-/**
- * @param form
- * @param key
- * @param name
- * @param required
- * @param requiredMessage
- * @param placeholder
- * @param iconType
- * @param label
- * @param formItemLayout
- * @returns {*}
- */
-export const generateInput = (form, {
-  key, name, label,
-  required = false, requiredMessage,
-  placeholder = '',
-  iconType,
-}, formItemLayout = defaultFormItemLayout) => {
-  console.log('generateInput', key, name, label);
-  const fieldName = key || name;
-  if (name) {
-    const decorator = form.getFieldDecorator(fieldName, { rules: [{ required, requiredMessage }] });
-    let decorated;
-    if (iconType) {
-      decorated = decorator(<Input
-        prefix={<Icon type={iconType} style={{ color: 'rgba(0,0,0,.25)' }} />}
-        placeholder={placeholder}
-      />);
-    } else {
-      decorated = decorator(<Input placeholder={placeholder} />);
-    }
+const generateComponent = (form,
+                           { fieldName, labelName = fieldName, rules = {} },
+                           component,
+                           formItemLayout = {}) => {
+  if (fieldName) {
+    const decorator = form.getFieldDecorator(fieldName, rules);
     return (
-      <Form.Item key={fieldName} {...formItemLayout} label={label || name || key}>
-        {decorated}
+      <Form.Item key={fieldName} {...formItemLayout} label={labelName}>
+        {decorator(component)}
       </Form.Item>
     );
   }
-  console.error('name is required in generateInput');
   return null;
 };
 
 export const generateHidden = (form, { key, name }) => {
-  console.log('generateHidden', key, name);
+  // logger.log('generateHidden', key, name);
   const fieldName = key || name;
   if (name) {
     return (
@@ -80,14 +67,28 @@ export const generateHidden = (form, { key, name }) => {
       </Form.Item>
     );
   }
-  console.error('name is required in generateHidden');
+  logger.error('name is required in generateHidden');
   return null;
 };
 
 export const generateCheckbox = (form, {
   key, name, label,
+}, formItemLayout) => {
+  const fieldName = key || name;
+  const labelName = label || name || key;
+  return generateComponent(
+    form,
+    { fieldName, labelName },
+    <Checkbox />,
+    formItemLayout,
+  );
+};
+
+/*
+export const generateCheckbox2 = (form, {
+  key, name, label,
 }, formItemLayout = defaultFormItemLayout) => {
-  console.log('generateCheckbox', key, name);
+  // logger.log('generateCheckbox', key, name);
   const fieldName = key || name;
   if (name) {
     const decorator = form.getFieldDecorator(fieldName, {
@@ -101,14 +102,16 @@ export const generateCheckbox = (form, {
       </Form.Item>
     );
   }
-  console.error('name is required in generateCheckbox');
+  logger.error('name is required in generateCheckbox');
   return null;
 };
+*/
 
+// TODO wrap by generateComponent
 export const generateButton = (form, {
   key, name, label, type, htmlType, onClick,
 }, formItemLayout = defaultFormItemLayout) => {
-  console.log('generateButton', key, name);
+  // logger.log('generateButton', key, name);
   const fieldName = key || name;
   if (name) {
     return (
@@ -122,14 +125,15 @@ export const generateButton = (form, {
       </Form.Item>
     );
   }
-  console.error('name is required in generateButton');
+  logger.error('name is required in generateButton');
   return null;
 };
 
+// TODO wrap by generateComponent
 export const generateInputNumber = (form, {
   key, name, label,
 }, formItemLayout = defaultFormItemLayout) => {
-  console.log('generateInputNumber', key, name);
+  // logger.log('generateInputNumber', key, name);
   const fieldName = key || name;
   if (name) {
     return (
@@ -138,28 +142,49 @@ export const generateInputNumber = (form, {
       </Form.Item>
     );
   }
-  console.error('name is required in generateInputNumber');
+  logger.error('name is required in generateInputNumber');
   return null;
 };
 
-export const generateTextArea = (form, {
+export const generateInput = (form, {
   key, name, label,
-}, formItemLayout = defaultFormItemLayout) => {
-  console.log('generateInputNumber', key, name);
+  required = false, requiredMessage,
+  placeholder = '',
+  iconType,
+}, formItemLayout) => {
   const fieldName = key || name;
-  if (name) {
-    return (
-      <Form.Item key={fieldName} {...formItemLayout} label={label || name || key}>
-        <Input.TextArea />
-      </Form.Item>
-    );
+  const labelName = label || name || key;
+
+  let component;
+  if (iconType) {
+    component = (<Input
+      prefix={<Icon type={iconType} style={{ color: 'rgba(0,0,0,.25)' }} />}
+      placeholder={placeholder}
+    />);
+  } else {
+    component = (<Input placeholder={placeholder} />);
   }
-  console.error('name is required in generateInputNumber');
-  return null;
+
+  return generateComponent(
+    form,
+    { fieldName, labelName, rules: [{ required, requiredMessage }] },
+    component,
+    formItemLayout,
+  );
+};
+
+export const generateTextArea = (form, { key, name, label }, formItemLayout) => {
+  const fieldName = key || name;
+  const labelName = label || name || key;
+  return generateComponent(
+    form, { fieldName, labelName }, (
+      <Input.TextArea />
+    ), formItemLayout,
+  );
 };
 
 /**
- *
+ * TODO wrap by generateComponent
  * @param form
  * @param key
  * @param name
@@ -172,7 +197,7 @@ export const generateDateTime = (form, {
   key, name, label,
   mode = '',
 }, formItemLayout = defaultFormItemLayout) => {
-  console.log('generateDateTime', key, name);
+  // logger.log('generateDateTime', key, name);
   const fieldName = key || name;
   const labelName = label || name || key;
 
@@ -194,14 +219,15 @@ export const generateDateTime = (form, {
     );
   }
 
-  console.error('name is required in generateDateTime');
+  logger.error('name is required in generateDateTime');
   return null;
 };
 
+// TODO wrap by generateComponent
 export const generateSwitch = (form, {
   key, name, label,
 }, formItemLayout = defaultFormItemLayout) => {
-  console.log('generateSwitch', key, name);
+  // logger.log('generateSwitch', key, name);
   const fieldName = key || name;
   const labelName = label || name || key;
   if (name) {
@@ -211,6 +237,6 @@ export const generateSwitch = (form, {
       </Form.Item>
     );
   }
-  console.error('name is required in generateSwitch');
+  logger.error('name is required in generateSwitch');
   return null;
 };

@@ -2,12 +2,14 @@ import React     from 'react';
 import PropTypes from 'prop-types';
 import _         from 'lodash';
 
-import { Card, Form } from 'antd';
+import { Button, Card, Form } from 'antd';
 
 import {
   generateButton, generateCheckbox, generateDateTime, generateHidden, generateInput,
-  generateInputNumber, generatePlain, generateTextArea, generateSwitch,
+  generateInputNumber, generatePlain, generateSwitch, generateTextArea,
 } from './elements';
+
+import { logger } from '../../adapters/logger';
 
 // FIXME remove it
 export const buildForm = (form, definitions) => definitions.map((definition) => {
@@ -16,7 +18,7 @@ export const buildForm = (form, definitions) => definitions.map((definition) => 
       return generateInput(form, definition.config, definition.layout);
     }
     default:
-      console.warn(`build form for type ${definition.type} not implemented.`);
+      logger.warn(`build form for type ${definition.type} not implemented.`);
   }
   return definition;
 });
@@ -55,17 +57,25 @@ export const DynamicFormTypes = {
 
 export class DynamicForm2 extends React.Component {
   static propTypes = {
-    fields: PropTypes.shape({}),
+    fields  : PropTypes.shape({}),
+    onSubmit: PropTypes.func.isRequired,
   };
 
-  constructor(props) {
-    super(props);
+  handleOnSubmit = (e) => {
+    e.preventDefault();
 
-    this.buildField = this.buildField.bind(this);
-  }
+    const { form, onSubmit } = this.props;
+    form.validateFields((err, values) => {
+      if (err) {
+        console.log('error occurred in form', values, err);
+      } else {
+        onSubmit(e);
+      }
+    });
+  };
 
-  buildField(field, index) {
-    console.log('DynamicForm2 build field', field, 'field index is', index);
+  buildField = (field, index) => {
+    // logger.log('DynamicForm2 build field', field, 'field index is', index);
 
     const { form } = this.props;
     const options  = { ...field.options, key: field.key || field.name, name: field.name };
@@ -92,16 +102,16 @@ export class DynamicForm2 extends React.Component {
       default:
         return <div>DynamicForm2 `{field.type}-{options.type}-{options.key}` not implemented.</div>;
     }
-  }
+  };
 
   buildFieldGroup = (fieldGroup, index) => {
-    console.log('DynamicForm2 build field group', fieldGroup, 'group index is', index);
+    logger.log('DynamicForm2 build field group', fieldGroup, 'group index is', index);
     return (
       <div>
         <Card key={index}>
           {_.map(fieldGroup, this.buildField)}
-          {/* language=CSS */}
         </Card>
+        {/* language=CSS */}
         <style jsx>{`
           div {
             margin-bottom: .5rem;
@@ -114,7 +124,7 @@ export class DynamicForm2 extends React.Component {
 
   render() {
     const { fields } = this.props;
-    console.log('DynamicForm2 props is', this.props, 'fields is', fields);
+    logger.log('DynamicForm2 props is', this.props, 'fields is', fields);
 
     /*
         const fieldGroups = R.compose(
@@ -122,13 +132,22 @@ export class DynamicForm2 extends React.Component {
           R.values,
         )(fields);
         const fieldGroup s= _.groupBy(fields, (field, key) => _.split(_.get(field, 'key'), '-'));
-        console.log('DynamicForm2 fields group is', fieldGroups);
+        logger.log('DynamicForm2 fields group is', fieldGroups);
     */
 
     return (
-      <Form>
+      <Form onSubmit={this.handleOnSubmit}>
         {/* {_.map(fieldGroups, this.buildFieldGroup)} */}
         {_.map(fields, this.buildField)}
+        <Form.Item>
+          <Button
+            type="primary"
+            htmlType="submit"
+            // disabled={hasErrors(getFieldsError())}
+          >
+            Submit
+          </Button>
+        </Form.Item>
       </Form>
     );
   }

@@ -26,6 +26,15 @@ export const modelsProxy = {
    * @returns {*}
    */
   loadAllSchemas: ({ token }) => global.context.models.loadAllSchemas({ token }),
+
+  /**
+   * update model if id exists in body, insert new one or else.
+   * @param config - { token }
+   * @param model  - model name
+   * @param data   - model body
+   * @returns {*}
+   */
+  upsert: (config, model, data) => global.context.models.upsert(config, model, data),
 };
 
 export class ModelsAdapter {
@@ -44,6 +53,14 @@ export class ModelsAdapter {
 
     console.warn('type', name, 'cannot identified.');
     return name;
+  };
+
+  upsert = (config, model, data) => {
+    if (R.prop('id')(model)) {
+      this.service.update(config, model, data);
+    } else {
+      this.service.insert(config, model, data);
+    }
   };
 
   modelConfigs = name => this.modelsConfigs[name];
