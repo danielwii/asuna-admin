@@ -1,4 +1,4 @@
-const Jarvis = require('webpack-jarvis');
+const Jarvis               = require('webpack-jarvis');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = {
@@ -9,6 +9,20 @@ module.exports = {
     config.plugins = config.plugins || [];
     config.plugins.push(new Jarvis({ port: 1337 }));
     config.plugins.push(new BundleAnalyzerPlugin());
+
+    config.module.rules.push({
+      test: /\.css$/, use: [{
+        loader : 'postcss-loader',
+        options: {
+          plugins: function () {
+            return [
+              require('postcss-import')(),
+              require("autoprefixer")()
+            ]
+          }
+        }
+      }]
+    });
 
     return config;
   },

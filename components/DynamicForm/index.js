@@ -6,12 +6,12 @@ import { Button, Card, Form } from 'antd';
 
 import {
   generateButton, generateCheckbox, generateDateTime, generateHidden, generateInput,
-  generateInputNumber, generatePlain, generateSwitch, generateTextArea,
+  generateInputNumber, generatePlain, generateRichTextEditor, generateSwitch, generateTextArea,
 } from './elements';
 
 import { createLogger } from '../../adapters/logger';
 
-const logger = createLogger('components:dynamic-form');
+const logger = createLogger('components:dynamic-form', ':*');
 
 // FIXME remove it
 export const buildForm = (form, definitions) => definitions.map((definition) => {
@@ -55,6 +55,7 @@ export const DynamicFormTypes = {
   TextArea   : 'TextArea',
   DateTime   : 'DateTime',
   Switch     : 'Switch',
+  RichText   : 'RichText',
 };
 
 export class DynamicForm2 extends React.Component {
@@ -84,7 +85,7 @@ export class DynamicForm2 extends React.Component {
 
     switch (field.type) {
       case DynamicFormTypes.Plain:
-        return generatePlain({ label: options.name, text: field.value });
+        return generatePlain({ key: index, label: options.name, text: field.value });
       case DynamicFormTypes.Input:
         return generateInput(form, options);
       case DynamicFormTypes.Checkbox:
@@ -101,13 +102,20 @@ export class DynamicForm2 extends React.Component {
         return generateDateTime(form, options);
       case DynamicFormTypes.Switch:
         return generateSwitch(form, options);
+      case DynamicFormTypes.RichText:
+        return generateRichTextEditor(form, options);
       default:
-        return <div>DynamicForm2 `{field.type}-{options.type}-{options.key}` not implemented.</div>;
+        return (
+          <div key={index}>
+            DynamicForm2 `{field.type}-{options.type}-{options.key}` not implemented.
+            <pre>{JSON.stringify(field)}</pre>
+          </div>
+        );
     }
   };
 
   buildFieldGroup = (fieldGroup, index) => {
-    logger.log('DynamicForm2 build field group', fieldGroup, 'group index is', index);
+    logger.info('DynamicForm2 build field group', fieldGroup, 'group index is', index);
     return (
       <div>
         <Card key={index}>
@@ -126,7 +134,7 @@ export class DynamicForm2 extends React.Component {
 
   render() {
     const { fields } = this.props;
-    logger.log('DynamicForm2 props is', this.props, 'fields is', fields);
+    logger.info('DynamicForm2 props is', this.props, 'fields is', fields);
 
     /*
         const fieldGroups = R.compose(

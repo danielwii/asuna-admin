@@ -1,7 +1,8 @@
 import * as R from 'ramda';
+import moment from 'moment';
 
 import { DynamicFormTypes } from '../components/DynamicForm';
-import { createLogger }           from '../adapters/logger';
+import { createLogger }     from '../adapters/logger';
 
 const logger = createLogger('adapters:models');
 

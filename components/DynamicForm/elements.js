@@ -6,9 +6,10 @@ import {
   TimePicker,
 } from 'antd';
 
+import { LzRichEditor } from './rich-editor';
 import { createLogger } from '../../adapters/logger';
 
-const logger = createLogger('components:dynamic-form:elements', '-components:dynamic-form:elements:*');
+const logger = createLogger('components:dynamic-form:elements', ':*');
 
 const defaultFormItemLayout = {
   // labelCol  : { offset: 0, span: 4 },
@@ -21,7 +22,7 @@ const defaultFormItemLayout = {
 // export const generate = (form, {
 //   key, name, label,
 // }, formItemLayout = defaultFormItemLayout) => {
-// //   logger.debug('generate', key, name);
+// //   logger.info('generate', key, name);
 //   const fieldName = key || name;
 //   const labelName = label || name || key;
 //   if (name) {
@@ -39,9 +40,9 @@ const defaultFormItemLayout = {
 // --------------------------------------------------------------
 
 // eslint-disable-next-line react/prop-types
-export const generatePlain = ({ label, text }, formItemLayout = defaultFormItemLayout) => {
-  logger.debug('generatePlain', label, text);
-  return <Form.Item {...formItemLayout} label={label}>{text}</Form.Item>;
+export const generatePlain = ({ key, label, text }, formItemLayout = defaultFormItemLayout) => {
+  logger.info('generatePlain', key, label, text);
+  return <Form.Item key={key || label} {...formItemLayout} label={label}>{text}</Form.Item>;
 };
 
 const generateComponent = (form,
@@ -60,7 +61,7 @@ const generateComponent = (form,
 };
 
 export const generateHidden = (form, { key, name }) => {
-  logger.debug('generateHidden', key, name);
+  logger.info('generateHidden', key, name);
   const fieldName = key || name;
   if (name) {
     return (
@@ -90,7 +91,7 @@ export const generateCheckbox = (form, {
 export const generateCheckbox2 = (form, {
   key, name, label,
 }, formItemLayout = defaultFormItemLayout) => {
-  logger.debug('generateCheckbox', key, name);
+  logger.info('generateCheckbox', key, name);
   const fieldName = key || name;
   if (name) {
     const decorator = form.getFieldDecorator(fieldName, {
@@ -113,7 +114,7 @@ export const generateCheckbox2 = (form, {
 export const generateButton = (form, {
   key, name, label, type, htmlType, onClick,
 }, formItemLayout = defaultFormItemLayout) => {
-  logger.debug('generateButton', key, name);
+  logger.info('generateButton', key, name);
   const fieldName = key || name;
   if (name) {
     return (
@@ -131,21 +132,18 @@ export const generateButton = (form, {
   return null;
 };
 
-// TODO wrap by generateComponent
 export const generateInputNumber = (form, {
   key, name, label,
 }, formItemLayout = defaultFormItemLayout) => {
-  logger.debug('generateInputNumber', key, name);
+  logger.info('generateInputNumber', key, name);
   const fieldName = key || name;
-  if (name) {
-    return (
-      <Form.Item key={fieldName} {...formItemLayout} label={label || name || key}>
-        <InputNumber />
-      </Form.Item>
-    );
-  }
-  logger.error('name is required in generateInputNumber');
-  return null;
+  const labelName = label || name || key;
+  return generateComponent(
+    form,
+    { fieldName, labelName },
+    <InputNumber />,
+    formItemLayout,
+  );
 };
 
 export const generateInput = (form, {
@@ -186,7 +184,6 @@ export const generateTextArea = (form, { key, name, label }, formItemLayout) => 
 };
 
 /**
- * TODO wrap by generateComponent
  * @param form
  * @param key
  * @param name
@@ -199,46 +196,58 @@ export const generateDateTime = (form, {
   key, name, label,
   mode = '',
 }, formItemLayout = defaultFormItemLayout) => {
-  logger.debug('generateDateTime', key, name);
+  logger.info('generateDateTime', key, name);
   const fieldName = key || name;
   const labelName = label || name || key;
 
-  if (name) {
-    let datePicker;
-    let timePicker;
-
-    if (mode === '' || mode === 'date') {
-      datePicker = <DatePicker />;
-    }
-
-    if (mode === '' || mode === 'time') {
-      timePicker = <TimePicker />;
-    }
-    return (
-      <Form.Item key={fieldName} {...formItemLayout} label={labelName}>
-        {datePicker}{timePicker}
-      </Form.Item>
+  if (mode === 'time') {
+    return generateComponent(
+      form, { fieldName, labelName }, (
+        <TimePicker />
+      ), formItemLayout,
+    );
+  } else if (mode === 'date') {
+    return generateComponent(
+      form, { fieldName, labelName }, (
+        <DatePicker />
+      ), formItemLayout,
     );
   }
-
-  logger.error('name is required in generateDateTime');
-  return null;
+  return generateComponent(
+    form, { fieldName, labelName }, (
+      <DatePicker showTime format="YYYY-MM-DD HH:mm:ss" />
+    ), formItemLayout,
+  );
 };
 
 // TODO wrap by generateComponent
 export const generateSwitch = (form, {
   key, name, label,
 }, formItemLayout = defaultFormItemLayout) => {
-  logger.debug('generateSwitch', key, name);
+  const fieldName = key || name;
+  const labelName = label || name || key;
+  return generateComponent(
+    form, { fieldName, labelName, rules: { valuePropName: 'checked' } }, (
+      <Switch />
+    ), formItemLayout,
+  );
+};
+
+export const generateRichTextEditor = (form, {
+  key, name, label,
+}, formItemLayout = defaultFormItemLayout) => {
+//   logger.info('generateRichTextEditor', key, name);
   const fieldName = key || name;
   const labelName = label || name || key;
   if (name) {
+    const decorator = form.getFieldDecorator(fieldName, {});
+    const decorated = decorator(<LzRichEditor />);
     return (
       <Form.Item key={fieldName} {...formItemLayout} label={labelName}>
-        <Switch />
+        {decorated}
       </Form.Item>
     );
   }
-  logger.error('name is required in generateSwitch');
+  logger.error('name is required in generateRichTextEditor');
   return null;
 };
