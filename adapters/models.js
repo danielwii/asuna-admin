@@ -1,5 +1,4 @@
 import * as R from 'ramda';
-import moment from 'moment';
 
 import { DynamicFormTypes } from '../components/DynamicForm';
 import { createLogger }     from '../adapters/logger';
@@ -7,8 +6,10 @@ import { createLogger }     from '../adapters/logger';
 const logger = createLogger('adapters:models');
 
 export const modelsProxy = {
-  modelConfigs: name => global.context.models.modelConfigs(name),
-  formFields  : (schema, name, values) => global.context.models.formSchema(schema, name, values),
+  getModelConfigs: name => global.context.models.getModelConfig(name),
+  // eslint-disable-next-line function-paren-newline
+  getFormFields  : (schemas, name, values) =>
+    global.context.models.getFormSchema(schemas, name, values),
 
   /**
    * load schema list
@@ -17,7 +18,9 @@ export const modelsProxy = {
    * @param data - { pagination, filters, sorter }
    * @returns {*}
    */
-  loadModels: ({ token }, { name }, data = {}) => global.context.models.loadModels({ token }, { name }, data),
+  // eslint-disable-next-line function-paren-newline
+  loadModels: ({ token }, { name }, data = {}) =>
+    global.context.models.loadModels({ token }, { name }, data),
 
   /**
    * load definition of schema
@@ -47,10 +50,10 @@ export const modelsProxy = {
 };
 
 export class ModelsAdapter {
-  constructor(service, modelsConfigs) {
-    this.service       = service;
-    this.allModels     = Object.keys(modelsConfigs);
-    this.modelsConfigs = modelsConfigs;
+  constructor(service, modelConfigs) {
+    this.service      = service;
+    this.allModels    = Object.keys(modelConfigs);
+    this.modelConfigs = modelConfigs;
   }
 
   identifyType = (name) => {
@@ -75,8 +78,26 @@ export class ModelsAdapter {
     return this.service.insert(config, modelName, data);
   };
 
-  modelConfigs = name => this.modelsConfigs[name];
-  formSchema   = (schema, name, values) => {
+  getModelConfig = (name) => {
+    if (this.modelConfigs && this.modelConfigs[name]) {
+      return this.modelConfigs[name];
+    }
+    logger.error(`'${name}' not found in`, this.modelConfigs);
+    return {};
+  };
+
+  getFormSchema = (schemas, name, values) => {
+    if (!schemas || !name) {
+      logger.error('schemas or name is required. schemas is', schemas, 'name is', name);
+      return {};
+    }
+    const schema = R.prop(name)(schemas);
+
+    if (!schema) {
+      logger.error('schema is required.');
+      return {};
+    }
+
     logger.log('schema is', schema, 'name is', name);
     return R.compose(
       R.mergeAll,

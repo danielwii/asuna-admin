@@ -30,7 +30,8 @@ global.context = _.assign(global.context, {
   auth    : new JwtAuthAdapter(authService),
   response: new PyResponseAdapter(),
   models  : new ModelsAdapter(modelsService, {
-    colleges: { table: tableColumns.colleges, model: modelColumns.colleges },
+    colleges : { table: tableColumns.colleges, model: modelColumns.colleges },
+    countries: { table: tableColumns.countries, model: modelColumns.countries },
   }),
   menu    : new MenuAdapter(menuService, [
     {
@@ -38,6 +39,7 @@ global.context = _.assign(global.context, {
       title   : '内容管理',
       subMenus: [
         { key: 'colleges', title: '院校管理', linkTo: 'content::index' },
+        { key: 'countries', title: '国家管理', linkTo: 'content::index' },
       ],
     },
   ]),

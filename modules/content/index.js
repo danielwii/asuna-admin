@@ -37,7 +37,7 @@ class ContentIndex extends React.Component {
 
     // content::name => name
     const model   = R.compose(R.nth(1), R.split(/::/), R.path(['pane', 'key']))(context);
-    const configs = modelsProxy.modelConfigs(model);
+    const configs = modelsProxy.getModelConfigs(model);
     const columns = R.prop('table')(configs)(actions);
 
     this.state = { model, columns };

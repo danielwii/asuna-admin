@@ -71,8 +71,8 @@ class ContentUpsert extends React.Component {
       dispatch(modelsActions.fetch(modelName, { id: record.id, profile: 'detail' }));
     }
 
-    const allFields = modelsProxy.formFields(schemas[modelName], modelName);
-    logger.info('--> form fields is', allFields);
+    const allFields = modelsProxy.getFormFields(schemas, modelName);
+    logger.info('form fields is', allFields);
 
     if (R.has('id')(allFields)) {
       allFields.id.type = DynamicFormTypes.Plain;
