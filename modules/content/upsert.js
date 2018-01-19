@@ -11,7 +11,7 @@ import { modelsProxy }                    from '../../adapters/models';
 import { createLogger }                   from '../../adapters/logger';
 import { modelsActions }                  from '../../store/models.redux';
 
-const logger = createLogger('modules:content:upsert', 1);
+const logger = createLogger('modules:content:upsert');
 
 // --------------------------------------------------------------
 // Build Form
@@ -102,10 +102,11 @@ class ContentUpsert extends React.Component {
   }
 
   shouldComponentUpdate(nextProps, nextState, nextContext: any): boolean {
-    logger.log('[lifecycle] shouldComponentUpdate...', nextProps, nextState, nextContext);
-    const { key }                                 = this.state;
-    const { context: { pane: { key: nextKey } } } = nextProps;
-    return key === nextKey;
+    logger.info('[lifecycle] shouldComponentUpdate...', nextProps, nextState, nextContext);
+    const { key }       = this.state;
+    const { activeKey } = nextProps;
+    logger.info('[lifecycle] shouldComponentUpdate', key, activeKey);
+    return key === activeKey;
   }
 
   /**
@@ -121,11 +122,17 @@ class ContentUpsert extends React.Component {
     logger.info('new fields is', fields);
     logger.info('new changedFieldsList is', changedFieldsList);
 
-    // const { onTitleChange } = this.props;
-    //
-    // const idValue   = R.path(['id', 'value'])(changedFieldsList);
-    // const nameValue = R.path(['name', 'value'])(changedFieldsList);
-    // onTitleChange(`${idValue},${nameValue}`);
+    /*
+        const { onTitleChange, title } = this.props;
+
+        const idValue   = R.path(['id', 'value'])(changedFieldsList);
+        const nameValue = R.path(['name', 'value'])(changedFieldsList);
+        const newTitle  = `${idValue},${nameValue}`;
+        console.log('title is', title, 'new title is', newTitle);
+        if (title !== newTitle && count-- > 0) {
+          onTitleChange(newTitle);
+        }
+    */
 
     this.setState({
       modelFields: { ...this.state.modelFields, ...changedFieldsList },

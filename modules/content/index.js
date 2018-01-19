@@ -11,7 +11,7 @@ import { modelsProxy }    from '../../adapters/models';
 import { responseProxy }  from '../../adapters/response';
 import { createLogger }   from '../../adapters/logger';
 
-const logger = createLogger('modules:content:index', 1);
+const logger = createLogger('modules:content:index');
 
 class ContentIndex extends React.Component {
   static propTypes = {
@@ -50,17 +50,12 @@ class ContentIndex extends React.Component {
     dispatch(contentActions.loadModels(modelName));
   }
 
-  componentWillMount() {
-    logger.log('[lifecycle] componentWillMount...');
-  }
-
-  shouldComponentUpdate(nextProps, nextState, nextContext) {
-    logger.log('[lifecycle] shouldComponentUpdate...', nextProps, nextState, nextContext);
-    return true;
-  }
-
-  componentWillUpdate(nextProps, nextState, nextContext) {
-    logger.log('[lifecycle] componentWillUpdate::nextProps is', nextProps, 'nextState is', nextState, 'nextContext is', nextContext);
+  shouldComponentUpdate(nextProps, nextState, nextContext: any): boolean {
+    logger.info('[lifecycle] shouldComponentUpdate...', nextProps, nextState, nextContext);
+    const { key }       = this.state;
+    const { activeKey } = nextProps;
+    logger.info('[lifecycle] shouldComponentUpdate', key, activeKey);
+    return key === activeKey;
   }
 
   create = () => {

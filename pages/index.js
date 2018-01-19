@@ -45,7 +45,7 @@ global.context = _.assign(global.context, {
   ]),
 });
 
-logger.log('2--> global context is', global.context);
+logger.info('global context is', global.context);
 
 // --------------------------------------------------------------
 // Define main app dynamic loader
@@ -64,7 +64,7 @@ const DynamicMainLayoutLoading = dynamic(
 
 class Index extends React.Component {
   componentWillMount() {
-    logger.log('componentWillMount...');
+    logger.info('componentWillMount...');
     const { dispatch } = this.props;
     dispatch(menuActions.init());
     dispatch(modelsActions.loadAllSchemas());

@@ -19,7 +19,7 @@ export default dynamic({
     logger.log('looking for module', module);
 
     if (_.has(components, module)) {
-      logger.log('module includes in components', components);
+      logger.info('module includes in components', components);
       return { Component: components[module] };
     }
 

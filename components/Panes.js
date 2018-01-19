@@ -1,6 +1,7 @@
 import React     from 'react';
 import PropTypes from 'prop-types';
 import _         from 'lodash';
+import * as R    from 'ramda';
 
 import { Tabs } from 'antd';
 
@@ -29,8 +30,9 @@ class Panes extends React.Component {
 
   constructor(props) {
     super(props);
-
-    this.onEdit = this.onEdit.bind(this);
+    this.state = {
+      titles: {},
+    };
   }
 
   onEdit = (targetKey, action) => {
@@ -41,19 +43,23 @@ class Panes extends React.Component {
     }
   };
 
-  onTitleChange = (key, title) => {
-    logger.log('onTitleChange', key, title);
-    if (key && title) {
-      this.setState({ [key]: title });
+  onTitleChange = (key, newTitle) => {
+    logger.log('onTitleChange', key, newTitle);
+    if (key && newTitle) {
+      this.setState(R.mergeDeepRight(this.state, { titles: { [key]: newTitle } }));
     }
   };
 
   render() {
+    const { titles } = this.state;
+
     const { activeKey, panes, onActive } = this.props;
 
     if (!activeKey) {
       return <div>^_^ - panes</div>;
     }
+
+    const title = titles[activeKey];
 
     return (
       <div>
@@ -66,11 +72,12 @@ class Panes extends React.Component {
         >
           {_.map(panes, pane => (
             <TabPane tab={pane.title} key={pane.key}>
-              {activeKey} - {pane.key}
+              {activeKey} - {pane.key} - {title}
               <ModulesLoader
                 module={pane.linkTo || pane.key}
+                activeKey={activeKey}
                 context={{ pane }}
-                onTitleChange={title => this.onTitleChange(activeKey, title)}
+                onTitleChange={newTitle => this.onTitleChange(activeKey, newTitle)}
               />
             </TabPane>
           ))}
