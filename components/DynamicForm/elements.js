@@ -9,7 +9,7 @@ import {
 import { LzRichEditor } from './rich-editor';
 import { createLogger } from '../../adapters/logger';
 
-const logger = createLogger('components:dynamic-form:elements', ':*');
+const logger = createLogger('components:dynamic_form:elements');
 
 const defaultFormItemLayout = {
   // labelCol  : { offset: 0, span: 4 },

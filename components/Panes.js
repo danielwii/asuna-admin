@@ -4,7 +4,10 @@ import _         from 'lodash';
 
 import { Tabs } from 'antd';
 
-import ModulesLoader from '../modules';
+import { createLogger } from '../adapters/logger';
+import ModulesLoader    from '../modules';
+
+const logger = createLogger('components:panes');
 
 const { TabPane } = Tabs;
 
@@ -32,14 +35,17 @@ class Panes extends React.Component {
 
   onEdit = (targetKey, action) => {
     const { onClose } = this.props;
-    console.log('targetKey is', targetKey, 'action is', action);
+    logger.log('targetKey is', targetKey, 'action is', action);
     if (action === 'remove') {
       onClose(targetKey);
     }
   };
 
   onTitleChange = (key, title) => {
-    console.log('onTitleChange', key, title);
+    logger.log('onTitleChange', key, title);
+    if (key && title) {
+      this.setState({ [key]: title });
+    }
   };
 
   render() {
@@ -48,9 +54,6 @@ class Panes extends React.Component {
     if (!activeKey) {
       return <div>^_^ - panes</div>;
     }
-
-    const current = _.find(panes, pane => pane.key === activeKey);
-    const module  = current.linkTo || activeKey;
 
     return (
       <div>
@@ -63,16 +66,15 @@ class Panes extends React.Component {
         >
           {_.map(panes, pane => (
             <TabPane tab={pane.title} key={pane.key}>
-              {/* {activeKey} - {pane.key} */}
-              {/* <pre>{JSON.stringify(pane, null, 2)}</pre> */}
+              {activeKey} - {pane.key}
+              <ModulesLoader
+                module={pane.linkTo || pane.key}
+                context={{ pane }}
+                onTitleChange={title => this.onTitleChange(activeKey, title)}
+              />
             </TabPane>
           ))}
         </Tabs>
-        <ModulesLoader
-          module={module}
-          context={{ pane: current }}
-          onTitleChange={title => this.onTitleChange(activeKey, title)}
-        />
       </div>
     );
   }

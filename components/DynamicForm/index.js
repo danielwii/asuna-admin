@@ -11,7 +11,7 @@ import {
 
 import { createLogger } from '../../adapters/logger';
 
-const logger = createLogger('components:dynamic-form', ':*');
+const logger = createLogger('components:dynamic_form');
 
 // FIXME remove it
 export const buildForm = (form, definitions) => definitions.map((definition) => {

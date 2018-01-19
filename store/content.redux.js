@@ -1,10 +1,11 @@
 import { call, put, select, takeLatest } from 'redux-saga/effects';
 
+import * as R          from 'ramda';
 import { reduxAction } from 'node-buffs';
 
 import { notificationsActions, notificationTypes } from '../store/notifications.redux';
 
-import { modelsProxy } from '../adapters/models';
+import { modelsProxy }  from '../adapters/models';
 import { createLogger } from '../adapters/logger';
 
 const logger = createLogger('store:content');
@@ -15,9 +16,9 @@ const logger = createLogger('store:content');
 
 const actionTypes = {
   // ACTION: 'module::action'
-  CONTENT_LOAD_MODELS        : 'content::load-model',
-  CONTENT_LOAD_MODELS_FAILED : 'content::load-model-failed',
-  CONTENT_LOAD_MODELS_SUCCESS: 'content::load-model-success',
+  CONTENT_LOAD_MODELS        : 'content::load-models',
+  CONTENT_LOAD_MODELS_FAILED : 'content::load-models-failed',
+  CONTENT_LOAD_MODELS_SUCCESS: 'content::load-models-success',
 };
 
 const isCurrent = type => type.startsWith('content::');
@@ -72,6 +73,8 @@ const initialState = {};
 const reducer = (previousState = initialState, action) => {
   if (isCurrent(action.type)) {
     switch (action.type) {
+      case actionTypes.CONTENT_LOAD_MODELS_SUCCESS:
+        return R.mergeDeepRight(previousState, action.payload);
       default:
         return { ...previousState, ...action.payload };
     }

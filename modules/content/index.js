@@ -9,9 +9,9 @@ import { panesActions }   from '../../store/panes.redux';
 import { contentActions } from '../../store/content.redux';
 import { modelsProxy }    from '../../adapters/models';
 import { responseProxy }  from '../../adapters/response';
-import { createLogger }         from '../../adapters/logger';
+import { createLogger }   from '../../adapters/logger';
 
-const logger = createLogger('modules:content:index');
+const logger = createLogger('modules:content:index', 1);
 
 class ContentIndex extends React.Component {
   static propTypes = {
@@ -28,6 +28,8 @@ class ContentIndex extends React.Component {
 
     const { dispatch, context } = this.props;
 
+    logger.info('context is', context);
+
     const actions = (text, record) => (
       <span>
         <Button size="small" type="dashed" onClick={() => this.edit(text, record)}>Edit</Button>
@@ -36,14 +38,29 @@ class ContentIndex extends React.Component {
     );
 
     // content::name => name
-    const model   = R.compose(R.nth(1), R.split(/::/), R.path(['pane', 'key']))(context);
-    const configs = modelsProxy.getModelConfigs(model);
+    const modelName = R.compose(R.nth(1), R.split(/::/), R.path(['pane', 'key']))(context);
+    const configs   = modelsProxy.getModelConfigs(modelName);
+    logger.info('load table from configs', configs, 'by', modelName);
+
     const columns = R.prop('table')(configs)(actions);
 
-    this.state = { model, columns };
+    this.state = { modelName, columns };
 
-    logger.log('current model is', model);
-    dispatch(contentActions.loadModels(model));
+    logger.log('current modelName is', modelName);
+    dispatch(contentActions.loadModels(modelName));
+  }
+
+  componentWillMount() {
+    logger.log('[lifecycle] componentWillMount...');
+  }
+
+  shouldComponentUpdate(nextProps, nextState, nextContext) {
+    logger.log('[lifecycle] shouldComponentUpdate...', nextProps, nextState, nextContext);
+    return true;
+  }
+
+  componentWillUpdate(nextProps, nextState, nextContext) {
+    logger.log('[lifecycle] componentWillUpdate::nextProps is', nextProps, 'nextState is', nextState, 'nextContext is', nextContext);
   }
 
   create = () => {
@@ -58,35 +75,36 @@ class ContentIndex extends React.Component {
 
   edit = (text, record) => {
     logger.log('edit', record);
-    const { model }    = this.state;
-    const { dispatch } = this.props;
+    const { modelName } = this.state;
+    const { dispatch }  = this.props;
     dispatch(panesActions.open({
-      key   : `content::upsert::${model}::${Date.now()}`,
+      key   : `content::upsert::${modelName}::${record.id}`,
       title : '更新',
       linkTo: 'content::upsert',
-      data  : { model, record },
+      data  : { modelName, record },
     }));
   };
 
   handleTableChange = (pagination, filters, sorter) => {
-    console.log(pagination, filters, sorter);
+    logger.info(pagination, filters, sorter);
     const { model }    = this.state;
     const { dispatch } = this.props;
     dispatch(contentActions.loadModels(model, { pagination, filters, sorter }));
   };
 
   render() {
-    const { model, columns }  = this.state;
-    const { context, models } = this.props;
+    const { modelName, columns } = this.state;
+    const { context, models }    = this.props;
 
     // const dataSource = _.get(models, `${model}.data`, []);
-    const response = R.pathOr([], [model, 'data'])(models);
+    const response = R.pathOr([], [modelName, 'data'])(models);
 
     const { items: dataSource, pagination } = responseProxy.extract(response);
 
-    logger.log('dataSource is', dataSource);
-    logger.log('columns is', columns);
-    logger.log('pagination is', pagination);
+    logger.info('models is', models);
+    logger.info('dataSource is', dataSource);
+    logger.info('columns is', columns);
+    logger.info('pagination is', pagination);
 
     return (
       <div>

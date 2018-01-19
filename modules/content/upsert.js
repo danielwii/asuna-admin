@@ -11,7 +11,7 @@ import { modelsProxy }                    from '../../adapters/models';
 import { createLogger }                   from '../../adapters/logger';
 import { modelsActions }                  from '../../store/models.redux';
 
-const logger = createLogger('modules:content:upsert', ':*');
+const logger = createLogger('modules:content:upsert', 1);
 
 // --------------------------------------------------------------
 // Build Form
@@ -63,6 +63,7 @@ class ContentUpsert extends React.Component {
 
     // content::create::name::timestamp => name
     const modelName = R.compose(R.nth(2), R.split(/::/), R.path(['pane', 'key']))(context);
+    logger.info('model name is ', modelName);
 
     const record = R.path(['pane', 'data', 'record'])(context);
     if (record) {
@@ -84,11 +85,12 @@ class ContentUpsert extends React.Component {
       isInsertMode,
       modelName,
       modelFields: formFields,
+      key        : context.pane.key,
     };
   }
 
   componentWillReceiveProps(nextProps) {
-    logger.info('call componentWillReceiveProps...');
+    logger.info('[lifecycle] componentWillReceiveProps...');
     const { isInsertMode, modelName } = this.state;
     if (!isInsertMode) {
       const { models, context: { pane: { data: { record } } } } = nextProps;
@@ -97,6 +99,13 @@ class ContentUpsert extends React.Component {
       logger.info('field values is', fieldValues);
       this.handleFormChange(R.map(value => ({ value }))(fieldValues));
     }
+  }
+
+  shouldComponentUpdate(nextProps, nextState, nextContext: any): boolean {
+    logger.log('[lifecycle] shouldComponentUpdate...', nextProps, nextState, nextContext);
+    const { key }                                 = this.state;
+    const { context: { pane: { key: nextKey } } } = nextProps;
+    return key === nextKey;
   }
 
   /**
@@ -111,6 +120,12 @@ class ContentUpsert extends React.Component {
     logger.info('modelFields is', this.state.modelFields);
     logger.info('new fields is', fields);
     logger.info('new changedFieldsList is', changedFieldsList);
+
+    // const { onTitleChange } = this.props;
+    //
+    // const idValue   = R.path(['id', 'value'])(changedFieldsList);
+    // const nameValue = R.path(['name', 'value'])(changedFieldsList);
+    // onTitleChange(`${idValue},${nameValue}`);
 
     this.setState({
       modelFields: { ...this.state.modelFields, ...changedFieldsList },

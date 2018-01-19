@@ -2,8 +2,10 @@ import React from 'react';
 
 import { Button, Form, Icon, Input } from 'antd';
 
-import { authActions } from '../store/auth.redux';
+import { authActions }  from '../store/auth.redux';
+import { createLogger } from '../adapters/logger';
 
+const logger = createLogger('components:login');
 
 // TODO using DynamicForm's component instead
 function generateInput(form, name, required, message, placeholder, iconType) {
@@ -20,10 +22,10 @@ function generateInput(form, name, required, message, placeholder, iconType) {
 class NormalLoginForm extends React.Component {
   handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Dispatch is', this.props.dispatch);
+    logger.log('Dispatch is', this.props.dispatch);
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        console.log('Received values of form: ', values);
+        logger.log('Received values of form: ', values);
         const { username, password } = values;
         this.props.dispatch(authActions.login(username, password));
       }

@@ -130,7 +130,12 @@ const reducer = (previousState = initialState, action) => {
         const models = R.mergeDeepRight(previousState.models, {
           [modelName]: { [response.id]: response },
         });
-        return { ...previousState, models };
+        // return { ...previousState, models };
+        return R.mergeDeepRight(previousState, {
+          models: {
+            [modelName]: { [response.id]: response },
+          },
+        });
       }
       default:
         return { ...previousState, ...action.payload };

@@ -12,11 +12,11 @@ import * as authService  from '../services/auth';
 import { modelsService } from '../services/models';
 import { menuService }   from '../services/menu';
 
-import { JwtAuthAdapter }          from '../adapters/auth';
-import { ModelsAdapter }           from '../adapters/models';
-import { MenuAdapter }             from '../adapters/menu';
-import { PyResponseAdapter }       from '../adapters/response';
-import { createLogger, initDebug } from '../adapters/logger';
+import { JwtAuthAdapter }    from '../adapters/auth';
+import { ModelsAdapter }     from '../adapters/models';
+import { MenuAdapter }       from '../adapters/menu';
+import { PyResponseAdapter } from '../adapters/response';
+import { createLogger }      from '../adapters/logger';
 
 import { modelColumns, tableColumns } from '../services/definations';
 
@@ -68,11 +68,6 @@ class Index extends React.Component {
     const { dispatch } = this.props;
     dispatch(menuActions.init());
     dispatch(modelsActions.loadAllSchemas());
-  }
-
-
-  componentDidMount(): void {
-    initDebug();
   }
 
   render() {
