@@ -70,3 +70,19 @@ export const modelColumns = {
     actions,
   }),
 };
+
+export const modelConfigs = {
+  colleges : { table: tableColumns.colleges, model: modelColumns.colleges },
+  countries: { table: tableColumns.countries, model: modelColumns.countries },
+};
+
+export const registeredModels = [
+  {
+    key     : 'content',
+    title   : '内容管理',
+    subMenus: [
+      { key: 'colleges', title: '院校管理', linkTo: 'content::index' },
+      { key: 'countries', title: '国家管理', linkTo: 'content::index' },
+    ],
+  },
+];

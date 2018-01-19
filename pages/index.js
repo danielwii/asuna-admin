@@ -18,7 +18,7 @@ import { MenuAdapter }       from '../adapters/menu';
 import { PyResponseAdapter } from '../adapters/response';
 import { createLogger }      from '../adapters/logger';
 
-import { modelColumns, tableColumns } from '../services/definations';
+import { modelConfigs, registeredModels } from '../services/definations';
 
 const logger = createLogger('pages:index');
 
@@ -29,20 +29,8 @@ const logger = createLogger('pages:index');
 global.context = _.assign(global.context, {
   auth    : new JwtAuthAdapter(authService),
   response: new PyResponseAdapter(),
-  models  : new ModelsAdapter(modelsService, {
-    colleges : { table: tableColumns.colleges, model: modelColumns.colleges },
-    countries: { table: tableColumns.countries, model: modelColumns.countries },
-  }),
-  menu    : new MenuAdapter(menuService, [
-    {
-      key     : 'content',
-      title   : '内容管理',
-      subMenus: [
-        { key: 'colleges', title: '院校管理', linkTo: 'content::index' },
-        { key: 'countries', title: '国家管理', linkTo: 'content::index' },
-      ],
-    },
-  ]),
+  models  : new ModelsAdapter(modelsService, modelConfigs),
+  menu    : new MenuAdapter(menuService, registeredModels),
 });
 
 logger.info('global context is', global.context);
