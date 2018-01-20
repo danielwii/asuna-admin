@@ -1,5 +1,9 @@
+/* eslint-disable max-len */
 import moment from 'moment';
 
+/**
+ * 通用配置
+ */
 const commonColumns = {
   id       : {
     title    : 'ID',
@@ -25,6 +29,10 @@ const commonColumns = {
   }),
 };
 
+/**
+ * 模型列表页配置
+ * @type {{colleges: function(*=): *[], countries: function(*=): *[]}}
+ */
 export const tableColumns = {
   colleges : actions => [
     commonColumns.id,
@@ -60,22 +68,34 @@ export const tableColumns = {
   ],
 };
 
+/**
+ * 模型新增 / 编辑页面配置
+ */
 export const modelColumns = {
-  colleges : (fields, actions) => ({
-    fields: {},
-    actions,
-  }),
-  countries: (fields, actions) => ({
-    fields: {},
-    actions,
-  }),
+  colleges : {
+    associations: {
+      countries: ['id', 'name'],
+    },
+  },
+  countries: {
+    associations: {
+      countries: ['id', 'name_en'],
+    },
+  },
 };
 
+/**
+ * 关联模型配置
+ */
 export const modelConfigs = {
   colleges : { table: tableColumns.colleges, model: modelColumns.colleges },
   countries: { table: tableColumns.countries, model: modelColumns.countries },
 };
 
+/**
+ * 定义左侧导航条
+ * @type {*[]}
+ */
 export const registeredModels = [
   {
     key     : 'content',

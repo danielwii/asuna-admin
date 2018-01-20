@@ -3,15 +3,15 @@ import PropTypes   from 'prop-types';
 import { connect } from 'react-redux';
 import * as R      from 'ramda';
 import moment      from 'moment';
-
-import { Form } from 'antd';
+import { Form }    from 'antd';
 
 import { DynamicForm2, DynamicFormTypes } from '../../components/DynamicForm';
 import { modelsProxy }                    from '../../adapters/models';
 import { createLogger }                   from '../../adapters/logger';
 import { modelsActions }                  from '../../store/models.redux';
+// import { Promise } from 'bluebird';
 
-const logger = createLogger('modules:content:upsert');
+const logger = createLogger('modules:content:upsert', 1);
 
 // --------------------------------------------------------------
 // Build Form
@@ -57,36 +57,45 @@ class ContentUpsert extends React.Component {
   constructor(props) {
     super(props);
 
-    const { dispatch, context, schemas } = this.props;
-
-    let isInsertMode = true;
+    const { context } = this.props;
 
     // content::create::name::timestamp => name
     const modelName = R.compose(R.nth(2), R.split(/::/), R.path(['pane', 'key']))(context);
     logger.info('model name is ', modelName);
 
-    const record = R.path(['pane', 'data', 'record'])(context);
-    if (record) {
-      logger.info('update mode...');
-      isInsertMode = false;
-      dispatch(modelsActions.fetch(modelName, { id: record.id, profile: 'detail' }));
-    }
-
-    const allFields = modelsProxy.getFormFields(schemas, modelName);
-    logger.info('form fields is', allFields);
-
-    if (R.has('id')(allFields)) {
-      allFields.id.type = DynamicFormTypes.Plain;
-    }
-
-    const formFields = R.omit(['created_at', 'updated_at'])(allFields);
+    const isInsertMode = this.detectUpsertMode(modelName);
 
     this.state = {
       isInsertMode,
       modelName,
-      modelFields: formFields,
+      modelFields: [],
       key        : context.pane.key,
     };
+  }
+
+
+  async componentWillMount(): void {
+    const { context, schemas } = this.props;
+
+    // content::create::name::timestamp => name
+    const modelName = R.compose(R.nth(2), R.split(/::/), R.path(['pane', 'key']))(context);
+    logger.info('model name is ', modelName);
+
+    const allFields     = modelsProxy.getFormFields(schemas, modelName);
+    const wrappedFields = await this.asyncWrapAssociations(allFields);
+
+    logger.log('===> async componentDidMount wrappedFields is', wrappedFields);
+
+    const formFields = R.omit(
+      ['created_at', 'updated_at'],
+      R.mergeDeepRight(allFields, wrappedFields),
+    );
+
+    logger.log('form fields is', formFields);
+
+    this.setState({
+      modelFields: formFields,
+    });
   }
 
   componentWillReceiveProps(nextProps) {
@@ -108,6 +117,57 @@ class ContentUpsert extends React.Component {
     logger.info('[lifecycle] shouldComponentUpdate', key, activeKey);
     return key === activeKey;
   }
+
+  detectUpsertMode = (modelName) => {
+    const { dispatch, context } = this.props;
+
+    const record = R.path(['pane', 'data', 'record'])(context);
+    if (record) {
+      logger.info('update mode...');
+      dispatch(modelsActions.fetch(modelName, { id: record.id, profile: 'detail' }));
+      return false;
+    }
+    return true;
+  };
+
+  asyncWrapAssociations = async (fields) => {
+    const { auth: { token } } = this.props;
+
+    const associations = R.filter(field => field.type === DynamicFormTypes.Association)(fields);
+    logger.info('associations is', associations);
+
+    const wrappedAssociations = await Promise.all(R.values(associations).map(async (field) => {
+      const foreignKeys = R.pathOr([], ['options', 'foreignKeys'])(field);
+      logger.log('handle field', field, foreignKeys);
+      if (foreignKeys && foreignKeys.length > 0) {
+        const foreignOpts = R.map((foreignKey) => {
+          const [, modelName, property] = foreignKey.match(/t_(\w+)\.(\w+)/);
+          return { modelName, property };
+        })(foreignKeys);
+        logger.info('foreignOpts is', foreignOpts);
+
+        const associationNames = R.pluck('modelName')(foreignOpts);
+        logger.info('associationNames is', associationNames);
+
+        const effects = modelsProxy.listAssociationsCallable({ token }, associationNames);
+        logger.info('list associations callable', effects);
+
+        const allResponse = await Promise.all(R.values(effects));
+        logger.info('allResponse is', allResponse);
+
+        const foreignKeysResponse = R.zipObj(associationNames, R.map(R.prop('data'), allResponse));
+        logger.log('foreignOpts is', foreignOpts, 'foreignKeysResponse is', foreignKeysResponse);
+
+        return { ...field, foreignOpts, associations: foreignKeysResponse };
+      }
+      logger.warn('no foreignKeys with association', field);
+      return { ...field, type: DynamicFormTypes.Input };
+    }));
+
+    const pairedWrappedAssociations = R.zipObj(R.keys(associations), wrappedAssociations);
+    logger.log('wrapped associations', pairedWrappedAssociations);
+    return pairedWrappedAssociations;
+  };
 
   /**
    * Saving changed field values in props
@@ -157,6 +217,10 @@ class ContentUpsert extends React.Component {
 
     logger.log('modelFields is ', modelFields);
 
+    if (!modelFields) {
+      return <div>loading...</div>;
+    }
+
     return (
       <div>
         <h1>hello, kitty. ^_^</h1>
@@ -175,6 +239,6 @@ class ContentUpsert extends React.Component {
   }
 }
 
-const mapStateToProps = state => ({ ...state.models });
+const mapStateToProps = state => ({ ...state.models, auth: state.auth });
 
 export default connect(mapStateToProps)(ContentUpsert);

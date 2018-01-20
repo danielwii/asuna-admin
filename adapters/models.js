@@ -19,8 +19,8 @@ export const modelsProxy = {
    * @returns {*}
    */
   // eslint-disable-next-line function-paren-newline
-  loadModels: ({ token }, { name }, data = {}) =>
-    global.context.models.loadModels({ token }, { name }, data),
+  loadModels: ({ token }, name, data = {}) =>
+    global.context.models.loadModels({ token }, name, data),
 
   /**
    * load definition of schema
@@ -35,18 +35,21 @@ export const modelsProxy = {
    * @param token
    * @returns {*}
    */
-  loadAllSchemas: ({ token }) => global.context.models.loadAllSchemas({ token }),
+  listSchemasCallable: ({ token }) => global.context.models.listSchemasCallable({ token }),
 
-  fetch: (config, modelName, data) => global.context.models.fetch(config, modelName, data),
+  listAssociationsCallable: ({ token }, associationNames) =>
+    global.context.models.listAssociationsCallable({ token }, associationNames),
+
+  fetch: ({ token }, modelName, data) => global.context.models.fetch({ token }, modelName, data),
 
   /**
    * update model if id exists in body, insert new one or else.
-   * @param config     - { token }
+   * @param {token}    - { token }
    * @param modelName  - model name
    * @param data       - model body
    * @returns {*}
    */
-  upsert: (config, modelName, data) => global.context.models.upsert(config, modelName, data),
+  upsert: ({ token }, modelName, data) => global.context.models.upsert({ token }, modelName, data),
 };
 
 export class ModelsAdapter {
@@ -56,15 +59,24 @@ export class ModelsAdapter {
     this.modelConfigs = modelConfigs;
   }
 
-  identifyType = (name) => {
-    if (/VARCHAR.+/.test(name)) return DynamicFormTypes.Input;
-    if (/INTEGER|FLOAT/.test(name)) return DynamicFormTypes.InputNumber;
-    if (/TEXT/.test(name)) return DynamicFormTypes.TextArea;
-    if (/DATETIME/.test(name)) return DynamicFormTypes.DateTime;
-    if (/BOOLEAN/.test(name)) return DynamicFormTypes.Switch;
+  identifyType = (field) => {
+    const type = R.path(['config', 'type'])(field);
+    if (field.name in ['id', 'created_at', 'updated_at']) {
+      return DynamicFormTypes.Plain;
+    }
 
-    logger.warn('type', name, 'cannot identified.');
-    return name;
+    if (R.endsWith('_id')(field.name)) {
+      return DynamicFormTypes.Association;
+    }
+
+    if (/VARCHAR.+/.test(type)) return DynamicFormTypes.Input;
+    if (/INTEGER|FLOAT/.test(type)) return DynamicFormTypes.InputNumber;
+    if (/TEXT/.test(type)) return DynamicFormTypes.TextArea;
+    if (/DATETIME/.test(type)) return DynamicFormTypes.DateTime;
+    if (/BOOLEAN/.test(type)) return DynamicFormTypes.Switch;
+
+    logger.warn('type', type, 'cannot identified.');
+    return type;
   };
 
   fetch = (config, modelName, data) => this.service.fetch(config, modelName, data);
@@ -104,21 +116,40 @@ export class ModelsAdapter {
       R.map(formatted => ({ [formatted.name]: formatted })),
       R.map(field => ({
         name   : field.name,
-        type   : this.identifyType(R.path(['config', 'type'])(field)),
-        options: { label: R.path(['config', 'info', 'name'])(field) },
+        type   : this.identifyType(field),
+        options: {
+          label      : R.path(['config', 'info', 'name'])(field),
+          foreignKeys: R.path(['config', 'foreign_keys'])(field),
+        },
         value  : R.prop(field.name)(values),
       })),
     )(schema);
   };
 
-  loadModels = ({ token }, { name }, { pagination = {}, filters, sorter }) => {
+  loadModels = ({ token }, name, { pagination = {}, filters, sorter }) => {
     const { current: page, pageSize: size } = pagination;
-    return this.service.loadModels({ token }, { name }, { pagination: { page, size } });
+    return this.service.loadModels({ token }, name, { pagination: { page, size } });
   };
 
-  loadSchema = ({ token }, { name }) => this.service.loadSchema({ token }, { name });
+  loadAssociation = ({ token }, associationName) => {
+    const associationsFields = R.compose(
+      R.map(R.uniq),
+      R.reduce(R.mergeDeepWith(R.concat), {}),
+      R.values,
+      R.map(R.path(['model', 'associations'])),
+    )(this.modelConfigs);
+    logger.log('associationsFields is', associationsFields, associationName);
+    const associationFields = associationsFields[associationName];
+    return this.service.loadAssociation({ token }, associationName, { fields: associationFields });
+  };
 
   // eslint-disable-next-line function-paren-newline
-  loadAllSchemas = ({ token }) => Object.assign(
-    ...this.allModels.map(name => ({ [name]: this.loadSchema({ token }, { name }) })))
+  listAssociationsCallable = ({ token }, associationNames) => Object.assign(
+    ...associationNames.map(name => ({ [name]: this.loadAssociation({ token }, name) })));
+
+  loadSchema = ({ token }, name) => this.service.loadSchema({ token }, name);
+
+  // eslint-disable-next-line function-paren-newline
+  listSchemasCallable = ({ token }) => Object.assign(
+    ...this.allModels.map(name => ({ [name]: this.loadSchema({ token }, name) })))
 }

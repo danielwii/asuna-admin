@@ -5,8 +5,9 @@ import _         from 'lodash';
 import { Button, Card, Form } from 'antd';
 
 import {
-  generateButton, generateCheckbox, generateDateTime, generateHidden, generateInput,
-  generateInputNumber, generatePlain, generateRichTextEditor, generateSwitch, generateTextArea,
+  generateAssociation, generateButton, generateCheckbox, generateDateTime, generateHidden,
+  generateInput, generateInputNumber, generatePlain, generateRichTextEditor, generateSwitch,
+  generateTextArea,
 } from './elements';
 
 import { createLogger } from '../../adapters/logger';
@@ -56,6 +57,7 @@ export const DynamicFormTypes = {
   DateTime   : 'DateTime',
   Switch     : 'Switch',
   RichText   : 'RichText',
+  Association: 'Association',
 };
 
 export class DynamicForm2 extends React.Component {
@@ -104,6 +106,10 @@ export class DynamicForm2 extends React.Component {
         return generateSwitch(form, options);
       case DynamicFormTypes.RichText:
         return generateRichTextEditor(form, options);
+      case DynamicFormTypes.Association: {
+        logger.log('DynamicForm2 build field', field, 'field index is', index, 'option is', options);
+        return generateAssociation(form, options);
+      }
       default:
         return (
           <div key={index}>

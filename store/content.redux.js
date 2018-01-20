@@ -47,7 +47,7 @@ function* loadModels({ payload: { name, data } }) {
     yield put(notificationsActions.notify(`load content '${name}'...`));
     try {
       logger.log('modelsProxy is', modelsProxy);
-      const response = yield call(modelsProxy.loadModels, { token }, { name }, data);
+      const response = yield call(modelsProxy.loadModels, { token }, name, data);
       yield put(notificationsActions.notify(`load content '${name}' success`, notificationTypes.SUCCESS));
       yield put(actions.loadModelsSuccess({ [name]: { data: response.data } }));
       logger.log('load content', name, response.data);

@@ -1,8 +1,8 @@
 import { all, call, put, select, takeLatest } from 'redux-saga/effects';
 
 import { reduxAction } from 'node-buffs';
-import _               from 'lodash';
 import * as R          from 'ramda';
+import _               from 'lodash';
 
 import { notificationsActions, notificationTypes } from '../store/notifications.redux';
 
@@ -32,11 +32,10 @@ const isCurrent = type => type.startsWith('models::');
 
 const actions = {
   // action: (args) => ({ type, payload })
-  fetch       : (modelName, data) => reduxAction(actionTypes.FETCH, { modelName, data }),
-  fetchSuccess: (modelName, response) => reduxAction(actionTypes.FETCH_SUCCESS, {
-    modelName,
-    response,
-  }),
+  fetch       : (modelName, data) =>
+    reduxAction(actionTypes.FETCH, { modelName, data }),
+  fetchSuccess: (modelName, response) =>
+    reduxAction(actionTypes.FETCH_SUCCESS, { modelName, response }),
 
   upsert: (modelName, data) => reduxAction(actionTypes.UPSERT, { modelName, data }),
 
@@ -50,6 +49,23 @@ const actions = {
 //   yield call; yield puy({ type: actionType, payload: {} })
 // }
 // --------------------------------------------------------------
+
+// function* loadAssociations({ payload: { associationNames } }) {
+//   const { token } = yield select(state => state.auth);
+//   if (token) {
+//     const effects     = modelsProxy.listAssociationsCallable({ token }, associationNames);
+//     const allResponse = yield all(effects);
+//
+//     logger.log('allResponse is', allResponse);
+//
+//     // eslint-disable-next-line function-paren-newline
+//     const associations = Object.assign(..._.map(
+//       allResponse,
+//       (response, name) => ({ [name]: response.data }),
+//     ));
+//     logger.log('associations is', associations);
+//   }
+// }
 
 function* fetch({ payload: { modelName, data } }) {
   const { token } = yield select(state => state.auth);
@@ -90,8 +106,10 @@ function* loadAllSchemasSaga() {
   if (token) {
     yield put(notificationsActions.notify('load all options...'));
     try {
-      const effects     = modelsProxy.loadAllSchemas({ token });
+      const effects     = modelsProxy.listSchemasCallable({ token });
       const allResponse = yield all(effects);
+
+      logger.log('allResponse is', allResponse);
 
       const schemas = Object.assign(..._.map(
         allResponse,
@@ -109,6 +127,7 @@ function* loadAllSchemasSaga() {
 
 const sagas = [
   // takeLatest / takeEvery (actionType, actionSage)
+  // takeLatest(actionTypes.LOAD_ASSOCIATIONS, loadAssociations),
   takeLatest(actionTypes.LOAD_ALL_SCHEMAS, loadAllSchemasSaga),
   takeLatest(actionTypes.UPSERT, upsert),
   takeLatest(actionTypes.FETCH, fetch),
@@ -124,13 +143,16 @@ const initialState = {};
 const reducer = (previousState = initialState, action) => {
   if (isCurrent(action.type)) {
     switch (action.type) {
+      // case actionTypes.LOAD_ASSOCIATIONS_SUCCESS: {
+      //   const { associationNames, response } = action.payload;
+      //   return R.mergeDeepRight(previousState, {
+      //     associations: {
+      //       [associationName]: { [response.id]: response },
+      //     },
+      //   });
+      // }
       case actionTypes.FETCH_SUCCESS: {
         const { modelName, response } = action.payload;
-
-        const models = R.mergeDeepRight(previousState.models, {
-          [modelName]: { [response.id]: response },
-        });
-        // return { ...previousState, models };
         return R.mergeDeepRight(previousState, {
           models: {
             [modelName]: { [response.id]: response },

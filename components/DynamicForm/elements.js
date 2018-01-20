@@ -3,7 +3,7 @@ import React from 'react';
 
 import {
   Button, Checkbox, DatePicker, Form, Icon, Input, InputNumber, Switch,
-  TimePicker,
+  TimePicker, Select,
 } from 'antd';
 
 import { LzRichEditor } from './rich-editor';
@@ -220,7 +220,7 @@ export const generateDateTime = (form, {
   );
 };
 
-// TODO wrap by generateComponent
+// TODO need wrapped by generateComponent
 export const generateSwitch = (form, {
   key, name, label,
 }, formItemLayout = defaultFormItemLayout) => {
@@ -233,6 +233,7 @@ export const generateSwitch = (form, {
   );
 };
 
+// TODO need implemented
 export const generateRichTextEditor = (form, {
   key, name, label,
 }, formItemLayout = defaultFormItemLayout) => {
@@ -250,4 +251,28 @@ export const generateRichTextEditor = (form, {
   }
   logger.error('name is required in generateRichTextEditor');
   return null;
+};
+
+export const generateAssociation = (form, {
+  key, name, label, placeholder, onChange, onFocus, onBlur, objects,
+}, formItemLayout = defaultFormItemLayout) => {
+  const fieldName = key || name;
+  const labelName = label || name || key;
+  return (
+    <Select
+      key={fieldName}
+      showSearch
+      style={{ width: 200 }}
+      placeholder={placeholder}
+      optionFilterProp="objects"
+      onChange={onChange}
+      onFocus={onFocus}
+      onBlur={onBlur}
+      filterOption={(input, option) => {
+        return option.props.objects.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+      }}
+    >
+      {(objects || []).map(obj => <Select.Option key={obj.value} value={obj.value}>{obj.name}</Select.Option>)}
+    </Select>
+  );
 };

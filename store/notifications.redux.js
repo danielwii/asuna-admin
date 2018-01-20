@@ -94,7 +94,6 @@ const reducer = (previousState = initialState, action) => {
       case actionTypes.NOTIFY:
       case actionTypes.NOTIFY_SUCCESS:
         return { ...action.payload };
-      // return {};
       default:
         return { ...previousState, ...action.payload };
     }

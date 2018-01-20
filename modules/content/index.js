@@ -55,14 +55,14 @@ class ContentIndex extends React.Component {
     const { key }       = this.state;
     const { activeKey } = nextProps;
     logger.info('[lifecycle] shouldComponentUpdate', key, activeKey);
-    return key === activeKey;
+    return !key || key === activeKey;
   }
 
   create = () => {
-    const { model }    = this.state;
-    const { dispatch } = this.props;
+    const { modelName } = this.state;
+    const { dispatch }  = this.props;
     dispatch(panesActions.open({
-      key   : `content::upsert::${model}::${Date.now()}`,
+      key   : `content::upsert::${modelName}::${Date.now()}`,
       title : '新增',
       linkTo: 'content::upsert',
     }));
@@ -91,7 +91,6 @@ class ContentIndex extends React.Component {
     const { modelName, columns } = this.state;
     const { context, models }    = this.props;
 
-    // const dataSource = _.get(models, `${model}.data`, []);
     const response = R.pathOr([], [modelName, 'data'])(models);
 
     const { items: dataSource, pagination } = responseProxy.extract(response);
