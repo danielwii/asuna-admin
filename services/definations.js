@@ -72,14 +72,13 @@ export const tableColumns = {
  * 模型新增 / 编辑页面配置
  */
 export const modelColumns = {
-  colleges : {
+  colleges: {
     associations: {
-      countries: ['id', 'name'],
-    },
-  },
-  countries: {
-    associations: {
-      countries: ['id', 'name_en'],
+      countries: {
+        value : 'id',
+        name  : 'name',
+        fields: ['id', 'name'],
+      },
     },
   },
 };

@@ -1,6 +1,7 @@
 import React     from 'react';
 import PropTypes from 'prop-types';
 import _         from 'lodash';
+import * as R    from 'ramda';
 
 import { Button, Card, Form } from 'antd';
 
@@ -12,7 +13,7 @@ import {
 
 import { createLogger } from '../../adapters/logger';
 
-const logger = createLogger('components:dynamic_form');
+const logger = createLogger('components:dynamic_form', 3);
 
 // FIXME remove it
 export const buildForm = (form, definitions) => definitions.map((definition) => {
@@ -108,7 +109,15 @@ export class DynamicForm2 extends React.Component {
         return generateRichTextEditor(form, options);
       case DynamicFormTypes.Association: {
         logger.log('DynamicForm2 build field', field, 'field index is', index, 'option is', options);
-        return generateAssociation(form, options);
+        const { modelName, association } = R.path(['foreignOpts', 0])(field);
+
+        const items = R.path(['associations', modelName, 'items'])(field);
+        return generateAssociation(form, {
+          ...options,
+          items,
+          getName: R.prop(association.name),
+          getValue: R.prop(association.value),
+        });
       }
       default:
         return (
@@ -140,7 +149,7 @@ export class DynamicForm2 extends React.Component {
 
   render() {
     const { fields } = this.props;
-    logger.info('DynamicForm2 props is', this.props, 'fields is', fields);
+    logger.log('DynamicForm2 props is', this.props, 'fields is', fields);
 
     /*
         const fieldGroups = R.compose(

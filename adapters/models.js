@@ -3,13 +3,15 @@ import * as R from 'ramda';
 import { DynamicFormTypes } from '../components/DynamicForm';
 import { createLogger }     from '../adapters/logger';
 
-const logger = createLogger('adapters:models', 1);
+const logger = createLogger('adapters:models');
 
 export const modelsProxy = {
   getModelConfigs: name => global.context.models.getModelConfig(name),
   // eslint-disable-next-line function-paren-newline
   getFormFields  : (schemas, name, values) =>
     global.context.models.getFormSchema(schemas, name, values),
+
+  getFieldsOfAssociations: () => global.context.models.getFieldsOfAssociations(),
 
   /**
    * load schema list
@@ -126,21 +128,28 @@ export class ModelsAdapter {
     )(schema);
   };
 
+  getFieldsOfAssociations = R.memoize(() => {
+    logger.info('modelConfigs is', this.modelConfigs);
+    const concatValues       = (l, r) => (R.is(String, l) ? l : R.uniq(R.concat(l, r)));
+    const isNotEmpty         = R.compose(R.not, R.anyPass([R.isEmpty, R.isNil]));
+    const associationsFields = R.compose(
+      R.reduce(R.mergeDeepWith(concatValues), {}),
+      R.filter(isNotEmpty),
+      R.values,
+      R.map(R.path(['model', 'associations'])),
+    )(this.modelConfigs);
+    logger.log('associationsFields is', associationsFields);
+    return associationsFields;
+  });
+
   loadModels = ({ token }, name, { pagination = {}, filters, sorter }) => {
     const { current: page, pageSize: size } = pagination;
     return this.service.loadModels({ token }, name, { pagination: { page, size } });
   };
 
   loadAssociation = ({ token }, associationName) => {
-    const associationsFields = R.compose(
-      R.map(R.uniq),
-      R.reduce(R.mergeDeepWith(R.concat), {}),
-      R.values,
-      R.map(R.path(['model', 'associations'])),
-    )(this.modelConfigs);
-    logger.log('associationsFields is', associationsFields, associationName);
-    const associationFields = associationsFields[associationName];
-    return this.service.loadAssociation({ token }, associationName, { fields: associationFields });
+    const { fields } = this.getFieldsOfAssociations()[associationName];
+    return this.service.loadAssociation({ token }, associationName, { fields });
   };
 
   // eslint-disable-next-line function-paren-newline

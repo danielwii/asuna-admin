@@ -9,9 +9,8 @@ import { DynamicForm2, DynamicFormTypes } from '../../components/DynamicForm';
 import { modelsProxy }                    from '../../adapters/models';
 import { createLogger }                   from '../../adapters/logger';
 import { modelsActions }                  from '../../store/models.redux';
-// import { Promise } from 'bluebird';
 
-const logger = createLogger('modules:content:upsert', 1);
+const logger = createLogger('modules:content:upsert');
 
 // --------------------------------------------------------------
 // Build Form
@@ -25,12 +24,12 @@ const ContentForm = Form.create({
       }
       return Form.createFormField({ ...field });
     })(fields);
-    logger.info('fields is', fields);
-    logger.info('mapped fields is', mappedFields);
+    logger.info('[ContentForm][mapPropsToFields] fields is', fields);
+    logger.info('[ContentForm][mapPropsToFields] mapped fields is', mappedFields);
     return mappedFields;
   },
   onFieldsChange(props, changedFields) {
-    logger.info('onFieldsChange', props, changedFields);
+    logger.info('[ContentForm][onFieldsChange] onFieldsChange', props, changedFields);
     props.onChange(changedFields);
   },
 })(DynamicForm2);
@@ -61,60 +60,71 @@ class ContentUpsert extends React.Component {
 
     // content::create::name::timestamp => name
     const modelName = R.compose(R.nth(2), R.split(/::/), R.path(['pane', 'key']))(context);
-    logger.info('model name is ', modelName);
+    logger.info('[constructor] model name is ', modelName);
 
     const isInsertMode = this.detectUpsertMode(modelName);
 
     this.state = {
       isInsertMode,
       modelName,
-      modelFields: [],
+      modelFields: {},
       key        : context.pane.key,
     };
   }
 
 
   async componentWillMount(): void {
+    logger.info('[componentWillMount]...');
     const { context, schemas } = this.props;
 
     // content::create::name::timestamp => name
     const modelName = R.compose(R.nth(2), R.split(/::/), R.path(['pane', 'key']))(context);
-    logger.info('model name is ', modelName);
+    logger.info('[componentWillMount] model name is ', modelName);
 
-    const allFields     = modelsProxy.getFormFields(schemas, modelName);
+    const allFields = modelsProxy.getFormFields(schemas, modelName);
+    // const allFields  = {
+    //   id        : allFields1.id,
+    //   name      : allFields1.name,
+    //   country_id: allFields1.country_id,
+    // };
+
+    logger.info('[componentWillMount] allFields is', allFields);
+
     const wrappedFields = await this.asyncWrapAssociations(allFields);
 
-    logger.log('===> async componentDidMount wrappedFields is', wrappedFields);
+    logger.info('[componentWillMount] wrappedFields is', wrappedFields);
 
     const formFields = R.omit(
       ['created_at', 'updated_at'],
       R.mergeDeepRight(allFields, wrappedFields),
     );
 
-    logger.log('form fields is', formFields);
+    logger.info('[componentWillMount] form fields is', formFields);
 
+    // !!important!!
+    // associations is loaded in async mode, so the models may already set in state
     this.setState({
-      modelFields: formFields,
+      modelFields: R.mergeDeepRight(formFields, this.state.modelFields),
     });
   }
 
   componentWillReceiveProps(nextProps) {
-    logger.info('[lifecycle] componentWillReceiveProps...');
+    logger.info('[componentWillReceiveProps]...');
     const { isInsertMode, modelName } = this.state;
     if (!isInsertMode) {
       const { models, context: { pane: { data: { record } } } } = nextProps;
 
       const fieldValues = R.path([modelName, record.id])(models) || {};
-      logger.info('field values is', fieldValues);
+      logger.info('[componentWillReceiveProps] field values is', fieldValues);
       this.handleFormChange(R.map(value => ({ value }))(fieldValues));
     }
   }
 
   shouldComponentUpdate(nextProps, nextState, nextContext: any): boolean {
-    logger.info('[lifecycle] shouldComponentUpdate...', nextProps, nextState, nextContext);
+    logger.info('[shouldComponentUpdate]...', nextProps, nextState, nextContext);
     const { key }       = this.state;
     const { activeKey } = nextProps;
-    logger.info('[lifecycle] shouldComponentUpdate', key, activeKey);
+    logger.info('[shouldComponentUpdate]', key, activeKey);
     return key === activeKey;
   }
 
@@ -123,7 +133,7 @@ class ContentUpsert extends React.Component {
 
     const record = R.path(['pane', 'data', 'record'])(context);
     if (record) {
-      logger.info('update mode...');
+      logger.info('[detectUpsertMode] update mode...');
       dispatch(modelsActions.fetch(modelName, { id: record.id, profile: 'detail' }));
       return false;
     }
@@ -134,38 +144,41 @@ class ContentUpsert extends React.Component {
     const { auth: { token } } = this.props;
 
     const associations = R.filter(field => field.type === DynamicFormTypes.Association)(fields);
-    logger.info('associations is', associations);
+    logger.info('[asyncWrapAssociations] associations is', associations);
 
     const wrappedAssociations = await Promise.all(R.values(associations).map(async (field) => {
       const foreignKeys = R.pathOr([], ['options', 'foreignKeys'])(field);
-      logger.log('handle field', field, foreignKeys);
+      logger.log('[asyncWrapAssociations] handle field', field, foreignKeys);
       if (foreignKeys && foreignKeys.length > 0) {
+        const fieldsOfAssociations = modelsProxy.getFieldsOfAssociations();
+
         const foreignOpts = R.map((foreignKey) => {
           const [, modelName, property] = foreignKey.match(/t_(\w+)\.(\w+)/);
-          return { modelName, property };
+          const association             = fieldsOfAssociations[modelName];
+          return { modelName, property, association };
         })(foreignKeys);
-        logger.info('foreignOpts is', foreignOpts);
+        logger.info('[asyncWrapAssociations] foreignOpts is', foreignOpts);
 
         const associationNames = R.pluck('modelName')(foreignOpts);
-        logger.info('associationNames is', associationNames);
+        logger.info('[asyncWrapAssociations] associationNames is', associationNames);
 
         const effects = modelsProxy.listAssociationsCallable({ token }, associationNames);
-        logger.info('list associations callable', effects);
+        logger.info('[asyncWrapAssociations] list associations callable', effects);
 
         const allResponse = await Promise.all(R.values(effects));
-        logger.info('allResponse is', allResponse);
+        logger.info('[asyncWrapAssociations] allResponse is', allResponse);
 
         const foreignKeysResponse = R.zipObj(associationNames, R.map(R.prop('data'), allResponse));
-        logger.log('foreignOpts is', foreignOpts, 'foreignKeysResponse is', foreignKeysResponse);
+        logger.info('[asyncWrapAssociations] foreignOpts is', foreignOpts, 'foreignKeysResponse is', foreignKeysResponse);
 
         return { ...field, foreignOpts, associations: foreignKeysResponse };
       }
-      logger.warn('no foreignKeys with association', field);
+      logger.warn('[asyncWrapAssociations] no foreignKeys with association', field);
       return { ...field, type: DynamicFormTypes.Input };
     }));
 
     const pairedWrappedAssociations = R.zipObj(R.keys(associations), wrappedAssociations);
-    logger.log('wrapped associations', pairedWrappedAssociations);
+    logger.log('[asyncWrapAssociations] wrapped associations', pairedWrappedAssociations);
     return pairedWrappedAssociations;
   };
 
@@ -174,25 +187,13 @@ class ContentUpsert extends React.Component {
    * @param changedFields
    */
   handleFormChange = (changedFields) => {
-    logger.info('----> handleFormChange', changedFields);
+    logger.log('[handleFormChange] handleFormChange', changedFields);
 
     const fields            = R.map(field => R.pick(['value'])(field))(changedFields);
     const changedFieldsList = R.mergeDeepRight(this.state.modelFields, fields);
-    logger.info('modelFields is', this.state.modelFields);
-    logger.info('new fields is', fields);
-    logger.info('new changedFieldsList is', changedFieldsList);
-
-    /*
-        const { onTitleChange, title } = this.props;
-
-        const idValue   = R.path(['id', 'value'])(changedFieldsList);
-        const nameValue = R.path(['name', 'value'])(changedFieldsList);
-        const newTitle  = `${idValue},${nameValue}`;
-        console.log('title is', title, 'new title is', newTitle);
-        if (title !== newTitle && count-- > 0) {
-          onTitleChange(newTitle);
-        }
-    */
+    logger.info('[handleFormChange] modelFields is', this.state.modelFields);
+    logger.info('[handleFormChange] new fields is', fields);
+    logger.info('[handleFormChange] new changedFieldsList is', changedFieldsList);
 
     this.setState({
       modelFields: { ...this.state.modelFields, ...changedFieldsList },
@@ -200,10 +201,10 @@ class ContentUpsert extends React.Component {
   };
 
   handleFormSubmit = (e) => {
-    logger.info('handleFormSubmit', e);
+    logger.info('[handleFormSubmit] handleFormSubmit', e);
     e.preventDefault();
     const fieldPairs = R.map(R.prop('value'))(this.state.modelFields);
-    logger.info('all fieldPairs waiting for submit is', fieldPairs);
+    logger.info('[handleFormSubmit] all fieldPairs waiting for submit is', fieldPairs);
 
     const { dispatch }  = this.props;
     const { modelName } = this.state;
@@ -215,11 +216,11 @@ class ContentUpsert extends React.Component {
     const { modelFields } = this.state;
     const { context }     = this.props;
 
-    logger.log('modelFields is ', modelFields);
-
-    if (!modelFields) {
+    if (R.anyPass([R.isEmpty, R.isNil])(modelFields)) {
       return <div>loading...</div>;
     }
+
+    logger.log('[render] modelFields is ', modelFields);
 
     return (
       <div>
@@ -230,8 +231,10 @@ class ContentUpsert extends React.Component {
           onChange={this.handleFormChange}
           onSubmit={this.handleFormSubmit}
         />
-        {/* <hr /> */}
-        {/* <pre>{JSON.stringify(modelFields, null, 2)}</pre> */}
+        <hr />
+        <pre>{JSON.stringify(modelFields, null, 2)}</pre>
+        <hr />
+        <pre>{JSON.stringify(this.state, null, 2)}</pre>
         <hr />
         <pre>{JSON.stringify(context, null, 2)}</pre>
       </div>

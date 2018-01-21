@@ -1,16 +1,9 @@
 /* eslint-disable no-console */
-import debug  from 'debug';
-import * as R from 'ramda';
+import debug from 'debug';
 
 export const logger = console;
 
-const levels = [
-  'trace', 'info', 'log', 'warn', 'error',
-];
-
-export const createLogger = (module, level = 'log') => {
-  const levelIndex = R.indexOf(level)(levels);
-
+export const createLogger = (module, level = 2) => {
   const error = debug(`${module}:error`);
   error.log   = console.error.bind(console);
   const warn  = debug(`${module}:warn`);
@@ -24,19 +17,19 @@ export const createLogger = (module, level = 'log') => {
 
   return {
     trace: (...args) => {
-      if (levelIndex < 1) trace(...args);
+      if (level < 1) trace(...args);
     },
     info : (...args) => {
-      if (levelIndex < 2) info(...args);
+      if (level < 2) info(...args);
     },
     log  : (...args) => {
-      if (levelIndex < 3) log(...args);
+      if (level < 3) log(...args);
     },
     warn : (...args) => {
-      if (levelIndex < 4) warn(...args);
+      if (level < 4) warn(...args);
     },
     error: (...args) => {
-      if (levelIndex < 5) error(...args);
+      if (level < 5) error(...args);
     },
   };
 };

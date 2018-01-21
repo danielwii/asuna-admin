@@ -1,9 +1,18 @@
 /* eslint-disable indent,function-paren-newline */
-import React from 'react';
+import React  from 'react';
+import * as R from 'ramda';
 
 import {
-  Button, Checkbox, DatePicker, Form, Icon, Input, InputNumber, Switch,
-  TimePicker, Select,
+  Button,
+  Checkbox,
+  DatePicker,
+  Form,
+  Icon,
+  Input,
+  InputNumber,
+  Select,
+  Switch,
+  TimePicker,
 } from 'antd';
 
 import { LzRichEditor } from './rich-editor';
@@ -254,25 +263,31 @@ export const generateRichTextEditor = (form, {
 };
 
 export const generateAssociation = (form, {
-  key, name, label, placeholder, onChange, onFocus, onBlur, objects,
+  key, name, label, placeholder, onChange, onFocus, onBlur, items,
+  getName = R.prop('name'), getValue = R.prop('value'),
 }, formItemLayout = defaultFormItemLayout) => {
   const fieldName = key || name;
   const labelName = label || name || key;
-  return (
-    <Select
-      key={fieldName}
-      showSearch
-      style={{ width: 200 }}
-      placeholder={placeholder}
-      optionFilterProp="objects"
-      onChange={onChange}
-      onFocus={onFocus}
-      onBlur={onBlur}
-      filterOption={(input, option) => {
-        return option.props.objects.toLowerCase().indexOf(input.toLowerCase()) >= 0;
-      }}
-    >
-      {(objects || []).map(obj => <Select.Option key={obj.value} value={obj.value}>{obj.name}</Select.Option>)}
-    </Select>
+  return generateComponent(
+    form, { fieldName, labelName }, (
+      <Select
+        key={fieldName}
+        showSearch
+        style={{ width: 200 }}
+        placeholder={placeholder}
+        optionFilterProp="items"
+        // onChange={onChange}
+        // onFocus={onFocus}
+        // onBlur={onBlur}
+        filterOption={(input, option) => {
+          logger.log('filter input is', input, 'option is', option);
+          return option.props.items.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+        }}
+      >
+        {(items || []).map(item => (
+          <Select.Option key={getValue(item)} value={getValue(item)}>{getName(item)}</Select.Option>
+        ))}
+      </Select>
+    ), formItemLayout,
   );
 };
