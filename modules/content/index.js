@@ -82,9 +82,9 @@ class ContentIndex extends React.Component {
 
   handleTableChange = (pagination, filters, sorter) => {
     logger.info(pagination, filters, sorter);
-    const { model }    = this.state;
-    const { dispatch } = this.props;
-    dispatch(contentActions.loadModels(model, { pagination, filters, sorter }));
+    const { modelName } = this.state;
+    const { dispatch }  = this.props;
+    dispatch(contentActions.loadModels(modelName, { pagination, filters, sorter }));
   };
 
   render() {

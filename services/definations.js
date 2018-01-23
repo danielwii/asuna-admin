@@ -66,6 +66,22 @@ export const tableColumns = {
     commonColumns.updatedAt,
     commonColumns.actions(actions),
   ],
+  articles: actions => [
+    commonColumns.id,
+    {
+      title    : '名称',
+      dataIndex: 'name',
+      key      : 'name',
+    },
+    {
+      title    : '英文名称',
+      dataIndex: 'name_en',
+      key      : 'name_en',
+    },
+    commonColumns.createdAt,
+    commonColumns.updatedAt,
+    commonColumns.actions(actions),
+  ],
 };
 
 /**
@@ -77,10 +93,12 @@ export const modelColumns = {
       countries: {
         value : 'id',
         name  : 'name',
+        ref   : 'country',
         fields: ['id', 'name'],
       },
     },
   },
+  articles: {},
 };
 
 /**
@@ -89,6 +107,7 @@ export const modelColumns = {
 export const modelConfigs = {
   colleges : { table: tableColumns.colleges, model: modelColumns.colleges },
   countries: { table: tableColumns.countries, model: modelColumns.countries },
+  articles: { table: tableColumns.articles, model: modelColumns.articles },
 };
 
 /**
@@ -102,6 +121,7 @@ export const registeredModels = [
     subMenus: [
       { key: 'colleges', title: '院校管理', linkTo: 'content::index' },
       { key: 'countries', title: '国家管理', linkTo: 'content::index' },
+      { key: 'articles', title: '新闻管理', linkTo: 'content::index' },
     ],
   },
 ];

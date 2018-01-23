@@ -76,6 +76,7 @@ class Panes extends React.Component {
               <ModulesLoader
                 module={pane.linkTo || pane.key}
                 activeKey={activeKey}
+                onClose={() => this.onEdit(activeKey, 'remove')}
                 context={{ pane }}
                 onTitleChange={newTitle => this.onTitleChange(activeKey, newTitle)}
               />

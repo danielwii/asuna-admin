@@ -15,10 +15,10 @@ import {
   TimePicker,
 } from 'antd';
 
-import { LzRichEditor } from './rich-editor';
-import { createLogger } from '../../adapters/logger';
+// import { BraftRichEditor } from '../RichEditor';
+import { createLogger }    from '../../adapters/logger';
 
-const logger = createLogger('components:dynamic_form:elements');
+const logger = createLogger('components:dynamic-form:elements');
 
 const defaultFormItemLayout = {
   // labelCol  : { offset: 0, span: 4 },
@@ -246,15 +246,14 @@ export const generateSwitch = (form, {
 export const generateRichTextEditor = (form, {
   key, name, label,
 }, formItemLayout = defaultFormItemLayout) => {
-//   logger.info('generateRichTextEditor', key, name);
   const fieldName = key || name;
   const labelName = label || name || key;
   if (name) {
     const decorator = form.getFieldDecorator(fieldName, {});
-    const decorated = decorator(<LzRichEditor />);
+    // const decorated = decorator(<BraftRichEditor />);
     return (
       <Form.Item key={fieldName} {...formItemLayout} label={labelName}>
-        {decorated}
+        {/*{decorated}*/}
       </Form.Item>
     );
   }

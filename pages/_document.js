@@ -31,6 +31,7 @@ export default class MyDocument extends Document {
   render() {
     return (
       <html lang="zh">
+        <meta charSet="utf-8" />
         <Head>
           {this.props.styleTags}
         </Head>

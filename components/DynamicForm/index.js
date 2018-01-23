@@ -13,7 +13,7 @@ import {
 
 import { createLogger } from '../../adapters/logger';
 
-const logger = createLogger('components:dynamic_form', 3);
+const logger = createLogger('components:dynamic-form');
 
 // FIXME remove it
 export const buildForm = (form, definitions) => definitions.map((definition) => {
@@ -109,15 +109,19 @@ export class DynamicForm2 extends React.Component {
         return generateRichTextEditor(form, options);
       case DynamicFormTypes.Association: {
         logger.log('DynamicForm2 build field', field, 'field index is', index, 'option is', options);
-        const { modelName, association } = R.path(['foreignOpts', 0])(field);
+        if (R.has('foreignOpts')(field)) {
+          const { modelName, association } = R.path(['foreignOpts', 0])(field);
 
-        const items = R.path(['associations', modelName, 'items'])(field);
-        return generateAssociation(form, {
-          ...options,
-          items,
-          getName: R.prop(association.name),
-          getValue: R.prop(association.value),
-        });
+          const items = R.path(['associations', modelName, 'items'])(field);
+          return generateAssociation(form, {
+            ...options,
+            items,
+            getName : R.prop(association.name),
+            getValue: R.prop(association.value),
+          });
+        }
+        logger.warn('[buildField] foreignOpts is required in association.');
+        return <div>association need foreignOpts.</div>;
       }
       default:
         return (

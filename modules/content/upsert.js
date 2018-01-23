@@ -10,7 +10,7 @@ import { modelsProxy }                    from '../../adapters/models';
 import { createLogger }                   from '../../adapters/logger';
 import { modelsActions }                  from '../../store/models.redux';
 
-const logger = createLogger('modules:content:upsert');
+const logger = createLogger('modules:content:upsert', 1);
 
 // --------------------------------------------------------------
 // Build Form
@@ -51,6 +51,7 @@ class ContentUpsert extends React.Component {
     }),
     schemas: PropTypes.shape({}),
     models : PropTypes.shape({}),
+    onClose: PropTypes.func,
   };
 
   constructor(props) {
@@ -81,12 +82,13 @@ class ContentUpsert extends React.Component {
     const modelName = R.compose(R.nth(2), R.split(/::/), R.path(['pane', 'key']))(context);
     logger.info('[componentWillMount] model name is ', modelName);
 
-    const allFields = modelsProxy.getFormFields(schemas, modelName);
-    // const allFields  = {
-    //   id        : allFields1.id,
-    //   name      : allFields1.name,
-    //   country_id: allFields1.country_id,
-    // };
+    const allFields1 = modelsProxy.getFormFields(schemas, modelName);
+    const allFields  = {
+      id          : allFields1.id,
+      name        : allFields1.name,
+      introduction: allFields1.introduction,
+      country_id  : allFields1.country_id,
+    };
 
     logger.info('[componentWillMount] allFields is', allFields);
 
@@ -133,7 +135,7 @@ class ContentUpsert extends React.Component {
 
     const record = R.path(['pane', 'data', 'record'])(context);
     if (record) {
-      logger.info('[detectUpsertMode] update mode...');
+      logger.info('[detectUpsertMode] set to update mode and load model...', record);
       dispatch(modelsActions.fetch(modelName, { id: record.id, profile: 'detail' }));
       return false;
     }
@@ -141,6 +143,11 @@ class ContentUpsert extends React.Component {
   };
 
   asyncWrapAssociations = async (fields) => {
+    if (R.compose(R.isEmpty, R.isNil)(fields)) {
+      logger.info('[asyncWrapAssociations] no associations found.');
+      return {};
+    }
+
     const { auth: { token } } = this.props;
 
     const associations = R.filter(field => field.type === DynamicFormTypes.Association)(fields);
@@ -206,10 +213,15 @@ class ContentUpsert extends React.Component {
     const fieldPairs = R.map(R.prop('value'))(this.state.modelFields);
     logger.info('[handleFormSubmit] all fieldPairs waiting for submit is', fieldPairs);
 
-    const { dispatch }  = this.props;
-    const { modelName } = this.state;
+    const { dispatch, onClose }       = this.props;
+    const { modelName, isInsertMode } = this.state;
 
     dispatch(modelsActions.upsert(modelName, { body: fieldPairs }));
+
+    // FIXME 在 post 提交后暂时无法获取返回的 id，即当前页面暂时无法切换为 update 模式，暂时关闭当前页面
+    if (isInsertMode) {
+      onClose();
+    }
   };
 
   render() {

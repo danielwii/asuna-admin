@@ -44,13 +44,13 @@ const actions = {
 function* loadModels({ payload: { name, data } }) {
   const { token } = yield select(state => state.auth);
   if (token) {
+    logger.info('load content', name, data);
     yield put(notificationsActions.notify(`load content '${name}'...`));
     try {
-      logger.log('modelsProxy is', modelsProxy);
       const response = yield call(modelsProxy.loadModels, { token }, name, data);
       yield put(notificationsActions.notify(`load content '${name}' success`, notificationTypes.SUCCESS));
       yield put(actions.loadModelsSuccess({ [name]: { data: response.data } }));
-      logger.log('load content', name, response.data);
+      logger.log('loaded content', name, response.data);
     } catch (e) {
       yield put(notificationsActions.notify(e, notificationTypes.ERROR));
       logger.warn('CATCH ->', e);

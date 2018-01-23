@@ -85,10 +85,11 @@ function* fetch({ payload: { modelName, data } }) {
 
 function* upsert({ payload: { modelName, data } }) {
   const { token } = yield select(state => state.auth);
+  const { schemas } = yield select(state => state.models);
   if (token) {
     yield put(notificationsActions.notify(`upsert model '${modelName}'...`));
     try {
-      const response = yield call(modelsProxy.upsert, { token }, modelName, data);
+      const response = yield call(modelsProxy.upsert, { token, schemas }, modelName, data);
       yield put(notificationsActions.notify(`upsert model '${modelName}' success!`, notificationTypes.SUCCESS));
       logger.log('response of upsert model is', response);
       // save model data when upsert is success

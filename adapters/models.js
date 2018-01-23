@@ -1,4 +1,5 @@
 import * as R from 'ramda';
+import _      from 'lodash';
 
 import { DynamicFormTypes } from '../components/DynamicForm';
 import { createLogger }     from '../adapters/logger';
@@ -51,7 +52,8 @@ export const modelsProxy = {
    * @param data       - model body
    * @returns {*}
    */
-  upsert: ({ token }, modelName, data) => global.context.models.upsert({ token }, modelName, data),
+  upsert: ({ token, schemas }, modelName, data) =>
+    global.context.models.upsert({ token, schemas }, modelName, data),
 };
 
 export class ModelsAdapter {
@@ -62,8 +64,7 @@ export class ModelsAdapter {
   }
 
   identifyType = (field) => {
-    const type = R.path(['config', 'type'])(field);
-    if (field.name in ['id', 'created_at', 'updated_at']) {
+    if (['id', 'created_at', 'updated_at'].indexOf(field.name) > -1) {
       return DynamicFormTypes.Plain;
     }
 
@@ -71,25 +72,39 @@ export class ModelsAdapter {
       return DynamicFormTypes.Association;
     }
 
+    if (R.path(['config', 'info', 'type'])(field) === 'RICHTEXT') {
+      return DynamicFormTypes.RichText;
+    }
+
+    const type = R.path(['config', 'type'])(field);
+
     if (/VARCHAR.+/.test(type)) return DynamicFormTypes.Input;
     if (/INTEGER|FLOAT/.test(type)) return DynamicFormTypes.InputNumber;
     if (/TEXT/.test(type)) return DynamicFormTypes.TextArea;
     if (/DATETIME/.test(type)) return DynamicFormTypes.DateTime;
     if (/BOOLEAN/.test(type)) return DynamicFormTypes.Switch;
 
-    logger.warn('type', type, 'cannot identified.');
+    logger.warn('[identifyType] type', type, 'cannot identified.');
     return type;
   };
 
   fetch = (config, modelName, data) => this.service.fetch(config, modelName, data);
 
-  upsert = (config, modelName, data) => {
-    logger.info('--> upsert', config, modelName, data);
+  upsert = ({ token, schemas }, modelName, data: { body: any }) => {
+    logger.info('[upsert] upsert', modelName, data);
+
+    const fields = this.getFormSchema(schemas, modelName);
+
+    logger.info('[upsert] fields is', fields);
+
+    const transformed = _.mapKeys(data.body, (value, key) => _.get(fields, `${key}.ref`, key));
+    logger.info('[upsert] transformed is', transformed);
+
     const id = R.path(['body', 'id'])(data);
     if (id) {
-      return this.service.update(config, modelName, { ...data, id });
+      return this.service.update({ token }, modelName, { ...data, body: transformed, id });
     }
-    return this.service.insert(config, modelName, data);
+    return this.service.insert({ token }, modelName, { ...data, body: transformed });
   };
 
   getModelConfig = (name) => {
@@ -102,22 +117,23 @@ export class ModelsAdapter {
 
   getFormSchema = (schemas, name, values) => {
     if (!schemas || !name) {
-      logger.error('schemas or name is required. schemas is', schemas, 'name is', name);
+      logger.error('[getFormSchema] schemas or name is required. schemas is', schemas, 'name is', name);
       return {};
     }
     const schema = R.prop(name)(schemas);
 
     if (!schema) {
-      logger.error('schema is required.');
+      logger.error('[getFormSchema ]schema is required.');
       return {};
     }
 
-    logger.log('schema is', schema, 'name is', name);
+    logger.log('[getFormSchema] schema is', schema, 'name is', name);
     return R.compose(
       R.mergeAll,
       R.map(formatted => ({ [formatted.name]: formatted })),
       R.map(field => ({
         name   : field.name,
+        ref    : R.pathOr(field.name, ['config', 'info', 'ref'])(field),
         type   : this.identifyType(field),
         options: {
           label      : R.path(['config', 'info', 'name'])(field),
@@ -129,7 +145,7 @@ export class ModelsAdapter {
   };
 
   getFieldsOfAssociations = R.memoize(() => {
-    logger.info('modelConfigs is', this.modelConfigs);
+    logger.info('[getFieldsOfAssociations] modelConfigs is', this.modelConfigs);
     const concatValues       = (l, r) => (R.is(String, l) ? l : R.uniq(R.concat(l, r)));
     const isNotEmpty         = R.compose(R.not, R.anyPass([R.isEmpty, R.isNil]));
     const associationsFields = R.compose(
@@ -138,7 +154,7 @@ export class ModelsAdapter {
       R.values,
       R.map(R.path(['model', 'associations'])),
     )(this.modelConfigs);
-    logger.log('associationsFields is', associationsFields);
+    logger.log('[getFieldsOfAssociations] associationsFields is', associationsFields);
     return associationsFields;
   });
 

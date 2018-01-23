@@ -1,3 +1,4 @@
+/* eslint-disable spaced-comment,no-unused-vars */
 import withRedux     from 'next-redux-wrapper';
 import nextReduxSaga from 'next-redux-saga';
 
@@ -85,7 +86,7 @@ export const configureStore = (state = initialState) => {
   const store = createStore(
     rootReducers,
     state,
-    composeWithDevTools(applyMiddleware(sagaMiddleware, /* logger */)),
+    composeWithDevTools(applyMiddleware(sagaMiddleware/*,  logger */)),
   );
 
   store.sagaTask = sagaMiddleware.run(rootSaga);
