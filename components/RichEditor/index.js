@@ -1,33 +1,67 @@
-import React       from 'react';
-import BraftEditor from 'braft-editor';
+import React     from 'react';
+import PropTypes from 'prop-types';
 
-import 'braft-editor/dist/braft.css';
+import { ContentState, convertFromHTML, convertToRaw } from 'draft-js';
+
+import { createLogger } from '../../adapters/logger';
+
+const logger = createLogger('components:rich-editor');
+
+let BraftEditor;
 
 export class BraftRichEditor extends React.Component {
-  state = {
-    content: null,
+  static propTypes = {
+    value   : PropTypes.string,
+    onChange: PropTypes.func,
   };
 
+  state = {
+    loading: true,
+  };
+
+  componentDidMount(): void {
+    // eslint-disable-next-line global-require
+    BraftEditor = require('braft-editor').default;
+    logger.info('[componentDidMount] loaded braft editor');
+    // eslint-disable-next-line react/no-did-mount-set-state
+    this.setState({ loading: false });
+  }
+
   handleChange = (content) => {
-    console.log(content);
+    logger.info('content is', content);
   };
 
   handleHTMLChange = (html) => {
-    console.log(html);
+    logger.info('html is', html);
+    const { onChange } = this.props;
+    onChange(html);
   };
 
   render() {
+    const { value } = this.props;
+    logger.info('render by props', this.props);
+
+    const blocksFromHTML = convertFromHTML(value);
+    logger.info('blocksFromHTML is', blocksFromHTML);
+
+    // eslint-disable-next-line function-paren-newline
+    const contentState = ContentState.createFromBlockArray(
+      blocksFromHTML.contentBlocks, blocksFromHTML.entityMap);
+    logger.info('contentState is', contentState);
+
+    const rawDraftContentState = convertToRaw(contentState);
+
     const editorProps = {
       height        : 500,
-      initialContent: this.state.content,
+      initialContent: rawDraftContentState,
       onChange      : this.handleChange,
       onHTMLChange  : this.handleHTMLChange,
     };
 
-    return (
-      <div className="demo">
-        <BraftEditor {...editorProps} />
-      </div>
-    );
+    const { loading } = this.state;
+
+    if (loading) return <p>loading editor...</p>;
+
+    return <BraftEditor {...editorProps} />;
   }
 }

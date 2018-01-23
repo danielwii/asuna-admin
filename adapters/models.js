@@ -4,7 +4,7 @@ import _      from 'lodash';
 import { DynamicFormTypes } from '../components/DynamicForm';
 import { createLogger }     from '../adapters/logger';
 
-const logger = createLogger('adapters:models');
+const logger = createLogger('adapters:models', 1);
 
 export const modelsProxy = {
   getModelConfigs: name => global.context.models.getModelConfig(name),
@@ -164,7 +164,12 @@ export class ModelsAdapter {
   };
 
   loadAssociation = ({ token }, associationName) => {
-    const { fields } = this.getFieldsOfAssociations()[associationName];
+    if (!associationName) {
+      logger.warn('[loadAssociation] associationName is required.');
+      return null;
+    }
+
+    const fields = R.pathOr([], [associationName, 'fields'])(this.getFieldsOfAssociations());
     return this.service.loadAssociation({ token }, associationName, { fields });
   };
 

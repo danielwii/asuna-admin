@@ -2,8 +2,6 @@ import React                              from 'react';
 import { Editor, EditorState, RichUtils } from 'draft-js';
 import FontAwesomeIcon                    from '@fortawesome/react-fontawesome';
 
-import 'draft-js/dist/Draft.css';
-
 import {
   faAlignCenter,
   faAlignJustify,

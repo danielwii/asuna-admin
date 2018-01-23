@@ -68,23 +68,25 @@ export class DynamicForm2 extends React.Component {
   };
 
   handleOnSubmit = (e) => {
+    logger.info('[handleOnSubmit] onSubmit', e);
     e.preventDefault();
 
     const { form, onSubmit } = this.props;
     form.validateFields((err, values) => {
       if (err) {
-        console.log('error occurred in form', values, err);
+        logger.error('error occurred in form', values, err);
       } else {
         onSubmit(e);
       }
     });
   };
 
+  // TODO extract as a react Component
   buildField = (field, index) => {
-    // logger.log('DynamicForm2 build field', field, 'field index is', index);
-
     const { form } = this.props;
     const options  = { ...field.options, key: field.key || field.name, name: field.name };
+
+    logger.trace('[DynamicForm2][buildField] build field', field, 'field index is', index, 'option is', options);
 
     switch (field.type) {
       case DynamicFormTypes.Plain:
@@ -108,7 +110,6 @@ export class DynamicForm2 extends React.Component {
       case DynamicFormTypes.RichText:
         return generateRichTextEditor(form, options);
       case DynamicFormTypes.Association: {
-        logger.log('DynamicForm2 build field', field, 'field index is', index, 'option is', options);
         if (R.has('foreignOpts')(field)) {
           const { modelName, association } = R.path(['foreignOpts', 0])(field);
 
@@ -134,7 +135,7 @@ export class DynamicForm2 extends React.Component {
   };
 
   buildFieldGroup = (fieldGroup, index) => {
-    logger.info('DynamicForm2 build field group', fieldGroup, 'group index is', index);
+    logger.info('[DynamicForm2][buildFieldGroup]', fieldGroup, 'group index is', index);
     return (
       <div>
         <Card key={index}>
@@ -153,7 +154,7 @@ export class DynamicForm2 extends React.Component {
 
   render() {
     const { fields } = this.props;
-    logger.log('DynamicForm2 props is', this.props, 'fields is', fields);
+    logger.log('[DynamicForm2][render] props is', this.props, 'fields is', fields);
 
     /*
         const fieldGroups = R.compose(
@@ -165,13 +166,14 @@ export class DynamicForm2 extends React.Component {
     */
 
     return (
-      <Form onSubmit={this.handleOnSubmit}>
+      <Form>
         {/* {_.map(fieldGroups, this.buildFieldGroup)} */}
         {_.map(fields, this.buildField)}
         <Form.Item>
           <Button
             type="primary"
             htmlType="submit"
+            onClick={this.handleOnSubmit}
             // disabled={hasErrors(getFieldsError())}
           >
             Submit

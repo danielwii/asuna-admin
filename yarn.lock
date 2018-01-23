@@ -321,6 +321,20 @@
   version "3.5.19"
   resolved "https://registry.yarnpkg.com/@types/bluebird/-/bluebird-3.5.19.tgz#1a47308819ac2d1d6d1ca4f5d800ac84924100de"
 
+"@types/braft-editor@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@types/braft-editor/-/braft-editor-1.1.0.tgz#9b16964f1859d58e0936394efd0694f23ce1b7a9"
+  dependencies:
+    "@types/draft-js" "*"
+    "@types/react" "*"
+
+"@types/draft-js@*":
+  version "0.10.19"
+  resolved "https://registry.yarnpkg.com/@types/draft-js/-/draft-js-0.10.19.tgz#a1a59571c2a9c43505b944b7d4340855d0e1f800"
+  dependencies:
+    "@types/react" "*"
+    immutable "^3.8.1"
+
 "@types/inline-style-prefixer@^3.0.0":
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/@types/inline-style-prefixer/-/inline-style-prefixer-3.0.1.tgz#8541e636b029124b747952e9a28848286d2b5bf6"

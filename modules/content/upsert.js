@@ -10,7 +10,7 @@ import { modelsProxy }                    from '../../adapters/models';
 import { createLogger }                   from '../../adapters/logger';
 import { modelsActions }                  from '../../store/models.redux';
 
-const logger = createLogger('modules:content:upsert', 1);
+const logger = createLogger('modules:content:upsert');
 
 // --------------------------------------------------------------
 // Build Form

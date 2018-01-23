@@ -17,6 +17,7 @@ import {
 
 // import { BraftRichEditor } from '../RichEditor';
 import { createLogger }    from '../../adapters/logger';
+import { BraftRichEditor } from '../../components/RichEditor';
 
 const logger = createLogger('components:dynamic-form:elements');
 
@@ -229,7 +230,6 @@ export const generateDateTime = (form, {
   );
 };
 
-// TODO need wrapped by generateComponent
 export const generateSwitch = (form, {
   key, name, label,
 }, formItemLayout = defaultFormItemLayout) => {
@@ -242,23 +242,16 @@ export const generateSwitch = (form, {
   );
 };
 
-// TODO need implemented
 export const generateRichTextEditor = (form, {
   key, name, label,
 }, formItemLayout = defaultFormItemLayout) => {
   const fieldName = key || name;
   const labelName = label || name || key;
-  if (name) {
-    const decorator = form.getFieldDecorator(fieldName, {});
-    // const decorated = decorator(<BraftRichEditor />);
-    return (
-      <Form.Item key={fieldName} {...formItemLayout} label={labelName}>
-        {/*{decorated}*/}
-      </Form.Item>
-    );
-  }
-  logger.error('name is required in generateRichTextEditor');
-  return null;
+  return generateComponent(
+    form, { fieldName, labelName }, (
+      <BraftRichEditor />
+    ), formItemLayout,
+  );
 };
 
 export const generateAssociation = (form, {
