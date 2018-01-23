@@ -82,13 +82,7 @@ class ContentUpsert extends React.Component {
     const modelName = R.compose(R.nth(2), R.split(/::/), R.path(['pane', 'key']))(context);
     logger.info('[componentWillMount] model name is ', modelName);
 
-    const allFields1 = modelsProxy.getFormFields(schemas, modelName);
-    const allFields  = {
-      id          : allFields1.id,
-      name        : allFields1.name,
-      introduction: allFields1.introduction,
-      country_id  : allFields1.country_id,
-    };
+    let allFields = modelsProxy.getFormFields(schemas, modelName);
 
     logger.info('[componentWillMount] allFields is', allFields);
 
