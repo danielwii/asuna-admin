@@ -51,6 +51,7 @@ class ContentUpsert extends React.Component {
     }),
     schemas: PropTypes.shape({}),
     models : PropTypes.shape({}),
+    auth   : PropTypes.shape({}),
     onClose: PropTypes.func,
   };
 
@@ -84,6 +85,9 @@ class ContentUpsert extends React.Component {
 
     let allFields = modelsProxy.getFormFields(schemas, modelName);
 
+    if (modelName === 'colleges') {
+      allFields = R.pick(['id', 'name', 'introduction', 'country_id'], allFields);
+    }
     logger.info('[componentWillMount] allFields is', allFields);
 
     const wrappedFields = await this.asyncWrapAssociations(allFields);
@@ -142,7 +146,7 @@ class ContentUpsert extends React.Component {
       return {};
     }
 
-    const { auth: { token } } = this.props;
+    const { auth } = this.props;
 
     const associations = R.filter(field => field.type === DynamicFormTypes.Association)(fields);
     logger.info('[asyncWrapAssociations] associations is', associations);
@@ -163,7 +167,7 @@ class ContentUpsert extends React.Component {
         const associationNames = R.pluck('modelName')(foreignOpts);
         logger.info('[asyncWrapAssociations] associationNames is', associationNames);
 
-        const effects = modelsProxy.listAssociationsCallable({ token }, associationNames);
+        const effects = modelsProxy.listAssociationsCallable(auth, associationNames);
         logger.info('[asyncWrapAssociations] list associations callable', effects);
 
         const allResponse = await Promise.all(R.values(effects));
@@ -219,8 +223,8 @@ class ContentUpsert extends React.Component {
   };
 
   render() {
-    const { modelFields } = this.state;
-    const { context }     = this.props;
+    const { modelFields }   = this.state;
+    const { context, auth } = this.props;
 
     if (R.anyPass([R.isEmpty, R.isNil])(modelFields)) {
       return <div>loading...</div>;
@@ -233,6 +237,7 @@ class ContentUpsert extends React.Component {
         <h1>hello, kitty. ^_^</h1>
         <hr />
         <ContentForm
+          auth={auth}
           fields={modelFields}
           onChange={this.handleFormChange}
           onSubmit={this.handleFormSubmit}

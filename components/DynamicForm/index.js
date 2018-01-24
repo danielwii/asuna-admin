@@ -83,8 +83,11 @@ export class DynamicForm2 extends React.Component {
 
   // TODO extract as a react Component
   buildField = (field, index) => {
-    const { form } = this.props;
-    const options  = { ...field.options, key: field.key || field.name, name: field.name };
+    const { form, auth } = this.props;
+
+    const options = {
+      ...field.options, key: field.key || field.name, name: field.name, auth,
+    };
 
     logger.trace('[DynamicForm2][buildField] build field', field, 'field index is', index, 'option is', options);
 

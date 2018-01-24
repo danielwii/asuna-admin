@@ -13,8 +13,7 @@ import {
   Select,
   Switch,
   TimePicker,
-} from 'antd';
-
+}                          from 'antd';
 // import { BraftRichEditor } from '../RichEditor';
 import { createLogger }    from '../../adapters/logger';
 import { BraftRichEditor } from '../../components/RichEditor';
@@ -243,13 +242,13 @@ export const generateSwitch = (form, {
 };
 
 export const generateRichTextEditor = (form, {
-  key, name, label,
+  key, name, label, auth,
 }, formItemLayout = defaultFormItemLayout) => {
   const fieldName = key || name;
   const labelName = label || name || key;
   return generateComponent(
     form, { fieldName, labelName }, (
-      <BraftRichEditor />
+      <BraftRichEditor auth={auth} />
     ), formItemLayout,
   );
 };

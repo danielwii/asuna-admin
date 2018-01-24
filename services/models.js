@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 import { createLogger } from '../adapters/logger';
+import { authHeader }   from '../adapters/helper';
 
 const logger = createLogger('service:models');
 
@@ -8,8 +9,6 @@ const instance = axios.create({
   baseURL: '/rest/',
   timeout: 10000,
 });
-
-export const authHeader = token => ({ headers: { Authorization: `Bearer ${token}` } });
 
 export const modelsService = {
   // save({ token }, { name }) {

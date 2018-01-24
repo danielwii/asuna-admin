@@ -27,6 +27,12 @@ const handle       = app.getRequestHandler();
 const proxy        = createProxyServer({});
 const configurator = createConfigLoader();
 
+const pathNeedsProxy = (pathname) => {
+  return pathname.startsWith('/rest/') ||
+    pathname.startsWith('/admin/') ||
+    pathname.startsWith('/images/');
+};
+
 app.prepare().then(() => {
   createServer((req, res) => {
     // Be sure to pass `true` as the second argument to `url.parse`.
@@ -34,7 +40,7 @@ app.prepare().then(() => {
     const parsedUrl    = parse(req.url, true);
     const { pathname } = parsedUrl;
 
-    if (pathname.startsWith('/rest/')) {
+    if (pathNeedsProxy(pathname)) {
       // req.url = req.url.slice('/api/'.length);
       // console.log('call', req.url);
       proxy.web(req, res, { target: configurator.loadConfig('PROXY_API') }, (e) => {

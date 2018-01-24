@@ -11,12 +11,14 @@ import { modelsActions } from '../store/models.redux';
 import * as authService  from '../services/auth';
 import { modelsService } from '../services/models';
 import { menuService }   from '../services/menu';
+import { apiService }    from '../services/api';
 
 import { JwtAuthAdapter }    from '../adapters/auth';
 import { ModelsAdapter }     from '../adapters/models';
 import { MenuAdapter }       from '../adapters/menu';
 import { PyResponseAdapter } from '../adapters/response';
 import { createLogger }      from '../adapters/logger';
+import { ApiAdapter }        from '../adapters/api';
 
 import { modelConfigs, registeredModels } from '../services/definations';
 
@@ -31,6 +33,7 @@ global.context = _.assign(global.context, {
   response: new PyResponseAdapter(),
   models  : new ModelsAdapter(modelsService, modelConfigs),
   menu    : new MenuAdapter(menuService, registeredModels),
+  api     : new ApiAdapter(apiService),
 });
 
 logger.info('global context is', global.context);
