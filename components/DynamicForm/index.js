@@ -2,12 +2,21 @@ import React     from 'react';
 import PropTypes from 'prop-types';
 import _         from 'lodash';
 import * as R    from 'ramda';
+import { sha1 }  from 'object-hash';
 
 import { Button, Card, Form } from 'antd';
 
 import {
-  generateAssociation, generateButton, generateCheckbox, generateDateTime, generateHidden,
-  generateInput, generateInputNumber, generatePlain, generateRichTextEditor, generateSwitch,
+  generateAssociation,
+  generateButton,
+  generateCheckbox,
+  generateDateTime,
+  generateHidden,
+  generateInput,
+  generateInputNumber,
+  generatePlain,
+  generateRichTextEditor,
+  generateSwitch,
   generateTextArea,
 } from './elements';
 
@@ -154,6 +163,16 @@ export class DynamicForm2 extends React.Component {
       </div>
     );
   };
+
+  shouldComponentUpdate(nextProps, nextState, nextContext: any): boolean {
+    logger.info('[shouldComponentUpdate]', nextProps, nextState, nextContext);
+    const { fields }      = nextProps;
+    const nextFingerprint = sha1(fields);
+    const shouldUpdate    = !R.equals(this.fingerprint, nextFingerprint);
+    logger.info('[shouldComponentUpdate]', nextFingerprint, this.fingerprint, shouldUpdate);
+    this.fingerprint = nextFingerprint;
+    return shouldUpdate;
+  }
 
   render() {
     const { fields } = this.props;

@@ -24,13 +24,20 @@ const ContentForm = Form.create({
       }
       return Form.createFormField({ ...field });
     })(fields);
-    logger.info('[ContentForm][mapPropsToFields] fields is', fields);
-    logger.info('[ContentForm][mapPropsToFields] mapped fields is', mappedFields);
+    logger.info('[ContentForm][mapPropsToFields]', ' fields is', fields);
+    logger.info('[ContentForm][mapPropsToFields]', ' mapped fields is', mappedFields);
     return mappedFields;
   },
   onFieldsChange(props, changedFields) {
     logger.info('[ContentForm][onFieldsChange] onFieldsChange', props, changedFields);
-    props.onChange(changedFields);
+    const realChangedFields = R.pickBy((field, key) => {
+      const oldVar = R.path(['fields', key, 'value'])(props);
+      const newVar = field.value;
+      logger.info('[ContentForm][onFieldsChange]', 'oldVar is', oldVar, 'newVar is', newVar);
+      return oldVar !== newVar;
+    })(changedFields);
+    logger.info('[ContentForm][onFieldsChange]', ' real changed fields is', realChangedFields);
+    props.onChange(realChangedFields);
   },
 })(DynamicForm2);
 
@@ -85,9 +92,9 @@ class ContentUpsert extends React.Component {
 
     let allFields = modelsProxy.getFormFields(schemas, modelName);
 
-    if (modelName === 'colleges') {
-      allFields = R.pick(['id', 'name', 'introduction', 'country_id'], allFields);
-    }
+    // if (modelName === 'colleges') {
+    //   allFields = R.pick(['id', 'name', 'introduction', 'country_id'], allFields);
+    // }
     logger.info('[componentWillMount] allFields is', allFields);
 
     const wrappedFields = await this.asyncWrapAssociations(allFields);
@@ -109,7 +116,7 @@ class ContentUpsert extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    logger.info('[componentWillReceiveProps]...');
+    logger.info('[componentWillReceiveProps]');
     const { isInsertMode, modelName } = this.state;
     if (!isInsertMode) {
       const { models, context: { pane: { data: { record } } } } = nextProps;
@@ -121,7 +128,7 @@ class ContentUpsert extends React.Component {
   }
 
   shouldComponentUpdate(nextProps, nextState, nextContext: any): boolean {
-    logger.info('[shouldComponentUpdate]...', nextProps, nextState, nextContext);
+    logger.info('[shouldComponentUpdate]', nextProps, nextState, nextContext);
     const { key }       = this.state;
     const { activeKey } = nextProps;
     logger.info('[shouldComponentUpdate]', key, activeKey);
@@ -192,17 +199,19 @@ class ContentUpsert extends React.Component {
    * @param changedFields
    */
   handleFormChange = (changedFields) => {
-    logger.log('[handleFormChange] handleFormChange', changedFields);
+    if (!R.isEmpty(changedFields)) {
+      logger.log('[handleFormChange] handleFormChange', changedFields);
 
-    const fields            = R.map(field => R.pick(['value'])(field))(changedFields);
-    const changedFieldsList = R.mergeDeepRight(this.state.modelFields, fields);
-    logger.info('[handleFormChange] modelFields is', this.state.modelFields);
-    logger.info('[handleFormChange] new fields is', fields);
-    logger.info('[handleFormChange] new changedFieldsList is', changedFieldsList);
+      const fields            = R.map(field => R.pick(['value'])(field))(changedFields);
+      const changedFieldsList = R.mergeDeepRight(this.state.modelFields, fields);
+      logger.info('[handleFormChange] modelFields is', this.state.modelFields);
+      logger.info('[handleFormChange] new fields is', fields);
+      logger.info('[handleFormChange] new changedFieldsList is', changedFieldsList);
 
-    this.setState({
-      modelFields: { ...this.state.modelFields, ...changedFieldsList },
-    });
+      this.setState({
+        modelFields: { ...this.state.modelFields, ...changedFieldsList },
+      });
+    }
   };
 
   handleFormSubmit = (e) => {
@@ -243,10 +252,10 @@ class ContentUpsert extends React.Component {
           onSubmit={this.handleFormSubmit}
         />
         <hr />
-        <pre>{JSON.stringify(modelFields, null, 2)}</pre>
-        <hr />
-        <pre>{JSON.stringify(this.state, null, 2)}</pre>
-        <hr />
+        {/*<pre>{JSON.stringify(modelFields, null, 2)}</pre>*/}
+        {/*<hr />*/}
+        {/*<pre>{JSON.stringify(this.state, null, 2)}</pre>*/}
+        {/*<hr />*/}
         <pre>{JSON.stringify(context, null, 2)}</pre>
       </div>
     );

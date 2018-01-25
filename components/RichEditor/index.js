@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { createLogger } from '../../adapters/logger';
 import { apiProxy }     from '../../adapters/api';
 
-const logger = createLogger('components:rich-editor', 1);
+const logger = createLogger('components:rich-editor');
 
 let BraftEditor;
 
