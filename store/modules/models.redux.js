@@ -1,8 +1,11 @@
 import { call, put, select, takeLatest } from 'redux-saga/effects';
 
-import { modelsApi } from '../../services/models';
+import { modelsApi }    from '../../services/models';
+import { createLogger } from '../../adapters/logger';
 
 import { notificationsActions, notificationTypes } from '../notifications.redux';
+
+const logger = createLogger('store:modules:models');
 
 // --------------------------------------------------------------
 // Module actionTypes
@@ -46,10 +49,10 @@ function* save({ payload: { name } }) {
       const response = yield call(modelsApi.save, { token }, { name });
       yield put(notificationsActions.notify(`save model '${name}' success`, notificationTypes.SUCCESS));
       yield put(actions.refreshModels());
-      console.log('saved model is', response, response.data);
+      logger.log('saved model is', response, response.data);
     } catch (e) {
       yield put(notificationsActions.notify(e, notificationTypes.ERROR));
-      console.warn('CATCH -> save model error occurred', e.response, e);
+      logger.warn('CATCH -> save model error occurred', e.response, e);
     }
   }
 }
@@ -58,7 +61,7 @@ function* refreshModels() {
   const { token }    = yield select(state => state.auth);
   const { pageable } = yield select(state => state.mod_models);
   if (token) {
-    console.log('--> refreshModels model', pageable);
+    logger.log('--> refreshModels model', pageable);
     yield put(notificationsActions.notify('loading models...'));
     try {
       const response = yield call(modelsApi.refreshModels, { token }, pageable);
@@ -66,10 +69,10 @@ function* refreshModels() {
       const { data, data: { totalElements } } = response;
       yield put(actions.refreshModelsSuccess(data));
       yield put(notificationsActions.notify(`loading models success, ${totalElements} in total.`, notificationTypes.SUCCESS));
-      console.log('models is', response, response.data);
+      logger.log('models is', response, response.data);
     } catch (e) {
       yield put(notificationsActions.notify(e, notificationTypes.ERROR));
-      console.warn('loading models', e);
+      logger.warn('loading models', e);
     }
   }
 }

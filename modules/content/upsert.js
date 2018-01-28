@@ -90,7 +90,7 @@ class ContentUpsert extends React.Component {
     const modelName = R.compose(R.nth(2), R.split(/::/), R.path(['pane', 'key']))(context);
     logger.info('[componentWillMount] model name is ', modelName);
 
-    let allFields = modelsProxy.getFormFields(schemas, modelName);
+    const allFields = modelsProxy.getFormFields(schemas, modelName);
 
     // if (modelName === 'colleges') {
     //   allFields = R.pick(['id', 'name', 'introduction', 'country_id'], allFields);
@@ -149,48 +149,55 @@ class ContentUpsert extends React.Component {
 
   asyncWrapAssociations = async (fields) => {
     if (R.compose(R.isEmpty, R.isNil)(fields)) {
-      logger.info('[asyncWrapAssociations] no associations found.');
+      logger.info('[asyncWrapAssociations]', 'no associations found.');
       return {};
     }
 
     const { auth } = this.props;
 
-    const associations = R.filter(field => field.type === DynamicFormTypes.Association)(fields);
-    logger.info('[asyncWrapAssociations] associations is', associations);
+    const relationShips = [DynamicFormTypes.Association, DynamicFormTypes.ManyToMany];
+
+    const associations = R.filter(field => R.contains(field.type)(relationShips))(fields);
+    logger.info('[asyncWrapAssociations]', 'associations is', associations);
 
     const wrappedAssociations = await Promise.all(R.values(associations).map(async (field) => {
       const foreignKeys = R.pathOr([], ['options', 'foreignKeys'])(field);
-      logger.log('[asyncWrapAssociations] handle field', field, foreignKeys);
+      logger.log('[asyncWrapAssociations]', 'handle field', field, foreignKeys);
       if (foreignKeys && foreignKeys.length > 0) {
         const fieldsOfAssociations = modelsProxy.getFieldsOfAssociations();
 
         const foreignOpts = R.map((foreignKey) => {
-          const [, modelName, property] = foreignKey.match(/t_(\w+)\.(\w+)/);
-          const association             = fieldsOfAssociations[modelName];
+          const regex = foreignKey.startsWith('t_')
+            ? /t_(\w+)\.(\w+)/  // t_model.id -> model
+            : /(\w+)\.(\w+)/;   // model.id   -> model
+
+          const [, modelName, property] = foreignKey.match(regex);
+
+          const association = fieldsOfAssociations[modelName];
           return { modelName, property, association };
         })(foreignKeys);
-        logger.info('[asyncWrapAssociations] foreignOpts is', foreignOpts);
+        logger.info('[asyncWrapAssociations]', 'foreignOpts is', foreignOpts);
 
         const associationNames = R.pluck('modelName')(foreignOpts);
-        logger.info('[asyncWrapAssociations] associationNames is', associationNames);
+        logger.info('[asyncWrapAssociations]', 'associationNames is', associationNames);
 
         const effects = modelsProxy.listAssociationsCallable(auth, associationNames);
-        logger.info('[asyncWrapAssociations] list associations callable', effects);
+        logger.info('[asyncWrapAssociations]', 'list associations callable', effects);
 
         const allResponse = await Promise.all(R.values(effects));
-        logger.info('[asyncWrapAssociations] allResponse is', allResponse);
+        logger.info('[asyncWrapAssociations]', 'allResponse is', allResponse);
 
         const foreignKeysResponse = R.zipObj(associationNames, R.map(R.prop('data'), allResponse));
-        logger.info('[asyncWrapAssociations] foreignOpts is', foreignOpts, 'foreignKeysResponse is', foreignKeysResponse);
+        logger.info('[asyncWrapAssociations]', 'foreignOpts is', foreignOpts, 'foreignKeysResponse is', foreignKeysResponse);
 
         return { ...field, foreignOpts, associations: foreignKeysResponse };
       }
-      logger.warn('[asyncWrapAssociations] no foreignKeys with association', field);
+      logger.warn('[asyncWrapAssociations]', 'no foreignKeys with association', field);
       return { ...field, type: DynamicFormTypes.Input };
     }));
 
     const pairedWrappedAssociations = R.zipObj(R.keys(associations), wrappedAssociations);
-    logger.log('[asyncWrapAssociations] wrapped associations', pairedWrappedAssociations);
+    logger.log('[asyncWrapAssociations]', 'wrapped associations', pairedWrappedAssociations);
     return pairedWrappedAssociations;
   };
 
@@ -252,10 +259,10 @@ class ContentUpsert extends React.Component {
           onSubmit={this.handleFormSubmit}
         />
         <hr />
-        {/*<pre>{JSON.stringify(modelFields, null, 2)}</pre>*/}
-        {/*<hr />*/}
-        {/*<pre>{JSON.stringify(this.state, null, 2)}</pre>*/}
-        {/*<hr />*/}
+        {/* <pre>{JSON.stringify(modelFields, null, 2)}</pre> */}
+        {/* <hr /> */}
+        {/* <pre>{JSON.stringify(this.state, null, 2)}</pre> */}
+        {/* <hr /> */}
         <pre>{JSON.stringify(context, null, 2)}</pre>
       </div>
     );

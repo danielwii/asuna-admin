@@ -6,7 +6,7 @@ import { authHeader }   from '../adapters/helper';
 const logger = createLogger('service:models');
 
 const instance = axios.create({
-  baseURL: '/rest/',
+  baseURL: '/',
   timeout: 10000,
 });
 
@@ -17,29 +17,41 @@ export const modelsService = {
   // refreshModels({ token }, pageable = {}) {
   //   return instance.get('/content/models', { params: pageable, ...authHeader(token) });
   // },
-  fetch({ token }, modelName, { id, profile }) {
-    return instance.get(`${modelName}/${id}`, { params: { profile }, ...authHeader(token) });
+  fetch({ token }, modelName, { endpoint, id, profile }) {
+    const url    = endpoint ? `${endpoint}/${id}` : `/rest/${modelName}/${id}`;
+    const config = { params: { profile }, ...authHeader(token) };
+    return instance.get(url, config);
   },
-  loadAssociation({ token }, associationName, { fields = [] }) {
+  loadAssociation({ token }, associationName, { endpoint, fields = [] }) {
     logger.log('loadAssociation', associationName, fields);
-    return instance.get(associationName, {
+    const url    = endpoint || `/rest/${associationName}`;
+    const config = {
       params: {
         size  : 100,
         fields: fields.join(','),
       },
       ...authHeader(token),
-    });
+    };
+    return instance.get(url, config);
   },
-  loadModels({ token }, name, { pagination, filters, sorter }) {
-    return instance.get(name, { params: pagination, ...authHeader(token) });
+  loadModels({ token }, name, { endpoint, pagination, filters, sorter }) {
+    const url    = endpoint || `/rest/${name}`;
+    const config = { params: pagination, ...authHeader(token) };
+    return instance.get(url, config);
   },
-  loadSchema({ token }, name) {
-    return instance.options(name, authHeader(token));
+  loadSchema({ token }, name, { endpoint }) {
+    const url    = endpoint || `/rest/${name}`;
+    const config = authHeader(token);
+    return instance.options(url, config);
   },
-  insert({ token }, modelName, { body }) {
-    return instance.post(modelName, body, authHeader(token));
+  insert({ token }, modelName, { endpoint, body }) {
+    const url    = endpoint || `/rest/${modelName}`;
+    const config = authHeader(token);
+    return instance.post(url, body, config);
   },
-  update({ token }, modelName, { id, body }) {
-    return instance.put(`${modelName}/${id}`, body, authHeader(token));
+  update({ token }, modelName, { endpoint, id, body }) {
+    const url    = endpoint ? `${endpoint}/${id}` : `/rest/${modelName}/${id}`;
+    const config = authHeader(token);
+    return instance.put(url, body, config);
   },
 };

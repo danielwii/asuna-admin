@@ -31,7 +31,7 @@ export const buildForm = (form, definitions) => definitions.map((definition) => 
       return generateInput(form, definition.config, definition.layout);
     }
     default:
-      logger.warn(`build form for type ${definition.type} not implemented.`);
+      logger.warn('[buildForm]', `build form for type ${definition.type} not implemented.`);
   }
   return definition;
 });
@@ -68,6 +68,7 @@ export const DynamicFormTypes = {
   Switch     : 'Switch',
   RichText   : 'RichText',
   Association: 'Association',
+  ManyToMany : 'ManyToMany',
 };
 
 export class DynamicForm2 extends React.Component {
@@ -76,29 +77,30 @@ export class DynamicForm2 extends React.Component {
     onSubmit: PropTypes.func.isRequired,
   };
 
-  handleOnSubmit = (e) => {
-    logger.info('[handleOnSubmit] onSubmit', e);
-    e.preventDefault();
-
-    const { form, onSubmit } = this.props;
-    form.validateFields((err, values) => {
-      if (err) {
-        logger.error('error occurred in form', values, err);
-      } else {
-        onSubmit(e);
-      }
-    });
-  };
+  shouldComponentUpdate(nextProps, nextState, nextContext: any): boolean {
+    logger.info('[shouldComponentUpdate]', nextProps, nextState, nextContext);
+    const { fields }      = nextProps;
+    const nextFingerprint = sha1(fields);
+    const shouldUpdate    = !R.equals(this.fingerprint, nextFingerprint);
+    logger.info('[shouldComponentUpdate]', nextFingerprint, this.fingerprint, shouldUpdate);
+    this.fingerprint = nextFingerprint;
+    return shouldUpdate;
+  }
 
   // TODO extract as a react Component
   buildField = (field, index) => {
     const { form, auth } = this.props;
 
-    const options = {
+    const options            = {
       ...field.options, key: field.key || field.name, name: field.name, auth,
     };
+    const defaultAssociation = {
+      name  : 'name',
+      value : 'id',
+      fields: ['id', 'name'],
+    };
 
-    logger.trace('[DynamicForm2][buildField] build field', field, 'field index is', index, 'option is', options);
+    logger.trace('[DynamicForm2][buildField]', 'build field', field, 'field index is', index, 'option is', options);
 
     switch (field.type) {
       case DynamicFormTypes.Plain:
@@ -121,19 +123,43 @@ export class DynamicForm2 extends React.Component {
         return generateSwitch(form, options);
       case DynamicFormTypes.RichText:
         return generateRichTextEditor(form, options);
-      case DynamicFormTypes.Association: {
+      case DynamicFormTypes.ManyToMany: {
+        // --------------------------------------------------------------
+        // ManyToMany RelationShip
+        // --------------------------------------------------------------
+        logger.info('[DynamicForm2][buildField][ManyToMany]', field);
         if (R.has('foreignOpts')(field)) {
-          const { modelName, association } = R.path(['foreignOpts', 0])(field);
+          const { modelName, association = defaultAssociation } = R.path(['foreignOpts', 0])(field);
 
           const items = R.path(['associations', modelName, 'items'])(field);
           return generateAssociation(form, {
             ...options,
             items,
-            getName : R.prop(association.name),
-            getValue: R.prop(association.value),
+            mode    : 'multiple',
+            getName : R.prop(association.name || defaultAssociation.name),
+            getValue: R.prop(association.value || defaultAssociation.value),
           });
         }
-        logger.warn('[buildField] foreignOpts is required in association.');
+        logger.warn('[buildField]', 'foreignOpts is required in association.');
+        return <div>association need foreignOpts.</div>;
+      }
+      case DynamicFormTypes.Association: {
+        // --------------------------------------------------------------
+        // OneToMany / OneToOne RelationShip
+        // --------------------------------------------------------------
+        logger.info('[DynamicForm2][buildField][Association]', field);
+        if (R.has('foreignOpts')(field)) {
+          const { modelName, association = defaultAssociation } = R.path(['foreignOpts', 0])(field);
+
+          const items = R.path(['associations', modelName, 'items'])(field);
+          return generateAssociation(form, {
+            ...options,
+            items,
+            getName : R.prop(association.name || defaultAssociation.name),
+            getValue: R.prop(association.value || defaultAssociation.value),
+          });
+        }
+        logger.warn('[buildField]', 'foreignOpts is required in association.');
         return <div>association need foreignOpts.</div>;
       }
       default:
@@ -164,15 +190,19 @@ export class DynamicForm2 extends React.Component {
     );
   };
 
-  shouldComponentUpdate(nextProps, nextState, nextContext: any): boolean {
-    logger.info('[shouldComponentUpdate]', nextProps, nextState, nextContext);
-    const { fields }      = nextProps;
-    const nextFingerprint = sha1(fields);
-    const shouldUpdate    = !R.equals(this.fingerprint, nextFingerprint);
-    logger.info('[shouldComponentUpdate]', nextFingerprint, this.fingerprint, shouldUpdate);
-    this.fingerprint = nextFingerprint;
-    return shouldUpdate;
-  }
+  handleOnSubmit = (e) => {
+    logger.info('[handleOnSubmit]', 'onSubmit', e);
+    e.preventDefault();
+
+    const { form, onSubmit } = this.props;
+    form.validateFields((err, values) => {
+      if (err) {
+        logger.error('[handleOnSubmit]', 'error occurred in form', values, err);
+      } else {
+        onSubmit(e);
+      }
+    });
+  };
 
   render() {
     const { fields } = this.props;

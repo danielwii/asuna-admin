@@ -34,7 +34,7 @@ const commonColumns = {
  * @type {{colleges: function(*=): *[], countries: function(*=): *[]}}
  */
 export const tableColumns = {
-  colleges : actions => [
+  colleges   : actions => [
     commonColumns.id,
     {
       title    : '名称',
@@ -50,7 +50,7 @@ export const tableColumns = {
     commonColumns.updatedAt,
     commonColumns.actions(actions),
   ],
-  countries: actions => [
+  countries  : actions => [
     commonColumns.id,
     {
       title    : '名称',
@@ -66,7 +66,7 @@ export const tableColumns = {
     commonColumns.updatedAt,
     commonColumns.actions(actions),
   ],
-  articles: actions => [
+  articles   : actions => [
     commonColumns.id,
     {
       title    : '名称',
@@ -80,6 +80,24 @@ export const tableColumns = {
     },
     commonColumns.createdAt,
     commonColumns.updatedAt,
+    commonColumns.actions(actions),
+  ],
+  admin_users: actions => [
+    commonColumns.id,
+    {
+      title    : 'Email',
+      dataIndex: 'email',
+      key      : 'email',
+    },
+    commonColumns.actions(actions),
+  ],
+  admin_roles: actions => [
+    commonColumns.id,
+    {
+      title    : '名称',
+      dataIndex: 'name',
+      key      : 'name',
+    },
     commonColumns.actions(actions),
   ],
 };
@@ -88,26 +106,46 @@ export const tableColumns = {
  * 模型新增 / 编辑页面配置
  */
 export const modelColumns = {
-  colleges: {
+  colleges   : {
     associations: {
       countries: {
-        value : 'id',
         name  : 'name',
-        ref   : 'country',
+        value : 'id',
+        // ref   : 'country',
         fields: ['id', 'name'],
       },
     },
   },
-  articles: {},
+  articles   : {},
+  admin_users: {
+    associations: {
+      admin_roles: {
+        name  : 'name',
+        value : 'id',
+        // ref   : 'roles',
+        fields: ['id', 'name'],
+      },
+    },
+  },
 };
 
 /**
  * 关联模型配置
  */
 export const modelConfigs = {
-  colleges : { table: tableColumns.colleges, model: modelColumns.colleges },
-  countries: { table: tableColumns.countries, model: modelColumns.countries },
-  articles: { table: tableColumns.articles, model: modelColumns.articles },
+  colleges   : { table: tableColumns.colleges, model: modelColumns.colleges },
+  countries  : { table: tableColumns.countries, model: modelColumns.countries },
+  articles   : { table: tableColumns.articles, model: modelColumns.articles },
+  admin_users: {
+    endpoint: 'admin/auth/users',
+    table   : tableColumns.admin_users,
+    model   : modelColumns.admin_users,
+  },
+  admin_roles: {
+    endpoint: 'admin/auth/roles',
+    table   : tableColumns.admin_roles,
+    model   : modelColumns.admin_roles,
+  },
 };
 
 /**
@@ -122,6 +160,14 @@ export const registeredModels = [
       { key: 'colleges', title: '院校管理', linkTo: 'content::index' },
       { key: 'countries', title: '国家管理', linkTo: 'content::index' },
       { key: 'articles', title: '新闻管理', linkTo: 'content::index' },
+    ],
+  },
+  {
+    key     : 'admin',
+    title   : '系统管理',
+    subMenus: [
+      { key: 'admin_users', title: '用户管理', linkTo: 'content::index' },
+      { key: 'admin_roles', title: '角色管理', linkTo: 'content::index' },
     ],
   },
 ];

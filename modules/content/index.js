@@ -51,10 +51,10 @@ class ContentIndex extends React.Component {
   }
 
   shouldComponentUpdate(nextProps, nextState, nextContext: any): boolean {
-    logger.info('[lifecycle] shouldComponentUpdate...', nextProps, nextState, nextContext);
+    logger.info('[shouldComponentUpdate]', nextProps, nextState, nextContext);
     const { key }       = this.state;
     const { activeKey } = nextProps;
-    logger.info('[lifecycle] shouldComponentUpdate', key, activeKey);
+    logger.info('[shouldComponentUpdate]', key, activeKey);
     return !key || key === activeKey;
   }
 
@@ -63,7 +63,7 @@ class ContentIndex extends React.Component {
     const { dispatch }  = this.props;
     dispatch(panesActions.open({
       key   : `content::upsert::${modelName}::${Date.now()}`,
-      title : '新增',
+      title : `新增 - ${modelName}`,
       linkTo: 'content::upsert',
     }));
   };
@@ -74,7 +74,7 @@ class ContentIndex extends React.Component {
     const { dispatch }  = this.props;
     dispatch(panesActions.open({
       key   : `content::upsert::${modelName}::${record.id}`,
-      title : '更新',
+      title : `更新 - ${modelName} - ${record.name || ''}`,
       linkTo: 'content::upsert',
       data  : { modelName, record },
     }));

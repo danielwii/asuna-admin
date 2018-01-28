@@ -4,7 +4,7 @@ import _      from 'lodash';
 import { DynamicFormTypes } from '../components/DynamicForm';
 import { createLogger }     from '../adapters/logger';
 
-const logger = createLogger('adapters:models', 1);
+const logger = createLogger('adapters:models');
 
 export const modelsProxy = {
   getModelConfigs: name => global.context.models.getModelConfig(name),
@@ -43,17 +43,17 @@ export const modelsProxy = {
   listAssociationsCallable: ({ token }, associationNames) =>
     global.context.models.listAssociationsCallable({ token }, associationNames),
 
-  fetch: ({ token }, modelName, data) => global.context.models.fetch({ token }, modelName, data),
+  fetch: ({ token }, name, data) => global.context.models.fetch({ token }, name, data),
 
   /**
    * update model if id exists in body, insert new one or else.
    * @param {token}    - { token }
-   * @param modelName  - model name
+   * @param name       - model name
    * @param data       - model body
    * @returns {*}
    */
-  upsert: ({ token, schemas }, modelName, data) =>
-    global.context.models.upsert({ token, schemas }, modelName, data),
+  upsert: ({ token, schemas }, name, data) =>
+    global.context.models.upsert({ token, schemas }, name, data),
 };
 
 export class ModelsAdapter {
@@ -61,6 +61,13 @@ export class ModelsAdapter {
     this.service      = service;
     this.allModels    = Object.keys(modelConfigs);
     this.modelConfigs = modelConfigs;
+
+    logger.info('[ModelsAdapter][constructor]', 'init', modelConfigs);
+    R.forEachObjIndexed((config, name) => {
+      logger.info('[ModelsAdapter][constructor]', 'check', name, config);
+      if (!config.table) logger.warn('[ModelsAdapter][constructor]', name, 'should set table');
+      if (!config.model) logger.warn('[ModelsAdapter][constructor]', name, 'should set model');
+    })(modelConfigs);
   }
 
   identifyType = (field) => {
@@ -72,8 +79,16 @@ export class ModelsAdapter {
       return DynamicFormTypes.Association;
     }
 
+    if (R.path(['config', 'info'])(field.name)) {
+      return DynamicFormTypes.Association;
+    }
+
     if (R.path(['config', 'info', 'type'])(field) === 'RICHTEXT') {
       return DynamicFormTypes.RichText;
+    }
+
+    if (R.path(['config', 'many'])(field) === true) {
+      return DynamicFormTypes.ManyToMany;
     }
 
     const type = R.path(['config', 'type'])(field);
@@ -88,13 +103,15 @@ export class ModelsAdapter {
     return type;
   };
 
-  fetch = (config, modelName, data) => this.service.fetch(config, modelName, data);
+  fetch = (config, name, data) => this.service.fetch(config, name, {
+    ...data,
+    ...this.getModelConfig(name),
+  });
 
-  upsert = ({ token, schemas }, modelName, data: { body: any }) => {
-    logger.info('[upsert] upsert', modelName, data);
+  upsert = ({ token, schemas }, name, data: { body: any }) => {
+    logger.info('[upsert] upsert', name, data);
 
-    const fields = this.getFormSchema(schemas, modelName);
-
+    const fields = this.getFormSchema(schemas, name);
     logger.info('[upsert] fields is', fields);
 
     const transformed = _.mapKeys(data.body, (value, key) => _.get(fields, `${key}.ref`, key));
@@ -102,16 +119,27 @@ export class ModelsAdapter {
 
     const id = R.path(['body', 'id'])(data);
     if (id) {
-      return this.service.update({ token }, modelName, { ...data, body: transformed, id });
+      return this.service.update({ token }, name, {
+        ...data,
+        body: transformed,
+        id,
+        ...this.getModelConfig(name),
+      });
     }
-    return this.service.insert({ token }, modelName, { ...data, body: transformed });
+    return this.service.insert({ token }, name, {
+      ...data,
+      body: transformed,
+      ...this.getModelConfig(name),
+    });
   };
 
   getModelConfig = (name) => {
-    if (this.modelConfigs && this.modelConfigs[name]) {
-      return this.modelConfigs[name];
+    const config = R.prop(name)(this.modelConfigs);
+    if (config) {
+      logger.info('[getModelConfig]', name, 'config is', config);
+      return config;
     }
-    logger.error(`'${name}' not found in`, this.modelConfigs);
+    logger.error('[getModelConfig]', `'${name}' not found in`, this.modelConfigs);
     return {};
   };
 
@@ -160,7 +188,10 @@ export class ModelsAdapter {
 
   loadModels = ({ token }, name, { pagination = {}, filters, sorter }) => {
     const { current: page, pageSize: size } = pagination;
-    return this.service.loadModels({ token }, name, { pagination: { page, size } });
+    return this.service.loadModels({ token }, name, {
+      pagination: { page, size },
+      ...this.getModelConfig(name),
+    });
   };
 
   loadAssociation = ({ token }, associationName) => {
@@ -170,14 +201,17 @@ export class ModelsAdapter {
     }
 
     const fields = R.pathOr([], [associationName, 'fields'])(this.getFieldsOfAssociations());
-    return this.service.loadAssociation({ token }, associationName, { fields });
+    return this.service.loadAssociation({ token }, associationName, {
+      fields, ...this.getModelConfig(associationName),
+    });
   };
+
+  loadSchema = ({ token }, name) =>
+    this.service.loadSchema({ token }, name, this.getModelConfig(name));
 
   // eslint-disable-next-line function-paren-newline
   listAssociationsCallable = ({ token }, associationNames) => Object.assign(
     ...associationNames.map(name => ({ [name]: this.loadAssociation({ token }, name) })));
-
-  loadSchema = ({ token }, name) => this.service.loadSchema({ token }, name);
 
   // eslint-disable-next-line function-paren-newline
   listSchemasCallable = ({ token }) => Object.assign(

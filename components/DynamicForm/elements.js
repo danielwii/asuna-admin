@@ -254,11 +254,12 @@ export const generateRichTextEditor = (form, {
 };
 
 export const generateAssociation = (form, {
-  key, name, label, placeholder, onChange, onFocus, onBlur, items,
+  key, name, label, placeholder, onChange, onFocus, onBlur, items, mode,
   getName = R.prop('name'), getValue = R.prop('value'),
 }, formItemLayout = defaultFormItemLayout) => {
   const fieldName = key || name;
   const labelName = label || name || key;
+  logger.log('[generateAssociation]', 'items is', items);
   return generateComponent(
     form, { fieldName, labelName }, (
       <Select
@@ -270,6 +271,7 @@ export const generateAssociation = (form, {
         // onChange={onChange}
         // onFocus={onFocus}
         // onBlur={onBlur}
+        mode={mode}
         filterOption={(input, option) => {
           logger.log('filter input is', input, 'option is', option);
           return option.props.items.toLowerCase().indexOf(input.toLowerCase()) >= 0;
