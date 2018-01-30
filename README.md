@@ -21,3 +21,16 @@ yarn dev # run server as dev mode
     cp .env.example .env
     ```
 3. Setup services/definitions
+
+### Using subtree
+
+1. Create
+    ```bash
+    git remote add mast-admin git@github.com:danielwii/mast-admin.git
+    git subtree add --prefix mast-admin mast-admin master
+    ```
+
+2. Update.
+    ```bash
+    git subtree pull --prefix mast-admin mast-admin master
+    ```
