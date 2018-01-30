@@ -8,3 +8,16 @@
 yarn     # install dependencies
 yarn dev # run server as dev mode
 ```
+
+## Quick Start
+
+1. Get the package.
+    ```bash
+    git clone -o mast -b master --single-branch git@github.com:danielwii/mast-admin.git admin
+    cd admin && yarn
+    ```
+2. Setup env.
+    ```bash
+    cp .env.example .env
+    ```
+3. Setup services/definitions
