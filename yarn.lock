@@ -3010,6 +3010,10 @@ dotenv@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-4.0.0.tgz#864ef1379aced55ce6f95debecdce179f7a0cd1d"
 
+dotenv@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-5.0.0.tgz#0206eb5b336639bf377618a2a304ff00c6a1fddb"
+
 draft-convert@^2.0.0:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/draft-convert/-/draft-convert-2.0.1.tgz#dfaa812b489fa87b38a54e16d04523eab63564d9"
@@ -5542,10 +5546,11 @@ no-case@^2.2.0:
   dependencies:
     lower-case "^1.1.1"
 
-node-buffs@../node-buffs:
-  version "0.0.1"
+node-buffs@^0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/node-buffs/-/node-buffs-0.0.2.tgz#fc0266330ed2059a1e859c459954fe7ae3423311"
   dependencies:
-    dotenv "^4.0.0"
+    dotenv "^5.0.0"
     lodash "^4.17.4"
 
 node-dir@^0.1.10:
