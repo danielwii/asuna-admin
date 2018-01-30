@@ -13,10 +13,11 @@ import {
   Select,
   Switch,
   TimePicker,
-}                          from 'antd';
-// import { BraftRichEditor } from '../RichEditor';
+} from 'antd';
+
 import { createLogger }    from '../../adapters/logger';
 import { BraftRichEditor } from '../../components/RichEditor';
+import { Images }          from './images';
 
 const logger = createLogger('components:dynamic-form:elements');
 
@@ -50,7 +51,7 @@ const defaultFormItemLayout = {
 
 // eslint-disable-next-line react/prop-types
 export const generatePlain = ({ key, label, text }, formItemLayout = defaultFormItemLayout) => {
-  logger.info('generatePlain', key, label, text);
+  logger.info('[generatePlain]', key, label, text);
   return <Form.Item key={key || label} {...formItemLayout} label={label}>{text}</Form.Item>;
 };
 
@@ -79,7 +80,7 @@ export const generateHidden = (form, { key, name }) => {
       </Form.Item>
     );
   }
-  logger.error('name is required in generateHidden');
+  logger.error('[generateHidden]', 'name is required in generateHidden');
   return null;
 };
 
@@ -123,7 +124,7 @@ export const generateCheckbox2 = (form, {
 export const generateButton = (form, {
   key, name, label, type, htmlType, onClick,
 }, formItemLayout = defaultFormItemLayout) => {
-  logger.info('generateButton', key, name);
+  logger.info('[generateButton]', key, name);
   const fieldName = key || name;
   if (name) {
     return (
@@ -137,14 +138,14 @@ export const generateButton = (form, {
       </Form.Item>
     );
   }
-  logger.error('name is required in generateButton');
+  logger.error('[generateButton]', 'name is required in generateButton');
   return null;
 };
 
 export const generateInputNumber = (form, {
   key, name, label,
 }, formItemLayout = defaultFormItemLayout) => {
-  logger.info('generateInputNumber', key, name);
+  logger.info('[generateInputNumber]', key, name);
   const fieldName = key || name;
   const labelName = label || name || key;
   return generateComponent(
@@ -205,7 +206,7 @@ export const generateDateTime = (form, {
   key, name, label,
   mode = '',
 }, formItemLayout = defaultFormItemLayout) => {
-  logger.info('generateDateTime', key, name);
+  logger.info('[generateDateTime]', key, name);
   const fieldName = key || name;
   const labelName = label || name || key;
 
@@ -237,6 +238,18 @@ export const generateSwitch = (form, {
   return generateComponent(
     form, { fieldName, labelName, rules: { valuePropName: 'checked' } }, (
       <Switch />
+    ), formItemLayout,
+  );
+};
+
+export const generateImages = (form, {
+  key, name, label, fileList = [], onUpload,
+}, formItemLayout = defaultFormItemLayout) => {
+  const fieldName = key || name;
+  const labelName = label || name || key;
+  return generateComponent(
+    form, { fieldName, labelName }, (
+      <Images />
     ), formItemLayout,
   );
 };

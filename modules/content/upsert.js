@@ -29,14 +29,14 @@ const ContentForm = Form.create({
     return mappedFields;
   },
   onFieldsChange(props, changedFields) {
-    logger.info('[ContentForm][onFieldsChange] onFieldsChange', props, changedFields);
+    logger.info('[ContentForm][onFieldsChange]', 'onFieldsChange', props, changedFields);
     const realChangedFields = R.pickBy((field, key) => {
       const oldVar = R.path(['fields', key, 'value'])(props);
       const newVar = field.value;
       logger.info('[ContentForm][onFieldsChange]', 'oldVar is', oldVar, 'newVar is', newVar);
       return oldVar !== newVar;
     })(changedFields);
-    logger.info('[ContentForm][onFieldsChange]', ' real changed fields is', realChangedFields);
+    logger.info('[ContentForm][onFieldsChange]', 'real changed fields is', realChangedFields);
     props.onChange(realChangedFields);
   },
 })(DynamicForm2);
@@ -69,7 +69,7 @@ class ContentUpsert extends React.Component {
 
     // content::create::name::timestamp => name
     const modelName = R.compose(R.nth(2), R.split(/::/), R.path(['pane', 'key']))(context);
-    logger.info('[constructor] model name is ', modelName);
+    logger.info('[constructor]', 'model name is ', modelName);
 
     const isInsertMode = this.detectUpsertMode(modelName);
 
@@ -83,30 +83,30 @@ class ContentUpsert extends React.Component {
 
 
   async componentWillMount(): void {
-    logger.info('[componentWillMount]...');
+    logger.info('[componentWillMount]', 'init...');
     const { context, schemas } = this.props;
 
     // content::create::name::timestamp => name
     const modelName = R.compose(R.nth(2), R.split(/::/), R.path(['pane', 'key']))(context);
-    logger.info('[componentWillMount] model name is ', modelName);
+    logger.info('[componentWillMount]', 'model name is ', modelName);
 
     const allFields = modelsProxy.getFormFields(schemas, modelName);
 
     // if (modelName === 'colleges') {
     //   allFields = R.pick(['id', 'name', 'introduction', 'country_id'], allFields);
     // }
-    logger.info('[componentWillMount] allFields is', allFields);
+    logger.info('[componentWillMount]', 'allFields is', allFields);
 
     const wrappedFields = await this.asyncWrapAssociations(allFields);
 
-    logger.info('[componentWillMount] wrappedFields is', wrappedFields);
+    logger.info('[componentWillMount]', 'wrappedFields is', wrappedFields);
 
     const formFields = R.omit(
       ['created_at', 'updated_at'],
       R.mergeDeepRight(allFields, wrappedFields),
     );
 
-    logger.info('[componentWillMount] form fields is', formFields);
+    logger.info('[componentWillMount]', 'form fields is', formFields);
 
     // !!important!!
     // associations is loaded in async mode, so the models may already set in state
@@ -116,13 +116,13 @@ class ContentUpsert extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    logger.info('[componentWillReceiveProps]');
+    logger.info('[componentWillReceiveProps]', 'init...');
     const { isInsertMode, modelName } = this.state;
     if (!isInsertMode) {
       const { models, context: { pane: { data: { record } } } } = nextProps;
 
       const fieldValues = R.path([modelName, record.id])(models) || {};
-      logger.info('[componentWillReceiveProps] field values is', fieldValues);
+      logger.info('[componentWillReceiveProps]', 'field values is', fieldValues);
       this.handleFormChange(R.map(value => ({ value }))(fieldValues));
     }
   }
@@ -140,7 +140,7 @@ class ContentUpsert extends React.Component {
 
     const record = R.path(['pane', 'data', 'record'])(context);
     if (record) {
-      logger.info('[detectUpsertMode] set to update mode and load model...', record);
+      logger.info('[detectUpsertMode]', 'set to update mode and load model...', record);
       dispatch(modelsActions.fetch(modelName, { id: record.id, profile: 'detail' }));
       return false;
     }
@@ -207,13 +207,13 @@ class ContentUpsert extends React.Component {
    */
   handleFormChange = (changedFields) => {
     if (!R.isEmpty(changedFields)) {
-      logger.log('[handleFormChange] handleFormChange', changedFields);
+      logger.log('[handleFormChange]', 'handleFormChange', changedFields);
 
       const fields            = R.map(field => R.pick(['value'])(field))(changedFields);
       const changedFieldsList = R.mergeDeepRight(this.state.modelFields, fields);
-      logger.info('[handleFormChange] modelFields is', this.state.modelFields);
-      logger.info('[handleFormChange] new fields is', fields);
-      logger.info('[handleFormChange] new changedFieldsList is', changedFieldsList);
+      logger.info('[handleFormChange]', 'modelFields is', this.state.modelFields);
+      logger.info('[handleFormChange]', 'new fields is', fields);
+      logger.info('[handleFormChange]', 'new changedFieldsList is', changedFieldsList);
 
       this.setState({
         modelFields: { ...this.state.modelFields, ...changedFieldsList },
@@ -222,10 +222,10 @@ class ContentUpsert extends React.Component {
   };
 
   handleFormSubmit = (e) => {
-    logger.info('[handleFormSubmit] handleFormSubmit', e);
+    logger.info('[handleFormSubmit]', 'handleFormSubmit', e);
     e.preventDefault();
     const fieldPairs = R.map(R.prop('value'))(this.state.modelFields);
-    logger.info('[handleFormSubmit] all fieldPairs waiting for submit is', fieldPairs);
+    logger.info('[handleFormSubmit]', 'all fieldPairs waiting for submit is', fieldPairs);
 
     const { dispatch, onClose }       = this.props;
     const { modelName, isInsertMode } = this.state;
@@ -246,7 +246,7 @@ class ContentUpsert extends React.Component {
       return <div>loading...</div>;
     }
 
-    logger.log('[render] modelFields is ', modelFields);
+    logger.log('[render]', 'modelFields is ', modelFields);
 
     return (
       <div>

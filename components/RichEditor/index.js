@@ -21,17 +21,17 @@ export class BraftRichEditor extends React.Component {
   componentDidMount(): void {
     // eslint-disable-next-line global-require
     BraftEditor = require('braft-editor').default;
-    logger.info('[componentDidMount] loaded braft editor');
+    logger.info('[componentDidMount]', 'loaded braft editor');
     // eslint-disable-next-line react/no-did-mount-set-state
     this.setState({ loading: false });
   }
 
   handleChange = (content) => {
-    logger.info('[handleChange] content is', content);
+    logger.info('[handleChange]', 'content is', content);
   };
 
   handleHTMLChange = (html) => {
-    logger.info('[handleHTMLChange] html is', html);
+    logger.info('[handleHTMLChange]', 'html is', html);
     const { onChange } = this.props;
     onChange(html);
   };
@@ -57,9 +57,9 @@ export class BraftRichEditor extends React.Component {
 */
 
   validateFn = (file) => {
-    logger.info('[validateFn] validate file', file);
+    logger.info('[validateFn]', 'validate file', file);
     if (file.size > 1000 * 1000 * 2) {
-      logger.warn('[validateFn] file size must less than 2_000_000', file);
+      logger.warn('[validateFn]', 'file size must less than 2_000_000', file);
       return false;
     }
     return true;
@@ -67,16 +67,16 @@ export class BraftRichEditor extends React.Component {
 
   uploadFn = async (param) => {
     const { auth } = this.props;
-    logger.info('[uploadFn] param is', param);
+    logger.info('[uploadFn]', 'param is', param);
 
     const response = await apiProxy.upload(auth, param.file, {
       onUploadProgress(progressEvent) {
-        logger.info('[uploadFn][progressFn] event is', progressEvent);
+        logger.info('[uploadFn][progressFn]', 'event is', progressEvent);
         param.progress((progressEvent.loaded / progressEvent.total) * 100);
       },
     });
 
-    logger.info('[uploadFn] response is', response);
+    logger.info('[uploadFn]', 'response is', response);
 
     if (response.status === 200) {
       param.success({

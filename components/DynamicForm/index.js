@@ -12,6 +12,7 @@ import {
   generateCheckbox,
   generateDateTime,
   generateHidden,
+  generateImages,
   generateInput,
   generateInputNumber,
   generatePlain,
@@ -57,7 +58,9 @@ class DynamicForm extends React.Component {
 export default Form.create()(DynamicForm);
 
 export const DynamicFormTypes = {
-  Input      : 'Input',
+  // --------------------------------------------------------------
+  // Basic Types
+  // --------------------------------------------------------------
   Checkbox   : 'Checkbox',
   Button     : 'Button',
   Hidden     : 'Hidden',
@@ -66,6 +69,12 @@ export const DynamicFormTypes = {
   TextArea   : 'TextArea',
   DateTime   : 'DateTime',
   Switch     : 'Switch',
+  // --------------------------------------------------------------
+  // Advanced Types
+  // --------------------------------------------------------------
+  Image      : 'Image',
+  Images     : 'Images',
+  Video      : 'Video',
   RichText   : 'RichText',
   Association: 'Association',
   ManyToMany : 'ManyToMany',
@@ -74,6 +83,7 @@ export const DynamicFormTypes = {
 export class DynamicForm2 extends React.Component {
   static propTypes = {
     fields  : PropTypes.shape({}),
+    auth    : PropTypes.shape({}),
     onSubmit: PropTypes.func.isRequired,
   };
 
@@ -119,6 +129,8 @@ export class DynamicForm2 extends React.Component {
         return generateTextArea(form, options);
       case DynamicFormTypes.DateTime:
         return generateDateTime(form, options);
+      case DynamicFormTypes.Images:
+        return generateImages(form, options);
       case DynamicFormTypes.Switch:
         return generateSwitch(form, options);
       case DynamicFormTypes.RichText:
@@ -206,7 +218,7 @@ export class DynamicForm2 extends React.Component {
 
   render() {
     const { fields } = this.props;
-    logger.log('[DynamicForm2][render] props is', this.props, 'fields is', fields);
+    logger.log('[DynamicForm2][render]', 'props is', this.props, 'fields is', fields);
 
     /*
         const fieldGroups = R.compose(

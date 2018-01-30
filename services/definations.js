@@ -82,6 +82,15 @@ export const tableColumns = {
     commonColumns.updatedAt,
     commonColumns.actions(actions),
   ],
+  students   : actions => [
+    commonColumns.id,
+    {
+      title    : '名称',
+      dataIndex: 'name',
+      key      : 'name',
+    },
+    commonColumns.actions(actions),
+  ],
   admin_users: actions => [
     commonColumns.id,
     {
@@ -131,11 +140,13 @@ export const modelColumns = {
 
 /**
  * 关联模型配置
+ * endpoint: /rest/modelName
  */
 export const modelConfigs = {
   colleges   : { table: tableColumns.colleges, model: modelColumns.colleges },
   countries  : { table: tableColumns.countries, model: modelColumns.countries },
   articles   : { table: tableColumns.articles, model: modelColumns.articles },
+  students   : { table: tableColumns.students, model: modelColumns.students },
   admin_users: {
     endpoint: 'admin/auth/users',
     table   : tableColumns.admin_users,
@@ -153,6 +164,13 @@ export const modelConfigs = {
  * @type {*[]}
  */
 export const registeredModels = [
+  {
+    key     : 'student',
+    title   : '学生管理',
+    subMenus: [
+      { key: 'students', title: '学生管理', linkTo: 'content::index' },
+    ],
+  },
   {
     key     : 'content',
     title   : '内容管理',

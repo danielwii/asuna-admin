@@ -75,17 +75,16 @@ export class ModelsAdapter {
       return DynamicFormTypes.Plain;
     }
 
-    if (R.endsWith('_id')(field.name)) {
+    if (R.endsWith('_id')(field.name) || R.path(['config', 'info'])(field.name)) {
       return DynamicFormTypes.Association;
     }
 
-    if (R.path(['config', 'info'])(field.name)) {
-      return DynamicFormTypes.Association;
-    }
+    const advancedType = R.path(['config', 'info', 'type'])(field);
 
-    if (R.path(['config', 'info', 'type'])(field) === 'RICHTEXT') {
-      return DynamicFormTypes.RichText;
-    }
+    if (/^RichText$/i.test(advancedType)) return DynamicFormTypes.RichText;
+    if (/^Image$/i.test(advancedType)) return DynamicFormTypes.Image;
+    if (/^Images$/i.test(advancedType)) return DynamicFormTypes.Images;
+    if (/^Video$/i.test(advancedType)) return DynamicFormTypes.Video;
 
     if (R.path(['config', 'many'])(field) === true) {
       return DynamicFormTypes.ManyToMany;
@@ -93,13 +92,13 @@ export class ModelsAdapter {
 
     const type = R.path(['config', 'type'])(field);
 
-    if (/VARCHAR.+/.test(type)) return DynamicFormTypes.Input;
-    if (/INTEGER|FLOAT/.test(type)) return DynamicFormTypes.InputNumber;
-    if (/TEXT/.test(type)) return DynamicFormTypes.TextArea;
-    if (/DATETIME/.test(type)) return DynamicFormTypes.DateTime;
-    if (/BOOLEAN/.test(type)) return DynamicFormTypes.Switch;
+    if (/^VARCHAR.+$/.test(type)) return DynamicFormTypes.Input;
+    if (/^INTEGER|FLOAT$/.test(type)) return DynamicFormTypes.InputNumber;
+    if (/^TEXT$/.test(type)) return DynamicFormTypes.TextArea;
+    if (/^DATETIME$/.test(type)) return DynamicFormTypes.DateTime;
+    if (/^BOOLEAN$/.test(type)) return DynamicFormTypes.Switch;
 
-    logger.warn('[identifyType] type', type, 'cannot identified.');
+    logger.warn('[identifyType]', 'type', type, 'cannot identified.');
     return type;
   };
 
@@ -109,13 +108,13 @@ export class ModelsAdapter {
   });
 
   upsert = ({ token, schemas }, name, data: { body: any }) => {
-    logger.info('[upsert] upsert', name, data);
+    logger.info('[upsert]', 'upsert', name, data);
 
     const fields = this.getFormSchema(schemas, name);
-    logger.info('[upsert] fields is', fields);
+    logger.info('[upsert]', 'fields is', fields);
 
     const transformed = _.mapKeys(data.body, (value, key) => _.get(fields, `${key}.ref`, key));
-    logger.info('[upsert] transformed is', transformed);
+    logger.info('[upsert]', 'transformed is', transformed);
 
     const id = R.path(['body', 'id'])(data);
     if (id) {
@@ -145,17 +144,17 @@ export class ModelsAdapter {
 
   getFormSchema = (schemas, name, values) => {
     if (!schemas || !name) {
-      logger.error('[getFormSchema] schemas or name is required. schemas is', schemas, 'name is', name);
+      logger.error('[getFormSchema]', 'schemas or name is required. schemas is', schemas, 'name is', name);
       return {};
     }
     const schema = R.prop(name)(schemas);
 
     if (!schema) {
-      logger.error('[getFormSchema ]schema is required.');
+      logger.error('[getFormSchema]', 'schema is required.');
       return {};
     }
 
-    logger.log('[getFormSchema] schema is', schema, 'name is', name);
+    logger.log('[getFormSchema]', 'schema is', schema, 'name is', name);
     return R.compose(
       R.mergeAll,
       R.map(formatted => ({ [formatted.name]: formatted })),
@@ -173,7 +172,7 @@ export class ModelsAdapter {
   };
 
   getFieldsOfAssociations = R.memoize(() => {
-    logger.info('[getFieldsOfAssociations] modelConfigs is', this.modelConfigs);
+    logger.info('[getFieldsOfAssociations]', 'modelConfigs is', this.modelConfigs);
     const concatValues       = (l, r) => (R.is(String, l) ? l : R.uniq(R.concat(l, r)));
     const isNotEmpty         = R.compose(R.not, R.anyPass([R.isEmpty, R.isNil]));
     const associationsFields = R.compose(
@@ -182,7 +181,7 @@ export class ModelsAdapter {
       R.values,
       R.map(R.path(['model', 'associations'])),
     )(this.modelConfigs);
-    logger.log('[getFieldsOfAssociations] associationsFields is', associationsFields);
+    logger.log('[getFieldsOfAssociations]', 'associationsFields is', associationsFields);
     return associationsFields;
   });
 
@@ -196,7 +195,7 @@ export class ModelsAdapter {
 
   loadAssociation = ({ token }, associationName) => {
     if (!associationName) {
-      logger.warn('[loadAssociation] associationName is required.');
+      logger.warn('[loadAssociation]', 'associationName is required.');
       return null;
     }
 
