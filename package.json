@@ -1,5 +1,6 @@
 {
   "name": "mast-admin",
+  "version": "0.0.1",
   "scripts": {
     "autod": "autod",
     "dev": "node $NODE_DEBUG_OPTION server.js",
