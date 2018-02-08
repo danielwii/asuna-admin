@@ -61,6 +61,6 @@
     "eslint-plugin-jsx-a11y": "^6.0.3",
     "eslint-plugin-react": "^7.5.1",
     "webpack-bundle-analyzer": "^2.9.2",
-    "webpack-jarvis": "^0.2.2"
+    "webpack-jarvis": "0.3.0"
   }
 }
