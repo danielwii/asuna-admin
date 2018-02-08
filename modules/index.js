@@ -9,8 +9,8 @@ const logger = createLogger('modules:index');
 export default dynamic({
   modules: ({ module }) => {
     const components = {
-      'models::index'  : import('./models'),
-      'models::setup'  : import('./models/setup'),
+      // 'models::index'  : import('./models'),
+      // 'models::setup'  : import('./models/setup'),
       'content::index' : import('./content'),
       'content::upsert': import('./content/upsert'),
       default          : import('./undefined'),

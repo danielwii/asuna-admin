@@ -21,7 +21,7 @@ import { panesActionTypes, panesReducer, panesSagas }             from './panes.
 import { menuActionTypes, menuReducer, menuSagas }                from './menu.redux';
 import { modelsActionTypes, modelsReducer, modelsSagas }          from './models.redux';
 import { contentActionTypes, contentReducer, contentSagas }       from './content.redux';
-import { modModelsActionTypes, modModelsReducer, modModelsSagas } from './modules/models.redux';
+// import { modModelsActionTypes, modModelsReducer, modModelsSagas } from './modules/models.redux';
 
 const initialState = {};
 
@@ -37,7 +37,7 @@ export const actionTypes = {
   menu         : menuActionTypes,
   models       : modelsActionTypes,
   content      : contentActionTypes,
-  mod_models   : modModelsActionTypes,
+  // mod_models   : modModelsActionTypes,
 };
 
 // --------------------------------------------------------------
@@ -52,7 +52,7 @@ const rootReducers = combineReducers({
   menu         : menuReducer,
   models       : modelsReducer,
   content      : contentReducer,
-  mod_models   : modModelsReducer,
+  // mod_models   : modModelsReducer,
   form         : formReducer,
   global       : (previousState = initialState, action) => (
     { ...previousState, ...action }
@@ -72,7 +72,7 @@ function* rootSaga() {
     ...menuSagas,
     ...modelsSagas,
     ...contentSagas,
-    ...modModelsSagas,
+    // ...modModelsSagas,
   ]);
 }
 
