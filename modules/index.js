@@ -16,7 +16,7 @@ export default dynamic({
       default          : import('./undefined'),
     };
 
-    logger.log('looking for module', module);
+    logger.info('looking for module', module);
 
     if (_.has(components, module)) {
       logger.info('module includes in components', components);

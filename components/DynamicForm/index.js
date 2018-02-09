@@ -12,6 +12,7 @@ import {
   generateCheckbox,
   generateDateTime,
   generateHidden,
+  generateImage,
   generateImages,
   generateInput,
   generateInputNumber,
@@ -110,7 +111,7 @@ export class DynamicForm2 extends React.Component {
       fields: ['id', 'name'],
     };
 
-    logger.trace('[DynamicForm2][buildField]', 'build field', field, 'field index is', index, 'option is', options);
+    logger.info('[DynamicForm2][buildField]', 'build field', field, 'field index is', index, 'option is', options);
 
     switch (field.type) {
       case DynamicFormTypes.Plain:
@@ -129,6 +130,8 @@ export class DynamicForm2 extends React.Component {
         return generateTextArea(form, options);
       case DynamicFormTypes.DateTime:
         return generateDateTime(form, options);
+      case DynamicFormTypes.Image:
+        return generateImage(form, options);
       case DynamicFormTypes.Images:
         return generateImages(form, options);
       case DynamicFormTypes.Switch:
@@ -229,10 +232,14 @@ export class DynamicForm2 extends React.Component {
         logger.log('DynamicForm2 fields group is', fieldGroups);
     */
 
+    // remove fields which type is not included
+    const renderFields = _.map(_.filter(fields, field => !!field.type), this.buildField);
+
     return (
       <Form>
         {/* {_.map(fieldGroups, this.buildFieldGroup)} */}
-        {_.map(fields, this.buildField)}
+        {/* {_.map(fields, this.buildField)} */}
+        {renderFields}
         <Form.Item>
           <Button
             type="primary"

@@ -110,6 +110,7 @@ class ContentUpsert extends React.Component {
 
     // !!important!!
     // associations is loaded in async mode, so the models may already set in state
+    // it have to be merged with fields in state
     this.setState({
       modelFields: R.mergeDeepRight(formFields, this.state.modelFields),
     });

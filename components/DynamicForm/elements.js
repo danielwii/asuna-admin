@@ -17,7 +17,8 @@ import {
 
 import { createLogger }    from '../../adapters/logger';
 import { BraftRichEditor } from '../../components/RichEditor';
-import { Images }          from './images';
+
+import { ImagesUploader, ImageUploader } from './images';
 
 const logger = createLogger('components:dynamic-form:elements');
 
@@ -96,29 +97,6 @@ export const generateCheckbox = (form, {
     formItemLayout,
   );
 };
-
-/*
-export const generateCheckbox2 = (form, {
-  key, name, label,
-}, formItemLayout = defaultFormItemLayout) => {
-  logger.info('generateCheckbox', key, name);
-  const fieldName = key || name;
-  if (name) {
-    const decorator = form.getFieldDecorator(fieldName, {
-      valuePropName: 'checked',
-      initialValue : false,
-    });
-    const decorated = decorator(<Checkbox>{label || name || key}</Checkbox>);
-    return (
-      <Form.Item key={fieldName} {...formItemLayout}>
-        {decorated}
-      </Form.Item>
-    );
-  }
-  logger.error('name is required in generateCheckbox');
-  return null;
-};
-*/
 
 // TODO wrap by generateComponent
 export const generateButton = (form, {
@@ -243,13 +221,25 @@ export const generateSwitch = (form, {
 };
 
 export const generateImages = (form, {
-  key, name, label, fileList = [], onUpload,
+  key, name, label, auth, fileList = [], onUpload,
 }, formItemLayout = defaultFormItemLayout) => {
   const fieldName = key || name;
   const labelName = label || name || key;
   return generateComponent(
     form, { fieldName, labelName }, (
-      <Images />
+      <ImagesUploader auth={auth} />
+    ), formItemLayout,
+  );
+};
+
+export const generateImage = (form, {
+  key, name, label, auth, file, onUpload,
+}, formItemLayout = defaultFormItemLayout) => {
+  const fieldName = key || name;
+  const labelName = label || name || key;
+  return generateComponent(
+    form, { fieldName, labelName }, (
+      <ImageUploader auth={auth} />
     ), formItemLayout,
   );
 };

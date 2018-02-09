@@ -85,6 +85,12 @@ class ContentIndex extends React.Component {
     const { modelName } = this.state;
     const { dispatch }  = this.props;
     dispatch(contentActions.loadModels(modelName, { pagination, filters, sorter }));
+    this.setState({ pagination, filters, sorter });
+  };
+
+  refresh = () => {
+    const { pagination, filters, sorter } = this.state;
+    this.handleTableChange(pagination, filters, sorter);
   };
 
   render() {
@@ -102,12 +108,11 @@ class ContentIndex extends React.Component {
 
     return (
       <div>
-        <h1>hello kitty!</h1>
         <hr />
 
         <Button onClick={this.create}>Create</Button>
         <Divider type="vertical" />
-        <Button>Refresh</Button>
+        <Button onClick={this.refresh}>Refresh</Button>
 
         <hr />
 

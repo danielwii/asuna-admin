@@ -23,7 +23,13 @@ yarn dev     # run server as dev mode
     ```
 3. Setup services/definitions
 
-### Using subtree
+## Sonar
+
+```bash
+sonar-scanner -Dsonar.projectKey=mast-admin -Dsonar.sources=.
+```
+
+## Using subtree
 
 1. Create
     ```bash

@@ -11,6 +11,9 @@
 /dist
 /.next
 
+# sonar
+.scannerwork
+
 # misc
 .DS_Store
 .env
