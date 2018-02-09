@@ -26,7 +26,7 @@ yarn dev     # run server as dev mode
 ## Sonar
 
 ```bash
-sonar-scanner -Dsonar.projectKey=mast-admin -Dsonar.sources=.
+sonar-scanner -Dsonar.projectKey=mast-admin -Dsonar.sources=. -Dsonar.exclusions=stories/**/*
 ```
 
 ## Using subtree

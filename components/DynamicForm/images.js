@@ -1,5 +1,7 @@
 import React     from 'react';
 import PropTypes from 'prop-types';
+import * as R    from 'ramda';
+import _         from 'lodash';
 
 import { Icon, message, Modal, Upload } from 'antd';
 
@@ -26,22 +28,37 @@ function beforeUpload(file) {
   return isJPG && isLt2M;
 }
 
+async function upload(auth, onChange, files, args) {
+  logger.log('[upload]', args);
+  const response = await apiProxy.upload(auth, args.file);
+  logger.log('[upload]', 'response is', response);
+
+  if (response.status === 200) {
+    message.success('upload successfully.');
+    args.onSuccess();
+
+    const urls = R.compose(
+      R.join(','),
+      R.filter(R.identity),
+      R.concat(files),
+    )(response.data);
+    logger.log('[upload]', urls);
+
+    onChange(urls);
+  } else {
+    message.error('upload failed.');
+    args.onError();
+  }
+}
+
 export class ImageUploader extends React.Component {
   static propTypes = {
-    auth : PropTypes.shape({}), // auth token object
-    value: PropTypes.string,    // image urls in db
+    auth    : PropTypes.shape({}), // auth token object
+    value   : PropTypes.string,    // image url in db
+    onChange: PropTypes.func,
   };
 
-  state = {
-    imageUrl: '',
-    loading : false,
-  };
-
-  componentWillMount(): void {
-    logger.log('[ImageUploader][componentWillMount]', this.props);
-    const { value } = this.props;
-    this.setState({ imageUrl: value });
-  }
+  state = { loading: false };
 
   handleChange = (info) => {
     logger.log('[ImageUploader][handleChange]', info);
@@ -51,33 +68,13 @@ export class ImageUploader extends React.Component {
     }
     if (info.file.status === 'done') {
       // Get this url from response in real world.
-      getBase64(info.file.originFileObj, imageUrl => this.setState({
-        imageUrl,
-        loading: false,
-      }));
-    }
-  };
-
-  upload = async (auth, args) => {
-    logger.log('[upload]', args);
-    const response = await apiProxy.upload(auth, args.file);
-    logger.log('[upload]', 'response is', response);
-
-    if (response.status === 200) {
-      message.success('upload successfully.');
-      args.onSuccess();
-      const { onChange } = this.props;
-      // onChange(R.join(',', response.data));
-      onChange(response.data);
-    } else {
-      message.error('upload failed.');
-      args.onError();
+      getBase64(info.file.originFileObj, () => this.setState({ loading: false }));
     }
   };
 
   render() {
-    const { imageUrl } = this.state;
-    const { auth }     = this.props;
+    const { auth, onChange, value: imageUrl } = this.props;
+
     const uploadButton = (
       <div>
         <Icon type={this.state.loading ? 'loading' : 'plus'} />
@@ -92,7 +89,7 @@ export class ImageUploader extends React.Component {
           listType="picture-card"
           className="avatar-uploader"
           showUploadList={false}
-          customRequest={(...args) => this.upload(auth, ...args)}
+          customRequest={(...args) => upload(auth, onChange, [], ...args)}
           beforeUpload={beforeUpload}
           onChange={this.handleChange}
         >
@@ -103,16 +100,50 @@ export class ImageUploader extends React.Component {
   }
 }
 
+// eslint-disable-next-line react/no-multi-comp
 export class ImagesUploader extends React.Component {
+  static propTypes = {
+    auth    : PropTypes.shape({}), // auth token object
+    value   : PropTypes.string,    // image url in db
+    onChange: PropTypes.func,
+  };
+
   state = {
     previewVisible: false,
     previewImage  : '',
-    fileList      : [{
-      uid   : -1,
-      name  : 'xxx.png',
+    fileList      : [],
+  };
+
+  /**
+   * set fileList for Uploader at first time
+   */
+  componentWillMount(): void {
+    logger.info('[componentWillMount]', this.props);
+    const { value: imageUrls } = this.props;
+    this.wrapImageUrlsToFileList(imageUrls);
+  }
+
+  /**
+   * set fileList for Uploader when new images uploaded
+   * @param nextProps
+   * @param nextContext
+   */
+  componentWillReceiveProps(nextProps, nextContext: any): void {
+    logger.info('[componentWillReceiveProps]', nextProps, nextContext);
+    const { value: imageUrls } = nextProps;
+    this.wrapImageUrlsToFileList(imageUrls);
+  }
+
+  wrapImageUrlsToFileList = (imageUrls) => {
+    const files = _.compact(_.split(imageUrls, ','));
+    logger.info('[wrapImageUrlsToFileList]', 'files is', files);
+    const fileList = _.map(files, (file, index) => ({
+      uid   : index,
       status: 'done',
-      url   : 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-    }],
+      url   : file,
+    }));
+    logger.info('[wrapImageUrlsToFileList]', 'fileList is', fileList);
+    this.setState({ fileList });
   };
 
   handleCancel = () => this.setState({ previewVisible: false });
@@ -128,22 +159,29 @@ export class ImagesUploader extends React.Component {
 
   render() {
     const { previewVisible, previewImage, fileList } = this.state;
-    const uploadButton                               = (
+
+    const { auth, onChange } = this.props;
+
+    const files = R.map(R.prop('url')())(fileList);
+    logger.info('[render]', 'files is', fileList, files);
+
+    const uploadButton = (
       <div>
         <Icon type="plus" />
         <div className="ant-upload-text">Upload</div>
       </div>
     );
+
     return (
       <div className="clearfix">
         <Upload
-          action="//jsonplaceholder.typicode.com/posts/"
           listType="picture-card"
           fileList={fileList}
+          customRequest={(...args) => upload(auth, onChange, files, ...args)}
           onPreview={this.handlePreview}
           onChange={this.handleChange}
         >
-          {fileList.length >= 3 ? null : uploadButton}
+          {fileList && fileList.length >= 3 ? null : uploadButton}
         </Upload>
         <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>
           <img style={{ width: '100%' }} src={previewImage} alt="" />

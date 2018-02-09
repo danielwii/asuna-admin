@@ -28,7 +28,7 @@ module.exports = {
     });
 
     // fix `react-dom/server could not be resolved` issue.
-    delete config.resolve.alias['react-dom'];
+    // delete config.resolve.alias['react-dom'];
 
     return config;
   },
