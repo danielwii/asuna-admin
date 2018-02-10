@@ -4,8 +4,7 @@ import { reduxAction } from 'node-buffs';
 import * as R          from 'ramda';
 import _               from 'lodash';
 
-import { notificationsActions, notificationTypes } from '../store/notifications.redux';
-
+import { message }      from 'antd';
 import { modelsProxy }  from '../adapters/models';
 import { createLogger } from '../adapters/logger';
 
@@ -70,32 +69,32 @@ const actions = {
 function* fetch({ payload: { modelName, data } }) {
   const { token } = yield select(state => state.auth);
   if (token) {
-    yield put(notificationsActions.notify(`fetch model '${modelName}'...`));
+    message.info(`fetch model '${modelName}'...`);
     try {
       const response = yield call(modelsProxy.fetch, { token }, modelName, data);
-      yield put(notificationsActions.notify(`fetch model '${modelName}' success!`, notificationTypes.SUCCESS));
+      message.success(`fetch model '${modelName}' success!`);
       logger.log('response of fetch model is', response);
       yield put(actions.fetchSuccess(modelName, response.data));
     } catch (e) {
-      yield put(notificationsActions.notify(e, notificationTypes.ERROR));
+      message.error(e);
       logger.warn('CATCH -> fetch model error', e);
     }
   }
 }
 
 function* upsert({ payload: { modelName, data } }) {
-  const { token } = yield select(state => state.auth);
+  const { token }   = yield select(state => state.auth);
   const { schemas } = yield select(state => state.models);
   if (token) {
-    yield put(notificationsActions.notify(`upsert model '${modelName}'...`));
+    message.info(`upsert model '${modelName}'...`);
     try {
       const response = yield call(modelsProxy.upsert, { token, schemas }, modelName, data);
-      yield put(notificationsActions.notify(`upsert model '${modelName}' success!`, notificationTypes.SUCCESS));
+      message.success(`upsert model '${modelName}' success!`);
       logger.log('response of upsert model is', response);
       // save model data when upsert is success
       yield put(actions.fetchSuccess(modelName, response.data));
     } catch (e) {
-      yield put(notificationsActions.notify(e, notificationTypes.ERROR));
+      message.error(e);
       logger.warn('CATCH -> upsert model error', e);
     }
   }
@@ -105,7 +104,7 @@ function* loadAllSchemasSaga() {
   logger.log('load all options in saga');
   const { token } = yield select(state => state.auth);
   if (token) {
-    yield put(notificationsActions.notify('load all options...'));
+    message.info('load all options...');
     try {
       const effects     = modelsProxy.listSchemasCallable({ token });
       const allResponse = yield all(effects);
@@ -116,11 +115,11 @@ function* loadAllSchemasSaga() {
         allResponse,
         (response, name) => ({ [name]: response.data }),
       ));
-      yield put(notificationsActions.notify('load all schemas success', notificationTypes.SUCCESS));
+      message.success('load all schemas success');
       yield put(actions.loadAllSchemasSuccess(schemas));
       logger.log('load all model schemas', effects, schemas);
     } catch (e) {
-      yield put(notificationsActions.notify(e, notificationTypes.ERROR));
+      message.error(e);
       logger.warn('CATCH -> load all options error occurred', e);
     }
   }

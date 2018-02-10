@@ -2,8 +2,7 @@ import { call, put, select, takeLatest } from 'redux-saga/effects';
 
 import * as R          from 'ramda';
 import { reduxAction } from 'node-buffs';
-
-import { notificationsActions, notificationTypes } from '../store/notifications.redux';
+import { message }     from 'antd';
 
 import { modelsProxy }  from '../adapters/models';
 import { createLogger } from '../adapters/logger';
@@ -45,14 +44,14 @@ function* loadModels({ payload: { name, data } }) {
   const { token } = yield select(state => state.auth);
   if (token) {
     logger.info('load content', name, data);
-    yield put(notificationsActions.notify(`load content '${name}'...`));
+    message.info(`load content '${name}'...`);
     try {
       const response = yield call(modelsProxy.loadModels, { token }, name, data);
-      yield put(notificationsActions.notify(`load content '${name}' success`, notificationTypes.SUCCESS));
+      message.success(`load content '${name}' success`);
       yield put(actions.loadModelsSuccess({ [name]: { data: response.data } }));
       logger.log('loaded content', name, response.data);
     } catch (e) {
-      yield put(notificationsActions.notify(e, notificationTypes.ERROR));
+      message.error(e);
       logger.warn('CATCH ->', e);
     }
   }

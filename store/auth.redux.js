@@ -1,11 +1,10 @@
 import { call, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
 
-import _ from 'lodash';
+import _           from 'lodash';
+import { message } from 'antd';
 
-import { jwtAuthProxy } from '../adapters/auth';
-
-import { routerActions }        from './router.redux';
-import { notificationsActions } from './notifications.redux';
+import { jwtAuthProxy }  from '../adapters/auth';
+import { routerActions } from './router.redux';
 
 // --------------------------------------------------------------
 // Login actionTypes
@@ -44,12 +43,12 @@ function* loginSaga({ payload: { username, password } }) {
     const { data: { token } } = yield call(jwtAuthProxy.login, username, password);
     // console.log('token is', token);
     yield put(actions.loginSuccess(token));
-    yield put(notificationsActions.notify(`'${username}' login success`));
+    message.info(`'${username}' login success`);
     yield put(routerActions.toIndex());
   } catch (error) {
     // console.error('login error', error);
     yield put(actions.loginFailed(error));
-    yield put(notificationsActions.notifyError(error));
+    message.error(error);
   }
 }
 
