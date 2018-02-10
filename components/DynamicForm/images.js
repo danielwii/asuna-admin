@@ -10,6 +10,10 @@ import { apiProxy }     from '../../adapters/api';
 
 const logger = createLogger('components:dynamic-form:images');
 
+// --------------------------------------------------------------
+// Functions
+// --------------------------------------------------------------
+
 function getBase64(img, callback) {
   const reader = new FileReader();
   reader.addEventListener('load', () => callback(reader.result));
@@ -51,6 +55,10 @@ async function upload(auth, onChange, files, args) {
   }
 }
 
+// --------------------------------------------------------------
+// Uploader
+// --------------------------------------------------------------
+
 export class ImageUploader extends React.Component {
   static propTypes = {
     auth    : PropTypes.shape({}), // auth token object
@@ -68,7 +76,8 @@ export class ImageUploader extends React.Component {
     }
     if (info.file.status === 'done') {
       // Get this url from response in real world.
-      getBase64(info.file.originFileObj, () => this.setState({ loading: false }));
+      // eslint-disable-next-line no-unused-vars
+      getBase64(info.file.originFileObj, imageUrl => this.setState({ loading: false }));
     }
   };
 
@@ -178,6 +187,7 @@ export class ImagesUploader extends React.Component {
           listType="picture-card"
           fileList={fileList}
           customRequest={(...args) => upload(auth, onChange, files, ...args)}
+          beforeUpload={beforeUpload}
           onPreview={this.handlePreview}
           onChange={this.handleChange}
         >

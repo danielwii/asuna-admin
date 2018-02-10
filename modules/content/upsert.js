@@ -251,7 +251,6 @@ class ContentUpsert extends React.Component {
 
     return (
       <div>
-        <h1>hello, kitty. ^_^</h1>
         <hr />
         <ContentForm
           auth={auth}

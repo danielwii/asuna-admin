@@ -66,6 +66,7 @@ export const DynamicFormTypes = {
   Button     : 'Button',
   Hidden     : 'Hidden',
   Plain      : 'Plain',
+  Input      : 'Input',
   InputNumber: 'InputNumber',
   TextArea   : 'TextArea',
   DateTime   : 'DateTime',
