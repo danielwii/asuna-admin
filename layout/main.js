@@ -1,7 +1,7 @@
 import React  from 'react';
 import styled from 'styled-components';
 
-import { Layout, Menu } from 'antd';
+import { Layout, Menu, Dropdown, Spin } from 'antd';
 
 import AntdLayout        from './antd';
 import PanesContainer    from '../containers/Panes';
@@ -23,13 +23,26 @@ const StyledContentDiv = styled.div`
 
 const { Header } = Layout;
 
-export default () => (
+const menu = (
+  <Menu>
+    <Menu.Item>
+      <a target="_blank" rel="noopener noreferrer" href="#">Profile</a>
+    </Menu.Item>
+    <Menu.Divider />
+    <Menu.Item>
+      <a target="_blank" rel="noopener noreferrer" href="#">Logout</a>
+    </Menu.Item>
+  </Menu>
+);
+
+export default ({ auth }) => (
   <AntdLayout>
     <Layout>
       <Header className="header">
         <div className="logo">
           <StyledLogoImg src="/static/logo.png" alt="mast" />
         </div>
+        {/*
         <Menu
           theme="dark"
           mode="horizontal"
@@ -38,6 +51,25 @@ export default () => (
         >
           <Menu.Item key="1">Home</Menu.Item>
         </Menu>
+*/}
+        <div className="header-user">
+          {auth.username ? (
+            <div>
+              Welcome,&nbsp;
+              <Dropdown overlay={menu}>
+                <a>{auth.username}</a>
+              </Dropdown>
+              .
+            </div>
+          ) : <Spin size="small" style={{ marginLeft: 8 }} />}
+        </div>
+        {/* language=CSS */}
+        <style jsx>{`
+          .header-user {
+            float: right;
+            color: white;
+          }
+        `}</style>
       </Header>
       <Layout>
         <SideMenuContainer />

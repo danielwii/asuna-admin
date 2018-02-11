@@ -10,11 +10,9 @@ import Snow              from '../components/Snow';
 import LogoCanvas        from '../components/LogoCanvas';
 import { withReduxSaga } from '../store';
 
-import { notificationTypes } from '../store/notifications.redux';
-
 import * as authService   from '../services/auth';
 import { JwtAuthAdapter } from '../adapters/auth';
-import { createLogger } from '../adapters/logger';
+import { createLogger }   from '../adapters/logger';
 
 const logger = createLogger('pages:login');
 
@@ -55,11 +53,7 @@ const StyledLogoWrapper = styled.div`
 
 class LoginPage extends React.Component {
   static propTypes = {
-    global       : PropTypes.shape(),
-    notifications: PropTypes.shape({
-      message: PropTypes.string,
-      type   : PropTypes.oneOf(_.values(notificationTypes)),
-    }),
+    global: PropTypes.shape(),
   };
 
   // --------------------------------------------------------------
@@ -164,8 +158,7 @@ class LoginPage extends React.Component {
 }
 
 const mapStateToProps = state => ({
-  global       : state.global,
-  notifications: state.notifications,
+  global: state.global,
 });
 
 export default withReduxSaga(connect(mapStateToProps)(LoginPage));

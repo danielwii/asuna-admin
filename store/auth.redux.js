@@ -41,12 +41,10 @@ const actions = {
 function* loginSaga({ payload: { username, password } }) {
   try {
     const { data: { token } } = yield call(jwtAuthProxy.login, username, password);
-    // console.log('token is', token);
     yield put(actions.loginSuccess(token));
     message.info(`'${username}' login success`);
     yield put(routerActions.toIndex());
   } catch (error) {
-    // console.error('login error', error);
     yield put(actions.loginFailed(error));
     message.error(error);
   }

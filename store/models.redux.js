@@ -69,15 +69,15 @@ const actions = {
 function* fetch({ payload: { modelName, data } }) {
   const { token } = yield select(state => state.auth);
   if (token) {
-    message.info(`fetch model '${modelName}'...`);
+    message.loading(`loading model '${modelName}'...`);
     try {
       const response = yield call(modelsProxy.fetch, { token }, modelName, data);
-      message.success(`fetch model '${modelName}' success!`);
-      logger.log('response of fetch model is', response);
+      message.success(`load model '${modelName}' success!`);
+      logger.log('response of load model is', response);
       yield put(actions.fetchSuccess(modelName, response.data));
     } catch (e) {
       message.error(e);
-      logger.warn('CATCH -> fetch model error', e);
+      logger.warn('CATCH -> load model error', e);
     }
   }
 }
@@ -104,7 +104,7 @@ function* loadAllSchemasSaga() {
   logger.log('load all options in saga');
   const { token } = yield select(state => state.auth);
   if (token) {
-    message.info('load all options...');
+    message.loading('loading all options...');
     try {
       const effects     = modelsProxy.listSchemasCallable({ token });
       const allResponse = yield all(effects);

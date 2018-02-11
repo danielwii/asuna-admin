@@ -22,10 +22,10 @@ function generateInput(form, name, required, message, placeholder, iconType) {
 class NormalLoginForm extends React.Component {
   handleSubmit = (e) => {
     e.preventDefault();
-    logger.log('Dispatch is', this.props.dispatch);
+    logger.info('Dispatch is', this.props.dispatch);
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        logger.log('Received values of form: ', values);
+        logger.info('Received values of form: ', values);
         const { username, password } = values;
         this.props.dispatch(authActions.login(username, password));
       }

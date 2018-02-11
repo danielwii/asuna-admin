@@ -1,6 +1,7 @@
 import React       from 'react';
 import { connect } from 'react-redux';
 import dynamic     from 'next/dynamic';
+import PropTypes   from 'prop-types';
 import _           from 'lodash';
 import 'moment/locale/zh-cn';
 
@@ -39,7 +40,7 @@ global.context = _.assign(global.context, {
 logger.info('global context is', global.context);
 
 // --------------------------------------------------------------
-// Define main app dynamic loader
+// Dynamic load main layout
 // --------------------------------------------------------------
 
 const DynamicMainLayoutLoading = dynamic(
@@ -54,18 +55,28 @@ const DynamicMainLayoutLoading = dynamic(
 // --------------------------------------------------------------
 
 class Index extends React.Component {
+  static propTypes = {
+    auth: PropTypes.shape({}),
+  };
+
   componentWillMount() {
-    logger.info('componentWillMount...');
+    logger.log('componentWillMount...', this.props);
     const { dispatch } = this.props;
     dispatch(menuActions.init());
     dispatch(modelsActions.loadAllSchemas());
   }
 
   render() {
+    const { auth } = this.props;
+
     return (
-      <DynamicMainLayoutLoading />
+      <DynamicMainLayoutLoading auth={auth} />
     );
   }
 }
 
-export default withReduxSaga(connect()(Index));
+const mapStateToProps = state => ({
+  auth: state.auth,
+});
+
+export default withReduxSaga(connect(mapStateToProps)(Index));

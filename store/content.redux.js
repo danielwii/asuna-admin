@@ -43,8 +43,8 @@ const actions = {
 function* loadModels({ payload: { name, data } }) {
   const { token } = yield select(state => state.auth);
   if (token) {
-    logger.info('load content', name, data);
-    message.info(`load content '${name}'...`);
+    logger.info('loading content', name, data);
+    message.loading(`loading content '${name}'...`);
     try {
       const response = yield call(modelsProxy.loadModels, { token }, name, data);
       message.success(`load content '${name}' success`);
