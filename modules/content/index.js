@@ -3,10 +3,11 @@ import PropTypes   from 'prop-types';
 import { connect } from 'react-redux';
 import * as R      from 'ramda';
 
-import { Button, Divider, Table } from 'antd';
+import { Button, Divider, Table, Modal } from 'antd';
 
 import { panesActions }   from '../../store/panes.redux';
 import { contentActions } from '../../store/content.redux';
+import { modelsActions }  from '../../store/models.redux';
 import { modelsProxy }    from '../../adapters/models';
 import { responseProxy }  from '../../adapters/response';
 import { createLogger }   from '../../adapters/logger';
@@ -28,25 +29,26 @@ class ContentIndex extends React.Component {
 
     const { dispatch, context } = this.props;
 
-    logger.info('context is', context);
+    logger.info('constructor', 'context is', context);
 
     const actions = (text, record) => (
       <span>
         <Button size="small" type="dashed" onClick={() => this.edit(text, record)}>Edit</Button>
         <Divider type="vertical" />
+        <Button size="small" type="danger" onClick={() => this.remove(text, record)}>Delete</Button>
       </span>
     );
 
     // content::name => name
     const modelName = R.compose(R.nth(1), R.split(/::/), R.path(['pane', 'key']))(context);
     const configs   = modelsProxy.getModelConfigs(modelName);
-    logger.info('load table from configs', configs, 'by', modelName);
+    logger.info('constructor', 'load table from configs', configs, 'by', modelName);
 
     const columns = R.prop('table')(configs)(actions);
 
     this.state = { modelName, columns };
 
-    logger.log('current modelName is', modelName);
+    logger.log('constructor', 'current modelName is', modelName);
     dispatch(contentActions.loadModels(modelName));
   }
 
@@ -69,7 +71,7 @@ class ContentIndex extends React.Component {
   };
 
   edit = (text, record) => {
-    logger.log('edit', record);
+    logger.log('[edit]', record);
     const { modelName } = this.state;
     const { dispatch }  = this.props;
     dispatch(panesActions.open({
@@ -78,6 +80,21 @@ class ContentIndex extends React.Component {
       linkTo: 'content::upsert',
       data  : { modelName, record },
     }));
+  };
+
+  remove = (text, record) => {
+    logger.log('[remove]', record);
+    const { modelName } = this.state;
+    const { dispatch }  = this.props;
+    Modal.confirm({
+      title     : '是否确认',
+      content   : `删除 ${modelName}？`,
+      okText    : '确认',
+      cancelText: '取消',
+      onOk      : () => {
+        dispatch(modelsActions.remove(modelName, record));
+      },
+    });
   };
 
   handleTableChange = (pagination, filters, sorter) => {

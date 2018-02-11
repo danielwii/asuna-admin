@@ -41,3 +41,21 @@ sonar-scanner -Dsonar.projectKey=mast-admin -Dsonar.sources=. -Dsonar.exclusions
     ```bash
     git subtree pull --prefix mast-admin mast-admin master
     ```
+## Config
+
+### ModelColumns
+
+```javascript
+modelColumns = {
+  [modelName]   : {
+    associations: {
+      [associationName]: {
+        name  : 'name',
+        value : 'id',
+        // ref   : 'refName',   // using to update data, when it's not same as `associationName`.
+        fields: ['id', 'name'],
+      },
+    },
+  },
+}
+```

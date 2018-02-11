@@ -45,6 +45,8 @@ export const modelsProxy = {
 
   fetch: ({ token }, name, data) => global.context.models.fetch({ token }, name, data),
 
+  remove: ({ token }, name, data) => global.context.models.remove({ token }, name, data),
+
   /**
    * update model if id exists in body, insert new one or else.
    * @param {token}    - { token }
@@ -103,6 +105,11 @@ export class ModelsAdapter {
   };
 
   fetch = (config, name, data) => this.service.fetch(config, name, {
+    ...data,
+    ...this.getModelConfig(name),
+  });
+
+  remove = (config, name, data) => this.service.remove(config, name, {
     ...data,
     ...this.getModelConfig(name),
   });

@@ -19,6 +19,7 @@ const actionTypes = {
   FETCH                   : 'models::fetch',
   FETCH_SUCCESS           : 'models::fetch-success',
   UPSERT                  : 'models::upsert',
+  REMOVE                  : 'models::remove',
   LOAD_ALL_SCHEMAS        : 'models::load-all-schemas',
   LOAD_ALL_SCHEMAS_SUCCESS: 'models::load-all-schemas-success',
 };
@@ -37,6 +38,7 @@ const actions = {
     reduxAction(actionTypes.FETCH_SUCCESS, { modelName, response }),
 
   upsert: (modelName, data) => reduxAction(actionTypes.UPSERT, { modelName, data }),
+  remove: (modelName, data) => reduxAction(actionTypes.REMOVE, { modelName, data }),
 
   loadAllSchemas       : () => reduxAction(actionTypes.LOAD_ALL_SCHEMAS),
   loadAllSchemasSuccess: schemas => reduxAction(actionTypes.LOAD_ALL_SCHEMAS_SUCCESS, { schemas }),
@@ -100,6 +102,23 @@ function* upsert({ payload: { modelName, data } }) {
   }
 }
 
+function* remove({ payload: { modelName, data } }) {
+  const { token } = yield select(state => state.auth);
+  if (token) {
+    message.info(`remove model '${modelName}'...`);
+    try {
+      const response = yield call(modelsProxy.remove, { token }, modelName, data);
+      message.success(`remove model '${modelName}' success!`);
+      logger.log('response of remove model is', response);
+      // save model data when remove is success
+      yield put(actions.fetchSuccess(modelName, response.data));
+    } catch (e) {
+      message.error(e);
+      logger.warn('CATCH -> remove model error', e);
+    }
+  }
+}
+
 function* loadAllSchemasSaga() {
   logger.log('load all options in saga');
   const { token } = yield select(state => state.auth);
@@ -129,6 +148,7 @@ const sagas = [
   // takeLatest / takeEvery (actionType, actionSage)
   // takeLatest(actionTypes.LOAD_ASSOCIATIONS, loadAssociations),
   takeLatest(actionTypes.LOAD_ALL_SCHEMAS, loadAllSchemasSaga),
+  takeLatest(actionTypes.REMOVE, remove),
   takeLatest(actionTypes.UPSERT, upsert),
   takeLatest(actionTypes.FETCH, fetch),
 ];
