@@ -1,6 +1,9 @@
 {
   "name": "mast-admin",
   "version": "0.0.1",
+  "repository": "git@github.com:danielwii/mast-admin.git",
+  "author": "Daniel Wei <danielwii0326@gmail.com>",
+  "license": "MIT",
   "scripts": {
     "autod": "autod",
     "dev": "node $NODE_DEBUG_OPTION server.js",

@@ -1,7 +1,6 @@
-import _ from 'lodash';
-
 export const menuProxy = {
-  init: () => global.context.menu.init(),
+  init               : () => global.context.menu.init(),
+  getRegisteredModels: () => global.context.menu.getRegisteredModels(),
 };
 
 export class MenuAdapter {
@@ -10,11 +9,11 @@ export class MenuAdapter {
     this.registeredModels = registeredModels;
   }
 
-  generateRegisteredMenu() {
+  getRegisteredModels() {
     return this.registeredModels;
   }
 
   init() {
-    return [...this.generateRegisteredMenu()];
+    return [...this.getRegisteredModels()];
   }
 }

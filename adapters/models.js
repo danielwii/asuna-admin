@@ -87,6 +87,7 @@ export class ModelsAdapter {
     if (/^Image$/i.test(advancedType)) return DynamicFormTypes.Image;
     if (/^Images$/i.test(advancedType)) return DynamicFormTypes.Images;
     if (/^Video$/i.test(advancedType)) return DynamicFormTypes.Video;
+    if (/^Authorities$/i.test(advancedType)) return DynamicFormTypes.Authorities;
 
     if (R.path(['config', 'many'])(field) === true) {
       return DynamicFormTypes.ManyToMany;
@@ -140,13 +141,16 @@ export class ModelsAdapter {
   };
 
   getModelConfig = (name) => {
-    const config = R.prop(name)(this.modelConfigs);
-    if (config) {
-      logger.info('[getModelConfig]', name, 'config is', config);
-      return config;
+    if (name) {
+      const config = R.prop(name)(this.modelConfigs);
+      if (config) {
+        logger.info('[getModelConfig]', name, 'config is', config);
+        return config;
+      }
+      logger.error('[getModelConfig]', `'${name}' not found in`, this.modelConfigs);
+      return {};
     }
-    logger.error('[getModelConfig]', `'${name}' not found in`, this.modelConfigs);
-    return {};
+    return this.modelConfigs;
   };
 
   getFormSchema = (schemas, name, values) => {

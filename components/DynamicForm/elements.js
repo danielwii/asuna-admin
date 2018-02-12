@@ -19,6 +19,7 @@ import { createLogger }    from '../../adapters/logger';
 import { BraftRichEditor } from '../../components/RichEditor';
 
 import { ImagesUploader, ImageUploader } from './images';
+import { Authorities }                   from './authorities';
 
 const logger = createLogger('components:dynamic-form:elements');
 
@@ -221,7 +222,7 @@ export const generateSwitch = (form, {
 };
 
 export const generateImages = (form, {
-  key, name, label, auth, fileList = [], onUpload,
+  key, name, label, auth,
 }, formItemLayout = defaultFormItemLayout) => {
   const fieldName = key || name;
   const labelName = label || name || key;
@@ -233,13 +234,25 @@ export const generateImages = (form, {
 };
 
 export const generateImage = (form, {
-  key, name, label, auth, file, onUpload,
+  key, name, label, auth,
 }, formItemLayout = defaultFormItemLayout) => {
   const fieldName = key || name;
   const labelName = label || name || key;
   return generateComponent(
     form, { fieldName, labelName }, (
       <ImageUploader auth={auth} />
+    ), formItemLayout,
+  );
+};
+
+export const generateAuthorities = (form, {
+  key, name, label,
+}, formItemLayout = defaultFormItemLayout) => {
+  const fieldName = key || name;
+  const labelName = label || name || key;
+  return generateComponent(
+    form, { fieldName, labelName }, (
+      <Authorities />
     ), formItemLayout,
   );
 };
@@ -257,7 +270,7 @@ export const generateRichTextEditor = (form, {
 };
 
 export const generateAssociation = (form, {
-  key, name, label, placeholder, onChange, onFocus, onBlur, items, mode,
+  key, name, label, placeholder, items, mode,
   getName = R.prop('name'), getValue = R.prop('value'),
 }, formItemLayout = defaultFormItemLayout) => {
   const fieldName = key || name;

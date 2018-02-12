@@ -14,6 +14,7 @@ import {
   generateHidden,
   generateImage,
   generateImages,
+  generateAuthorities,
   generateInput,
   generateInputNumber,
   generatePlain,
@@ -39,6 +40,7 @@ export const buildForm = (form, definitions) => definitions.map((definition) => 
 });
 
 // FIXME remove it
+// eslint-disable-next-line react/prefer-stateless-function
 class DynamicForm extends React.Component {
   static propTypes = {
     definitions: PropTypes.arrayOf(PropTypes.shape({})),
@@ -71,6 +73,7 @@ export const DynamicFormTypes = {
   TextArea   : 'TextArea',
   DateTime   : 'DateTime',
   Switch     : 'Switch',
+  Authorities: 'Authorities',
   // --------------------------------------------------------------
   // Advanced Types
   // --------------------------------------------------------------
@@ -82,6 +85,7 @@ export const DynamicFormTypes = {
   ManyToMany : 'ManyToMany',
 };
 
+// eslint-disable-next-line react/no-multi-comp
 export class DynamicForm2 extends React.Component {
   static propTypes = {
     fields  : PropTypes.shape({}),
@@ -131,6 +135,8 @@ export class DynamicForm2 extends React.Component {
         return generateTextArea(form, options);
       case DynamicFormTypes.DateTime:
         return generateDateTime(form, options);
+      case DynamicFormTypes.Authorities:
+        return generateAuthorities(form, options);
       case DynamicFormTypes.Image:
         return generateImage(form, options);
       case DynamicFormTypes.Images:
