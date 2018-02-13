@@ -9,12 +9,12 @@ import { withReduxSaga } from '../store';
 import { menuActions }   from '../store/menu.redux';
 import { modelsActions } from '../store/models.redux';
 
-import * as authService  from '../services/auth';
+import { authService }   from '../services/auth';
 import { modelsService } from '../services/models';
 import { menuService }   from '../services/menu';
 import { apiService }    from '../services/api';
 
-import { JwtAuthAdapter }    from '../adapters/auth';
+import { AuthAdapter }       from '../adapters/auth';
 import { ModelsAdapter }     from '../adapters/models';
 import { MenuAdapter }       from '../adapters/menu';
 import { PyResponseAdapter } from '../adapters/response';
@@ -30,7 +30,7 @@ const logger = createLogger('pages:index');
 // --------------------------------------------------------------
 
 global.context = _.assign(global.context, {
-  auth    : new JwtAuthAdapter(authService),
+  auth    : new AuthAdapter(authService),
   response: new PyResponseAdapter(),
   models  : new ModelsAdapter(modelsService, modelConfigs),
   menu    : new MenuAdapter(menuService, registeredModels),

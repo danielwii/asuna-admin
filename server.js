@@ -27,11 +27,10 @@ const handle       = app.getRequestHandler();
 const proxy        = createProxyServer({});
 const configurator = createConfigLoader();
 
-const pathNeedsProxy = (pathname) => {
-  return pathname.startsWith('/rest/') ||
-    pathname.startsWith('/admin/') ||
-    pathname.startsWith('/images/');
-};
+const pathNeedsProxy = pathname =>
+  pathname.startsWith('/rest/') ||
+  pathname.startsWith('/admin/') ||
+  pathname.startsWith('/images/');
 
 app.prepare().then(() => {
   createServer((req, res) => {
@@ -42,7 +41,15 @@ app.prepare().then(() => {
 
     if (pathNeedsProxy(pathname)) {
       // req.url = req.url.slice('/api/'.length);
-      // console.log('call', req.url);
+      /**
+       * TODO 考虑其他的登录认证解决方案。
+       * 目前后台登录服务在登录成功后会给请求加上相应的 cookie（即返回带有 set-cookie 的响应）。
+       * 前端再进行登录时会返回 302 请求跳转到首页。
+       * 由于前端是 api 请求，目前无法很好的处理该种情况，暂时清理 auth 模块的 cookie。
+       */
+      if (req.url.startsWith('/admin/auth')) {
+        req.headers.cookie = '';
+      }
       proxy.web(req, res, { target: configurator.loadConfig('PROXY_API') }, (e) => {
         console.error('PROXY_API ERROR!', e.stack);
       });

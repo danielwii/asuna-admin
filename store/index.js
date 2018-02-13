@@ -11,17 +11,17 @@ import { reducer as formReducer } from 'redux-form';
 import { all }                    from 'redux-saga/effects';
 
 import {
-  notificationsActionTypes, notificationsReducer,
+  notificationsActionTypes,
+  notificationsReducer,
   notificationsSagas,
 } from './notifications.redux';
 
-import { authActionTypes, authReducer, authSagas }                from './auth.redux';
-import { routerActionTypes, routerReducer, routerSagas }          from './router.redux';
-import { panesActionTypes, panesReducer, panesSagas }             from './panes.redux';
-import { menuActionTypes, menuReducer, menuSagas }                from './menu.redux';
-import { modelsActionTypes, modelsReducer, modelsSagas }          from './models.redux';
-import { contentActionTypes, contentReducer, contentSagas }       from './content.redux';
-// import { modModelsActionTypes, modModelsReducer, modModelsSagas } from './modules/models.redux';
+import { authActionTypes, authReducer, authSagas }          from './auth.redux';
+import { routerActionTypes, routerReducer, routerSagas }    from './router.redux';
+import { panesActionTypes, panesReducer, panesSagas }       from './panes.redux';
+import { menuActionTypes, menuReducer, menuSagas }          from './menu.redux';
+import { modelsActionTypes, modelsReducer, modelsSagas }    from './models.redux';
+import { contentActionTypes, contentReducer, contentSagas } from './content.redux';
 
 const initialState = {};
 
@@ -86,7 +86,7 @@ export const configureStore = (state = initialState) => {
   const store = createStore(
     rootReducers,
     state,
-    composeWithDevTools(applyMiddleware(sagaMiddleware/*,  logger */)),
+    composeWithDevTools(applyMiddleware(sagaMiddleware, logger)),
   );
 
   store.sagaTask = sagaMiddleware.run(rootSaga);
