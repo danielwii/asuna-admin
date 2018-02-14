@@ -3,7 +3,7 @@ import PropTypes   from 'prop-types';
 import { connect } from 'react-redux';
 import * as R      from 'ramda';
 
-import { Button, Divider, Table, Modal } from 'antd';
+import { Button, Divider, Modal, Table } from 'antd';
 
 import { panesActions }   from '../../store/panes.redux';
 import { contentActions } from '../../store/content.redux';
@@ -29,7 +29,7 @@ class ContentIndex extends React.Component {
 
     const { dispatch, context } = this.props;
 
-    logger.info('constructor', 'context is', context);
+    logger.info('[constructor]', 'context is', context);
 
     const actions = (text, record) => (
       <span>
@@ -42,17 +42,17 @@ class ContentIndex extends React.Component {
     // content::name => name
     const modelName = R.compose(R.nth(1), R.split(/::/), R.path(['pane', 'key']))(context);
     const configs   = modelsProxy.getModelConfigs(modelName);
-    logger.info('constructor', 'load table from configs', configs, 'by', modelName);
+    logger.info('[constructor]', 'load table from configs', configs, 'by', modelName);
 
     const columns = R.prop('table')(configs)(actions);
 
     this.state = { modelName, columns };
 
-    logger.log('constructor', 'current modelName is', modelName);
+    logger.log('[constructor]', 'current modelName is', modelName);
     dispatch(contentActions.loadModels(modelName));
   }
 
-  shouldComponentUpdate(nextProps, nextState, nextContext: any): boolean {
+  shouldComponentUpdate(nextProps, nextState, nextContext) {
     logger.info('[shouldComponentUpdate]', nextProps, nextState, nextContext);
     const { key }       = this.state;
     const { activeKey } = nextProps;
@@ -118,10 +118,10 @@ class ContentIndex extends React.Component {
 
     const { items: dataSource, pagination } = responseProxy.extract(response);
 
-    logger.info('models is', models);
-    logger.info('dataSource is', dataSource);
-    logger.info('columns is', columns);
-    logger.info('pagination is', pagination);
+    logger.info('[render]', 'models is', models);
+    logger.info('[render]', 'dataSource is', dataSource);
+    logger.info('[render]', 'columns is', columns);
+    logger.info('[render]', 'pagination is', pagination);
 
     return (
       <div>

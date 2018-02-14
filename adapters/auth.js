@@ -1,15 +1,40 @@
-export const authProxy = {
-  login       : (username, password) => global.context.auth.login(username, password),
+// @flow
+import { createLogger } from '../adapters/logger';
+
+// --------------------------------------------------------------
+// Types
+// --------------------------------------------------------------
+
+declare type LoginParams = { body: { username: string, password: string } }
+
+declare var ExtractToken: any;
+
+export interface IAuthService {
+  login: LoginParams => any,
+  logout: () => any,
+  extractToken: ExtractToken => string,
+}
+
+// --------------------------------------------------------------
+// Main
+// --------------------------------------------------------------
+
+const logger = createLogger('adapters:auth');
+
+export const authProxy: IAuthService = {
+  login       : args => global.context.auth.login(args),
   logout      : () => global.context.auth.logout(),
-  extractToken: response => global.context.auth.extractToken(response),
+  extractToken: args => global.context.auth.extractToken(args),
 };
 
-export class AuthAdapter {
-  constructor(service) {
+export class AuthAdapter implements IAuthService {
+  service: IAuthService;
+
+  constructor(service: IAuthService) {
     this.service = service;
   }
 
-  login        = (username, password) => this.service.login(username, password);
+  login        = args => this.service.login(args);
   logout       = () => this.service.logout();
-  extractToken = response => this.service.extractToken(response)
+  extractToken = args => this.service.extractToken(args);
 }

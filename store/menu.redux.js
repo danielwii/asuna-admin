@@ -33,9 +33,9 @@ const actions = {
 // --------------------------------------------------------------
 
 function* init() {
-  logger.log('menu init sage, call getMenus...');
+  logger.log('[menu]', 'init sage, call getMenus...');
   const menus = yield menuProxy.init();
-  logger.log('menu init sage, menus is', menus);
+  logger.log('[menu]', 'init sage, menus is', menus);
   yield put({ type: actionTypes.INIT_SUCCESS, payload: { menus } });
 }
 

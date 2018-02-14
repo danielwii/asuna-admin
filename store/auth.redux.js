@@ -48,7 +48,7 @@ const actions = {
 function* loginSaga({ payload: { username, password } }) {
   try {
     logger.log('[loginSaga]');
-    const response = yield call(authProxy.login, username, password);
+    const response = yield call(authProxy.login, { body: { username, password } });
     logger.log('[loginSaga]', 'response is', response);
     const token = yield call(authProxy.extractToken, response.data);
     yield put(actions.loginSuccess(token));
