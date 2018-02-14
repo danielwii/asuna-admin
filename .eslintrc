@@ -2,8 +2,14 @@
   "env": {
     "browser": true
   },
-  "extends": "airbnb",
+  "extends": [
+    "airbnb",
+    "plugin:flowtype/recommended"
+  ],
   "parser": "babel-eslint",
+  "plugins": [
+    "flowtype"
+  ],
   "rules": {
     "func-names": ["error", "never"],
     "key-spacing": 0,

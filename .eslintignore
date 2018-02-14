@@ -65,3 +65,6 @@ postcss.config.js
 
 .storybook
 stories
+
+# flow
+types

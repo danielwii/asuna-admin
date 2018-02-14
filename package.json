@@ -17,7 +17,6 @@
     "@fortawesome/fontawesome": "^1.1.2",
     "@fortawesome/fontawesome-free-solid": "^5.0.4",
     "@fortawesome/react-fontawesome": "^0.0.17",
-    "@types/braft-editor": "^1.1.0",
     "antd": "^3.0.2",
     "axios": "^0.17.1",
     "braft-editor": "^1.1.11",
@@ -53,6 +52,7 @@
     "@storybook/addon-actions": "^3.2.18",
     "@storybook/addon-links": "^3.2.18",
     "@storybook/react": "^3.2.18",
+    "@types/braft-editor": "^1.1.0",
     "@types/lodash": "^4.14.91",
     "@types/ramda": "^0.25.12",
     "babel-eslint": "^8.0.3",
@@ -60,9 +60,12 @@
     "babel-plugin-styled-components": "^1.4.0",
     "eslint": "^4.13.1",
     "eslint-config-airbnb": "^16.1.0",
+    "eslint-plugin-flowtype": "^2.44.0",
     "eslint-plugin-import": "^2.8.0",
     "eslint-plugin-jsx-a11y": "^6.0.3",
     "eslint-plugin-react": "^7.5.1",
+    "flow-bin": "^0.65.0",
+    "flow-typed": "^2.3.0",
     "webpack-bundle-analyzer": "^2.9.2",
     "webpack-jarvis": "0.3.0"
   }
