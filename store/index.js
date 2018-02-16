@@ -16,12 +16,14 @@ import {
   notificationsSagas,
 } from './notifications.redux';
 
-import { authActionTypes, authReducer, authSagas }          from './auth.redux';
-import { routerActionTypes, routerReducer, routerSagas }    from './router.redux';
-import { panesActionTypes, panesReducer, panesSagas }       from './panes.redux';
-import { menuActionTypes, menuReducer, menuSagas }          from './menu.redux';
-import { modelsActionTypes, modelsReducer, modelsSagas }    from './models.redux';
-import { contentActionTypes, contentReducer, contentSagas } from './content.redux';
+import { appActionTypes, appReducer, appSagas }                from './app.redux';
+import { authActionTypes, authReducer, authSagas }             from './auth.redux';
+import { routerActionTypes, routerReducer, routerSagas }       from './router.redux';
+import { panesActionTypes, panesReducer, panesSagas }          from './panes.redux';
+import { menuActionTypes, menuReducer, menuSagas }             from './menu.redux';
+import { modelsActionTypes, modelsReducer, modelsSagas }       from './models.redux';
+import { contentActionTypes, contentReducer, contentSagas }    from './content.redux';
+import { securityActionTypes, securityReducer, securitySagas } from './security.redux';
 
 const initialState = {};
 
@@ -38,6 +40,8 @@ export const actionTypes = {
   models       : modelsActionTypes,
   content      : contentActionTypes,
   // mod_models   : modModelsActionTypes,
+  security     : securityActionTypes,
+  app          : appActionTypes,
 };
 
 // --------------------------------------------------------------
@@ -53,6 +57,8 @@ const rootReducers = combineReducers({
   models       : modelsReducer,
   content      : contentReducer,
   // mod_models   : modModelsReducer,
+  security     : securityReducer,
+  app          : appReducer,
   form         : formReducer,
   global       : (previousState = initialState, action) => (
     { ...previousState, ...action }
@@ -73,6 +79,8 @@ function* rootSaga() {
     ...modelsSagas,
     ...contentSagas,
     // ...modModelsSagas,
+    ...securitySagas,
+    ...appSagas,
   ]);
 }
 

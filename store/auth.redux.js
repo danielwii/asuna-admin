@@ -28,6 +28,7 @@ const isCurrent = type => type.startsWith('auth::');
 
 const actions = {
   login       : (username, password) => ({
+    // TODO using reduxAction instead
     type: actionTypes.LOGIN, payload: { username, password }, error: null,
   }),
   logout      : () => ({

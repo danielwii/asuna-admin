@@ -97,6 +97,7 @@ class LoginPage extends React.Component {
    * (另外 componentWillUpdate 和 componentDidUpdate 也不会被执行)
    * @param nextProps
    * @param nextState
+   * @param nextContext
    */
   shouldComponentUpdate(nextProps, nextState, nextContext) {
     logger.log('shouldComponentUpdate::nextProps is', nextProps, 'nextState is', nextState, 'nextContext is', nextContext);

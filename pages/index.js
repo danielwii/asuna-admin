@@ -6,15 +6,16 @@ import _           from 'lodash';
 import 'moment/locale/zh-cn';
 
 import { withReduxSaga } from '../store';
-import { menuActions }   from '../store/menu.redux';
-import { modelsActions } from '../store/models.redux';
+import { appActions }    from '../store/app.redux';
 
-import { authService }   from '../services/auth';
-import { modelsService } from '../services/models';
-import { menuService }   from '../services/menu';
-import { apiService }    from '../services/api';
+import { authService }     from '../services/auth';
+import { securityService } from '../services/security';
+import { modelsService }   from '../services/models';
+import { menuService }     from '../services/menu';
+import { apiService }      from '../services/api';
 
 import { AuthAdapter }       from '../adapters/auth';
+import { SecurityAdapter }   from '../adapters/security';
 import { ModelsAdapter }     from '../adapters/models';
 import { MenuAdapter }       from '../adapters/menu';
 import { PyResponseAdapter } from '../adapters/response';
@@ -35,6 +36,7 @@ global.context = _.assign(global.context, {
   models  : new ModelsAdapter(modelsService, modelConfigs),
   menu    : new MenuAdapter(menuService, registeredModels),
   api     : new ApiAdapter(apiService),
+  security: new SecurityAdapter(securityService),
 });
 
 logger.info('global context is', global.context);
@@ -62,8 +64,7 @@ class Index extends React.Component {
   componentWillMount() {
     logger.log('componentWillMount...', this.props);
     const { dispatch } = this.props;
-    dispatch(menuActions.init());
-    dispatch(modelsActions.loadAllSchemas());
+    dispatch(appActions.init());
   }
 
   render() {

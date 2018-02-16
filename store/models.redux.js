@@ -51,106 +51,89 @@ const actions = {
 // }
 // --------------------------------------------------------------
 
-// function* loadAssociations({ payload: { associationNames } }) {
-//   const { token } = yield select(state => state.auth);
-//   if (token) {
-//     const effects     = modelsProxy.listAssociationsCallable({ token }, associationNames);
-//     const allResponse = yield all(effects);
-//
-//     logger.log('allResponse is', allResponse);
-//
-//     // eslint-disable-next-line function-paren-newline
-//     const associations = Object.assign(..._.map(
-//       allResponse,
-//       (response, name) => ({ [name]: response.data }),
-//     ));
-//     logger.log('associations is', associations);
-//   }
-// }
-
-function* fetch({ payload: { modelName, data } }) {
-  const { token } = yield select(state => state.auth);
-  if (token) {
-    message.loading(`loading model '${modelName}'...`);
-    try {
-      const response = yield call(modelsProxy.fetch, { token }, modelName, data);
-      message.success(`load model '${modelName}' success!`);
-      logger.log('response of load model is', response);
-      yield put(actions.fetchSuccess(modelName, response.data));
-    } catch (e) {
-      message.error(e);
-      logger.warn('CATCH -> load model error', e);
+const modelsSagaFunctions = {
+  * fetch({ payload: { modelName, data } }) {
+    const { token } = yield select(state => state.auth);
+    if (token) {
+      message.loading(`loading model '${modelName}'...`);
+      try {
+        const response = yield call(modelsProxy.fetch, { token }, modelName, data);
+        message.success(`load model '${modelName}' success!`);
+        logger.log('response of load model is', response);
+        yield put(actions.fetchSuccess(modelName, response.data));
+      } catch (e) {
+        message.error(e);
+        logger.warn('CATCH -> load model error', e);
+      }
     }
-  }
-}
-
-function* upsert({ payload: { modelName, data } }) {
-  const { token }   = yield select(state => state.auth);
-  const { schemas } = yield select(state => state.models);
-  if (token) {
-    message.info(`upsert model '${modelName}'...`);
-    try {
-      const response = yield call(modelsProxy.upsert, { token, schemas }, modelName, data);
-      message.success(`upsert model '${modelName}' success!`);
-      logger.log('response of upsert model is', response);
-      // save model data when upsert is success
-      yield put(actions.fetchSuccess(modelName, response.data));
-    } catch (e) {
-      message.error(e);
-      logger.warn('CATCH -> upsert model error', e);
+  },
+  * upsert({ payload: { modelName, data } }) {
+    const { token }   = yield select(state => state.auth);
+    const { schemas } = yield select(state => state.models);
+    if (token) {
+      message.info(`upsert model '${modelName}'...`);
+      try {
+        const response = yield call(modelsProxy.upsert, { token, schemas }, modelName, data);
+        message.success(`upsert model '${modelName}' success!`);
+        logger.log('response of upsert model is', response);
+        // save model data when upsert is success
+        yield put(actions.fetchSuccess(modelName, response.data));
+      } catch (e) {
+        message.error(e);
+        logger.warn('CATCH -> upsert model error', e);
+      }
     }
-  }
-}
-
-function* remove({ payload: { modelName, data } }) {
-  const { token } = yield select(state => state.auth);
-  if (token) {
-    message.info(`remove model '${modelName}'...`);
-    try {
-      const response = yield call(modelsProxy.remove, { token }, modelName, data);
-      message.success(`remove model '${modelName}' success!`);
-      logger.log('response of remove model is', response);
-      // save model data when remove is success
-      yield put(actions.fetchSuccess(modelName, response.data));
-    } catch (e) {
-      message.error(e);
-      logger.warn('CATCH -> remove model error', e);
+  },
+  * remove({ payload: { modelName, data } }) {
+    const { token } = yield select(state => state.auth);
+    if (token) {
+      message.info(`remove model '${modelName}'...`);
+      try {
+        const response = yield call(modelsProxy.remove, { token }, modelName, data);
+        message.success(`remove model '${modelName}' success!`);
+        logger.log('response of remove model is', response);
+        // save model data when remove is success
+        yield put(actions.fetchSuccess(modelName, response.data));
+      } catch (e) {
+        message.error(e);
+        logger.warn('CATCH -> remove model error', e);
+      }
     }
-  }
-}
+  },
+  * loadAllSchemas() {
+    logger.log('load all options in saga');
+    const { token } = yield select(state => state.auth);
+    if (token) {
+      message.loading('loading all options...');
+      try {
+        const effects     = modelsProxy.listSchemasCallable({ token });
+        const allResponse = yield all(effects);
 
-function* loadAllSchemasSaga() {
-  logger.log('load all options in saga');
-  const { token } = yield select(state => state.auth);
-  if (token) {
-    message.loading('loading all options...');
-    try {
-      const effects     = modelsProxy.listSchemasCallable({ token });
-      const allResponse = yield all(effects);
+        logger.log('allResponse is', allResponse);
 
-      logger.log('allResponse is', allResponse);
-
-      const schemas = Object.assign(..._.map(
-        allResponse,
-        (response, name) => ({ [name]: response.data }),
-      ));
-      message.success('load all schemas success');
-      yield put(actions.loadAllSchemasSuccess(schemas));
-      logger.log('load all model schemas', effects, schemas);
-    } catch (e) {
-      message.error(e);
-      logger.warn('CATCH -> load all options error occurred', e);
+        const schemas = Object.assign(..._.map(
+          allResponse,
+          (response, name) => ({ [name]: response.data }),
+        ));
+        message.success('load all schemas success');
+        yield put(actions.loadAllSchemasSuccess(schemas));
+        logger.log('load all model schemas', effects, schemas);
+      } catch (e) {
+        message.error(e);
+        logger.warn('CATCH -> load all options error occurred', e);
+      }
     }
-  }
-}
+  },
+};
+
 
 const sagas = [
   // takeLatest / takeEvery (actionType, actionSage)
   // takeLatest(actionTypes.LOAD_ASSOCIATIONS, loadAssociations),
-  takeLatest(actionTypes.LOAD_ALL_SCHEMAS, loadAllSchemasSaga),
-  takeLatest(actionTypes.REMOVE, remove),
-  takeLatest(actionTypes.UPSERT, upsert),
-  takeLatest(actionTypes.FETCH, fetch),
+  takeLatest(actionTypes.LOAD_ALL_SCHEMAS, modelsSagaFunctions.loadAllSchemas),
+  takeLatest(actionTypes.REMOVE, modelsSagaFunctions.remove),
+  takeLatest(actionTypes.UPSERT, modelsSagaFunctions.upsert),
+  takeLatest(actionTypes.FETCH, modelsSagaFunctions.fetch),
 ];
 
 // --------------------------------------------------------------
@@ -192,4 +175,5 @@ export {
   actions as modelsActions,
   sagas as modelsSagas,
   reducer as modelsReducer,
+  modelsSagaFunctions,
 };

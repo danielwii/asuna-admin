@@ -1,4 +1,5 @@
 // @flow
+import { createLogger } from '../adapters/logger';
 
 // --------------------------------------------------------------
 // Types
@@ -6,7 +7,6 @@
 
 type CurrentUserParams = {
   opts: { token: string },
-  pathVariable: { id: string },
   config: IRequestConfig
 }
 
@@ -31,10 +31,12 @@ export interface ISecurityService {
 // Main
 // --------------------------------------------------------------
 
+const logger = createLogger('adapters:security');
+
 export const securityProxy: ISecurityService = {
-  currentUser   : args => global.context.auth.currentUser(args),
-  roles         : args => global.context.auth.roles(args),
-  updatePassword: args => global.context.auth.updatePassword(args),
+  currentUser   : args => global.context.security.currentUser(args),
+  roles         : args => global.context.security.roles(args),
+  updatePassword: args => global.context.security.updatePassword(args),
 };
 
 export class SecurityAdapter implements ISecurityService {
