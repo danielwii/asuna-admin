@@ -1,4 +1,6 @@
-import { put, takeLatest } from 'redux-saga/effects';
+import { put, select, takeLatest } from 'redux-saga/effects';
+
+import * as R from 'ramda';
 
 import { menuProxy }    from '../adapters/menu';
 import { createLogger } from '../adapters/logger';
@@ -34,10 +36,33 @@ const actions = {
 
 const sagaFunctions = {
   * init() {
-    logger.log('[menu]', 'init sage, call getMenus...');
-    const menus = yield menuProxy.init();
-    logger.log('[menu]', 'init sage, menus is', menus);
-    yield put({ type: actionTypes.INIT_SUCCESS, payload: { menus } });
+    const { roles, user } = yield select(state => state.security);
+
+    if (user) {
+      if (R.prop('items')(roles)) {
+        const currentRoles = R.compose(
+          R.filter(role => R.contains(role.id)(user.roles)),
+          R.propOr([], 'items'),
+        )(roles);
+        logger.info('[init]', 'current roles is', currentRoles);
+
+        const authoritiesList = R.map(R.prop('authorities'))(currentRoles);
+        logger.info('[init]', 'current authoritiesList is', authoritiesList);
+
+        const authorities = R.reduce(R.mergeWith(R.or), {})(authoritiesList);
+        logger.info('[init]', 'current authorities is', authorities);
+
+        const menus = yield menuProxy.init(authorities);
+        logger.log('[init]', 'init sage, menus is', menus);
+
+        yield put({ type: actionTypes.INIT_SUCCESS, payload: { menus } });
+      } else {
+        logger.warn('[init]', 'cannot found any roles');
+      }
+    } else {
+      logger.warn('[init]', 'cannot found current user');
+    }
+
   },
 };
 
