@@ -9,6 +9,7 @@ export default ({ children }) => (
       <link rel="stylesheet" href="/static/libs/antd.css" />
       <link rel="stylesheet" href="/static/libs/draft.css" />
       <link rel="stylesheet" href="/static/libs/braft.css" />
+      <link rel="stylesheet" href="/static/libs/video-js.css" />
     </NextHead>
     {children}
   </div>

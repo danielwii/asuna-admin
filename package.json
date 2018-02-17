@@ -46,7 +46,8 @@
     "redux-logger": "^3.0.6",
     "redux-observable": "^0.18.0",
     "redux-saga": "^0.16.0",
-    "styled-components": "^3.0.2"
+    "styled-components": "^3.0.2",
+    "video.js": "^6.6.3"
   },
   "devDependencies": {
     "@storybook/addon-actions": "^3.2.18",

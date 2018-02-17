@@ -14,6 +14,7 @@ import {
   generateHidden,
   generateImage,
   generateImages,
+  generateVideo,
   generateAuthorities,
   generateInput,
   generateInputNumber,
@@ -135,6 +136,8 @@ export class DynamicForm2 extends React.Component {
         return generateTextArea(form, options);
       case DynamicFormTypes.DateTime:
         return generateDateTime(form, options);
+      case DynamicFormTypes.Video:
+        return generateVideo(form, options);
       case DynamicFormTypes.Authorities:
         return generateAuthorities(form, options);
       case DynamicFormTypes.Image:

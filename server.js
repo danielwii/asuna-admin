@@ -31,7 +31,8 @@ const configurator = createConfigLoader();
 const pathNeedsProxy = pathname =>
   pathname.startsWith('/rest/') ||
   pathname.startsWith('/admin/') ||
-  pathname.startsWith('/images/');
+  pathname.startsWith('/images/') ||
+  pathname.startsWith('/videos/');
 
 app.prepare().then(() => {
   createServer((req, res) => {

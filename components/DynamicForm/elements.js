@@ -19,6 +19,7 @@ import { createLogger }    from '../../adapters/logger';
 import { BraftRichEditor } from '../../components/RichEditor';
 
 import { ImagesUploader, ImageUploader } from './images';
+import { VideoUploader }                 from './videos';
 import { Authorities }                   from './authorities';
 
 const logger = createLogger('components:dynamic-form:elements');
@@ -241,6 +242,18 @@ export const generateImage = (form, {
   return generateComponent(
     form, { fieldName, labelName }, (
       <ImageUploader auth={auth} />
+    ), formItemLayout,
+  );
+};
+
+export const generateVideo = (form, {
+  key, name, label, auth,
+}, formItemLayout = defaultFormItemLayout) => {
+  const fieldName = key || name;
+  const labelName = label || name || key;
+  return generateComponent(
+    form, { fieldName, labelName }, (
+      <VideoUploader auth={auth} />
     ), formItemLayout,
   );
 };
