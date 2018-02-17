@@ -373,6 +373,10 @@
   version "16.0.36"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-16.0.36.tgz#ceb5639013bdb92a94147883052e69bb2c22c69b"
 
+"@types/video.js@^6.2.3":
+  version "6.2.3"
+  resolved "https://registry.yarnpkg.com/@types/video.js/-/video.js-6.2.3.tgz#6122da45923028b4d88180477dbdcbcd968fae3b"
+
 JSONStream@^1.0.4:
   version "1.3.2"
   resolved "https://registry.yarnpkg.com/JSONStream/-/JSONStream-1.3.2.tgz#c102371b6ec3a7cf3b847ca00c20bb0fce4c6dea"

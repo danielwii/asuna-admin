@@ -1,6 +1,8 @@
-import React   from 'react';
-import * as R  from 'ramda';
-import videojs from 'video.js';
+/* eslint-disable jsx-a11y/media-has-caption */
+import React     from 'react';
+import PropTypes from 'prop-types';
+import * as R    from 'ramda';
+import videojs   from 'video.js';
 
 import { Button, Icon, message, Upload } from 'antd';
 
@@ -55,28 +57,40 @@ async function upload(auth, onChange, files, args) {
 
 // eslint-disable-next-line import/prefer-default-export
 export class VideoUploader extends React.Component {
+  static propTypes = {
+    auth    : PropTypes.shape({}), // auth token object
+    value   : PropTypes.string,    // image url in db
+    onChange: PropTypes.func,
+    multi   : PropTypes.bool,
+  };
+
   state = {
     fileList: [],
-    // fileList: [{
-    //   uid   : -1,
-    //   name  : 'xxx.png',
-    //   status: 'done',
-    //   url   : 'http://www.baidu.com/xxx.png',
-    // }],
+  };
+
+  prop = {
+    multi: false,
   };
 
   handleChange = (info) => {
-    let fileList = info.fileList;
+    const { multi } = this.props;
+
+    let { fileList } = info;
 
     // 1. Limit the number of uploaded files
-    //    Only to show two recent uploaded files, and old ones will be replaced by the new
-    fileList = fileList.slice(-1);
+    //    this old ones will be replaced by the new
+
+    if (multi) {
+      fileList = fileList.slice(-3);
+    } else {
+      fileList = fileList.slice(-1);
+    }
 
     // 2. read from response and show file link
     fileList = fileList.map((file) => {
       if (file.response) {
         // Component will show file.url as link
-        file.url = file.response.url;
+        return { ...file, url: file.response.url };
       }
       return file;
     });
@@ -92,27 +106,36 @@ export class VideoUploader extends React.Component {
     this.setState({ fileList });
   };
 
+  renderPlayer = () => {
+    const { value: videoUrl } = this.props;
+
+    if (videoUrl) {
+      const videoJsOptions = {
+        width   : 640,
+        height  : 320,
+        autoplay: false,
+        controls: true,
+        sources : [{
+          src : videoUrl,
+          type: 'video/mp4',
+        }],
+      };
+      return <VideoPlayer {...videoJsOptions} />;
+    }
+    return null;
+  };
+
   render() {
-    const { auth, onChange, value: videoUrl } = this.props;
+    const { auth, onChange } = this.props;
 
     const props = {
-      // action  : '//jsonplaceholder.typicode.com/posts/',
-      onChange     : this.handleChange,
-      multiple     : false,
-      customRequest: (...args) => upload(auth, onChange, [], ...args),
+      onChange           : this.handleChange,
+      multiple           : false,
+      customRequest      : (...args) => upload(auth, onChange, [], ...args),
+      supportServerRender: true,
       beforeUpload,
     };
 
-    const videoJsOptions = {
-      width   : 640,
-      height  : 264,
-      autoplay: true,
-      controls: true,
-      sources : [{
-        src : videoUrl,
-        type: 'video/mp4',
-      }],
-    };
 
     return (
       <div>
@@ -121,7 +144,7 @@ export class VideoUploader extends React.Component {
             <Icon type="upload" /> upload
           </Button>
         </Upload>
-        {!videoUrl ? null : <VideoPlayer {...videoJsOptions} />}
+        {this.renderPlayer()}
       </div>
     );
   }
@@ -131,15 +154,16 @@ export class VideoUploader extends React.Component {
 export default class VideoPlayer extends React.Component {
   componentDidMount() {
     // instantiate Video.js
-    this.player = videojs(this.videoNode, this.props, function onPlayerReady() {
-      console.log('onPlayerReady', this);
+    this.player = videojs(this.videoNode, this.props, () => {
+      logger.log('[componentDidMount]', 'onPlayerReady', this);
     });
   }
 
   // destroy player on unmount
   componentWillUnmount() {
     if (this.player) {
-      this.player.dispose();
+      logger.log('[componentWillUnmount]', 'call player dispose');
+      // this.player.dispose();
     }
   }
 
@@ -149,6 +173,7 @@ export default class VideoPlayer extends React.Component {
   render() {
     return (
       <div data-vjs-player>
+        {/* eslint-disable-next-line no-return-assign */}
         <video ref={node => this.videoNode = node} className="video-js" />
       </div>
     );

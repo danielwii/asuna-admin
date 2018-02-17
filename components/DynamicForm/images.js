@@ -98,6 +98,7 @@ export class ImageUploader extends React.Component {
           listType="picture-card"
           className="avatar-uploader"
           showUploadList={false}
+          supportServerRender
           customRequest={(...args) => upload(auth, onChange, [], ...args)}
           beforeUpload={beforeUpload}
           onChange={this.handleChange}
@@ -126,7 +127,7 @@ export class ImagesUploader extends React.Component {
   /**
    * set fileList for Uploader at first time
    */
-  componentWillMount(): void {
+  componentWillMount() {
     logger.info('[componentWillMount]', this.props);
     const { value: imageUrls } = this.props;
     this.wrapImageUrlsToFileList(imageUrls);
@@ -137,7 +138,7 @@ export class ImagesUploader extends React.Component {
    * @param nextProps
    * @param nextContext
    */
-  componentWillReceiveProps(nextProps, nextContext: any): void {
+  componentWillReceiveProps(nextProps, nextContext) {
     logger.info('[componentWillReceiveProps]', nextProps, nextContext);
     const { value: imageUrls } = nextProps;
     this.wrapImageUrlsToFileList(imageUrls);
@@ -186,6 +187,7 @@ export class ImagesUploader extends React.Component {
         <Upload
           listType="picture-card"
           fileList={fileList}
+          supportServerRender
           customRequest={(...args) => upload(auth, onChange, files, ...args)}
           beforeUpload={beforeUpload}
           onPreview={this.handlePreview}
