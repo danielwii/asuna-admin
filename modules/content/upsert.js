@@ -3,7 +3,8 @@ import PropTypes   from 'prop-types';
 import { connect } from 'react-redux';
 import * as R      from 'ramda';
 import moment      from 'moment';
-import { Form }    from 'antd';
+
+import { Form, message } from 'antd';
 
 import { DynamicForm2, DynamicFormTypes } from '../../components/DynamicForm';
 import { modelsProxy }                    from '../../adapters/models';
@@ -82,7 +83,7 @@ class ContentUpsert extends React.Component {
   }
 
 
-  async componentWillMount(): void {
+  async componentWillMount() {
     logger.info('[componentWillMount]', 'init...');
     const { context, schemas } = this.props;
 
@@ -128,7 +129,7 @@ class ContentUpsert extends React.Component {
     }
   }
 
-  shouldComponentUpdate(nextProps, nextState, nextContext: any): boolean {
+  shouldComponentUpdate(nextProps, nextState, nextContext) {
     logger.info('[shouldComponentUpdate]', nextProps, nextState, nextContext);
     const { key }       = this.state;
     const { activeKey } = nextProps;
@@ -185,8 +186,14 @@ class ContentUpsert extends React.Component {
         const effects = modelsProxy.listAssociationsCallable(auth, associationNames);
         logger.info('[asyncWrapAssociations]', 'list associations callable', effects);
 
-        const allResponse = await Promise.all(R.values(effects));
-        logger.info('[asyncWrapAssociations]', 'allResponse is', allResponse);
+        let allResponse = {};
+        try {
+          allResponse = await Promise.all(R.values(effects));
+          logger.info('[asyncWrapAssociations]', 'allResponse is', allResponse);
+        } catch (e) {
+          logger.error('[asyncWrapAssociations]', e);
+          message.error(`Load associations error: ${e.message}`);
+        }
 
         const foreignKeysResponse = R.zipObj(associationNames, R.map(R.prop('data'), allResponse));
         logger.info('[asyncWrapAssociations]', 'foreignOpts is', foreignOpts, 'foreignKeysResponse is', foreignKeysResponse);

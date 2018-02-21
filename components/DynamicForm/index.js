@@ -8,20 +8,20 @@ import { Button, Card, Form } from 'antd';
 
 import {
   generateAssociation,
+  generateAuthorities,
   generateButton,
   generateCheckbox,
   generateDateTime,
   generateHidden,
   generateImage,
   generateImages,
-  generateVideo,
-  generateAuthorities,
   generateInput,
   generateInputNumber,
   generatePlain,
   generateRichTextEditor,
   generateSwitch,
   generateTextArea,
+  generateVideo,
 } from './elements';
 
 import { createLogger } from '../../adapters/logger';
@@ -94,7 +94,7 @@ export class DynamicForm2 extends React.Component {
     onSubmit: PropTypes.func.isRequired,
   };
 
-  shouldComponentUpdate(nextProps, nextState, nextContext: any): boolean {
+  shouldComponentUpdate(nextProps, nextState, nextContext) {
     logger.info('[shouldComponentUpdate]', nextProps, nextState, nextContext);
     const { fields }      = nextProps;
     const nextFingerprint = sha1(fields);
@@ -243,7 +243,8 @@ export class DynamicForm2 extends React.Component {
     */
 
     // remove fields which type is not included
-    const renderFields = _.map(_.filter(fields, field => !!field.type), this.buildField);
+    const renderFields = _.map(_.filter(fields, field => !!field.type), (field, index) =>
+      <EnhancedPureElement key={index} field={field} index={index} builder={this.buildField} />);
 
     return (
       <Form>
@@ -262,5 +263,22 @@ export class DynamicForm2 extends React.Component {
         </Form.Item>
       </Form>
     );
+  }
+}
+
+/**
+ * Using PureComponent to improve elements' performance
+ */
+// eslint-disable-next-line react/no-multi-comp
+class EnhancedPureElement extends React.PureComponent {
+  static propTypes = {
+    field  : PropTypes.shape({}),
+    index  : PropTypes.string,
+    builder: PropTypes.func.isRequired,
+  };
+
+  render() {
+    const { field, index, builder } = this.props;
+    return <div key={index}>{builder(field, index)}</div>;
   }
 }
