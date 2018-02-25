@@ -104,7 +104,6 @@ export class DynamicForm2 extends React.Component {
     return shouldUpdate;
   }
 
-  // TODO extract as a react Component
   buildField = (field, index) => {
     const { form, auth } = this.props;
 
