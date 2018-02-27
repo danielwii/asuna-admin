@@ -12,7 +12,7 @@ const logger = createLogger('components:authorities', 1);
 // eslint-disable-next-line import/prefer-default-export
 export class Authorities extends React.Component {
   static propTypes = {
-    value   : PropTypes.string,
+    value   : PropTypes.oneOfType(PropTypes.string, PropTypes.shape({})),
     onChange: PropTypes.func,
   };
 
@@ -26,14 +26,14 @@ export class Authorities extends React.Component {
       dataIndex: 'permission',
       key      : 'permission',
       render   : ({ parent, menu, active }) => (
-        <div>
+        <React.Fragment>
           <Checkbox
             checked={active}
             onChange={e => this.updatePermission(parent, menu, e.target.checked)}
           >
             激活
           </Checkbox>
-        </div>
+        </React.Fragment>
       ),
     }],
   };
@@ -41,14 +41,17 @@ export class Authorities extends React.Component {
   componentWillMount(): void {
     logger.info('[componentWillMount]');
     const { value: authorities } = this.props;
-    this.updateDataSource(authorities);
+    this.updateDataSource(this.transformToJson(authorities));
   }
 
   componentWillReceiveProps(nextProps, nextContext: any): void {
     logger.info('[componentWillReceiveProps]', nextProps, nextContext);
     const { value: authorities } = nextProps;
-    this.updateDataSource(authorities);
+    this.updateDataSource(this.transformToJson(authorities));
   }
+
+  transformToJson = authorities =>
+    (R.is(String, authorities) ? JSON.parse(authorities) : authorities);
 
   updateDataSource = (authorities) => {
     const registeredModels = menuProxy.getRegisteredModels();
@@ -75,7 +78,7 @@ export class Authorities extends React.Component {
     const { onChange, value } = this.props;
 
     const key         = `${parent.key}::${menu.key}`;
-    const authorities = R.merge(value, { [key]: active });
+    const authorities = R.merge(this.transformToJson(value), { [key]: active });
     logger.log('[updatePermission]', authorities, key, active);
     onChange(authorities);
   };
@@ -85,9 +88,9 @@ export class Authorities extends React.Component {
 
     logger.log('props is', this.props, dataSource, columns);
     return (
-      <div>
+      <React.Fragment>
         <Table dataSource={dataSource} columns={columns} />
-      </div>
+      </React.Fragment>
     );
   }
 }

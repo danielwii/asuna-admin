@@ -175,10 +175,9 @@ class ContentUpsert extends React.Component {
 
           // update model_name to model-name
           const [, modelName, property] = foreignKey.match(regex);
-          const associationName         = modelName.replace(/_/g, '-');
 
-          const association = fieldsOfAssociations[associationName];
-          return { modelName: associationName, property, association };
+          const association = fieldsOfAssociations[modelName];
+          return { modelName, property, association };
         })(foreignKeys);
         logger.info('[asyncWrapAssociations]', 'foreignOpts is', foreignOpts);
 

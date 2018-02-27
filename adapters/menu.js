@@ -9,6 +9,7 @@ import { createLogger } from '../adapters/logger';
 
 
 declare type InitParams = {
+  isSysAdmin: boolean,
   authorities: any,
 }
 
@@ -39,8 +40,13 @@ export class MenuAdapter implements IMenuService {
 
   getRegisteredModels = () => this.registeredModels;
 
-  init = (authorities) => {
-    logger.log('[MenuAdapter][init]', authorities);
+  init = (isSysAdmin, authorities) => {
+    logger.log('[MenuAdapter][init]', 'isSysAdmin', isSysAdmin, 'authorities', authorities);
+
+    // 系统管理员默认显示所有菜单项
+    if (isSysAdmin) {
+      return this.getRegisteredModels();
+    }
 
     const includedSubMenus = menu =>
       R.filter(subMenu => R.propOr(false, `${menu.key}::${subMenu.key}`)(authorities))(menu.subMenus);

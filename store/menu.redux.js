@@ -46,13 +46,20 @@ const sagaFunctions = {
         )(roles);
         logger.info('[init]', 'current roles is', currentRoles);
 
+        const isSysAdmin = R.compose(
+          R.not,
+          R.isEmpty,
+          R.find(role => role.name === 'SYS_ADMIN'),
+        )(currentRoles);
+        logger.info('[init]', 'current user isSysAdmin', isSysAdmin);
+
         const authoritiesList = R.map(R.prop('authorities'))(currentRoles);
         logger.info('[init]', 'current authoritiesList is', authoritiesList);
 
         const authorities = R.reduce(R.mergeWith(R.or), {})(authoritiesList);
         logger.info('[init]', 'current authorities is', authorities);
 
-        const menus = yield menuProxy.init(authorities);
+        const menus = yield menuProxy.init(isSysAdmin, authorities);
         logger.log('[init]', 'init sage, menus is', menus);
 
         yield put({ type: actionTypes.INIT_SUCCESS, payload: { menus } });
@@ -62,7 +69,6 @@ const sagaFunctions = {
     } else {
       logger.warn('[init]', 'cannot found current user');
     }
-
   },
 };
 
