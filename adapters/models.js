@@ -123,7 +123,7 @@ export class ModelsAdapter {
 
     const fixKeys     = _.mapKeys(data.body, (value, key) => _.get(fields, `${key}.ref`, key));
     const transformed = _.mapValues(fixKeys, (value, key) => {
-      // see line 185
+      // json 用于描述该字段需要通过字符串转换处理，目前用于服务器端不支持 JSON 数据格式的情况
       if (_.get(fields, `${key}.options.json`) === 'str') {
         return JSON.stringify(value);
       }
@@ -182,8 +182,7 @@ export class ModelsAdapter {
         type   : this.identifyType(field),
         options: {
           label      : R.path(['config', 'info', 'name'])(field),
-          // json 用于描述该字段需要通过字符串转换处理，目前用于服务器端不支持 JSON 数据格式的情况
-          json       : R.path(['config', 'info', 'json'])(field),
+          ...R.path(['config', 'info'])(field),
           foreignKeys: R.path(['config', 'foreign_keys'])(field),
         },
         value  : R.prop(field.name)(values),

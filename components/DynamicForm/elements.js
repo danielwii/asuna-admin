@@ -3,7 +3,6 @@ import React  from 'react';
 import * as R from 'ramda';
 
 import {
-  Button,
   Checkbox,
   DatePicker,
   Form,
@@ -25,8 +24,11 @@ import { Authorities }                   from './authorities';
 const logger = createLogger('components:dynamic-form:elements');
 
 const defaultFormItemLayout = {
-  // labelCol  : { offset: 0, span: 4 },
-  // wrapperCol: { offset: 0, span: 20 },
+};
+
+const horizontalFormItemLayout = {
+  labelCol  : { offset: 0, span: 4 },
+  wrapperCol: { offset: 0, span: 20 },
 };
 
 // --------------------------------------------------------------
@@ -53,15 +55,17 @@ const defaultFormItemLayout = {
 // --------------------------------------------------------------
 
 // eslint-disable-next-line react/prop-types
-export const generatePlain = ({ key, label, text }, formItemLayout = defaultFormItemLayout) => {
+export const generatePlain = ({ key, label, text }, formItemLayout = horizontalFormItemLayout) => {
   logger.info('[generatePlain]', key, label, text);
   return <Form.Item key={key || label} {...formItemLayout} label={label}>{text}</Form.Item>;
 };
 
-const generateComponent = (form,
-                           { fieldName, labelName = fieldName, rules = {} },
-                           component,
-                           formItemLayout = {}) => {
+const generateComponent = (
+  form,
+  { fieldName, labelName = fieldName, rules = {} },
+  component,
+  formItemLayout = {},
+) => {
   if (fieldName) {
     const decorator = form.getFieldDecorator(fieldName, rules);
     return (
@@ -98,28 +102,6 @@ export const generateCheckbox = (form, {
     <Checkbox />,
     formItemLayout,
   );
-};
-
-// TODO wrap by generateComponent
-export const generateButton = (form, {
-  key, name, label, type, htmlType, onClick,
-}, formItemLayout = defaultFormItemLayout) => {
-  logger.info('[generateButton]', key, name);
-  const fieldName = key || name;
-  if (name) {
-    return (
-      <Form.Item key={fieldName} {...formItemLayout}>
-        <Button
-          type={type}
-          htmlType={htmlType}
-          onClick={() => onClick({ key, name, label })}
-        >{label || name || key}
-        </Button>
-      </Form.Item>
-    );
-  }
-  logger.error('[generateButton]', 'name is required in generateButton');
-  return null;
 };
 
 export const generateInputNumber = (form, {

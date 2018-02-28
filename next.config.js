@@ -2,7 +2,7 @@ const Jarvis               = require('webpack-jarvis');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const jarvis               = new Jarvis({ port: 1337 });
-const bundleAnalyzerPlugin = new BundleAnalyzerPlugin();
+const bundleAnalyzerPlugin = new BundleAnalyzerPlugin({ openAnalyzer: false });
 
 module.exports = {
   webpack: (config) => {

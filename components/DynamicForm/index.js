@@ -9,7 +9,6 @@ import { Button, Card, Form } from 'antd';
 import {
   generateAssociation,
   generateAuthorities,
-  generateButton,
   generateCheckbox,
   generateDateTime,
   generateHidden,
@@ -118,6 +117,11 @@ export class DynamicForm2 extends React.Component {
 
     logger.info('[DynamicForm2][buildField]', 'build field', field, 'field index is', index, 'option is', options);
 
+    // all readonly field rendered as plain component
+    if (_.get(field, 'options.readonly', false)) {
+      return generatePlain({ key: index, label: options.name, text: field.value });
+    }
+
     switch (field.type) {
       case DynamicFormTypes.Plain:
         return generatePlain({ key: index, label: options.name, text: field.value });
@@ -125,8 +129,6 @@ export class DynamicForm2 extends React.Component {
         return generateInput(form, options);
       case DynamicFormTypes.Checkbox:
         return generateCheckbox(form, options);
-      case DynamicFormTypes.Button:
-        return generateButton(form, options);
       case DynamicFormTypes.Hidden:
         return generateHidden(form, options);
       case DynamicFormTypes.InputNumber:
@@ -272,7 +274,7 @@ export class DynamicForm2 extends React.Component {
 class EnhancedPureElement extends React.PureComponent {
   static propTypes = {
     field  : PropTypes.shape({}),
-    index  : PropTypes.string,
+    index  : PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     builder: PropTypes.func.isRequired,
   };
 

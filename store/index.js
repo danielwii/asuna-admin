@@ -6,7 +6,7 @@ import { applyMiddleware, combineReducers, createStore } from 'redux';
 
 import createSagaMiddleware       from 'redux-saga';
 import { composeWithDevTools }    from 'redux-devtools-extension';
-import logger                     from 'redux-logger';
+import { createLogger }           from 'redux-logger';
 import { reducer as formReducer } from 'redux-form';
 import { all }                    from 'redux-saga/effects';
 
@@ -26,6 +26,10 @@ import { contentActionTypes, contentReducer, contentSagas }    from './content.r
 import { securityActionTypes, securityReducer, securitySagas } from './security.redux';
 
 const initialState = {};
+
+const logger = createLogger({
+  collapsed: true,
+});
 
 // --------------------------------------------------------------
 // Types

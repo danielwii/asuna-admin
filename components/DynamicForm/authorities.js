@@ -12,7 +12,7 @@ const logger = createLogger('components:authorities', 1);
 // eslint-disable-next-line import/prefer-default-export
 export class Authorities extends React.Component {
   static propTypes = {
-    value   : PropTypes.oneOfType(PropTypes.string, PropTypes.shape({})),
+    value   : PropTypes.oneOfType([PropTypes.string, PropTypes.shape({})]),
     onChange: PropTypes.func,
   };
 
