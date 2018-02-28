@@ -85,14 +85,26 @@ export const DynamicFormTypes = {
   ManyToMany : 'ManyToMany',
 };
 
+/**
+ * delegate: hide submit button, using ref: form.
+ * fields: {
+ *   [name]: {
+ *     name,
+ *     type   : DynamicFormTypes.Input,
+ *     options: { required: true },
+ *   },
+ * }
+ */
 // eslint-disable-next-line react/no-multi-comp
 export class DynamicForm2 extends React.Component {
   static propTypes = {
     fields  : PropTypes.shape({}),
     auth    : PropTypes.shape({}),
-    onSubmit: PropTypes.func.isRequired,
+    onSubmit: PropTypes.func,
+    delegate: PropTypes.bool,
   };
 
+  // TODO try PureComponent instead
   shouldComponentUpdate(nextProps, nextState, nextContext) {
     logger.info('[shouldComponentUpdate]', nextProps, nextState, nextContext);
     const { fields }      = nextProps;
@@ -110,6 +122,7 @@ export class DynamicForm2 extends React.Component {
       ...field.options, key: field.key || field.name, name: field.name, auth,
     };
     const defaultAssociation = {
+
       name  : 'name',
       value : 'id',
       fields: ['id', 'name'],
@@ -231,7 +244,7 @@ export class DynamicForm2 extends React.Component {
   };
 
   render() {
-    const { fields } = this.props;
+    const { fields, delegate } = this.props;
     logger.log('[DynamicForm2][render]', 'props is', this.props, 'fields is', fields);
 
     /*
@@ -252,16 +265,18 @@ export class DynamicForm2 extends React.Component {
         {/* {_.map(fieldGroups, this.buildFieldGroup)} */}
         {/* {_.map(fields, this.buildField)} */}
         {renderFields}
-        <Form.Item>
-          <Button
-            type="primary"
-            htmlType="submit"
-            onClick={this.handleOnSubmit}
-            // disabled={hasErrors(getFieldsError())}
-          >
-            Submit
-          </Button>
-        </Form.Item>
+        {!delegate && (
+          <Form.Item>
+            <Button
+              type="primary"
+              htmlType="submit"
+              onClick={this.handleOnSubmit}
+              // disabled={hasErrors(getFieldsError())}
+            >
+              Submit
+            </Button>
+          </Form.Item>
+        )}
       </Form>
     );
   }

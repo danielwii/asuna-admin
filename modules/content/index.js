@@ -22,17 +22,19 @@ class ContentIndex extends React.Component {
       }),
     }),
     models : PropTypes.shape({}),
+    auth   : PropTypes.shape({}),
   };
 
   constructor(props) {
     super(props);
 
-    const { dispatch, context } = this.props;
+    const { dispatch, context, auth } = this.props;
 
     logger.info('[constructor]', 'context is', context);
 
-    const actions = (text, record) => (
+    const actions = (text, record, extras) => (
       <span>
+        {extras && extras(auth)}
         <Button size="small" type="dashed" onClick={() => this.edit(text, record)}>Edit</Button>
         <Divider type="vertical" />
         <Button size="small" type="danger" onClick={() => this.remove(text, record)}>Delete</Button>
@@ -148,6 +150,6 @@ class ContentIndex extends React.Component {
   }
 }
 
-const mapStateToProps = state => ({ ...state.content });
+const mapStateToProps = state => ({ ...state.content, auth: state.auth });
 
 export default connect(mapStateToProps)(ContentIndex);

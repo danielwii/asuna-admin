@@ -25,7 +25,7 @@ declare interface IMenuService {
 const logger = createLogger('adapters:menu');
 
 export const menuProxy: IMenuService = {
-  init               : args => global.context.menu.init(args),
+  init               : (...args) => global.context.menu.init(...args),
   getRegisteredModels: () => global.context.menu.getRegisteredModels(),
 };
 

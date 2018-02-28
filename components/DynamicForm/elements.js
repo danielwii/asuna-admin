@@ -23,8 +23,7 @@ import { Authorities }                   from './authorities';
 
 const logger = createLogger('components:dynamic-form:elements');
 
-const defaultFormItemLayout = {
-};
+const defaultFormItemLayout = {};
 
 const horizontalFormItemLayout = {
   labelCol  : { offset: 0, span: 4 },
@@ -62,12 +61,12 @@ export const generatePlain = ({ key, label, text }, formItemLayout = horizontalF
 
 const generateComponent = (
   form,
-  { fieldName, labelName = fieldName, rules = {} },
+  { fieldName, labelName = fieldName, rules },
   component,
   formItemLayout = {},
 ) => {
   if (fieldName) {
-    const decorator = form.getFieldDecorator(fieldName, rules);
+    const decorator = form.getFieldDecorator(fieldName, rules ? { rules } : {});
     return (
       <Form.Item key={fieldName} {...formItemLayout} label={labelName}>
         {decorator(component)}

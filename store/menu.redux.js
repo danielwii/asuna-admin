@@ -46,14 +46,14 @@ const sagaFunctions = {
         )(roles);
         logger.info('[init]', 'current roles is', currentRoles);
 
-        const isSysAdmin = R.compose(
-          R.not,
-          R.isEmpty,
-          R.find(role => role.name === 'SYS_ADMIN'),
-        )(currentRoles);
+        const isSysAdmin = !!R.find(role => role.name === 'SYS_ADMIN')(currentRoles);
         logger.info('[init]', 'current user isSysAdmin', isSysAdmin);
 
-        const authoritiesList = R.map(R.prop('authorities'))(currentRoles);
+        const authoritiesList = R.map((role) => {
+          const each = R.prop('authorities')(role);
+          // 后端返回字符串时需要反序列化为 JSON
+          return R.is(String, each) ? JSON.parse(each) : each;
+        })(currentRoles);
         logger.info('[init]', 'current authoritiesList is', authoritiesList);
 
         const authorities = R.reduce(R.mergeWith(R.or), {})(authoritiesList);
