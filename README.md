@@ -58,3 +58,7 @@ modelColumns = {
   },
 }
 ```
+
+## Changelog
+
+- 0.0.2 - Mar 2 2018 - 修改视频对象结构为 JSON。

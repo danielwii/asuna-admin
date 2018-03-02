@@ -1,7 +1,6 @@
 /* eslint-disable jsx-a11y/media-has-caption */
 import React     from 'react';
 import PropTypes from 'prop-types';
-import * as R    from 'ramda';
 import videojs   from 'video.js';
 
 import { Button, Icon, message, Upload } from 'antd';
@@ -23,7 +22,7 @@ function beforeUpload(file) {
   }
   const isLt100M = file.size / 1024 / 1024 < 100;
   if (!isLt100M) {
-    message.error('Image must smaller than 100MB!');
+    message.error('Video must smaller than 100MB!');
   }
   return isMP4 && isLt100M;
 }
@@ -37,14 +36,14 @@ async function upload(auth, onChange, files, args) {
     message.success('upload successfully.');
     args.onSuccess();
 
-    const urls = R.compose(
-      R.join(','),
-      R.filter(R.identity),
-      R.concat(files),
-    )(response.data);
-    logger.log('[upload]', urls);
+    // const urls = R.compose(
+    //   R.join(','),
+    //   R.filter(R.identity),
+    //   R.concat(files),
+    // )(response.data);
+    // logger.log('[upload]', files, urls);
 
-    onChange(urls);
+    onChange(response.data);
   } else {
     message.error('upload failed.');
     args.onError();
@@ -59,7 +58,11 @@ async function upload(auth, onChange, files, args) {
 export class VideoUploader extends React.Component {
   static propTypes = {
     auth    : PropTypes.shape({}), // auth token object
-    value   : PropTypes.string,    // image url in db
+    value   : PropTypes.arrayOf(PropTypes.shape({
+      filename: PropTypes.string,
+      mode    : PropTypes.string,
+      prefix  : PropTypes.string,
+    })),
     onChange: PropTypes.func,
     multi   : PropTypes.bool,
   };
@@ -106,27 +109,27 @@ export class VideoUploader extends React.Component {
     this.setState({ fileList });
   };
 
-  renderPlayer = () => {
-    const { value: videoUrl } = this.props;
+  renderPlayer = (video) => {
+    logger.info('[VideoUploader][renderPlayer]', video);
 
-    if (videoUrl) {
+    if (video) {
       const videoJsOptions = {
         width   : 640,
         height  : 320,
         autoplay: false,
         controls: true,
         sources : [{
-          src : videoUrl,
+          src : `${video.prefix}/${video.filename}`,
           type: 'video/mp4',
         }],
       };
-      return <VideoPlayer {...videoJsOptions} />;
+      return <VideoPlayer key={video.filename} {...videoJsOptions} />;
     }
     return null;
   };
 
   render() {
-    const { auth, onChange } = this.props;
+    const { auth, onChange, value: videos } = this.props;
 
     const props = {
       onChange           : this.handleChange,
@@ -136,7 +139,6 @@ export class VideoUploader extends React.Component {
       beforeUpload,
     };
 
-
     return (
       <div>
         <Upload {...props} fileList={this.state.fileList}>
@@ -144,7 +146,7 @@ export class VideoUploader extends React.Component {
             <Icon type="upload" /> upload
           </Button>
         </Upload>
-        {this.renderPlayer()}
+        {videos && videos.map(this.renderPlayer)}
       </div>
     );
   }
