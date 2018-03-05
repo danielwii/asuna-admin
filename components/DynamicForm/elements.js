@@ -61,12 +61,13 @@ export const generatePlain = ({ key, label, text }, formItemLayout = horizontalF
 
 const generateComponent = (
   form,
-  { fieldName, labelName = fieldName, rules },
+  { fieldName, labelName = fieldName, opts = {} },
   component,
   formItemLayout = {},
 ) => {
   if (fieldName) {
-    const decorator = form.getFieldDecorator(fieldName, rules ? { rules } : {});
+    logger.info('[generateComponent]', fieldName, labelName, opts);
+    const decorator = form.getFieldDecorator(fieldName, opts);
     return (
       <Form.Item key={fieldName} {...formItemLayout} label={labelName}>
         {decorator(component)}
@@ -138,7 +139,7 @@ export const generateInput = (form, {
 
   return generateComponent(
     form,
-    { fieldName, labelName, rules: [{ required, requiredMessage }] },
+    { fieldName, labelName, opts: { rules: [{ required, requiredMessage }] } },
     component,
     formItemLayout,
   );
@@ -197,7 +198,7 @@ export const generateSwitch = (form, {
   const fieldName = key || name;
   const labelName = label || name || key;
   return generateComponent(
-    form, { fieldName, labelName, rules: { valuePropName: 'checked' } }, (
+    form, { fieldName, labelName, opts: { valuePropName: 'checked' } }, (
       <Switch />
     ), formItemLayout,
   );

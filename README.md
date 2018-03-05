@@ -5,8 +5,9 @@
 根据 `.env.example` 创建 `.env` 并配置对应的服务地址。
 
 ```bash
-yarn     # install dependencies
-yarn dev # run server as dev mode
+yarn                 # install dependencies
+yarn dev             # run server as dev mode
+ENV=staging yarn dev # run dev mode using staging env
 ```
 
 ## Quick Start

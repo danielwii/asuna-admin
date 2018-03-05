@@ -51,6 +51,7 @@ app.prepare().then(() => {
   }).listen(3000, (err) => {
     if (err) throw err;
     console.log('> Ready on http://localhost:3000');
-    console.log(`> ENV: ${process.env.NODE_ENV}`);
+    console.log(`> NODE_ENV: ${process.env.NODE_ENV}`);
+    console.log(`> ENV: ${process.env.ENV}`);
   });
 });
