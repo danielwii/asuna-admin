@@ -31,14 +31,24 @@ const ContentForm = Form.create({
   },
   onFieldsChange(props, changedFields) {
     logger.info('[ContentForm][onFieldsChange]', 'onFieldsChange', props, changedFields);
-    const realChangedFields = R.pickBy((field, key) => {
-      const oldVar = R.path(['fields', key, 'value'])(props);
-      const newVar = field.value;
-      logger.info('[ContentForm][onFieldsChange]', 'oldVar is', oldVar, 'newVar is', newVar);
-      return oldVar !== newVar;
-    })(changedFields);
-    logger.info('[ContentForm][onFieldsChange]', 'real changed fields is', realChangedFields);
-    props.onChange(realChangedFields);
+    const filteredChangedFields = R.compose(
+      R.pickBy((field, key) => {
+        const oldVar = R.path(['fields', key, 'value'])(props);
+        const newVar = field.value;
+        logger.log('[ContentForm][onFieldsChange]', 'oldVar is', oldVar, 'newVar is', newVar);
+        return oldVar !== newVar;
+      }),
+      R.map((field) => {
+        let { value } = field;
+        // eslint-disable-next-line no-underscore-dangle
+        if (value && value._isAMomentObject) {
+          value = value.toDate();
+        }
+        return { ...field, value };
+      }),
+    )(changedFields);
+    logger.log('[ContentForm][onFieldsChange]', 'real changed fields is', filteredChangedFields);
+    props.onChange(filteredChangedFields);
   },
 })(DynamicForm2);
 
@@ -218,7 +228,7 @@ class ContentUpsert extends React.Component {
     if (!R.isEmpty(changedFields)) {
       logger.log('[handleFormChange]', 'handleFormChange', changedFields);
 
-      const fields            = R.map(field => R.pick(['value'])(field))(changedFields);
+      const fields            = R.map(field => R.pick(['value'], field))(changedFields);
       const changedFieldsList = R.mergeDeepRight(this.state.modelFields, fields);
       logger.info('[handleFormChange]', 'modelFields is', this.state.modelFields);
       logger.info('[handleFormChange]', 'new fields is', fields);
