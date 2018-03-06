@@ -24,7 +24,7 @@ global.context = _.assign(global.context, {
   auth: new AuthAdapter(authService),
 });
 
-logger.log('1--> global context is', global.context);
+logger.log('global context is', global.context);
 
 // --------------------------------------------------------------
 // Main

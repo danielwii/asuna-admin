@@ -80,10 +80,9 @@ const initialState = {};
 const contentReducer = (previousState = initialState, action) => {
   if (isCurrent(action.type)) {
     switch (action.type) {
-      case contentActionTypes.CONTENT_LOAD_MODELS_SUCCESS:
-        return R.mergeDeepRight(previousState, action.payload);
       default:
-        return { ...previousState, ...action.payload };
+        // TODO update others to use mergeDeepRight
+        return R.mergeDeepRight(previousState, action.payload);
     }
   } else {
     return previousState;

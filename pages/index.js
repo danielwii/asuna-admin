@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import dynamic     from 'next/dynamic';
 import PropTypes   from 'prop-types';
 import _           from 'lodash';
+
 import 'moment/locale/zh-cn';
 
 import { withReduxSaga } from '../store';

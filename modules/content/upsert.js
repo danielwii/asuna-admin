@@ -58,7 +58,7 @@ const ContentForm = Form.create({
 
 class ContentUpsert extends React.Component {
   static propTypes = {
-    context: PropTypes.shape({
+    basis  : PropTypes.shape({
       pane: PropTypes.shape({
         key : PropTypes.string,
         data: PropTypes.shape({
@@ -76,10 +76,10 @@ class ContentUpsert extends React.Component {
   constructor(props) {
     super(props);
 
-    const { context } = this.props;
+    const { basis } = this.props;
 
     // content::create::name::timestamp => name
-    const modelName = R.compose(R.nth(2), R.split(/::/), R.path(['pane', 'key']))(context);
+    const modelName = R.compose(R.nth(2), R.split(/::/), R.path(['pane', 'key']))(basis);
     logger.info('[constructor]', 'model name is ', modelName);
 
     const isInsertMode = this.detectUpsertMode(modelName);
@@ -88,17 +88,17 @@ class ContentUpsert extends React.Component {
       isInsertMode,
       modelName,
       modelFields: {},
-      key        : context.pane.key,
+      key        : basis.pane.key,
     };
   }
 
 
   async componentWillMount() {
     logger.info('[componentWillMount]', 'init...');
-    const { context, schemas } = this.props;
+    const { basis, schemas } = this.props;
 
     // content::create::name::timestamp => name
-    const modelName = R.compose(R.nth(2), R.split(/::/), R.path(['pane', 'key']))(context);
+    const modelName = R.compose(R.nth(2), R.split(/::/), R.path(['pane', 'key']))(basis);
     logger.info('[componentWillMount]', 'model name is ', modelName);
 
     const allFields = modelsProxy.getFormFields(schemas, modelName);
@@ -131,7 +131,7 @@ class ContentUpsert extends React.Component {
     logger.info('[componentWillReceiveProps]', 'init...');
     const { isInsertMode, modelName } = this.state;
     if (!isInsertMode) {
-      const { models, context: { pane: { data: { record } } } } = nextProps;
+      const { models, basis: { pane: { data: { record } } } } = nextProps;
 
       const fieldValues = R.path([modelName, record.id])(models) || {};
       logger.info('[componentWillReceiveProps]', 'field values is', fieldValues);
@@ -148,9 +148,9 @@ class ContentUpsert extends React.Component {
   }
 
   detectUpsertMode = (modelName) => {
-    const { dispatch, context } = this.props;
+    const { dispatch, basis } = this.props;
 
-    const record = R.path(['pane', 'data', 'record'])(context);
+    const record = R.path(['pane', 'data', 'record'])(basis);
     if (record) {
       logger.info('[detectUpsertMode]', 'set to update mode and load model...', record);
       dispatch(modelsActions.fetch(modelName, { id: record.id, profile: 'detail' }));
@@ -258,8 +258,8 @@ class ContentUpsert extends React.Component {
   };
 
   render() {
-    const { modelFields }   = this.state;
-    const { context, auth } = this.props;
+    const { modelFields } = this.state;
+    const { basis, auth } = this.props;
 
     if (R.anyPass([R.isEmpty, R.isNil])(modelFields)) {
       return <div>loading...</div>;
@@ -281,7 +281,7 @@ class ContentUpsert extends React.Component {
         {/* <hr /> */}
         {/* <pre>{JSON.stringify(this.state, null, 2)}</pre> */}
         {/* <hr /> */}
-        <pre>{JSON.stringify(context, null, 2)}</pre>
+        <pre>{JSON.stringify(basis, null, 2)}</pre>
       </div>
     );
   }

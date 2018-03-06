@@ -1,7 +1,8 @@
-import { call, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
+import { call, put, take, select, takeEvery, takeLatest } from 'redux-saga/effects';
 
-import _           from 'lodash';
-import { message } from 'antd';
+import _             from 'lodash';
+import { message }   from 'antd';
+import { REHYDRATE } from 'redux-persist/constants';
 
 import { authProxy }     from '../adapters/auth';
 import { createLogger }  from '../adapters/logger';
@@ -78,10 +79,26 @@ function* logoutSaga() {
  * 未找到可用 token 时重定向到登录页面
  */
 function* tokenWatcher() {
-  // const action = yield take('*');
   const { auth: { token }, router: { path } } = yield select();
   if (!token && path !== '/login') {
-    yield put(routerActions.toLogin());
+    const action = yield take(REHYDRATE);
+    logger.log('[tokenWatcher]', 'waiting for action', action);
+    if (!_.get(action, 'payload.auth.token')) {
+      yield put(routerActions.toLogin());
+    }
+  }
+}
+
+/**
+ * 恢复 store 时跳转到主页面
+ * @param action
+ */
+function* rehydrateWatcher(action) {
+  logger.log('[rehydrateWatcher]', action);
+  const { payload: { auth: { token }, router: { path } } } = action;
+  logger.log('[rehydrateWatcher]', !!token, path);
+  if (token) {
+    yield put(routerActions.toIndex());
   }
 }
 
@@ -89,6 +106,7 @@ const sagas = [
   takeLatest(actionTypes.LOGIN, loginSaga),
   takeLatest(actionTypes.LOGOUT, logoutSaga),
   takeEvery('*', tokenWatcher),
+  takeEvery(REHYDRATE, rehydrateWatcher),
 ];
 
 // --------------------------------------------------------------

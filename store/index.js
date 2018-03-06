@@ -4,11 +4,17 @@ import nextReduxSaga from 'next-redux-saga';
 
 import { applyMiddleware, combineReducers, createStore } from 'redux';
 
-import createSagaMiddleware       from 'redux-saga';
+import createSagaMiddleware from 'redux-saga';
+import { all }              from 'redux-saga/effects';
+
 import { composeWithDevTools }    from 'redux-devtools-extension';
 import { createLogger }           from 'redux-logger';
 import { reducer as formReducer } from 'redux-form';
-import { all }                    from 'redux-saga/effects';
+
+import { REHYDRATE }                   from 'redux-persist/constants';
+import { autoRehydrate, persistStore } from 'redux-persist';
+
+import localForage from 'localforage';
 
 import {
   notificationsActionTypes,
@@ -27,7 +33,15 @@ import { securityActionTypes, securityReducer, securitySagas } from './security.
 
 const initialState = {};
 
-const logger = createLogger({
+const persistConfig = {
+  key      : 'root',
+  storage  : localForage,
+  debug    : true,
+  timeout  : 30000,
+  blacklist: ['app'],
+};
+
+const loggerMiddleware = createLogger({
   collapsed: true,
 });
 
@@ -67,7 +81,27 @@ const rootReducers = combineReducers({
   global       : (previousState = initialState, action) => (
     { ...previousState, ...action }
   ),
+  persistStore : (state = initialState, action) => {
+    switch (action.type) {
+      case REHYDRATE: {
+        const incoming = action.payload.myReducer;
+        if (incoming) {
+          return {
+            ...state,
+            ...incoming,
+            //  specialKey: processSpecial(incoming.specialKey)
+          };
+        }
+        return state;
+      }
+
+      default:
+        return state;
+    }
+  },
 });
+
+// const persistedReducer = persistReducer(persistConfig, rootReducers);
 
 // --------------------------------------------------------------
 // Root sagas
@@ -98,8 +132,13 @@ export const configureStore = (state = initialState) => {
   const store = createStore(
     rootReducers,
     state,
-    composeWithDevTools(applyMiddleware(sagaMiddleware, logger)),
+    composeWithDevTools(
+      applyMiddleware(sagaMiddleware, loggerMiddleware),
+      autoRehydrate(),
+    ),
   );
+
+  persistStore(store, persistConfig);
 
   store.sagaTask = sagaMiddleware.run(rootSaga);
   return store;
