@@ -101,14 +101,11 @@ class ContentUpsert extends React.Component {
     const modelName = R.compose(R.nth(2), R.split(/::/), R.path(['pane', 'key']))(context);
     logger.info('[componentWillMount]', 'model name is ', modelName);
 
-    let allFields = modelsProxy.getFormFields(schemas, modelName);
+    const allFields = modelsProxy.getFormFields(schemas, modelName);
 
     // if (modelName === 'colleges') {
-    //   allFields = R.pick(['id', 'name', 'covers', 'logo', 'introduction'], allFields);
+    //   allFields = R.pick(['id', 'name', 'introduction', 'country_id'], allFields);
     // }
-    if (modelName === 'videos') {
-      allFields = R.pick(['id', 'name', 'video'], allFields);
-    }
     logger.info('[componentWillMount]', 'allFields is', allFields);
 
     const wrappedFields = await this.asyncWrapAssociations(allFields);
@@ -280,8 +277,8 @@ class ContentUpsert extends React.Component {
           onSubmit={this.handleFormSubmit}
         />
         <hr />
-        <pre>{JSON.stringify(modelFields, null, 2)}</pre>
-        <hr />
+        {/* <pre>{JSON.stringify(modelFields, null, 2)}</pre> */}
+        {/* <hr /> */}
         {/* <pre>{JSON.stringify(this.state, null, 2)}</pre> */}
         {/* <hr /> */}
         <pre>{JSON.stringify(context, null, 2)}</pre>

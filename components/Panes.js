@@ -77,7 +77,7 @@ class Panes extends React.Component {
                 module={pane.linkTo || pane.key}
                 activeKey={activeKey}
                 onClose={() => this.onEdit(activeKey, 'remove')}
-                context={{ pane }}
+                basis={{ pane }}
                 onTitleChange={newTitle => this.onTitleChange(activeKey, newTitle)}
               />
             </TabPane>

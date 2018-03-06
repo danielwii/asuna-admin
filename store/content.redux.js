@@ -13,7 +13,7 @@ const logger = createLogger('store:content');
 // Module actionTypes
 // --------------------------------------------------------------
 
-const actionTypes = {
+const contentActionTypes = {
   // ACTION: 'module::action'
   CONTENT_LOAD_MODELS        : 'content::load-models',
   CONTENT_LOAD_MODELS_FAILED : 'content::load-models-failed',
@@ -26,11 +26,17 @@ const isCurrent = type => type.startsWith('content::');
 // Module actions
 // --------------------------------------------------------------
 
-const actions = {
+const contentActions = {
   // action: (args) => ({ type, payload })
-  loadModels       : (name, data) => reduxAction(actionTypes.CONTENT_LOAD_MODELS, { name, data }),
-  loadModelsSuccess: data => reduxAction(actionTypes.CONTENT_LOAD_MODELS_SUCCESS, { models: data }),
-  // loadModelsFailed : error => reduxAction(actionTypes.CONTENT_LOAD_MODELS_FAILED, {}, error),
+  loadModels       : (name, data) => reduxAction(contentActionTypes.CONTENT_LOAD_MODELS, {
+    name,
+    models: { [name]: { data, loading: true } },
+  }),
+  loadModelsSuccess: data => reduxAction(contentActionTypes.CONTENT_LOAD_MODELS_SUCCESS, {
+    models: data,
+  }),
+  // loadModelsFailed : error => reduxAction(contentActionTypes.CONTENT_LOAD_MODELS_FAILED, {},
+  // error),
 };
 
 // --------------------------------------------------------------
@@ -48,7 +54,9 @@ function* loadModels({ payload: { name, data } }) {
     try {
       const response = yield call(modelsProxy.loadModels, { token }, name, data);
       message.success(`load content '${name}' success`);
-      yield put(actions.loadModelsSuccess({ [name]: { data: response.data } }));
+      yield put(contentActions.loadModelsSuccess({
+        [name]: { data: response.data, loading: false },
+      }));
       logger.log('loaded content', name, response.data);
     } catch (e) {
       message.error(e);
@@ -57,9 +65,9 @@ function* loadModels({ payload: { name, data } }) {
   }
 }
 
-const sagas = [
+const contentSagas = [
   // takeLatest / takeEvery (actionType, actionSage)
-  takeLatest(actionTypes.CONTENT_LOAD_MODELS, loadModels),
+  takeLatest(contentActionTypes.CONTENT_LOAD_MODELS, loadModels),
 ];
 
 // --------------------------------------------------------------
@@ -69,10 +77,10 @@ const sagas = [
 
 const initialState = {};
 
-const reducer = (previousState = initialState, action) => {
+const contentReducer = (previousState = initialState, action) => {
   if (isCurrent(action.type)) {
     switch (action.type) {
-      case actionTypes.CONTENT_LOAD_MODELS_SUCCESS:
+      case contentActionTypes.CONTENT_LOAD_MODELS_SUCCESS:
         return R.mergeDeepRight(previousState, action.payload);
       default:
         return { ...previousState, ...action.payload };
@@ -83,8 +91,8 @@ const reducer = (previousState = initialState, action) => {
 };
 
 export {
-  actionTypes as contentActionTypes,
-  actions as contentActions,
-  sagas as contentSagas,
-  reducer as contentReducer,
+  contentActionTypes,
+  contentActions,
+  contentSagas,
+  contentReducer,
 };

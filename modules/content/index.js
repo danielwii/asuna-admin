@@ -16,21 +16,21 @@ const logger = createLogger('modules:content:index');
 
 class ContentIndex extends React.Component {
   static propTypes = {
-    context: PropTypes.shape({
+    basis : PropTypes.shape({
       pane: PropTypes.shape({
         key: PropTypes.string,
       }),
     }),
-    models : PropTypes.shape({}),
-    auth   : PropTypes.shape({}),
+    models: PropTypes.shape({}),
+    auth  : PropTypes.shape({}),
   };
 
   constructor(props) {
     super(props);
 
-    const { dispatch, context, auth } = this.props;
+    const { dispatch, basis, auth } = this.props;
 
-    logger.info('[constructor]', 'context is', context);
+    logger.info('[constructor]', 'basis is', basis);
 
     const actions = (text, record, extras) => (
       <span>
@@ -42,7 +42,7 @@ class ContentIndex extends React.Component {
     );
 
     // content::name => name
-    const modelName = R.compose(R.nth(1), R.split(/::/), R.path(['pane', 'key']))(context);
+    const modelName = R.compose(R.nth(1), R.split(/::/), R.path(['pane', 'key']))(basis);
     const configs   = modelsProxy.getModelConfigs(modelName);
     logger.info('[constructor]', 'load table from configs', configs, 'by', modelName);
 
@@ -114,9 +114,10 @@ class ContentIndex extends React.Component {
 
   render() {
     const { modelName, columns } = this.state;
-    const { context, models }    = this.props;
+    const { basis, models }      = this.props;
 
     const response = R.pathOr([], [modelName, 'data'])(models);
+    const loading  = R.pathOr(false, [modelName, 'loading'])(models);
 
     const { items: dataSource, pagination } = responseProxy.extract(response);
 
@@ -138,13 +139,14 @@ class ContentIndex extends React.Component {
         <Table
           dataSource={dataSource}
           rowKey="id"
+          loading={loading}
           columns={columns}
           pagination={pagination}
           onChange={this.handleTableChange}
         />
 
         {/* <pre>{JSON.stringify(dataSource, null, 2)}</pre> */}
-        <pre>{JSON.stringify(context, null, 2)}</pre>
+        <pre>{JSON.stringify(basis, null, 2)}</pre>
       </div>
     );
   }
