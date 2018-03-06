@@ -3,6 +3,7 @@ import _      from 'lodash';
 
 import { DynamicFormTypes } from '../components/DynamicForm';
 import { createLogger }     from '../adapters/logger';
+import { defaultColumns }   from '../adapters/helper';
 
 const logger = createLogger('adapters:models');
 
@@ -154,8 +155,8 @@ export class ModelsAdapter {
         logger.info('[getModelConfig]', name, 'config is', config);
         return config;
       }
-      logger.error('[getModelConfig]', `'${name}' not found in`, this.modelConfigs);
-      return {};
+      logger.warn('[getModelConfig]', `'${name}' not found in`, this.modelConfigs, 'generate a default one.');
+      return { model: {}, table: defaultColumns };
     }
     return this.modelConfigs;
   };

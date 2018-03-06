@@ -33,3 +33,24 @@ export const columnHelper = {
       actions(text, record, extras ? auth => extras(text, record, auth) : null),
   }),
 };
+
+/**
+ * 通用配置
+ */
+export const commonColumns = {
+  any      : any => columnHelper.generate(any, any.toUpperCase()),
+  id       : columnHelper.generate('id', 'ID'),
+  name     : columnHelper.generate('name', '名称'),
+  name_en  : columnHelper.generate('name_en', '英文名称'),
+  email    : columnHelper.generate('email', 'Email'),
+  createdAt: columnHelper.generateCalendar('createdAt', '创建时间'),
+  updatedAt: columnHelper.generateCalendar('updatedAt', '更新时间'),
+  actions  : columnHelper.generateActions,
+};
+
+export const defaultColumns = actions => [
+  commonColumns.id,
+  commonColumns.createdAt,
+  commonColumns.updatedAt,
+  commonColumns.actions(actions),
+];
