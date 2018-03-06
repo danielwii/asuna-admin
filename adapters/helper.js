@@ -41,6 +41,7 @@ export const commonColumns = {
   any      : any => columnHelper.generate(any, any.toUpperCase()),
   id       : columnHelper.generate('id', 'ID'),
   name     : columnHelper.generate('name', '名称'),
+  title    : columnHelper.generate('title', '标题'),
   name_en  : columnHelper.generate('name_en', '英文名称'),
   email    : columnHelper.generate('email', 'Email'),
   createdAt: columnHelper.generateCalendar('createdAt', '创建时间'),
@@ -50,7 +51,7 @@ export const commonColumns = {
 
 export const defaultColumns = actions => [
   commonColumns.id,
-  commonColumns.createdAt,
+  // commonColumns.createdAt,
   commonColumns.updatedAt,
   commonColumns.actions(actions),
 ];

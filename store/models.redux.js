@@ -101,10 +101,10 @@ const modelsSagaFunctions = {
     }
   },
   * loadAllSchemas() {
-    logger.log('load all options in saga');
+    logger.log('load all schemas in saga');
     const { token } = yield select(state => state.auth);
     if (token) {
-      message.loading('loading all options...');
+      message.loading('loading all schemas...');
       try {
         const effects     = modelsProxy.listSchemasCallable({ token });
         const allResponse = yield all(effects);
@@ -120,7 +120,7 @@ const modelsSagaFunctions = {
         logger.log('load all model schemas', effects, schemas);
       } catch (e) {
         message.error(e);
-        logger.warn('CATCH -> load all options error occurred', e);
+        logger.warn('CATCH -> load all schemas error occurred', e);
       }
     }
   },
