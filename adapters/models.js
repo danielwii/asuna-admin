@@ -153,6 +153,15 @@ export class ModelsAdapter {
       const config = R.prop(name)(this.modelConfigs);
       if (config) {
         logger.info('[getModelConfig]', name, 'config is', config);
+
+        // 未定义具体模型时，使用默认定义
+        if (!config.model) {
+          config.model = {};
+        }
+        if (!config.table) {
+          config.table = defaultColumns;
+        }
+
         return config;
       }
       logger.warn('[getModelConfig]', `'${name}' not found in`, this.modelConfigs, 'generate a default one.');
@@ -169,7 +178,7 @@ export class ModelsAdapter {
     const schema = R.prop(name)(schemas);
 
     if (!schema) {
-      logger.error('[getFormSchema]', 'schema is required.');
+      logger.error('[getFormSchema]', 'schema is required.', schemas);
       return {};
     }
 
