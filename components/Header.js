@@ -1,10 +1,10 @@
-import React  from 'react';
-import styled from 'styled-components';
+import React     from 'react';
+import PropTypes from 'prop-types';
+import styled    from 'styled-components';
+
+import { Dropdown, Icon, Layout, Menu } from 'antd';
 
 import { authActions } from '../store/auth.redux';
-
-import { Dropdown, Layout, Menu, Spin } from 'antd';
-import PropTypes                        from 'prop-types';
 
 const { Header } = Layout;
 
@@ -65,7 +65,7 @@ export default class extends React.Component {
               </Dropdown>
               .
             </div>
-          ) : <Spin size="small" style={{ marginLeft: 8 }} />}
+          ) : <Icon type="loading" style={{ marginLeft: 8, fontSize: 24 }} spin />}
         </div>
         {/* language=CSS */}
         <style jsx>{`

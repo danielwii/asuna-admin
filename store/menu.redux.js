@@ -36,38 +36,42 @@ const actions = {
 
 const sagaFunctions = {
   * init() {
-    const { roles, user } = yield select(state => state.security);
+    try {
+      const { roles, user } = yield select(state => state.security);
 
-    if (user) {
-      if (R.prop('items')(roles)) {
-        const currentRoles = R.compose(
-          R.filter(role => R.contains(role.id)(user.roles)),
-          R.propOr([], 'items'),
-        )(roles);
-        logger.info('[init]', 'current roles is', currentRoles);
+      if (user) {
+        if (R.prop('items')(roles)) {
+          const currentRoles = R.compose(
+            R.filter(role => R.contains(role.id)(user.roles)),
+            R.propOr([], 'items'),
+          )(roles);
+          logger.info('[init]', 'current roles is', currentRoles);
 
-        const isSysAdmin = !!R.find(role => role.name === 'SYS_ADMIN')(currentRoles);
-        logger.info('[init]', 'current user isSysAdmin', isSysAdmin);
+          const isSysAdmin = !!R.find(role => role.name === 'SYS_ADMIN')(currentRoles);
+          logger.info('[init]', 'current user isSysAdmin', isSysAdmin);
 
-        const authoritiesList = R.map((role) => {
-          const each = R.prop('authorities')(role);
-          // 后端返回字符串时需要反序列化为 JSON
-          return R.is(String, each) ? JSON.parse(each) : each;
-        })(currentRoles);
-        logger.info('[init]', 'current authoritiesList is', authoritiesList);
+          const authoritiesList = R.map((role) => {
+            const each = R.prop('authorities')(role);
+            // 后端返回字符串时需要反序列化为 JSON
+            return R.is(String, each) ? JSON.parse(each) : each;
+          })(currentRoles);
+          logger.info('[init]', 'current authoritiesList is', authoritiesList);
 
-        const authorities = R.reduce(R.mergeWith(R.or), {})(authoritiesList);
-        logger.info('[init]', 'current authorities is', authorities);
+          const authorities = R.reduce(R.mergeWith(R.or), {})(authoritiesList);
+          logger.info('[init]', 'current authorities is', authorities);
 
-        const menus = yield menuProxy.init(isSysAdmin, authorities);
-        logger.log('[init]', 'init sage, menus is', menus);
+          const menus = yield menuProxy.init(isSysAdmin, authorities);
+          logger.log('[init]', 'init sage, menus is', menus);
 
-        yield put({ type: actionTypes.INIT_SUCCESS, payload: { menus } });
+          yield put({ type: actionTypes.INIT_SUCCESS, payload: { menus } });
+        } else {
+          logger.warn('[init]', 'cannot found any roles');
+        }
       } else {
-        logger.warn('[init]', 'cannot found any roles');
+        logger.warn('[init]', 'cannot found current user');
       }
-    } else {
-      logger.warn('[init]', 'cannot found current user');
+    } catch (e) {
+      logger.error('[init]', e);
     }
   },
 };

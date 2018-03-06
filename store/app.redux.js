@@ -28,8 +28,8 @@ const isCurrent = type => type.startsWith('app::');
 
 const appActions = {
   // action: (args) => ({ type, payload })
-  init       : () => reduxAction(appActionTypes.INIT),
-  initSuccess: () => reduxAction(appActionTypes.INIT_SUCCESS),
+  init       : () => reduxAction(appActionTypes.INIT, { loading: true }),
+  initSuccess: () => reduxAction(appActionTypes.INIT_SUCCESS, { loading: false }),
 };
 
 // --------------------------------------------------------------
@@ -40,16 +40,19 @@ const appActions = {
 // --------------------------------------------------------------
 
 function* init() {
-  // const { token } = yield select(state => state.auth);
-  logger.log('[init]', 'load all roles...');
-  yield securitySagaFunctions.loadAllRoles();
-  logger.log('[init]', 'get current user...');
-  yield securitySagaFunctions.getCurrentUser();
-  logger.log('[init]', 'call init menu...');
-  yield menuSagaFunctions.init();
-  logger.log('[init]', 'load all schemas');
-  yield modelsSagaFunctions.loadAllSchemas();
-  yield put(appActions.initSuccess());
+  try { // const { token } = yield select(state => state.auth);
+    logger.log('[init]', 'load all roles...');
+    yield securitySagaFunctions.loadAllRoles();
+    logger.log('[init]', 'get current user...');
+    yield securitySagaFunctions.getCurrentUser();
+    logger.log('[init]', 'call init menu...');
+    yield menuSagaFunctions.init();
+    logger.log('[init]', 'load all schemas');
+    yield modelsSagaFunctions.loadAllSchemas();
+    yield put(appActions.initSuccess());
+  } catch (e) {
+    logger.error('[init]', e);
+  }
 }
 
 const appSagas = [
@@ -62,7 +65,9 @@ const appSagas = [
 // action = { payload: any? }
 // --------------------------------------------------------------
 
-const initialState = {};
+const initialState = {
+  loading: true,
+};
 
 const appReducer = (previousState = initialState, action) => {
   if (isCurrent(action.type)) {

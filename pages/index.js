@@ -8,6 +8,8 @@ import 'moment/locale/zh-cn';
 import { withReduxSaga } from '../store';
 import { appActions }    from '../store/app.redux';
 
+import Loading from '../components/LivingLoading';
+
 import { authService }     from '../services/auth';
 import { securityService } from '../services/security';
 import { modelsService }   from '../services/models';
@@ -48,7 +50,7 @@ logger.info('global context is', global.context);
 const DynamicMainLayoutLoading = dynamic(
   import('../layout/main'),
   {
-    loading: () => <p>loading...</p>,
+    loading: () => <p>main loading...</p>,
   },
 );
 
@@ -59,6 +61,9 @@ const DynamicMainLayoutLoading = dynamic(
 class Index extends React.Component {
   static propTypes = {
     auth: PropTypes.shape({}),
+    app : PropTypes.shape({
+      loading: PropTypes.bool,
+    }),
   };
 
   componentWillMount() {
@@ -68,16 +73,15 @@ class Index extends React.Component {
   }
 
   render() {
-    const { auth } = this.props;
+    const { auth, app: { loading } } = this.props;
 
-    return (
-      <DynamicMainLayoutLoading auth={auth} />
-    );
+    return loading ? <Loading /> : <DynamicMainLayoutLoading auth={auth} />;
   }
 }
 
 const mapStateToProps = state => ({
   auth: state.auth,
+  app : state.app,
 });
 
 export default withReduxSaga(connect(mapStateToProps)(Index));
