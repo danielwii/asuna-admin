@@ -270,7 +270,7 @@ export const generateAssociation = (form, {
 }, formItemLayout = defaultFormItemLayout) => {
   const fieldName = key || name;
   const labelName = label || name || key;
-  logger.log('[generateAssociation]', 'items is', items);
+  logger.info('[generateAssociation]', 'items is', items);
   return generateComponent(
     form, { fieldName, labelName }, (
       <Select

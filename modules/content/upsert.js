@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import * as R      from 'ramda';
 import moment      from 'moment';
 
-import { Form, message } from 'antd';
+import { Form, Icon, message } from 'antd';
 
 import { DynamicForm2, DynamicFormTypes } from '../../components/DynamicForm';
 import { modelsProxy }                    from '../../adapters/models';
@@ -35,7 +35,7 @@ const ContentForm = Form.create({
       R.pickBy((field, key) => {
         const oldVar = R.path(['fields', key, 'value'])(props);
         const newVar = field.value;
-        logger.log('[ContentForm][onFieldsChange]', 'oldVar is', oldVar, 'newVar is', newVar);
+        logger.info('[ContentForm][onFieldsChange]', 'oldVar is', oldVar, 'newVar is', newVar);
         return oldVar !== newVar;
       }),
       R.map((field) => {
@@ -47,7 +47,7 @@ const ContentForm = Form.create({
         return { ...field, value };
       }),
     )(changedFields);
-    logger.log('[ContentForm][onFieldsChange]', 'real changed fields is', filteredChangedFields);
+    logger.info('[ContentForm][onFieldsChange]', 'real changed fields is', filteredChangedFields);
     props.onChange(filteredChangedFields);
   },
 })(DynamicForm2);
@@ -91,7 +91,6 @@ class ContentUpsert extends React.Component {
       key        : basis.pane.key,
     };
   }
-
 
   async componentWillMount() {
     logger.info('[componentWillMount]', 'init...');
@@ -160,6 +159,8 @@ class ContentUpsert extends React.Component {
   };
 
   asyncWrapAssociations = async (fields) => {
+    this.setState({ loading: true });
+
     if (R.compose(R.isEmpty, R.isNil)(fields)) {
       logger.info('[asyncWrapAssociations]', 'no associations found.');
       return {};
@@ -174,7 +175,7 @@ class ContentUpsert extends React.Component {
 
     const wrappedAssociations = await Promise.all(R.values(associations).map(async (field) => {
       const foreignKeys = R.pathOr([], ['options', 'foreignKeys'])(field);
-      logger.log('[asyncWrapAssociations]', 'handle field', field, foreignKeys);
+      logger.info('[asyncWrapAssociations]', 'handle field', field, foreignKeys);
       if (foreignKeys && foreignKeys.length > 0) {
         const fieldsOfAssociations = modelsProxy.getFieldsOfAssociations();
 
@@ -216,7 +217,8 @@ class ContentUpsert extends React.Component {
     }));
 
     const pairedWrappedAssociations = R.zipObj(R.keys(associations), wrappedAssociations);
-    logger.log('[asyncWrapAssociations]', 'wrapped associations', pairedWrappedAssociations);
+    logger.info('[asyncWrapAssociations]', 'wrapped associations', pairedWrappedAssociations);
+    this.setState({ loading: false });
     return pairedWrappedAssociations;
   };
 
@@ -258,11 +260,23 @@ class ContentUpsert extends React.Component {
   };
 
   render() {
-    const { modelFields } = this.state;
-    const { basis, auth } = this.props;
+    const { modelFields, loading } = this.state;
+    const { basis, auth }          = this.props;
 
-    if (R.anyPass([R.isEmpty, R.isNil])(modelFields)) {
-      return <div>loading...</div>;
+    if (R.anyPass([R.isEmpty, R.isNil])(modelFields) || loading) {
+      return (
+        <div>
+          <Icon type="loading" style={{ marginLeft: 8, fontSize: 24 }} spin />
+          {/* language=CSS */}
+          <style jsx>{`
+            div {
+              width: 100%;
+              margin: 10rem 0;
+              text-align: center;
+            }
+          `}</style>
+        </div>
+      );
     }
 
     logger.log('[render]', 'modelFields is ', modelFields);

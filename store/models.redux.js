@@ -33,9 +33,17 @@ const isCurrent = type => type.startsWith('models::');
 const actions = {
   // action: (args) => ({ type, payload })
   fetch       : (modelName, data) =>
-    reduxAction(actionTypes.FETCH, { modelName, data }),
+    reduxAction(actionTypes.FETCH, {
+      modelName,
+      data,
+      loading: { [modelName]: true }, // not using this moment
+    }),
   fetchSuccess: (modelName, response) =>
-    reduxAction(actionTypes.FETCH_SUCCESS, { modelName, response }),
+    reduxAction(actionTypes.FETCH_SUCCESS, {
+      modelName,
+      models : { [modelName]: { [response.id]: response } },
+      loading: { [modelName]: false },
+    }),
 
   upsert: (modelName, data) => reduxAction(actionTypes.UPSERT, { modelName, data }),
   remove: (modelName, data) => reduxAction(actionTypes.REMOVE, { modelName, data }),
@@ -146,24 +154,8 @@ const initialState = {};
 const reducer = (previousState = initialState, action) => {
   if (isCurrent(action.type)) {
     switch (action.type) {
-      // case actionTypes.LOAD_ASSOCIATIONS_SUCCESS: {
-      //   const { associationNames, response } = action.payload;
-      //   return R.mergeDeepRight(previousState, {
-      //     associations: {
-      //       [associationName]: { [response.id]: response },
-      //     },
-      //   });
-      // }
-      case actionTypes.FETCH_SUCCESS: {
-        const { modelName, response } = action.payload;
-        return R.mergeDeepRight(previousState, {
-          models: {
-            [modelName]: { [response.id]: response },
-          },
-        });
-      }
       default:
-        return { ...previousState, ...action.payload };
+        return R.mergeDeepRight(previousState, action.payload);
     }
   } else {
     return previousState;
