@@ -45,6 +45,9 @@ const loggerMiddleware = createLogger({
   collapsed: true,
 });
 
+// TODO set in debug mode only
+localForage.setItem('debug', '*');
+
 // --------------------------------------------------------------
 // Types
 // --------------------------------------------------------------

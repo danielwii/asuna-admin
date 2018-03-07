@@ -1,6 +1,7 @@
-import { call, put, take, select, takeEvery, takeLatest } from 'redux-saga/effects';
+import { call, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 
 import _             from 'lodash';
+import * as R        from 'ramda';
 import { message }   from 'antd';
 import { REHYDRATE } from 'redux-persist/constants';
 
@@ -14,7 +15,7 @@ const logger = createLogger('store:auth');
 // Login actionTypes
 // --------------------------------------------------------------
 
-const actionTypes = {
+const authActionTypes = {
   LOGIN        : 'auth::login',
   LOGOUT       : 'auth::logout',
   LOGIN_FAILED : 'auth::login-failed',
@@ -27,19 +28,19 @@ const isCurrent = type => type.startsWith('auth::');
 // Login actions
 // --------------------------------------------------------------
 
-const actions = {
+const authActions = {
   login       : (username, password) => ({
     // TODO using reduxAction instead
-    type: actionTypes.LOGIN, payload: { username, password }, error: null,
+    type: authActionTypes.LOGIN, payload: { username, password }, error: null,
   }),
   logout      : () => ({
-    type: actionTypes.LOGOUT, payload: { token: null, loginTime: null }, error: null,
+    type: authActionTypes.LOGOUT, payload: { token: null, loginTime: null }, error: null,
   }),
   loginSuccess: token => ({
-    type: actionTypes.LOGIN_SUCCESS, payload: { token, loginTime: new Date() }, error: null,
+    type: authActionTypes.LOGIN_SUCCESS, payload: { token, loginTime: new Date() }, error: null,
   }),
   loginFailed : error => ({
-    type: actionTypes.LOGIN_FAILED, payload: {}, error,
+    type: authActionTypes.LOGIN_FAILED, payload: {}, error,
   }),
 };
 
@@ -53,13 +54,13 @@ function* loginSaga({ payload: { username, password } }) {
     const response = yield call(authProxy.login, { body: { username, password } });
     logger.log('[loginSaga]', 'response is', response);
     const token = yield call(authProxy.extractToken, response.data);
-    yield put(actions.loginSuccess(token));
+    yield put(authActions.loginSuccess(token));
     message.info(`'${username}' login success`);
     yield put(routerActions.toIndex());
   } catch (error) {
     logger.error('[loginSaga]', error);
     if (error.response) {
-      yield put(actions.loginFailed(error.response));
+      yield put(authActions.loginFailed(error.response));
       message.error(JSON.stringify(error.response.data));
     }
   }
@@ -78,12 +79,14 @@ function* logoutSaga() {
 /**
  * 未找到可用 token 时重定向到登录页面
  */
-function* tokenWatcher() {
+function* tokenWatcher(action) {
   const { auth: { token }, router: { path } } = yield select();
-  if (!token && path !== '/login') {
-    const action = yield take(REHYDRATE);
-    logger.log('[tokenWatcher]', 'waiting for action', action);
-    if (!_.get(action, 'payload.auth.token')) {
+  if (action.type === authActionTypes.LOGOUT) {
+    yield put(routerActions.toLogin());
+  } else if (!token && path !== '/login') {
+    const rehydrateAction = yield take(REHYDRATE);
+    logger.log('[tokenWatcher]', 'waiting for rehydrateAction', rehydrateAction);
+    if (!_.get(rehydrateAction, 'payload.auth.token')) {
       yield put(routerActions.toLogin());
     }
   }
@@ -95,16 +98,17 @@ function* tokenWatcher() {
  */
 function* rehydrateWatcher(action) {
   logger.log('[rehydrateWatcher]', action);
-  const { payload: { auth: { token }, router: { path } } } = action;
+  const token = _.get(action, 'payload.auth.token');
+  const path  = _.get(action, 'payload.router.path');
   logger.log('[rehydrateWatcher]', !!token, path);
   if (token) {
     yield put(routerActions.toIndex());
   }
 }
 
-const sagas = [
-  takeLatest(actionTypes.LOGIN, loginSaga),
-  takeLatest(actionTypes.LOGOUT, logoutSaga),
+const authSagas = [
+  takeLatest(authActionTypes.LOGIN, loginSaga),
+  takeLatest(authActionTypes.LOGOUT, logoutSaga),
   takeEvery('*', tokenWatcher),
   takeEvery(REHYDRATE, rehydrateWatcher),
 ];
@@ -119,15 +123,11 @@ const initialState = {
   token    : null,
 };
 
-const reducer = (previousState = initialState, action) => {
+const authReducer = (previousState = initialState, action) => {
   if (isCurrent(action.type)) {
     switch (action.type) {
-      // state 中移除 password
-      // case actionTypes.LOGIN:
-      // case actionTypes.LOGIN_FAILED:
-      //   return { username: action.payload.username };
       default:
-        return { ...previousState, ..._.omit(action.payload, 'password') };
+        return R.mergeDeepRight(previousState, _.omit(action.payload, 'password'));
     }
   } else {
     return previousState;
@@ -135,8 +135,8 @@ const reducer = (previousState = initialState, action) => {
 };
 
 export {
-  actionTypes as authActionTypes,
-  actions as authActions,
-  sagas as authSagas,
-  reducer as authReducer,
+  authActionTypes,
+  authActions,
+  authSagas,
+  authReducer,
 };
