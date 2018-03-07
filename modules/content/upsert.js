@@ -87,6 +87,7 @@ class ContentUpsert extends React.Component {
     this.state = {
       isInsertMode,
       modelName,
+      init       : true,
       modelFields: {},
       key        : basis.pane.key,
     };
@@ -126,15 +127,21 @@ class ContentUpsert extends React.Component {
     });
   }
 
+  /**
+   * update 模式时第一次加载数据需要通过异步获取到的数据进行渲染。
+   * 渲染成功后则不再处理 props 的数据更新，以保证当前用户的修改不会丢失。
+   * @param nextProps
+   */
   componentWillReceiveProps(nextProps) {
     logger.info('[componentWillReceiveProps]', 'init...');
-    const { isInsertMode, modelName } = this.state;
-    if (!isInsertMode) {
+    const { isInsertMode, modelName, init } = this.state;
+    if (!isInsertMode && init) {
       const { models, basis: { pane: { data: { record } } } } = nextProps;
 
       const fieldValues = R.path([modelName, record.id])(models) || {};
       logger.info('[componentWillReceiveProps]', 'field values is', fieldValues);
       this.handleFormChange(R.map(value => ({ value }))(fieldValues));
+      this.setState({ init: false });
     }
   }
 
