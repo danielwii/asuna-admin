@@ -285,7 +285,7 @@ export const generateAssociation = (form, {
         mode={mode}
         filterOption={(input, option) => {
           logger.log('filter input is', input, 'option is', option);
-          return option.props.items.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+          return option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
         }}
       >
         {(items || []).map(item => (
