@@ -133,15 +133,16 @@ class ContentUpsert extends React.Component {
    * @param nextProps
    */
   componentWillReceiveProps(nextProps) {
-    logger.info('[componentWillReceiveProps]', 'init...');
+    logger.info('[componentWillReceiveProps]', 'init...', nextProps);
     const { isInsertMode, modelName, init } = this.state;
     if (!isInsertMode && init) {
       const { models, basis: { pane: { data: { record } } } } = nextProps;
 
-      const fieldValues = R.path([modelName, record.id])(models) || {};
+      logger.info('[componentWillReceiveProps]', { modelName, record });
+      const fieldValues = R.pathOr({}, [modelName, record.id])(models);
       logger.info('[componentWillReceiveProps]', 'field values is', fieldValues);
       this.handleFormChange(R.map(value => ({ value }))(fieldValues));
-      this.setState({ init: false });
+      this.setState({ init: false, originalFieldValues: fieldValues });
     }
   }
 
@@ -159,7 +160,7 @@ class ContentUpsert extends React.Component {
     const record = R.path(['pane', 'data', 'record'])(basis);
     if (record) {
       logger.info('[detectUpsertMode]', 'set to update mode and load model...', record);
-      dispatch(modelsActions.fetch(modelName, { id: record.id, profile: 'detail' }));
+      dispatch(modelsActions.fetch(modelName, { id: record.id }));
       return false;
     }
     return true;
@@ -252,13 +253,20 @@ class ContentUpsert extends React.Component {
   handleFormSubmit = (e) => {
     logger.info('[handleFormSubmit]', 'handleFormSubmit', e);
     e.preventDefault();
-    const fieldPairs = R.map(R.prop('value'))(this.state.modelFields);
+    const { originalFieldValues } = this.state;
+
+    const fieldPairs = R.compose(
+      R.pickBy((value, key) => value !== originalFieldValues[key]),
+      R.map(R.prop('value')),
+    )(this.state.modelFields);
     logger.info('[handleFormSubmit]', 'all fieldPairs waiting for submit is', fieldPairs);
+
+    const { id } = originalFieldValues;
 
     const { dispatch, onClose }       = this.props;
     const { modelName, isInsertMode } = this.state;
 
-    dispatch(modelsActions.upsert(modelName, { body: fieldPairs }));
+    dispatch(modelsActions.upsert(modelName, { body: { ...fieldPairs, id } }));
 
     // FIXME 在 post 提交后暂时无法获取返回的 id，即当前页面暂时无法切换为 update 模式，暂时关闭当前页面
     if (isInsertMode) {

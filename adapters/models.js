@@ -60,7 +60,11 @@ export const modelsProxy = {
 };
 
 export class ModelsAdapter {
-  constructor(service, modelConfigs) {
+  constructor(service, modelConfigs = {}) {
+    if (!service) {
+      throw new Error('service must defined');
+    }
+
     this.service      = service;
     this.allModels    = Object.keys(modelConfigs);
     this.modelConfigs = modelConfigs;
@@ -116,7 +120,7 @@ export class ModelsAdapter {
     ...this.getModelConfig(name),
   });
 
-  upsert = ({ token, schemas }, name, data: { body: any }) => {
+  upsert = ({ token, schemas }, name, data) => {
     logger.info('[upsert]', 'upsert', name, data);
 
     const fields = this.getFormSchema(schemas, name);
@@ -186,17 +190,20 @@ export class ModelsAdapter {
     return R.compose(
       R.mergeAll,
       R.map(formatted => ({ [formatted.name]: formatted })),
-      R.map(field => ({
-        name   : field.name,
-        ref    : R.pathOr(field.name, ['config', 'info', 'ref'])(field),
-        type   : this.identifyType(field),
-        options: {
-          label      : R.path(['config', 'info', 'name'])(field),
-          ...R.path(['config', 'info'])(field),
-          foreignKeys: R.path(['config', 'foreign_keys'])(field),
-        },
-        value  : R.prop(field.name)(values),
-      })),
+      R.map((field) => {
+        const ref = R.pathOr(field.name, ['config', 'info', 'ref'])(field);
+        return ({
+          name   : ref || field.name,
+          ref,
+          type   : this.identifyType(field),
+          options: {
+            label      : R.path(['config', 'info', 'name'])(field),
+            ...R.path(['config', 'info'])(field),
+            foreignKeys: R.path(['config', 'foreign_keys'])(field),
+          },
+          value  : R.prop(field.name)(values),
+        });
+      }),
     )(schema);
   };
 

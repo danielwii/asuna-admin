@@ -1,5 +1,19 @@
 {
-  "presets": ["next/babel"],
+  // for using jest in test mode
+  "env": {
+    "dev": {
+      "presets": ["next/babel"]
+    },
+    "production": {
+      "presets": ["next/babel"]
+    },
+    "test": {
+      "presets": [
+        ["env", { "modules": "commonjs" }],
+        "next/babel"
+      ]
+    }
+  },
   "plugins": [
   	["import", { "libraryName": "antd", "style": false }],
     ["styled-components", { "ssr": true, "displayName": true, "preprocess": false }]

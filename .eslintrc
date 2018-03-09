@@ -1,14 +1,16 @@
 {
   "env": {
-    "browser": true
+    "browser": true,
+    "jest/globals": true
   },
   "extends": [
     "airbnb",
-    "plugin:flowtype/recommended"
+    "plugin:flowtype/recommended",
+    "plugin:jest/recommended"
   ],
   "parser": "babel-eslint",
   "plugins": [
-    "flowtype"
+    "flowtype", "jest"
   ],
   "rules": {
     "func-names": ["error", "never"],
