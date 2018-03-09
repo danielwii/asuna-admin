@@ -374,9 +374,9 @@
     react-treebeard "^2.1.0"
     redux "^3.7.2"
 
-"@types/braft-editor@^1.1.1":
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@types/braft-editor/-/braft-editor-1.1.1.tgz#5eb00530fa12482a1738ca5ac44a9d83983d80bd"
+"@types/braft-editor@^1.1.2":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@types/braft-editor/-/braft-editor-1.1.2.tgz#0fcd8a5dd430f2ccabcc07ace17b5fce87a90c09"
   dependencies:
     "@types/draft-js" "*"
     "@types/react" "*"
@@ -4059,9 +4059,9 @@ flatten@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/flatten/-/flatten-1.0.2.tgz#dae46a9d78fbe25292258cc1e780a41d95c03782"
 
-flow-bin@^0.66.0:
-  version "0.66.0"
-  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.66.0.tgz#a96dde7015dc3343fd552a7b4963c02be705ca26"
+flow-bin@^0.67.1:
+  version "0.67.1"
+  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.67.1.tgz#eabb7197cce870ac9442cfd04251c7ddc30377db"
 
 flow-typed@^2.3.0:
   version "2.3.0"

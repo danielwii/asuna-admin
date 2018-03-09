@@ -21,15 +21,16 @@ function getBase64(img, callback) {
 }
 
 function beforeUpload(file) {
-  const isJPG = file.type === 'image/jpeg';
-  if (!isJPG) {
-    message.error('You can only upload JPG file!');
+  const isImage = ['image/jpeg', 'image/png'].indexOf(file.type) > -1;
+  logger.log('[beforeUpload]', file);
+  if (!isImage) {
+    message.error('You can only upload JPG/PNG file!');
   }
   const isLt2M = file.size / 1024 / 1024 < 2;
   if (!isLt2M) {
     message.error('Image must smaller than 2MB!');
   }
-  return isJPG && isLt2M;
+  return isImage && isLt2M;
 }
 
 async function upload(auth, onChange, files, args) {
@@ -41,14 +42,10 @@ async function upload(auth, onChange, files, args) {
     message.success('upload successfully.');
     args.onSuccess();
 
-    const urls = R.compose(
-      R.join(','),
-      R.filter(R.identity),
-      R.concat(files),
-    )(response.data);
-    logger.log('[upload]', urls);
+    const images = [...files, ...response.data];
+    logger.log('[upload]', images);
 
-    onChange(urls);
+    onChange(images);
   } else {
     message.error('upload failed.');
     args.onError();
@@ -62,7 +59,12 @@ async function upload(auth, onChange, files, args) {
 export class ImageUploader extends React.Component {
   static propTypes = {
     auth    : PropTypes.shape({}), // auth token object
-    value   : PropTypes.string,    // image url in db
+    value   : PropTypes.arrayOf(PropTypes.shape({
+      bucket: PropTypes.string,
+      filename: PropTypes.string,
+      mode    : PropTypes.string,
+      prefix  : PropTypes.string,
+    })),
     onChange: PropTypes.func,
   };
 
@@ -77,12 +79,15 @@ export class ImageUploader extends React.Component {
     if (info.file.status === 'done') {
       // Get this url from response in real world.
       // eslint-disable-next-line no-unused-vars
-      getBase64(info.file.originFileObj, imageUrl => this.setState({ loading: false }));
+      getBase64(info.file.originFileObj, () => this.setState({ loading: false }));
     }
   };
 
   render() {
-    const { auth, onChange, value: imageUrl } = this.props;
+    const { auth, onChange, value: images } = this.props;
+
+    const image = images ? images[0] : null;
+    logger.log('[ImageUploader][render]', 'image is', images, image);
 
     const uploadButton = (
       <div>
@@ -103,7 +108,7 @@ export class ImageUploader extends React.Component {
           beforeUpload={beforeUpload}
           onChange={this.handleChange}
         >
-          {imageUrl ? <img style={{ width: '100%' }} src={imageUrl} alt="" /> : uploadButton}
+          {image ? <img style={{ width: '100%' }} src={`${image.prefix}/${image.filename}`} alt="" /> : uploadButton}
         </Upload>
       </div>
     );

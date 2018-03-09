@@ -2,6 +2,7 @@
 import React     from 'react';
 import PropTypes from 'prop-types';
 import videojs   from 'video.js';
+import * as R    from 'ramda';
 
 import { Button, Icon, message, Upload } from 'antd';
 
@@ -59,6 +60,7 @@ export class VideoUploader extends React.Component {
   static propTypes = {
     auth    : PropTypes.shape({}), // auth token object
     value   : PropTypes.arrayOf(PropTypes.shape({
+      bucket  : PropTypes.string,
       filename: PropTypes.string,
       mode    : PropTypes.string,
       prefix  : PropTypes.string,
@@ -146,7 +148,7 @@ export class VideoUploader extends React.Component {
             <Icon type="upload" /> upload
           </Button>
         </Upload>
-        {videos && videos.map(this.renderPlayer)}
+        {R.type(videos) === 'Array' && videos.map(this.renderPlayer)}
       </div>
     );
   }
