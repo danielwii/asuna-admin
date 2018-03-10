@@ -7,7 +7,7 @@ import { Checkbox, Table } from 'antd';
 import { menuProxy }    from '../../adapters/menu';
 import { createLogger } from '../../adapters/logger';
 
-const logger = createLogger('components:authorities', 1);
+const logger = createLogger('components:authorities');
 
 // eslint-disable-next-line import/prefer-default-export
 export class Authorities extends React.Component {
@@ -38,13 +38,13 @@ export class Authorities extends React.Component {
     }],
   };
 
-  componentWillMount(): void {
+  componentWillMount() {
     logger.info('[componentWillMount]');
     const { value: authorities } = this.props;
     this.updateDataSource(this.transformToJson(authorities));
   }
 
-  componentWillReceiveProps(nextProps, nextContext: any): void {
+  componentWillReceiveProps(nextProps, nextContext) {
     logger.info('[componentWillReceiveProps]', nextProps, nextContext);
     const { value: authorities } = nextProps;
     this.updateDataSource(this.transformToJson(authorities));

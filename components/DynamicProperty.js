@@ -3,11 +3,13 @@ import PropTypes from 'prop-types';
 import _         from 'lodash';
 import styled    from 'styled-components';
 
-import { Sticky, StickyContainer } from 'react-sticky';
-
 import { Button, Divider, Form, Icon, List } from 'antd';
 
+import { createLogger } from '../adapters/logger';
+
 import { DynamicForm2, DynamicFormTypes } from '../components/DynamicForm';
+
+const logger = createLogger('components:dynamic-property');
 
 export const inspectElementTypes = {
   Type    : 'Type',
@@ -106,13 +108,13 @@ export class DynamicProperty extends React.Component {
   }
 
   addProperty = (property) => {
-    console.log('add property', property);
+    logger.log('add property', property);
     const { onAddProperty } = this.props;
     onAddProperty(property);
   };
 
   removeProperty = (property) => {
-    console.log('remove property', property);
+    logger.log('remove property', property);
     const { onRemoveProperty } = this.props;
     onRemoveProperty(property);
   };
@@ -138,7 +140,7 @@ export class DynamicProperty extends React.Component {
   );
 
   buildInspectionElements = (property) => {
-    console.log('build elements', property);
+    logger.log('build elements', property);
     return _.map(property.inspection, (element) => {
       switch (element.type) {
         case inspectElementTypes.Type:
@@ -177,7 +179,7 @@ export class DynamicProperty extends React.Component {
   };
 
   buildInspections = (properties) => {
-    console.log('build inspects', properties);
+    logger.log('build inspects', properties);
     return <List dataSource={properties} renderItem={this.buildInspection} />;
   };
 
@@ -211,13 +213,13 @@ export class DynamicProperty extends React.Component {
     //   .reduce((fields, field) => ({ ...fields, ...field }), {})
     //   .value();
     //
-    // console.log('fields chain is', propertiesFields);
+    // logger.log('fields chain is', propertiesFields);
     //
     // const PropertiesForm = Form.create({
     //   mapPropsToFields({ fields }) {
-    //     console.log('fields is', fields);
+    //     logger.log('fields is', fields);
     //     const results = _.flatMap(fields, field => Form.createFormField(field));
-    //     console.log('results is', results);
+    //     logger.log('results is', results);
     //     return results;
     //     // return {
     //     //   title: Form.createFormField({ ...fields.title }),
@@ -225,7 +227,7 @@ export class DynamicProperty extends React.Component {
     //   },
     // })(DynamicForm2);
 
-    console.log('toBeEdited is', toBeEdited);
+    logger.log('toBeEdited is', toBeEdited);
     const fields = _
       .chain(toBeEdited.editForm)
       .map(editable => ({
@@ -239,19 +241,19 @@ export class DynamicProperty extends React.Component {
       }))
       .reduce((merged, editable) => ({ ...merged, ...editable }), {})
       .value();
-    console.log('fields is', fields);
+    logger.log('fields is', fields);
     const EditFormWrapper = Form.create({
       mapPropsToFields(props) {
-        console.log('edit form props is', props);
+        logger.log('edit form props is', props);
         return _.flatMap(fields, field => Form.createFormField(field));
       },
     })(DynamicForm2);
 
     return (
-      <StickyContainer>
-        <Sticky topOffset={80} relative="true">
-          { props => (<div>Hello Kitty!</div>) }
-        </Sticky>
+      <React.Fragment>
+        {/* <Sticky topOffset={80} relative="true"> */}
+        {/* { props => (<div>Hello Kitty!</div>) } */}
+        {/* </Sticky> */}
         <p>...properties</p>
         <Divider dashed>Properties</Divider>
         <StyledFlexContainer ref={(node) => {
@@ -281,7 +283,7 @@ export class DynamicProperty extends React.Component {
 
         {/* <pre>{JSON.stringify(propertiesFields, null, 2)}</pre> */}
         <pre>{JSON.stringify(properties, null, 2)}</pre>
-      </StickyContainer>
+      </React.Fragment>
     );
   }
 }
