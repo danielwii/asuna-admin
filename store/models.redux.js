@@ -137,7 +137,6 @@ const modelsSagaFunctions = {
 
 const sagas = [
   // takeLatest / takeEvery (actionType, actionSage)
-  // takeLatest(actionTypes.LOAD_ASSOCIATIONS, loadAssociations),
   takeLatest(actionTypes.LOAD_ALL_SCHEMAS, modelsSagaFunctions.loadAllSchemas),
   takeLatest(actionTypes.REMOVE, modelsSagaFunctions.remove),
   takeLatest(actionTypes.UPSERT, modelsSagaFunctions.upsert),

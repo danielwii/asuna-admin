@@ -306,10 +306,6 @@ class ContentUpsert extends React.Component {
           onSubmit={this.handleFormSubmit}
         />
         <hr />
-        {/* <pre>{JSON.stringify(modelFields, null, 2)}</pre> */}
-        {/* <hr /> */}
-        {/* <pre>{JSON.stringify(this.state, null, 2)}</pre> */}
-        {/* <hr /> */}
         <pre>{JSON.stringify(basis, null, 2)}</pre>
       </div>
     );

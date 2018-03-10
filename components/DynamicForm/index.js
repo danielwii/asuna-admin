@@ -72,6 +72,7 @@ export const DynamicFormTypes = {
   InputNumber: 'InputNumber',
   TextArea   : 'TextArea',
   DateTime   : 'DateTime',
+  Date       : 'Date',
   Switch     : 'Switch',
   Authorities: 'Authorities',
   // --------------------------------------------------------------
@@ -150,6 +151,8 @@ export class DynamicForm2 extends React.Component {
         return generateTextArea(form, options);
       case DynamicFormTypes.DateTime:
         return generateDateTime(form, options);
+      case DynamicFormTypes.Date:
+        return generateDateTime(form, { ...options, mode: 'date' });
       case DynamicFormTypes.Video:
         return generateVideo(form, options);
       case DynamicFormTypes.Authorities:

@@ -104,6 +104,7 @@ export class ModelsAdapter {
     if (/^INTEGER|FLOAT$/.test(type)) return DynamicFormTypes.InputNumber;
     if (/^TEXT$/.test(type)) return DynamicFormTypes.TextArea;
     if (/^DATETIME$/.test(type)) return DynamicFormTypes.DateTime;
+    if (/^DATE$/.test(type)) return DynamicFormTypes.Date;
     if (/^BOOLEAN$/.test(type)) return DynamicFormTypes.Switch;
 
     logger.warn('[identifyType]', 'type', type, 'cannot identified.');
