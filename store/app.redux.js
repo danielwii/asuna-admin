@@ -1,13 +1,15 @@
-import { put, select, take, takeLatest } from 'redux-saga/effects';
+import { put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 
 import { reduxAction } from 'node-buffs';
 import { REHYDRATE }   from 'redux-persist/constants';
+import _               from 'lodash';
 
 import { securitySagaFunctions } from './security.redux';
 import { menuSagaFunctions }     from './menu.redux';
 import { modelsSagaFunctions }   from './models.redux';
 
-import { createLogger } from '../adapters/logger';
+import { routerActions } from './router.redux';
+import { createLogger }  from '../adapters/logger';
 
 const logger = createLogger('store:app');
 
@@ -21,6 +23,7 @@ const appActionTypes = {
   SYNC        : 'app::sync',
   INIT_SUCCESS: 'app::init-success',
   SYNC_SUCCESS: 'app::sync-success',
+  RESTORED    : 'app::RESTORED',
 };
 
 const isCurrent = type => type.startsWith('app::');
@@ -35,6 +38,7 @@ const appActions = {
   init       : () => reduxAction(appActionTypes.INIT, { loading: true }),
   syncSuccess: () => reduxAction(appActionTypes.SYNC_SUCCESS, { loading: false }),
   initSuccess: () => reduxAction(appActionTypes.INIT_SUCCESS, { loading: false }),
+  restored   : () => reduxAction(appActionTypes.RESTORED, { restored: true }),
 };
 
 // --------------------------------------------------------------
@@ -46,7 +50,11 @@ const appActions = {
 
 function* init() {
   try {
-    yield take(REHYDRATE);
+    // store 未恢复时等待一个恢复信号
+    const { restored } = yield select(state => state.app);
+    if (!restored) {
+      yield take(REHYDRATE);
+    }
 
     logger.log('[init]', 'load all roles...');
     yield securitySagaFunctions.loadAllRoles();
@@ -84,10 +92,26 @@ function* sync() {
   }
 }
 
+/**
+ * 恢复 store 时跳转到主页面
+ * @param action
+ */
+function* rehydrateWatcher(action) {
+  logger.log('[rehydrateWatcher]', action);
+  yield put(appActions.restored());
+  const token = _.get(action, 'payload.auth.token');
+  const path  = _.get(action, 'payload.router.path');
+  logger.log('[rehydrateWatcher]', !!token, path);
+  if (token) {
+    yield put(routerActions.toIndex());
+  }
+}
+
 const appSagas = [
   // takeLatest / takeEvery (actionType, actionSage)
   takeLatest(appActionTypes.INIT, init),
   takeLatest(appActionTypes.SYNC, sync),
+  takeEvery(REHYDRATE, rehydrateWatcher),
 ];
 
 // --------------------------------------------------------------
@@ -96,7 +120,8 @@ const appSagas = [
 // --------------------------------------------------------------
 
 const initialState = {
-  loading: true,
+  loading : true,
+  restored: false,
 };
 
 const appReducer = (previousState = initialState, action) => {

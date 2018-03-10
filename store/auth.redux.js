@@ -92,25 +92,10 @@ function* tokenWatcher(action) {
   }
 }
 
-/**
- * 恢复 store 时跳转到主页面
- * @param action
- */
-function* rehydrateWatcher(action) {
-  logger.log('[rehydrateWatcher]', action);
-  const token = _.get(action, 'payload.auth.token');
-  const path  = _.get(action, 'payload.router.path');
-  logger.log('[rehydrateWatcher]', !!token, path);
-  if (token) {
-    yield put(routerActions.toIndex());
-  }
-}
-
 const authSagas = [
   takeLatest(authActionTypes.LOGIN, loginSaga),
   takeLatest(authActionTypes.LOGOUT, logoutSaga),
   takeEvery('*', tokenWatcher),
-  takeEvery(REHYDRATE, rehydrateWatcher),
 ];
 
 // --------------------------------------------------------------
