@@ -256,12 +256,12 @@ class ContentUpsert extends React.Component {
     const { originalFieldValues } = this.state;
 
     const fieldPairs = R.compose(
-      R.pickBy((value, key) => value !== originalFieldValues[key]),
+      R.pickBy((value, key) => (originalFieldValues ? value !== originalFieldValues[key] : true)),
       R.map(R.prop('value')),
     )(this.state.modelFields);
     logger.info('[handleFormSubmit]', 'all fieldPairs waiting for submit is', fieldPairs);
 
-    const { id } = originalFieldValues;
+    const id = R.prop('id')(originalFieldValues);
 
     const { dispatch, onClose }       = this.props;
     const { modelName, isInsertMode } = this.state;
