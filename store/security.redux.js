@@ -1,11 +1,11 @@
 import { call, put, select, takeLatest } from 'redux-saga/effects';
 
 import { reduxAction } from 'node-buffs';
-
-import { message } from 'antd';
+import { message }     from 'antd';
 
 import { securityProxy } from '../adapters/security';
 import { createLogger }  from '../adapters/logger';
+import { authActions }   from './auth.redux';
 
 const logger = createLogger('store:security');
 
@@ -73,6 +73,7 @@ const securitySagaFunctions = {
     if (token) {
       message.loading('loading current user...');
       try {
+        logger.log('[getCurrentUser]', 'get current user after rehydrate...');
         const response = yield call(securityProxy.currentUser, { opts: { token } });
         message.success('get current user success!');
         logger.log('[getCurrentUser]', 'response of get current user is', response);
@@ -80,6 +81,7 @@ const securitySagaFunctions = {
       } catch (e) {
         message.error(e);
         logger.warn('[getCurrentUser]', 'CATCH -> get current user error', e);
+        yield put(authActions.logout());
       }
     }
   },

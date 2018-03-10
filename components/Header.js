@@ -2,7 +2,7 @@ import React     from 'react';
 import PropTypes from 'prop-types';
 import styled    from 'styled-components';
 
-import { Dropdown, Icon, Layout, Menu } from 'antd';
+import { Dropdown, Icon, Layout, Menu, Button } from 'antd';
 
 import { authActions } from '../store/auth.redux';
 
@@ -19,7 +19,8 @@ const StyledLogoImg = styled.img`
 
 export default class extends React.Component {
   static propTypes = {
-    auth: PropTypes.shape({}),
+    auth  : PropTypes.shape({}),
+    onSync: PropTypes.func,
   };
 
   logout = () => {
@@ -40,7 +41,7 @@ export default class extends React.Component {
   );
 
   render() {
-    const { auth } = this.props;
+    const { auth, onSync } = this.props;
     return (
       <Header className="header">
         <div className="logo">
@@ -64,6 +65,8 @@ export default class extends React.Component {
                 <a>{auth.username}</a>
               </Dropdown>
               .
+              {' '}
+              <Button icon="sync" onClick={onSync} />
             </div>
           ) : <Icon type="loading" style={{ marginLeft: 8, fontSize: 24 }} spin />}
         </div>
