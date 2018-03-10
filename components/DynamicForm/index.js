@@ -7,7 +7,6 @@ import { sha1 }  from 'object-hash';
 import { Button, Card, Form } from 'antd';
 
 import {
-  generateAssociation,
   generateAuthorities,
   generateCheckbox,
   generateDateTime,
@@ -18,6 +17,7 @@ import {
   generateInputNumber,
   generatePlain,
   generateRichTextEditor,
+  generateSelect,
   generateSwitch,
   generateTextArea,
   generateVideo,
@@ -75,6 +75,8 @@ export const DynamicFormTypes = {
   Date       : 'Date',
   Switch     : 'Switch',
   Authorities: 'Authorities',
+  Enum       : 'Enum',
+  EnumFilter : 'EnumFilter',
   // --------------------------------------------------------------
   // Advanced Types
   // --------------------------------------------------------------
@@ -174,7 +176,7 @@ export class DynamicForm2 extends React.Component {
           const { modelName, association = defaultAssociation } = R.path(['foreignOpts', 0])(field);
 
           const items = R.path(['associations', modelName, 'items'])(field);
-          return generateAssociation(form, {
+          return generateSelect(form, {
             ...options,
             items,
             mode    : 'multiple',
@@ -185,6 +187,33 @@ export class DynamicForm2 extends React.Component {
         logger.warn('[buildField]', 'foreignOpts is required in association.');
         return <div>association need foreignOpts.</div>;
       }
+      case DynamicFormTypes.EnumFilter: {
+        // --------------------------------------------------------------
+        // EnumFilter / RelationShip
+        // --------------------------------------------------------------
+        logger.log('[DynamicForm2][buildField][EnumFilter]', field);
+        const items = R.path(['options', 'enum_data'])(field);
+        const type  = R.path(['options', 'filter_type'])(field);
+        logger.log('[DynamicForm2][buildField][EnumFilter]', { type, items });
+        return generateSelect(form, {
+          ...options,
+          items,
+          getName     : R.prop('key'),
+          withSortTree: type === 'Sort',
+        });
+      }
+      case DynamicFormTypes.Enum: {
+        // --------------------------------------------------------------
+        // Enum / RelationShip
+        // --------------------------------------------------------------
+        logger.info('[DynamicForm2][buildField][Enum]', field);
+        const items = R.path(['options', 'enum_data'])(field);
+        return generateSelect(form, {
+          ...options,
+          items,
+          getName: R.prop('key'),
+        });
+      }
       case DynamicFormTypes.Association: {
         // --------------------------------------------------------------
         // OneToMany / OneToOne RelationShip
@@ -194,7 +223,7 @@ export class DynamicForm2 extends React.Component {
           const { modelName, association = defaultAssociation } = R.path(['foreignOpts', 0])(field);
 
           const items = R.path(['associations', modelName, 'items'])(field);
-          return generateAssociation(form, {
+          return generateSelect(form, {
             ...options,
             items,
             getName : R.prop(association.name || defaultAssociation.name),

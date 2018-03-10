@@ -264,34 +264,52 @@ export const generateRichTextEditor = (form, {
   );
 };
 
-export const generateAssociation = (form, {
+export const generateSelect = (form, {
   key, name, label, placeholder, items, mode,
   getName = R.prop('name'), getValue = R.prop('value'),
+  withSortTree = false,
 }, formItemLayout = defaultFormItemLayout) => {
   const fieldName = key || name;
   const labelName = label || name || key;
-  logger.info('[generateAssociation]', 'items is', items);
+  logger.info('[generateSelect]', 'items is', items);
+
+  class MixedSelect extends React.Component {
+    renderSortTree = () => {
+      return (
+        <div>I'm sort tree. ^_^</div>
+      )
+    }
+
+    render() {
+      return (
+        <React.Fragment>
+          <Select
+            {...this.props}
+            key={fieldName}
+            showSearch
+            style={{ width: 200 }}
+            placeholder={placeholder}
+            optionFilterProp="items"
+            mode={mode}
+            filterOption={(input, option) => {
+              logger.log('filter input is', input, 'option is', option);
+              return option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+            }}
+          >
+            {(items || []).map(item => (
+              <Select.Option
+                key={getValue(item)}
+                value={getValue(item)}
+              >{getName(item)}</Select.Option>
+            ))}
+          </Select>
+          {withSortTree && this.renderSortTree()}
+        </React.Fragment>
+      );
+    }
+  }
+
   return generateComponent(
-    form, { fieldName, labelName }, (
-      <Select
-        key={fieldName}
-        showSearch
-        style={{ width: 200 }}
-        placeholder={placeholder}
-        optionFilterProp="items"
-        // onChange={onChange}
-        // onFocus={onFocus}
-        // onBlur={onBlur}
-        mode={mode}
-        filterOption={(input, option) => {
-          logger.log('filter input is', input, 'option is', option);
-          return option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
-        }}
-      >
-        {(items || []).map(item => (
-          <Select.Option key={getValue(item)} value={getValue(item)}>{getName(item)}</Select.Option>
-        ))}
-      </Select>
-    ), formItemLayout,
+    form, { fieldName, labelName }, (<MixedSelect />), formItemLayout,
   );
 };

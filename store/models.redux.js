@@ -154,7 +154,7 @@ const reducer = (previousState = initialState, action) => {
   if (isCurrent(action.type)) {
     switch (action.type) {
       default:
-        return R.mergeDeepRight(previousState, action.payload);
+        return R.omit(['modelName', 'data'])(R.mergeDeepRight(previousState, action.payload));
     }
   } else {
     return previousState;

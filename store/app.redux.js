@@ -120,8 +120,8 @@ const appSagas = [
 // --------------------------------------------------------------
 
 const initialState = {
-  loading : true,
-  restored: false,
+  loading : true,  // 初始化状态，用于加载 loading 图
+  restored: false, // 标记恢复状态，恢复后不再等待恢复信息
 };
 
 const appReducer = (previousState = initialState, action) => {

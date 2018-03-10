@@ -10,6 +10,7 @@ import { DynamicForm2, DynamicFormTypes } from '../../components/DynamicForm';
 import { modelsProxy }                    from '../../adapters/models';
 import { createLogger }                   from '../../adapters/logger';
 import { modelsActions }                  from '../../store/models.redux';
+import { schemaHelper }                   from '../../helpers';
 
 const logger = createLogger('modules:content:upsert');
 
@@ -85,11 +86,14 @@ class ContentUpsert extends React.Component {
     const isInsertMode = this.detectUpsertMode(modelName);
 
     this.state = {
+      preDecorators: [
+        schemaHelper.enumDecorator,
+      ],
       isInsertMode,
       modelName,
-      init       : true,
-      modelFields: {},
-      key        : basis.pane.key,
+      init         : true,
+      modelFields  : {},
+      key          : basis.pane.key,
     };
   }
 
@@ -102,6 +106,9 @@ class ContentUpsert extends React.Component {
     logger.info('[componentWillMount]', 'model name is ', modelName);
 
     const allFields = modelsProxy.getFormFields(schemas, modelName);
+    // --------------------------------------------------------------
+    // Build form fields with all needed data
+    // --------------------------------------------------------------
 
     // if (modelName === 'colleges') {
     //   allFields = R.pick(['id', 'name', 'introduction', 'country_id'], allFields);
@@ -119,11 +126,20 @@ class ContentUpsert extends React.Component {
 
     logger.info('[componentWillMount]', 'form fields is', formFields);
 
+    // --------------------------------------------------------------
+    // Using pre decorators instead
+    // --------------------------------------------------------------
+    // const filteredFields = schemaHelper.doEnumDecorator(formFields);
+
+    const { preDecorators } = this.state;
+    const decoratedFields   = R.pipe(...preDecorators)(formFields);
+
     // !!important!!
     // associations is loaded in async mode, so the models may already set in state
     // it have to be merged with fields in state
     this.setState({
-      modelFields: R.mergeDeepRight(formFields, this.state.modelFields),
+      formFields,
+      modelFields: R.mergeDeepRight(decoratedFields, this.state.modelFields),
     });
   }
 
@@ -244,8 +260,13 @@ class ContentUpsert extends React.Component {
       logger.info('[handleFormChange]', 'new fields is', fields);
       logger.info('[handleFormChange]', 'new changedFieldsList is', changedFieldsList);
 
+      const { preDecorators } = this.state;
+      const decoratedFields   = R.pipe(...preDecorators)({
+        ...this.state.formFields, ...changedFieldsList,
+      });
+
       this.setState({
-        modelFields: { ...this.state.modelFields, ...changedFieldsList },
+        modelFields: decoratedFields,
       });
     }
   };
@@ -306,7 +327,6 @@ class ContentUpsert extends React.Component {
           onSubmit={this.handleFormSubmit}
         />
         <hr />
-        <pre>{JSON.stringify(basis, null, 2)}</pre>
       </div>
     );
   }

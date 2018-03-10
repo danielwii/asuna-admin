@@ -1,6 +1,12 @@
 // @flow weak
 // export const authHeader = token => ({ headers: { Authorization: `Bearer ${token}` } });
 import moment from 'moment/moment';
+import * as R from 'ramda';
+
+import { createLogger }     from '../adapters/logger';
+import { DynamicFormTypes } from '../components/DynamicForm';
+
+const logger = createLogger('helpers');
 
 // TODO make helpers configurable
 export const authHeader = token => ({ headers: { Authorization: token } });
@@ -57,3 +63,47 @@ export const defaultColumns = actions => [
   commonColumns.updatedAt,
   commonColumns.actions(actions),
 ];
+
+export const schemaHelper = {
+  /**
+   * 通过 Enum 定义中的 enum_data 的 key 值拉取相应 schema 中的关联
+   * 通过所有的被选关联字段的 schema name 和 key 比较
+   * 目前认为每个 model schema 只有一个 enum filter 定义
+   * @param fields
+   * @returns {*}
+   */
+  enumDecorator: (fields) => {
+    logger.info('[schemaHelper][enumDecorator]', { fields });
+
+    const enumFilterFields = R.filter(R.propEq('type', DynamicFormTypes.EnumFilter))(fields);
+    if (enumFilterFields) {
+      const [, enumFilterField] = R.toPairs(enumFilterFields)[0];
+      logger.info('[schemaHelper][enumDecorator]', { enumFilterField });
+
+      const enums   = R.compose(
+        R.map(R.prop('key')),
+        R.path(['options', 'enum_data']),
+      )(enumFilterField);
+      const current = R.pathOr('', ['value'])(enumFilterField);
+      logger.info('[schemaHelper][enumDecorator]', { enums, current });
+
+      const filteredNames  = R.without(current)(enums);
+      const filteredFields = R.omit(filteredNames)(fields);
+      const markedFields   = current
+        ? R.mergeDeepRight(
+          filteredFields,
+          {
+            [current]: {
+              isFilterField: true,
+              filter_type: R.path(['options', 'filter_type'])(enumFilterField),
+            },
+          },
+        ) : filteredFields;
+      logger.info('[schemaHelper][enumDecorator]', { filteredNames, filteredFields, markedFields });
+
+      return markedFields;
+    }
+
+    return fields;
+  },
+};

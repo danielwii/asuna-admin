@@ -2,8 +2,8 @@ import * as R from 'ramda';
 import _      from 'lodash';
 
 import { DynamicFormTypes } from '../components/DynamicForm';
+import { defaultColumns }   from '../helpers/index';
 import { createLogger }     from '../adapters/logger';
-import { defaultColumns }   from '../adapters/helper';
 
 const logger = createLogger('adapters:models');
 
@@ -82,6 +82,10 @@ export class ModelsAdapter {
       return DynamicFormTypes.Plain;
     }
 
+    // --------------------------------------------------------------
+    // identify advanced types
+    // --------------------------------------------------------------
+
     if (R.endsWith('_id')(field.name) || R.path(['config', 'info'])(field.name)) {
       return DynamicFormTypes.Association;
     }
@@ -93,10 +97,16 @@ export class ModelsAdapter {
     if (/^Images$/i.test(advancedType)) return DynamicFormTypes.Images;
     if (/^Video$/i.test(advancedType)) return DynamicFormTypes.Video;
     if (/^Authorities$/i.test(advancedType)) return DynamicFormTypes.Authorities;
+    if (/^EnumFilter$/i.test(advancedType)) return DynamicFormTypes.EnumFilter;
+    if (/^Enum$/i.test(advancedType)) return DynamicFormTypes.Enum;
 
     if (R.path(['config', 'many'])(field) === true) {
       return DynamicFormTypes.ManyToMany;
     }
+
+    // --------------------------------------------------------------
+    // identify basic types
+    // --------------------------------------------------------------
 
     const type = R.path(['config', 'type'])(field);
 
@@ -222,6 +232,7 @@ export class ModelsAdapter {
     return associationsFields;
   });
 
+  // eslint-disable-next-line no-unused-vars
   loadModels = ({ token }, name, { pagination = {}, filters, sorter }) => {
     const { current: page, pageSize: size } = pagination;
     return this.service.loadModels({ token }, name, {
