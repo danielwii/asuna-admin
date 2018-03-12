@@ -62,8 +62,8 @@ const securitySagaFunctions = {
         logger.log('[loadAllRoles]', 'response of load all roles is', response);
         yield put(securityActions.loadAllRolesSuccess(response.data));
       } catch (e) {
-        message.error(e);
         logger.warn('[loadAllRoles]', 'CATCH -> load all roles error', e);
+        message.error(e.message);
       }
     }
   },
@@ -79,8 +79,8 @@ const securitySagaFunctions = {
         logger.log('[getCurrentUser]', 'response of get current user is', response);
         yield put(securityActions.getCurrentUserSuccess(response.data));
       } catch (e) {
-        message.error(e);
         logger.warn('[getCurrentUser]', 'CATCH -> get current user error', e);
+        message.error(e.message);
         yield put(authActions.logout());
       }
     }

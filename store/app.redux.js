@@ -9,6 +9,7 @@ import { menuSagaFunctions }     from './menu.redux';
 import { modelsSagaFunctions }   from './models.redux';
 
 import { routerActions } from './router.redux';
+import { authActions }   from './auth.redux';
 import { createLogger }  from '../adapters/logger';
 
 const logger = createLogger('store:app');
@@ -72,6 +73,7 @@ function* init() {
 
     yield put(appActions.initSuccess());
   } catch (e) {
+    yield put(authActions.logout());
     logger.error('[init]', e);
   }
 }

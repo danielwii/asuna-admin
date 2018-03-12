@@ -13,27 +13,12 @@
     "flowtype", "jest"
   ],
   "rules": {
+    "function-paren-newline": ["error", "consistent"],
     "func-names": ["error", "never"],
     "key-spacing": 0,
-//    "key-spacing": [2, {
-//      "singleLine": {
-//        "beforeColon": false,
-//        "afterColon": true
-//      },
-//      "multiLine": {
-//        "beforeColon": false,
-//        "afterColon": true
-//      },
-//      "align": {
-//        "beforeColon": false,
-//        "afterColon": true,
-//        "on": "colon"
-//      }
-//    }],
     "react/jsx-closing-tag-location": 0,
     "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
     "react/require-default-props": [0, { "forbidDefaultForRequired": false }],
-//    "no-multi-spaces": [2, { "exceptions": { "VariableDeclarator": true, "ImportDeclaration": true } }],
     "no-multi-spaces": 0,
     "class-methods-use-this": 0,
     "react/prop-types": [2, {

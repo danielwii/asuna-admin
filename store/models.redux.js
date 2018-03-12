@@ -67,11 +67,11 @@ const modelsSagaFunctions = {
       try {
         const response = yield call(modelsProxy.fetch, { token }, modelName, data);
         message.success(`load model '${modelName}' success!`);
-        logger.log('response of load model is', response);
+        logger.log('[fetch]', 'response of load model is', response);
         yield put(actions.fetchSuccess(modelName, response.data));
       } catch (e) {
-        message.error(e);
-        logger.warn('CATCH -> load model error', e);
+        logger.warn('[fetch]', 'CATCH -> load model error', e);
+        message.error(e.message);
       }
     }
   },
@@ -83,12 +83,12 @@ const modelsSagaFunctions = {
       try {
         const response = yield call(modelsProxy.upsert, { token, schemas }, modelName, data);
         message.success(`upsert model '${modelName}' success!`);
-        logger.log('response of upsert model is', response);
+        logger.log('[upsert]', 'response of upsert model is', response);
         // save model data when upsert is success
         yield put(actions.fetchSuccess(modelName, response.data));
       } catch (e) {
-        message.error(e);
-        logger.warn('CATCH -> upsert model error', e);
+        logger.warn('[upsert]', 'CATCH -> upsert model error', e);
+        message.error(e.message);
       }
     }
   },
@@ -99,17 +99,17 @@ const modelsSagaFunctions = {
       try {
         const response = yield call(modelsProxy.remove, { token }, modelName, data);
         message.success(`remove model '${modelName}' success!`);
-        logger.log('response of remove model is', response);
+        logger.log('[remove]', 'response of remove model is', response);
         // save model data when remove is success
         yield put(actions.fetchSuccess(modelName, response.data));
       } catch (e) {
-        message.error(e);
-        logger.warn('CATCH -> remove model error', e);
+        logger.warn('[remove]', 'CATCH -> remove model error', e);
+        message.error(e.message);
       }
     }
   },
   * loadAllSchemas() {
-    logger.log('load all schemas in saga');
+    logger.log('[loadAllSchemas]', 'load all schemas in saga');
     const { token } = yield select(state => state.auth);
     if (token) {
       message.loading('loading all schemas...');
@@ -117,7 +117,7 @@ const modelsSagaFunctions = {
         const effects     = modelsProxy.listSchemasCallable({ token });
         const allResponse = yield all(effects);
 
-        logger.log('allResponse is', allResponse);
+        logger.log('[loadAllSchemas]', 'allResponse is', allResponse);
 
         const schemas = Object.assign(..._.map(
           allResponse,
@@ -125,10 +125,10 @@ const modelsSagaFunctions = {
         ));
         message.success('load all schemas success');
         yield put(actions.loadAllSchemasSuccess(schemas));
-        logger.log('load all model schemas', effects, schemas);
+        logger.log('[loadAllSchemas]', 'load all model schemas', effects, schemas);
       } catch (e) {
-        message.error(e);
-        logger.warn('CATCH -> load all schemas error occurred', e);
+        logger.warn('[loadAllSchemas]', 'CATCH -> load all schemas error occurred', e);
+        message.error(e.message);
       }
     }
   },
