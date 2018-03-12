@@ -102,6 +102,7 @@ test('getFormFields matched related fields', () => {
         label      : 'TEST_NAME',
         name       : 'TEST_NAME',
         ref        : 'test_related',
+        required   : false,
       },
       ref    : 'test_related',
       type   : 'Association',

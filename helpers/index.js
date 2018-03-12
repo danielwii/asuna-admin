@@ -76,8 +76,9 @@ export const schemaHelper = {
     logger.info('[schemaHelper][enumDecorator]', { fields });
 
     const enumFilterFields = R.filter(R.propEq('type', DynamicFormTypes.EnumFilter))(fields);
-    if (enumFilterFields) {
+    if (R.not(R.isEmpty(enumFilterFields))) {
       const [, enumFilterField] = R.toPairs(enumFilterFields)[0];
+      // console.log(enumFilterField);
       logger.info('[schemaHelper][enumDecorator]', { enumFilterField });
 
       const enums   = R.compose(
@@ -87,19 +88,30 @@ export const schemaHelper = {
       const current = R.pathOr('', ['value'])(enumFilterField);
       logger.info('[schemaHelper][enumDecorator]', { enums, current });
 
+      // save positions value
+      const positionsField = R.compose(
+        R.map(field => ({ ...field, value: R.path([current, 'value'])(fields) })),
+        R.filter(R.pathEq(['options', 'type'], 'SortPosition')),
+      )(fields);
+
       const filteredNames  = R.without(current)(enums);
       const filteredFields = R.omit(filteredNames)(fields);
       const markedFields   = current
-        ? R.mergeDeepRight(
-          filteredFields,
+        ? R.mergeDeepRight(filteredFields,
           {
             [current]: {
               isFilterField: true,
-              filter_type: R.path(['options', 'filter_type'])(enumFilterField),
+              options      : { filter_type: R.path(['options', 'filter_type'])(enumFilterField) },
             },
-          },
-        ) : filteredFields;
-      logger.info('[schemaHelper][enumDecorator]', { filteredNames, filteredFields, markedFields });
+            ...positionsField,
+          })
+        : filteredFields;
+      logger.info(
+        '[schemaHelper][enumDecorator]',
+        {
+          filteredNames, filteredFields, markedFields, positionsField,
+        },
+      );
 
       return markedFields;
     }

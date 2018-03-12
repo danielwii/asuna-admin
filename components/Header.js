@@ -2,12 +2,11 @@ import React     from 'react';
 import PropTypes from 'prop-types';
 import styled    from 'styled-components';
 
-import { Dropdown, Icon, Layout, Menu, Button } from 'antd';
+import { Button, Dropdown, Icon, Layout, Menu } from 'antd';
 
 import { authActions } from '../store/auth.redux';
 
 const { Header } = Layout;
-
 
 const StyledLogoImg = styled.img`
   width: 120px;
@@ -15,7 +14,6 @@ const StyledLogoImg = styled.img`
   margin: 16px 28px 16px 0;
   float: left;
 `;
-
 
 export default class extends React.Component {
   static propTypes = {
@@ -56,7 +54,7 @@ export default class extends React.Component {
         >
           <Menu.Item key="1">Home</Menu.Item>
         </Menu>
-*/}
+        */}
         <div className="header-user">
           {auth.username ? (
             <div>

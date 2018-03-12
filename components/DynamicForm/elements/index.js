@@ -1,25 +1,14 @@
 /* eslint-disable indent,function-paren-newline */
-import React  from 'react';
-import * as R from 'ramda';
+import React from 'react';
 
-import {
-  Checkbox,
-  DatePicker,
-  Form,
-  Icon,
-  Input,
-  InputNumber,
-  Select,
-  Switch,
-  TimePicker,
-} from 'antd';
+import { Checkbox, DatePicker, Form, Icon, Input, InputNumber, Switch, TimePicker } from 'antd';
 
-import { createLogger }    from '../../adapters/logger';
-import { BraftRichEditor } from '../../components/RichEditor';
+import { BraftRichEditor } from '../../../components/RichEditor';
 
-import { ImagesUploader, ImageUploader } from './images';
-import { VideoUploader }                 from './videos';
-import { Authorities }                   from './authorities';
+import { ImagesUploader, ImageUploader } from '../images';
+import { VideoUploader }                 from '../videos';
+import { Authorities }                   from '../authorities';
+import { createLogger }                  from '../../../adapters/logger';
 
 const logger = createLogger('components:dynamic-form:elements');
 
@@ -59,7 +48,7 @@ export const generatePlain = ({ key, label, text }, formItemLayout = horizontalF
   return <Form.Item key={key || label} {...formItemLayout} label={label}>{text}</Form.Item>;
 };
 
-const generateComponent = (
+export const generateComponent = (
   form,
   { fieldName, labelName = fieldName, opts = {} },
   component,
@@ -139,7 +128,7 @@ export const generateInput = (form, {
 
   return generateComponent(
     form,
-    { fieldName, labelName, opts: { rules: [{ required, requiredMessage }] } },
+    { fieldName, labelName, opts: { rules: [{ required, message: requiredMessage }] } },
     component,
     formItemLayout,
   );
@@ -261,55 +250,5 @@ export const generateRichTextEditor = (form, {
     form, { fieldName, labelName }, (
       <BraftRichEditor auth={auth} />
     ), formItemLayout,
-  );
-};
-
-export const generateSelect = (form, {
-  key, name, label, placeholder, items, mode,
-  getName = R.prop('name'), getValue = R.prop('value'),
-  withSortTree = false,
-}, formItemLayout = defaultFormItemLayout) => {
-  const fieldName = key || name;
-  const labelName = label || name || key;
-  logger.info('[generateSelect]', 'items is', items);
-
-  class MixedSelect extends React.Component {
-    renderSortTree = () => {
-      return (
-        <div>I'm sort tree. ^_^</div>
-      )
-    }
-
-    render() {
-      return (
-        <React.Fragment>
-          <Select
-            {...this.props}
-            key={fieldName}
-            showSearch
-            style={{ width: 200 }}
-            placeholder={placeholder}
-            optionFilterProp="items"
-            mode={mode}
-            filterOption={(input, option) => {
-              logger.log('filter input is', input, 'option is', option);
-              return option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
-            }}
-          >
-            {(items || []).map(item => (
-              <Select.Option
-                key={getValue(item)}
-                value={getValue(item)}
-              >{getName(item)}</Select.Option>
-            ))}
-          </Select>
-          {withSortTree && this.renderSortTree()}
-        </React.Fragment>
-      );
-    }
-  }
-
-  return generateComponent(
-    form, { fieldName, labelName }, (<MixedSelect />), formItemLayout,
   );
 };

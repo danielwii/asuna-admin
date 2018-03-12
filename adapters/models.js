@@ -211,6 +211,7 @@ export class ModelsAdapter {
             label      : R.path(['config', 'info', 'name'])(field),
             ...R.path(['config', 'info'])(field),
             foreignKeys: R.path(['config', 'foreign_keys'])(field),
+            required   : R.not(R.pathOr(true, ['config', 'nullable'])(field)),
           },
           value  : R.prop(field.name)(values),
         });

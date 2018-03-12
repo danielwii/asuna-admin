@@ -21,7 +21,7 @@ test('schemaHelper.enumDecorator', () => {
   });
 
   expect(decorated).toEqual({
-    refInclude: { name: 'refInclude', isFilterField: true, filter_type: 'Sort' },
+    refInclude: { name: 'refInclude', isFilterField: true, options: { filter_type: 'Sort' } },
     type      :
       {
         name   : 'type',
@@ -37,5 +37,52 @@ test('schemaHelper.enumDecorator', () => {
         },
         value  : 'refInclude',
       },
+  });
+});
+
+test('schemaHelper.enumDecorator no type found', () => {
+  const decorated = schemaHelper.enumDecorator({
+    type: { value: 'refInclude' },
+  });
+
+  expect(decorated).toEqual({ type: { value: 'refInclude' } });
+});
+
+test('schemaHelper.enumDecorator with SortPosition', () => {
+  const decorated = schemaHelper.enumDecorator({
+    refInclude: { value: [1, 2, 3], type: 'ManyToMany' },
+    type      : {
+      type   : 'EnumFilter',
+      value  : 'refInclude',
+      options: {
+        filter_type: 'Sort',
+        enum_data: [{
+          key: 'refInclude', value: 'refValue1',
+        }],
+      },
+    },
+    positions : { options: { type: 'SortPosition' } },
+  });
+
+  expect(decorated).toEqual({
+    refInclude: {
+      type: 'ManyToMany',
+      isFilterField: true,
+      options: {
+        filter_type: 'Sort',
+      },
+      value: [1, 2, 3],
+    },
+    type      : {
+      type   : 'EnumFilter',
+      value  : 'refInclude',
+      options: {
+        filter_type: 'Sort',
+        enum_data: [{
+          key: 'refInclude', value: 'refValue1',
+        }],
+      },
+    },
+    positions : { options: { type: 'SortPosition' }, value: [1, 2, 3] },
   });
 });

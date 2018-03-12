@@ -14,6 +14,7 @@ import './login.story';
 // import './side-menu.story';
 // import './dynamic-form.story';
 // import './dynamic-form.rich-editor.story';
+import './dynamic-form.select.story';
 // import './dynamic-property.story';
 // import './modules-models.story';
 import './rich-text.story';

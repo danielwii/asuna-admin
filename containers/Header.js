@@ -6,6 +6,7 @@ import { appActions } from '../store/app.redux';
 
 const mapStateToProps    = R.pick(['auth']);
 const mapDispatchToProps = dispatch => ({
+  dispatch,
   onSync: () => dispatch(appActions.sync()),
 });
 

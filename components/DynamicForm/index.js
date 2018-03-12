@@ -17,13 +17,13 @@ import {
   generateInputNumber,
   generatePlain,
   generateRichTextEditor,
-  generateSelect,
   generateSwitch,
   generateTextArea,
   generateVideo,
 } from './elements';
 
-import { createLogger } from '../../adapters/logger';
+import { generateSelect } from './elements/select';
+import { createLogger }   from '../../adapters/logger';
 
 const logger = createLogger('components:dynamic-form');
 
@@ -122,10 +122,12 @@ export class DynamicForm2 extends React.Component {
     const { form, auth } = this.props;
 
     const options            = {
-      ...field.options, key: field.key || field.name, name: field.name, auth,
+      ...field.options,
+      key : field.key || field.name,
+      name: field.name,
+      auth,
     };
     const defaultAssociation = {
-
       name  : 'name',
       value : 'id',
       fields: ['id', 'name'],
@@ -133,8 +135,8 @@ export class DynamicForm2 extends React.Component {
 
     logger.info('[DynamicForm2][buildField]', 'build field', field, 'field index is', index, 'option is', options);
 
-    // all readonly field rendered as plain component
-    if (_.get(field, 'options.readonly', false)) {
+    // all readonly or hidden field will rendered as plain component
+    if (['readonly', 'hidden'].indexOf(_.get(field, 'options.accessible')) > -1) {
       return generatePlain({ key: index, label: options.name, text: field.value });
     }
 
@@ -176,12 +178,14 @@ export class DynamicForm2 extends React.Component {
           const { modelName, association = defaultAssociation } = R.path(['foreignOpts', 0])(field);
 
           const items = R.path(['associations', modelName, 'items'])(field);
+          const type  = R.path(['options', 'filter_type'])(field);
           return generateSelect(form, {
             ...options,
             items,
-            mode    : 'multiple',
-            getName : R.prop(association.name || defaultAssociation.name),
-            getValue: R.prop(association.value || defaultAssociation.value),
+            mode        : 'multiple',
+            withSortTree: type === 'Sort',
+            getName     : R.prop(association.name || defaultAssociation.name),
+            getValue    : R.prop(association.value || defaultAssociation.value),
           });
         }
         logger.warn('[buildField]', 'foreignOpts is required in association.');
@@ -198,8 +202,7 @@ export class DynamicForm2 extends React.Component {
         return generateSelect(form, {
           ...options,
           items,
-          getName     : R.prop('key'),
-          withSortTree: type === 'Sort',
+          getName: R.prop('key'),
         });
       }
       case DynamicFormTypes.Enum: {
@@ -289,8 +292,19 @@ export class DynamicForm2 extends React.Component {
     */
 
     // remove fields which type is not included
-    const renderFields = _.map(_.filter(fields, field => !!field.type), (field, index) =>
-      <EnhancedPureElement key={index} field={field} index={index} builder={this.buildField} />);
+    // pure component will not trigger error handler
+    const renderFields = _.map(_.filter(fields, field => !!field.type), (field, index) => {
+      const isRequired = R.path(['options', 'required'])(field);
+      if (isRequired) {
+        return this.buildField(field, index);
+      }
+      return (<EnhancedPureElement
+        key={index}
+        field={field}
+        index={index}
+        builder={this.buildField}
+      />);
+    });
 
     return (
       <Form>

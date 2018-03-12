@@ -132,14 +132,16 @@ class ContentUpsert extends React.Component {
     // const filteredFields = schemaHelper.doEnumDecorator(formFields);
 
     const { preDecorators } = this.state;
-    const decoratedFields   = R.pipe(...preDecorators)(formFields);
+    const decoratedFields   = R.pipe(...preDecorators)(
+      // !!important!!
+      // associations is loaded in async mode, so the models may already set in state
+      // it have to be merged with fields in state
+      R.mergeDeepRight(formFields, this.state.modelFields),
+    );
 
-    // !!important!!
-    // associations is loaded in async mode, so the models may already set in state
-    // it have to be merged with fields in state
     this.setState({
       formFields,
-      modelFields: R.mergeDeepRight(decoratedFields, this.state.modelFields),
+      modelFields: decoratedFields,
     });
   }
 
@@ -256,14 +258,14 @@ class ContentUpsert extends React.Component {
 
       const fields            = R.map(field => R.pick(['value'], field))(changedFields);
       const changedFieldsList = R.mergeDeepRight(this.state.modelFields, fields);
+      const mergedFieldsList  = R.mergeDeepRight(this.state.formFields, changedFieldsList);
       logger.info('[handleFormChange]', 'modelFields is', this.state.modelFields);
       logger.info('[handleFormChange]', 'new fields is', fields);
       logger.info('[handleFormChange]', 'new changedFieldsList is', changedFieldsList);
+      logger.info('[handleFormChange]', 'new mergedFieldsList is', mergedFieldsList);
 
       const { preDecorators } = this.state;
-      const decoratedFields   = R.pipe(...preDecorators)({
-        ...this.state.formFields, ...changedFieldsList,
-      });
+      const decoratedFields   = R.pipe(...preDecorators)(mergedFieldsList);
 
       this.setState({
         modelFields: decoratedFields,
