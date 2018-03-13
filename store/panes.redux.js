@@ -6,7 +6,7 @@ import * as R from 'ramda';
 // Module actionTypes
 // --------------------------------------------------------------
 
-const actionTypes = {
+const panesActionTypes = {
   // ACTION: 'module::action'
   OPEN  : 'panes::open',
   ACTIVE: 'panes::active',
@@ -19,11 +19,11 @@ const isCurrent = type => type.startsWith('panes::');
 // Module actions
 // --------------------------------------------------------------
 
-const actions = {
+const panesActions = {
   // action: (args) => ({ type, payload })
-  open  : pane => ({ type: actionTypes.OPEN, payload: { pane } }),
-  active: key => ({ type: actionTypes.ACTIVE, payload: { key } }),
-  close : key => ({ type: actionTypes.CLOSE, payload: { key } }),
+  open  : pane => ({ type: panesActionTypes.OPEN, payload: { pane } }),
+  active: key => ({ type: panesActionTypes.ACTIVE, payload: { key } }),
+  close : key => ({ type: panesActionTypes.CLOSE, payload: { key } }),
 };
 
 // --------------------------------------------------------------
@@ -33,7 +33,7 @@ const actions = {
 // }
 // --------------------------------------------------------------
 
-const sagas = [
+const panesSagas = [
   // takeLatest / takeEvery (actionType, actionSage)
 ];
 
@@ -47,18 +47,20 @@ const initialState = {
   panes    : {},
 };
 
-const reducer = (previousState = initialState, action) => {
+const panesCleaner = rootState => ({ ...rootState, panes: initialState });
+
+const panesReducer = (previousState = initialState, action) => {
   if (isCurrent(action.type)) {
     switch (action.type) {
-      case actionTypes.OPEN: {
+      case panesActionTypes.OPEN: {
         const { payload: { pane } } = action;
         return { activeKey: pane.key, panes: { ...previousState.panes, [pane.key]: pane } };
       }
-      case actionTypes.ACTIVE: {
+      case panesActionTypes.ACTIVE: {
         const { payload: { key } } = action;
         return { ...previousState, activeKey: key };
       }
-      case actionTypes.CLOSE: {
+      case panesActionTypes.CLOSE: {
         const { activeKey, panes } = previousState;
         const { payload: { key } } = action;
 
@@ -81,8 +83,9 @@ const reducer = (previousState = initialState, action) => {
 };
 
 export {
-  actionTypes as panesActionTypes,
-  actions as panesActions,
-  sagas as panesSagas,
-  reducer as panesReducer,
+  panesActionTypes,
+  panesActions,
+  panesSagas,
+  panesCleaner,
+  panesReducer,
 };

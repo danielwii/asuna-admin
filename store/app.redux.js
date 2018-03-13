@@ -11,6 +11,7 @@ import { modelsSagaFunctions }   from './models.redux';
 import { routerActions } from './router.redux';
 import { authActions }   from './auth.redux';
 import { createLogger }  from '../adapters/logger';
+import { actions }       from '.';
 
 const logger = createLogger('store:app');
 
@@ -80,6 +81,7 @@ function* init() {
 
 function* sync() {
   try {
+    yield put(actions.clean());
     logger.log('[sync]', 'load all roles...');
     yield securitySagaFunctions.loadAllRoles();
     logger.log('[sync]', 'get current user...');

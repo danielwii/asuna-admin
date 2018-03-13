@@ -1,35 +1,39 @@
 /* eslint-disable spaced-comment,no-unused-vars */
-import withRedux     from 'next-redux-wrapper';
-import nextReduxSaga from 'next-redux-saga';
+import withRedux       from 'next-redux-wrapper';
+import nextReduxSaga   from 'next-redux-saga';
+import * as R          from 'ramda';
+import { reduxAction } from 'node-buffs/dist/index';
 
 import { applyMiddleware, combineReducers, createStore } from 'redux';
 
 import createSagaMiddleware from 'redux-saga';
 import { all }              from 'redux-saga/effects';
 
-import { composeWithDevTools }    from 'redux-devtools-extension';
-import { createLogger }           from 'redux-logger';
-import { reducer as formReducer } from 'redux-form';
-
-import { REHYDRATE }                   from 'redux-persist/constants';
-import { autoRehydrate, persistStore } from 'redux-persist';
+import { composeWithDevTools }               from 'redux-devtools-extension';
+import { createLogger as createReduxLogger } from 'redux-logger';
+import { reducer as formReducer }            from 'redux-form';
+import { autoRehydrate, persistStore }       from 'redux-persist';
 
 import localForage from 'localforage';
 
-import {
-  notificationsActionTypes,
-  notificationsReducer,
-  notificationsSagas,
-} from './notifications.redux';
+import { notificationsReducer, notificationsSagas } from './notifications.redux';
 
-import { appActionTypes, appReducer, appSagas }                from './app.redux';
-import { authActionTypes, authReducer, authSagas }             from './auth.redux';
-import { routerActionTypes, routerReducer, routerSagas }       from './router.redux';
-import { panesActionTypes, panesReducer, panesSagas }          from './panes.redux';
-import { menuActionTypes, menuReducer, menuSagas }             from './menu.redux';
-import { modelsActionTypes, modelsReducer, modelsSagas }       from './models.redux';
-import { contentActionTypes, contentReducer, contentSagas }    from './content.redux';
-import { securityActionTypes, securityReducer, securitySagas } from './security.redux';
+import { appReducer, appSagas }                   from './app.redux';
+import { authReducer, authSagas }                 from './auth.redux';
+import { routerReducer, routerSagas }             from './router.redux';
+import { menuReducer, menuSagas }                 from './menu.redux';
+import { modelsReducer, modelsSagas }             from './models.redux';
+import { contentReducer, contentSagas }           from './content.redux';
+import { securityReducer, securitySagas }         from './security.redux';
+import { panesCleaner, panesReducer, panesSagas } from './panes.redux';
+
+import { createLogger } from '../adapters/logger';
+
+// --------------------------------------------------------------
+// Init
+// --------------------------------------------------------------
+
+const logger = createLogger('store');
 
 const initialState = {};
 
@@ -41,7 +45,7 @@ const persistConfig = {
   blacklist: ['app'],
 };
 
-const loggerMiddleware = createLogger({
+const loggerMiddleware = createReduxLogger({
   collapsed: true,
 });
 
@@ -53,23 +57,18 @@ localForage.setItem('debug', '*');
 // --------------------------------------------------------------
 
 export const actionTypes = {
-  auth         : authActionTypes,
-  notifications: notificationsActionTypes,
-  router       : routerActionTypes,
-  panes        : panesActionTypes,
-  menu         : menuActionTypes,
-  models       : modelsActionTypes,
-  content      : contentActionTypes,
-  // mod_models   : modModelsActionTypes,
-  security     : securityActionTypes,
-  app          : appActionTypes,
+  CLEAN: 'sys::clean',
+};
+
+export const actions = {
+  clean: () => reduxAction(actionTypes.CLEAN),
 };
 
 // --------------------------------------------------------------
 // Root reducers
 // --------------------------------------------------------------
 
-const rootReducers = combineReducers({
+const combinedReducers = combineReducers({
   auth         : authReducer,
   notifications: notificationsReducer,
   router       : routerReducer,
@@ -84,25 +83,21 @@ const rootReducers = combineReducers({
   global       : (previousState = initialState, action) => (
     { ...previousState, ...action }
   ),
-  persistStore : (state = initialState, action) => {
-    switch (action.type) {
-      case REHYDRATE: {
-        const incoming = action.payload.myReducer;
-        if (incoming) {
-          return {
-            ...state,
-            ...incoming,
-            //  specialKey: processSpecial(incoming.specialKey)
-          };
-        }
-        return state;
-      }
-
-      default:
-        return state;
-    }
-  },
 });
+
+const crossSliceReducer = (state, action) => {
+  if (action.type === actionTypes.CLEAN) {
+    const cleanedState = R.compose(panesCleaner)(state);
+    logger.log('[crossSliceReducer]', { state, action, cleanedState });
+    return cleanedState;
+  }
+  return state;
+};
+
+const rootReducers = (state, action) => {
+  const intermediateState = combinedReducers(state, action);
+  return crossSliceReducer(intermediateState, action);
+};
 
 // const persistedReducer = persistReducer(persistConfig, rootReducers);
 
