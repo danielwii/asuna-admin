@@ -105,10 +105,11 @@ class ContentUpsert extends React.Component {
     const modelName = R.compose(R.nth(2), R.split(/::/), R.path(['pane', 'key']))(basis);
     logger.info('[componentWillMount]', 'model name is ', modelName);
 
-    const allFields = modelsProxy.getFormFields(schemas, modelName);
     // --------------------------------------------------------------
     // Build form fields with all needed data
     // --------------------------------------------------------------
+
+    const allFields = modelsProxy.getFormFields(schemas, modelName);
 
     // if (modelName === 'colleges') {
     //   allFields = R.pick(['id', 'name', 'introduction', 'country_id'], allFields);

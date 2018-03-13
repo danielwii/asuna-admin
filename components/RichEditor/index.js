@@ -8,6 +8,7 @@ const logger = createLogger('components:rich-editor');
 
 let BraftEditor;
 
+// eslint-disable-next-line import/prefer-default-export
 export class BraftRichEditor extends React.Component {
   static propTypes = {
     value   : PropTypes.string,
@@ -18,10 +19,10 @@ export class BraftRichEditor extends React.Component {
     loading: true,
   };
 
-  componentDidMount(): void {
+  componentDidMount() {
     // eslint-disable-next-line global-require
     BraftEditor = require('braft-editor').default;
-    logger.info('[componentDidMount]', 'loaded braft editor');
+    logger.info('[componentDidMount]', { state: this.state, props: this.props });
     // eslint-disable-next-line react/no-did-mount-set-state
     this.setState({ loading: false });
   }
@@ -139,7 +140,7 @@ export class BraftRichEditor extends React.Component {
     const editorProps = {
       height        : 500,
       contentFormat : 'html',
-      initialContent: value,
+      initialContent: value || '',
       onChange      : this.handleChange,
       onHTMLChange  : this.handleHTMLChange,
       media         : {
