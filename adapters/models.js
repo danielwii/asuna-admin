@@ -10,7 +10,7 @@ const logger = createLogger('adapters:models');
 export const modelsProxy = {
   getModelConfigs: name => global.context.models.getModelConfig(name),
   // eslint-disable-next-line function-paren-newline
-  getFormFields  : (schemas, name, values) =>
+  getFormSchema  : (schemas, name, values) =>
     global.context.models.getFormSchema(schemas, name, values),
 
   getFieldsOfAssociations: () => global.context.models.getFieldsOfAssociations(),

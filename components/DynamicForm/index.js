@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import _         from 'lodash';
 import * as R    from 'ramda';
 import { sha1 }  from 'object-hash';
-import diff      from 'deep-diff';
 
 import { Button, Card, Form } from 'antd';
 
@@ -25,6 +24,7 @@ import {
 
 import { generateSelect } from './elements/select';
 import { createLogger }   from '../../adapters/logger';
+import { diff }           from '../../helpers';
 
 const logger = createLogger('components:dynamic-form');
 
@@ -294,22 +294,22 @@ export class DynamicForm2 extends React.Component {
 
     // remove fields which type is not included
     // pure component will not trigger error handler
-    /*
+
     const renderFields = _.map(_.filter(fields, field => !!field.type), (field, index) =>
       <EnhancedPureElement key={index} field={field} index={index} builder={this.buildField} />);
-    */
-    const renderFields = _.map(_.filter(fields, field => !!field.type), (field, index) => {
-      const isRequired = R.path(['options', 'required'])(field);
-      if (isRequired) {
-        return this.buildField(field, index);
-      }
-      return (<EnhancedPureElement
-        key={index}
-        field={field}
-        index={index}
-        builder={this.buildField}
-      />);
-    });
+
+    // const renderFields = _.map(_.filter(fields, field => !!field.type), (field, index) => {
+    //   const isRequired = R.path(['options', 'required'])(field);
+    //   if (isRequired) {
+    //     return this.buildField(field, index);
+    //   }
+    //   return (<EnhancedPureElement
+    //     key={index}
+    //     field={field}
+    //     index={index}
+    //     builder={this.buildField}
+    //   />);
+    // });
 
     return (
       <Form>
@@ -345,12 +345,25 @@ class EnhancedPureElement extends React.Component {
   };
 
   shouldComponentUpdate(nextProps, nextState) {
-    return !!diff(this.props, nextProps) || !!diff(this.state, nextState);
+    const propsDiff = diff(this.props, nextProps);
+    const stateDiff = diff(this.state, nextState);
+    const shouldUpdate = propsDiff.isDifferent || stateDiff.isDifferent;
+    if (shouldUpdate) {
+      logger.log('[EnhancedPureElement][shouldComponentUpdate]', {
+        props: this.props,
+        state: this.state,
+        nextProps,
+        nextState,
+        propsDiff,
+        stateDiff,
+      }, shouldUpdate);
+    }
+    return shouldUpdate;
   }
 
   render() {
     const { field, index, builder } = this.props;
-    logger.info('[EnhancedPureElement]', { props: this.props, state: this.state });
+    logger.info('[EnhancedPureElement][render]', { props: this.props, state: this.state });
     return <div key={index}>{builder(field, index)}</div>;
   }
 }

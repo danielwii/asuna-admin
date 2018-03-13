@@ -18,14 +18,14 @@ import localForage from 'localforage';
 
 import { notificationsReducer, notificationsSagas } from './notifications.redux';
 
-import { appReducer, appSagas }                   from './app.redux';
-import { authReducer, authSagas }                 from './auth.redux';
-import { routerReducer, routerSagas }             from './router.redux';
-import { menuReducer, menuSagas }                 from './menu.redux';
-import { modelsReducer, modelsSagas }             from './models.redux';
-import { contentReducer, contentSagas }           from './content.redux';
-import { securityReducer, securitySagas }         from './security.redux';
-import { panesCleaner, panesReducer, panesSagas } from './panes.redux';
+import { appReducer, appSagas }                      from './app.redux';
+import { authReducer, authSagas }                    from './auth.redux';
+import { routerReducer, routerSagas }                from './router.redux';
+import { menuReducer, menuSagas }                    from './menu.redux';
+import { modelsReducer, modelsSagas, modelsCleaner } from './models.redux';
+import { contentReducer, contentSagas }              from './content.redux';
+import { securityReducer, securitySagas }            from './security.redux';
+import { panesReducer, panesSagas, panesCleaner }    from './panes.redux';
 
 import { createLogger } from '../adapters/logger';
 
@@ -87,7 +87,10 @@ const combinedReducers = combineReducers({
 
 const crossSliceReducer = (state, action) => {
   if (action.type === actionTypes.CLEAN) {
-    const cleanedState = R.compose(panesCleaner)(state);
+    const cleanedState = R.compose(
+      modelsCleaner,
+      panesCleaner,
+    )(state);
     logger.log('[crossSliceReducer]', { state, action, cleanedState });
     return cleanedState;
   }

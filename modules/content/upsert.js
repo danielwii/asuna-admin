@@ -10,7 +10,7 @@ import { DynamicForm2, DynamicFormTypes } from '../../components/DynamicForm';
 import { modelsProxy }                    from '../../adapters/models';
 import { createLogger }                   from '../../adapters/logger';
 import { modelsActions }                  from '../../store/models.redux';
-import { schemaHelper }                   from '../../helpers';
+import { schemaHelper, diff }             from '../../helpers';
 
 const logger = createLogger('modules:content:upsert');
 
@@ -92,13 +92,13 @@ class ContentUpsert extends React.Component {
       isInsertMode,
       modelName,
       init         : true,
-      modelFields  : {},
+      fields       : {},
       key          : basis.pane.key,
     };
   }
 
   async componentWillMount() {
-    logger.info('[componentWillMount]', 'init...');
+    logger.log('[componentWillMount]', { props: this.props, state: this.state });
     const { basis, schemas } = this.props;
 
     // content::create::name::timestamp => name
@@ -109,20 +109,20 @@ class ContentUpsert extends React.Component {
     // Build form fields with all needed data
     // --------------------------------------------------------------
 
-    const allFields = modelsProxy.getFormFields(schemas, modelName);
+    let formSchema = modelsProxy.getFormSchema(schemas, modelName);
 
-    // if (modelName === 'colleges') {
-    //   allFields = R.pick(['id', 'name', 'introduction', 'country_id'], allFields);
-    // }
-    logger.info('[componentWillMount]', 'allFields is', allFields);
+    if (modelName === 'colleges') {
+      formSchema = R.pick(['id', 'name', 'name_en', 'sequences'], formSchema);
+    }
+    logger.info('[componentWillMount]', 'formSchema is', formSchema);
 
-    const wrappedFields = await this.asyncWrapAssociations(allFields);
+    const withAssociations = await this.asyncWrapAssociations(formSchema);
 
-    logger.info('[componentWillMount]', 'wrappedFields is', wrappedFields);
+    logger.info('[componentWillMount]', 'withAssociations is', withAssociations);
 
     const formFields = R.omit(
       ['created_at', 'updated_at'],
-      R.mergeDeepRight(allFields, wrappedFields),
+      R.mergeDeepRight(formSchema, withAssociations),
     );
 
     logger.info('[componentWillMount]', 'form fields is', formFields);
@@ -137,12 +137,12 @@ class ContentUpsert extends React.Component {
       // !!important!!
       // associations is loaded in async mode, so the models may already set in state
       // it have to be merged with fields in state
-      R.mergeDeepRight(formFields, this.state.modelFields),
+      R.mergeDeepRight(formFields, this.state.fields),
     );
 
     this.setState({
-      formFields,
-      modelFields: decoratedFields,
+      wrappedFormSchema: formFields,      // 用于在更新时重新构造完整（会又被过滤的部分）的数据结构
+      fields           : decoratedFields, // 最终渲染的对象
     });
   }
 
@@ -152,25 +152,33 @@ class ContentUpsert extends React.Component {
    * @param nextProps
    */
   componentWillReceiveProps(nextProps) {
-    logger.info('[componentWillReceiveProps]', 'init...', nextProps);
+    logger.log('[componentWillReceiveProps]', {
+      props: this.props, state: this.state, nextProps,
+    });
     const { isInsertMode, modelName, init } = this.state;
     if (!isInsertMode && init) {
       const { models, basis: { pane: { data: { record } } } } = nextProps;
 
       logger.info('[componentWillReceiveProps]', { modelName, record });
       const fieldValues = R.pathOr({}, [modelName, record.id])(models);
-      logger.info('[componentWillReceiveProps]', 'field values is', fieldValues);
+      logger.log('[componentWillReceiveProps]', 'field values is', fieldValues);
       this.handleFormChange(R.map(value => ({ value }))(fieldValues));
       this.setState({ init: false, originalFieldValues: fieldValues });
     }
   }
 
   shouldComponentUpdate(nextProps, nextState, nextContext) {
-    logger.info('[shouldComponentUpdate]', nextProps, nextState, nextContext);
     const { key }       = this.state;
     const { activeKey } = nextProps;
-    logger.info('[shouldComponentUpdate]', key, activeKey);
-    return key === activeKey;
+    // const propsDiff     = false;
+    const propsDiff     = diff(this.props, nextProps);
+    const stateDiff     = diff(this.state, nextState);
+    const samePane      = key === activeKey;
+    const shouldUpdate  = samePane && (propsDiff.isDifferent || stateDiff.isDifferent);
+    logger.log('[shouldComponentUpdate]',
+      { nextProps, nextState, nextContext }, shouldUpdate,
+      { samePane, propsDiff, stateDiff });
+    return shouldUpdate;
   }
 
   detectUpsertMode = (modelName) => {
@@ -255,21 +263,19 @@ class ContentUpsert extends React.Component {
    */
   handleFormChange = (changedFields) => {
     if (!R.isEmpty(changedFields)) {
-      logger.info('[handleFormChange]', 'handleFormChange', changedFields);
+      logger.log('[handleFormChange]', { changedFields });
+      const { wrappedFormSchema, fields, preDecorators } = this.state;
 
-      const fields            = R.map(field => R.pick(['value'], field))(changedFields);
-      const changedFieldsList = R.mergeDeepRight(this.state.modelFields, fields);
-      const mergedFieldsList  = R.mergeDeepRight(this.state.formFields, changedFieldsList);
-      logger.info('[handleFormChange]', 'modelFields is', this.state.modelFields);
-      logger.info('[handleFormChange]', 'new fields is', fields);
-      logger.info('[handleFormChange]', 'new changedFieldsList is', changedFieldsList);
-      logger.info('[handleFormChange]', 'new mergedFieldsList is', mergedFieldsList);
-
-      const { preDecorators } = this.state;
-      const decoratedFields   = R.pipe(...preDecorators)(mergedFieldsList);
+      const currentChangedFields = R.map(R.pick(['value']))(changedFields);
+      const changedFieldsBefore  = R.mergeDeepRight(wrappedFormSchema, fields);
+      const allChangedFields     = R.mergeDeepRight(changedFieldsBefore, currentChangedFields);
+      const decoratedFields      = R.pipe(...preDecorators)(allChangedFields);
+      logger.info('[handleFormChange]', {
+        currentChangedFields, changedFieldsBefore, allChangedFields, decoratedFields,
+      });
 
       this.setState({
-        modelFields: decoratedFields,
+        fields: decoratedFields,
       });
     }
   };
@@ -282,7 +288,7 @@ class ContentUpsert extends React.Component {
     const fieldPairs = R.compose(
       R.pickBy((value, key) => (originalFieldValues ? value !== originalFieldValues[key] : true)),
       R.map(R.prop('value')),
-    )(this.state.modelFields);
+    )(this.state.fields);
     logger.info('[handleFormSubmit]', 'all fieldPairs waiting for submit is', fieldPairs);
 
     const id = R.prop('id')(originalFieldValues);
@@ -299,10 +305,10 @@ class ContentUpsert extends React.Component {
   };
 
   render() {
-    const { modelFields, loading } = this.state;
-    const { basis, auth }          = this.props;
+    const { fields, loading } = this.state;
+    const { auth }            = this.props;
 
-    if (R.anyPass([R.isEmpty, R.isNil])(modelFields) || loading) {
+    if (R.anyPass([R.isEmpty, R.isNil])(fields) || loading) {
       return (
         <div>
           <Icon type="loading" style={{ marginLeft: 8, fontSize: 24 }} spin />
@@ -318,23 +324,25 @@ class ContentUpsert extends React.Component {
       );
     }
 
-    logger.log('[render]', 'modelFields is ', modelFields);
+    logger.log('[render]', { props: this.props, state: this.state });
 
     return (
       <div>
         <hr />
         <ContentForm
           auth={auth}
-          fields={modelFields}
+          fields={fields}
           onChange={this.handleFormChange}
           onSubmit={this.handleFormSubmit}
         />
-        <hr />
       </div>
     );
   }
 }
 
-const mapStateToProps = state => ({ ...state.models, auth: state.auth });
+const mapStateToProps = state => ({
+  ...R.pick(['schemas', 'models'])(state.models),
+  auth: state.auth,
+});
 
 export default connect(mapStateToProps)(ContentUpsert);

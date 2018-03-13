@@ -1,7 +1,8 @@
 // @flow weak
 // export const authHeader = token => ({ headers: { Authorization: `Bearer ${token}` } });
-import moment from 'moment/moment';
-import * as R from 'ramda';
+import moment   from 'moment/moment';
+import * as R   from 'ramda';
+import deepDiff from 'deep-diff';
 
 import { createLogger }     from '../adapters/logger';
 import { DynamicFormTypes } from '../components/DynamicForm';
@@ -63,6 +64,11 @@ export const defaultColumns = actions => [
   commonColumns.updatedAt,
   commonColumns.actions(actions),
 ];
+
+export const diff = (first, second) => {
+  const verbose = deepDiff(first, second);
+  return { verbose, isDifferent: !!verbose };
+};
 
 export const schemaHelper = {
   /**

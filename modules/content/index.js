@@ -114,7 +114,7 @@ class ContentIndex extends React.Component {
 
   render() {
     const { modelName, columns } = this.state;
-    const { basis, models }      = this.props;
+    const { models }             = this.props;
 
     const response = R.pathOr([], [modelName, 'data'])(models);
     const loading  = R.pathOr(false, [modelName, 'loading'])(models);
@@ -144,9 +144,6 @@ class ContentIndex extends React.Component {
           pagination={pagination}
           onChange={this.handleTableChange}
         />
-
-        {/* <pre>{JSON.stringify(dataSource, null, 2)}</pre> */}
-        <pre>{JSON.stringify(basis, null, 2)}</pre>
       </div>
     );
   }

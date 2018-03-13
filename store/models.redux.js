@@ -14,7 +14,7 @@ const logger = createLogger('store:models');
 // Module actionTypes
 // --------------------------------------------------------------
 
-const actionTypes = {
+const modelsActionTypes = {
   // ACTION: 'module::action'
   FETCH                   : 'models::fetch',
   FETCH_SUCCESS           : 'models::fetch-success',
@@ -30,26 +30,27 @@ const isCurrent = type => type.startsWith('models::');
 // Module actions
 // --------------------------------------------------------------
 
-const actions = {
+const modelsActions = {
   // action: (args) => ({ type, payload })
   fetch       : (modelName, data) =>
-    reduxAction(actionTypes.FETCH, {
+    reduxAction(modelsActionTypes.FETCH, {
       modelName,
       data,
       loading: { [modelName]: true }, // not using this moment
     }),
   fetchSuccess: (modelName, response) =>
-    reduxAction(actionTypes.FETCH_SUCCESS, {
+    reduxAction(modelsActionTypes.FETCH_SUCCESS, {
       modelName,
       models : { [modelName]: { [response.id]: response } },
       loading: { [modelName]: false },
     }),
 
-  upsert: (modelName, data) => reduxAction(actionTypes.UPSERT, { modelName, data }),
-  remove: (modelName, data) => reduxAction(actionTypes.REMOVE, { modelName, data }),
+  upsert: (modelName, data) => reduxAction(modelsActionTypes.UPSERT, { modelName, data }),
+  remove: (modelName, data) => reduxAction(modelsActionTypes.REMOVE, { modelName, data }),
 
-  loadAllSchemas       : () => reduxAction(actionTypes.LOAD_ALL_SCHEMAS),
-  loadAllSchemasSuccess: schemas => reduxAction(actionTypes.LOAD_ALL_SCHEMAS_SUCCESS, { schemas }),
+  loadAllSchemas       : () => reduxAction(modelsActionTypes.LOAD_ALL_SCHEMAS),
+  loadAllSchemasSuccess: schemas =>
+    reduxAction(modelsActionTypes.LOAD_ALL_SCHEMAS_SUCCESS, { schemas }),
 };
 
 // --------------------------------------------------------------
@@ -68,7 +69,7 @@ const modelsSagaFunctions = {
         const response = yield call(modelsProxy.fetch, { token }, modelName, data);
         message.success(`load model '${modelName}' success!`);
         logger.log('[fetch]', 'response of load model is', response);
-        yield put(actions.fetchSuccess(modelName, response.data));
+        yield put(modelsActions.fetchSuccess(modelName, response.data));
       } catch (e) {
         logger.warn('[fetch]', 'CATCH -> load model error', e);
         message.error(e.message);
@@ -85,7 +86,7 @@ const modelsSagaFunctions = {
         message.success(`upsert model '${modelName}' success!`);
         logger.log('[upsert]', 'response of upsert model is', response);
         // save model data when upsert is success
-        yield put(actions.fetchSuccess(modelName, response.data));
+        yield put(modelsActions.fetchSuccess(modelName, response.data));
       } catch (e) {
         logger.warn('[upsert]', 'CATCH -> upsert model error', e);
         message.error(e.message);
@@ -101,7 +102,7 @@ const modelsSagaFunctions = {
         message.success(`remove model '${modelName}' success!`);
         logger.log('[remove]', 'response of remove model is', response);
         // save model data when remove is success
-        yield put(actions.fetchSuccess(modelName, response.data));
+        yield put(modelsActions.fetchSuccess(modelName, response.data));
       } catch (e) {
         logger.warn('[remove]', 'CATCH -> remove model error', e);
         message.error(e.message);
@@ -124,7 +125,7 @@ const modelsSagaFunctions = {
           (response, name) => ({ [name]: response.data }),
         ));
         message.success('load all schemas success');
-        yield put(actions.loadAllSchemasSuccess(schemas));
+        yield put(modelsActions.loadAllSchemasSuccess(schemas));
         logger.log('[loadAllSchemas]', 'load all model schemas', effects, schemas);
       } catch (e) {
         logger.warn('[loadAllSchemas]', 'CATCH -> load all schemas error occurred', e);
@@ -135,12 +136,12 @@ const modelsSagaFunctions = {
 };
 
 
-const sagas = [
+const modelsSagas = [
   // takeLatest / takeEvery (actionType, actionSage)
-  takeLatest(actionTypes.LOAD_ALL_SCHEMAS, modelsSagaFunctions.loadAllSchemas),
-  takeLatest(actionTypes.REMOVE, modelsSagaFunctions.remove),
-  takeLatest(actionTypes.UPSERT, modelsSagaFunctions.upsert),
-  takeLatest(actionTypes.FETCH, modelsSagaFunctions.fetch),
+  takeLatest(modelsActionTypes.LOAD_ALL_SCHEMAS, modelsSagaFunctions.loadAllSchemas),
+  takeLatest(modelsActionTypes.REMOVE, modelsSagaFunctions.remove),
+  takeLatest(modelsActionTypes.UPSERT, modelsSagaFunctions.upsert),
+  takeLatest(modelsActionTypes.FETCH, modelsSagaFunctions.fetch),
 ];
 
 // --------------------------------------------------------------
@@ -150,7 +151,9 @@ const sagas = [
 
 const initialState = {};
 
-const reducer = (previousState = initialState, action) => {
+const modelsCleaner = rootState => ({ ...rootState, models: initialState });
+
+const modelsReducer = (previousState = initialState, action) => {
   if (isCurrent(action.type)) {
     switch (action.type) {
       default:
@@ -162,9 +165,10 @@ const reducer = (previousState = initialState, action) => {
 };
 
 export {
-  actionTypes as modelsActionTypes,
-  actions as modelsActions,
-  sagas as modelsSagas,
-  reducer as modelsReducer,
+  modelsActionTypes,
+  modelsActions,
+  modelsSagas,
+  modelsReducer,
+  modelsCleaner,
   modelsSagaFunctions,
 };
