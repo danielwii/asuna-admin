@@ -255,7 +255,7 @@ class ContentUpsert extends React.Component {
    */
   handleFormChange = (changedFields) => {
     if (!R.isEmpty(changedFields)) {
-      logger.log('[handleFormChange]', 'handleFormChange', changedFields);
+      logger.info('[handleFormChange]', 'handleFormChange', changedFields);
 
       const fields            = R.map(field => R.pick(['value'], field))(changedFields);
       const changedFieldsList = R.mergeDeepRight(this.state.modelFields, fields);

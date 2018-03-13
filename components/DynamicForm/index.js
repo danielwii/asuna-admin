@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import _         from 'lodash';
 import * as R    from 'ramda';
 import { sha1 }  from 'object-hash';
+import diff      from 'deep-diff';
 
 import { Button, Card, Form } from 'antd';
 
@@ -280,7 +281,7 @@ export class DynamicForm2 extends React.Component {
 
   render() {
     const { fields, delegate } = this.props;
-    logger.log('[DynamicForm2][render]', 'props is', this.props, 'fields is', fields);
+    logger.log('[DynamicForm2][render]', { props: this.props, fields });
 
     /*
         const fieldGroups = R.compose(
@@ -293,6 +294,10 @@ export class DynamicForm2 extends React.Component {
 
     // remove fields which type is not included
     // pure component will not trigger error handler
+    /*
+    const renderFields = _.map(_.filter(fields, field => !!field.type), (field, index) =>
+      <EnhancedPureElement key={index} field={field} index={index} builder={this.buildField} />);
+    */
     const renderFields = _.map(_.filter(fields, field => !!field.type), (field, index) => {
       const isRequired = R.path(['options', 'required'])(field);
       if (isRequired) {
@@ -332,15 +337,20 @@ export class DynamicForm2 extends React.Component {
  * Using PureComponent to improve elements' performance
  */
 // eslint-disable-next-line react/no-multi-comp
-class EnhancedPureElement extends React.PureComponent {
+class EnhancedPureElement extends React.Component {
   static propTypes = {
     field  : PropTypes.shape({}),
     index  : PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     builder: PropTypes.func.isRequired,
   };
 
+  shouldComponentUpdate(nextProps, nextState) {
+    return !!diff(this.props, nextProps) || !!diff(this.state, nextState);
+  }
+
   render() {
     const { field, index, builder } = this.props;
+    logger.info('[EnhancedPureElement]', { props: this.props, state: this.state });
     return <div key={index}>{builder(field, index)}</div>;
   }
 }

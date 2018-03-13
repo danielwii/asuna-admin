@@ -11,7 +11,7 @@ import {
 
 import { createLogger } from '../../adapters/logger';
 
-const logger = createLogger('components:dynamic-form:rich-editor', 1);
+const logger = createLogger('components:dynamic-form:rich-editor');
 
 class TextAlign extends React.Component {
   state = {

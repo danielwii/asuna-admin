@@ -11,7 +11,7 @@ import { generateComponent } from '.';
 
 import { createLogger } from '../../../adapters/logger';
 
-const logger = createLogger('components:dynamic-form:elements', 1);
+const logger = createLogger('components:dynamic-form:elements');
 
 const defaultFormItemLayout = {};
 
