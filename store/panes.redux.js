@@ -8,9 +8,10 @@ import * as R from 'ramda';
 
 const panesActionTypes = {
   // ACTION: 'module::action'
-  OPEN  : 'panes::open',
-  ACTIVE: 'panes::active',
-  CLOSE : 'panes::close',
+  OPEN     : 'panes::open',
+  ACTIVE   : 'panes::active',
+  CLOSE    : 'panes::close',
+  CLOSE_ALL: 'panes::close-all',
 };
 
 const isCurrent = type => type.startsWith('panes::');
@@ -21,9 +22,10 @@ const isCurrent = type => type.startsWith('panes::');
 
 const panesActions = {
   // action: (args) => ({ type, payload })
-  open  : pane => ({ type: panesActionTypes.OPEN, payload: { pane } }),
-  active: key => ({ type: panesActionTypes.ACTIVE, payload: { key } }),
-  close : key => ({ type: panesActionTypes.CLOSE, payload: { key } }),
+  open    : pane => ({ type: panesActionTypes.OPEN, payload: { pane } }),
+  active  : key => ({ type: panesActionTypes.ACTIVE, payload: { key } }),
+  close   : key => ({ type: panesActionTypes.CLOSE, payload: { key } }),
+  closeAll: () => ({ type: panesActionTypes.CLOSE_ALL }),
 };
 
 // --------------------------------------------------------------
@@ -73,6 +75,9 @@ const panesReducer = (previousState = initialState, action) => {
           // 关闭当前 tab 时定位到后面一个 tab
           : nextKeys[_.min([index, nextKeys.length - 1])];
         return { activeKey: nextKey, panes: nextPanes };
+      }
+      case panesActionTypes.CLOSE_ALL: {
+        return {};
       }
       default:
         return { ...previousState, ...action.payload };

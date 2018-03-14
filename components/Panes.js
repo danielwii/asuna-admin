@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import _         from 'lodash';
 import * as R    from 'ramda';
 
-import { Tabs } from 'antd';
+import { Button, Tabs } from 'antd';
 
 import { createLogger } from '../adapters/logger';
 import ModulesLoader    from '../modules';
@@ -14,10 +14,11 @@ const { TabPane } = Tabs;
 
 class Panes extends React.Component {
   static propTypes = {
-    activeKey: PropTypes.string,
-    onActive : PropTypes.func.isRequired,
-    onClose  : PropTypes.func.isRequired,
-    panes    : PropTypes.shape({
+    activeKey : PropTypes.string,
+    onActive  : PropTypes.func.isRequired,
+    onClose   : PropTypes.func.isRequired,
+    onCloseAll: PropTypes.func.isRequired,
+    panes     : PropTypes.shape({
       key: PropTypes.shape({
         title   : PropTypes.string,
         composed: PropTypes.shape({
@@ -43,6 +44,11 @@ class Panes extends React.Component {
     }
   };
 
+  onCloseAll = () => {
+    const { onCloseAll } = this.props;
+    onCloseAll();
+  };
+
   onTitleChange = (key, newTitle) => {
     logger.log('onTitleChange', key, newTitle);
     if (key && newTitle) {
@@ -53,7 +59,7 @@ class Panes extends React.Component {
   render() {
     const { titles } = this.state;
 
-    const { activeKey, panes, onActive } = this.props;
+    const { activeKey, panes, onActive, onCloseAll } = this.props;
 
     if (!activeKey) {
       return <div>^_^ - Hello kitty.</div>;
@@ -61,29 +67,30 @@ class Panes extends React.Component {
 
     const title = titles[activeKey];
 
+    const operations = panes && <Button icon="close-square" onClick={onCloseAll} />;
+
     return (
-      <div>
-        <Tabs
-          hideAdd
-          onChange={onActive}
-          activeKey={activeKey}
-          type="editable-card"
-          onEdit={this.onEdit}
-        >
-          {_.map(panes, pane => (
-            <TabPane tab={pane.title} key={pane.key}>
-              {activeKey} - {pane.key} - {title}
-              <ModulesLoader
-                module={pane.linkTo || pane.key}
-                activeKey={activeKey}
-                onClose={() => this.onEdit(activeKey, 'remove')}
-                basis={{ pane }}
-                onTitleChange={newTitle => this.onTitleChange(activeKey, newTitle)}
-              />
-            </TabPane>
-          ))}
-        </Tabs>
-      </div>
+      <Tabs
+        hideAdd
+        tabBarExtraContent={operations}
+        onChange={onActive}
+        activeKey={activeKey}
+        type="editable-card"
+        onEdit={this.onEdit}
+      >
+        {_.map(panes, pane => (
+          <TabPane tab={pane.title} key={pane.key}>
+            {activeKey} - {pane.key} - {title}
+            <ModulesLoader
+              module={pane.linkTo || pane.key}
+              activeKey={activeKey}
+              onClose={() => this.onEdit(activeKey, 'remove')}
+              basis={{ pane }}
+              onTitleChange={newTitle => this.onTitleChange(activeKey, newTitle)}
+            />
+          </TabPane>
+        ))}
+      </Tabs>
     );
   }
 }
