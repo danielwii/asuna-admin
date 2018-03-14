@@ -132,15 +132,16 @@ export const generateSelect = (form, {
             optionFilterProp="items"
             mode={mode}
             filterOption={(input, option) => {
-              logger.log('filter input is', input, 'option is', option);
-              return option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+              logger.log('filter item is', { input, option });
+              const itemStr = R.join('', option.props.children).toLowerCase();
+              return itemStr.indexOf(input.toLowerCase()) >= 0;
             }}
           >
             {(items || []).map(item => (
               <Select.Option
                 key={getValue(item)}
                 value={getValue(item)}
-              >{getName(item)}</Select.Option>
+              >{'#'}{getValue(item)}{': '}{getName(item)}</Select.Option>
             ))}
           </Select>
           {withSortTree && this.renderSortTree()}

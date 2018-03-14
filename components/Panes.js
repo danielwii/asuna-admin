@@ -56,7 +56,7 @@ class Panes extends React.Component {
     const { activeKey, panes, onActive } = this.props;
 
     if (!activeKey) {
-      return <div>^_^ - panes</div>;
+      return <div>^_^ - Hello kitty.</div>;
     }
 
     const title = titles[activeKey];

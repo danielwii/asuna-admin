@@ -104,7 +104,6 @@ export class ModelsAdapter {
     if (/^EnumFilter$/i.test(advancedType)) return DynamicFormTypes.EnumFilter;
     if (/^Enum$/i.test(advancedType)) return DynamicFormTypes.Enum;
 
-
     // --------------------------------------------------------------
     // identify basic types
     // --------------------------------------------------------------
@@ -249,7 +248,7 @@ export class ModelsAdapter {
       return null;
     }
 
-    const fields = R.pathOr([], [associationName, 'fields'])(this.getFieldsOfAssociations());
+    const fields = R.pathOr(['id', 'name'], [associationName, 'fields'])(this.getFieldsOfAssociations());
     return this.service.loadAssociation({ token }, associationName, {
       fields, ...this.getModelConfig(associationName),
     });
