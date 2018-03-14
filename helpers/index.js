@@ -1,14 +1,14 @@
-// @flow weak
 // export const authHeader = token => ({ headers: { Authorization: `Bearer ${token}` } });
 import moment   from 'moment/moment';
 import * as R   from 'ramda';
 import deepDiff from 'deep-diff';
 
-import { DynamicFormTypes } from '../components/DynamicForm';
-import { modelsProxy }      from '../adapters/models';
-import { createLogger }     from '../adapters/logger';
+import { DynamicFormTypes }    from '../components/DynamicForm';
+import { modelsProxy }         from '../adapters/models';
+import { storeConnectorProxy } from '../adapters/storeConnector';
+import { createLogger }        from '../adapters/logger';
 
-const logger = createLogger('helpers');
+const logger = createLogger('helpers', 3);
 
 // TODO make helpers configurable
 export const authHeader = token => ({ headers: { Authorization: token } });
@@ -86,21 +86,93 @@ export const diff = (first, second) => {
 };
 
 export const schemaHelper = {
+  peek: callback => async (fields) => {
+    callback();
+    logger.log('[schemaHelper][peek]', { fields });
+    return fields;
+  },
+
+  /**
+   * 异步加载所有的关联对象，用于下拉菜单提示
+   * @param fields
+   * @returns {Promise<*>}
+   */
+  loadAssociationsDecorator: async (fields) => {
+    logger.log('[schemaHelper][loadAssociationsDecorator]', { fields });
+
+    const relationShips = [DynamicFormTypes.Association, DynamicFormTypes.ManyToMany];
+    const associations  = R.filter(field => R.contains(field.type)(relationShips))(fields);
+
+    if (R.not(R.isEmpty(associations))) {
+      logger.info('[schemaHelper][loadAssociationsDecorator]', 'associations is', associations);
+      const auth = storeConnectorProxy.getState('auth');
+
+      const wrappedAssociations = await Promise.all(R.values(associations).map(async (field) => {
+        const foreignKeys = R.pathOr([], ['options', 'foreignKeys'])(field);
+        logger.info('[schemaHelper][loadAssociationsDecorator]', 'handle field', field, foreignKeys);
+        if (foreignKeys && foreignKeys.length > 0) {
+          const fieldsOfAssociations = modelsProxy.getFieldsOfAssociations();
+
+          const foreignOpts = R.map((foreignKey) => {
+            const regex = foreignKey.startsWith('t_')
+              ? /t_(\w+)\.(\w+)/  // t_model.id -> model
+              : /(\w+)\.(\w+)/;   // model.id   -> model
+
+            // update model_name to model-name
+            const [, modelName, property] = foreignKey.match(regex);
+
+            const association = fieldsOfAssociations[modelName];
+            return { modelName, property, association };
+          })(foreignKeys);
+          logger.info('[schemaHelper][loadAssociationsDecorator]', 'foreignOpts is', foreignOpts);
+
+          const associationNames = R.pluck('modelName')(foreignOpts);
+          logger.info('[schemaHelper][loadAssociationsDecorator]', 'associationNames is', associationNames);
+
+          const effects = modelsProxy.listAssociationsCallable(auth, associationNames);
+          logger.info('[schemaHelper][loadAssociationsDecorator]', 'list associations callable', effects);
+
+          let allResponse = {};
+          try {
+            allResponse = await Promise.all(R.values(effects));
+            logger.info('[schemaHelper][loadAssociationsDecorator]', 'allResponse is', allResponse);
+          } catch (e) {
+            logger.error('[schemaHelper][loadAssociationsDecorator]', e);
+          }
+
+          const foreignKeysResponse = R.zipObj(associationNames, R.map(R.prop('data'), allResponse));
+          logger.info('[schemaHelper][loadAssociationsDecorator]', 'foreignOpts is', foreignOpts, 'foreignKeysResponse is', foreignKeysResponse);
+
+          return { ...field, foreignOpts, associations: foreignKeysResponse };
+        }
+        logger.warn('[schemaHelper][loadAssociationsDecorator]', 'no foreignKeys with association', field);
+        return { ...field, type: DynamicFormTypes.Input };
+      }));
+
+      const pairedWrappedAssociations = R.zipObj(R.keys(associations), wrappedAssociations);
+      logger.info('[schemaHelper][loadAssociationsDecorator]', 'wrapped associations', pairedWrappedAssociations);
+
+      return R.mergeDeepRight(fields, pairedWrappedAssociations);
+    }
+
+    return fields;
+  },
+
   /**
    * 自动通过公共 associations 填充未定义的关联
    * @param fields
    * @returns {*}
    */
-  associationDecorator: (fields) => {
-    logger.info('[schemaHelper][associationDecorator]', { fields });
+  associationDecorator: async (fields) => {
+    logger.log('[schemaHelper][associationDecorator]', { fields });
 
     const associationFields = R.filter(R.compose(R.not, R.isNil, R.prop('associations')))(fields);
     if (R.not(R.isEmpty(associationFields))) {
       logger.info('[schemaHelper][associationDecorator]', { associationFields });
-      const wrapForeignOpt = R.map(opt => ({
+      const wrapForeignOpt   = R.map(opt => ({
         ...opt, association: modelsProxy.getAssociationConfigs(opt.modelName),
       }));
-      const withAssociations  = R.mapObjIndexed(field => ({
+      const withAssociations = R.mapObjIndexed(field => ({
         ...field, foreignOpts: wrapForeignOpt(field.foreignOpts),
       }))(associationFields);
       logger.info('[schemaHelper][associationDecorator]', { withAssociations });
@@ -121,8 +193,8 @@ export const schemaHelper = {
    * @param fields
    * @returns {*}
    */
-  enumDecorator: (fields) => {
-    logger.info('[schemaHelper][enumDecorator]', { fields });
+  enumDecorator: async (fields) => {
+    logger.log('[schemaHelper][enumDecorator]', { fields });
 
     const enumFilterFields = R.filter(R.propEq('type', DynamicFormTypes.EnumFilter))(fields);
     if (R.not(R.isEmpty(enumFilterFields))) {

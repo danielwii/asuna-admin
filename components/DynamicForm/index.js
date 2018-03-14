@@ -26,7 +26,7 @@ import { generateSelect } from './elements/select';
 import { createLogger }   from '../../adapters/logger';
 import { diff }           from '../../helpers';
 
-const logger = createLogger('components:dynamic-form');
+const logger = createLogger('components:dynamic-form', 3);
 
 // FIXME remove it
 export const buildForm = (form, definitions) => definitions.map((definition) => {

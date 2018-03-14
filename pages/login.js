@@ -10,9 +10,10 @@ import Snow              from '../components/Snow';
 import LogoCanvas        from '../components/LogoCanvas';
 import { withReduxSaga } from '../store';
 
-import { authService }  from '../services/auth';
-import { AuthAdapter }  from '../adapters/auth';
-import { createLogger } from '../adapters/logger';
+import { authService }           from '../services/auth';
+import { AuthAdapter }           from '../adapters/auth';
+import { createLogger }          from '../adapters/logger';
+import { StoreConnectorAdapter } from '../adapters/storeConnector';
 
 const logger = createLogger('pages:login');
 
@@ -21,7 +22,8 @@ const logger = createLogger('pages:login');
 // --------------------------------------------------------------
 
 global.context = _.assign(global.context, {
-  auth: new AuthAdapter(authService),
+  auth          : new AuthAdapter(authService),
+  storeConnector: new StoreConnectorAdapter(),
 });
 
 logger.log('global context is', global.context);

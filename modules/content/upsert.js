@@ -4,15 +4,15 @@ import { connect } from 'react-redux';
 import * as R      from 'ramda';
 import moment      from 'moment';
 
-import { Form, Icon, message } from 'antd';
+import { Form, Icon } from 'antd';
 
 import { DynamicForm2, DynamicFormTypes } from '../../components/DynamicForm';
 import { modelsProxy }                    from '../../adapters/models';
 import { createLogger }                   from '../../adapters/logger';
 import { modelsActions }                  from '../../store/models.redux';
-import { schemaHelper, diff }             from '../../helpers';
+import { diff, schemaHelper }             from '../../helpers';
 
-const logger = createLogger('modules:content:upsert');
+const logger = createLogger('modules:content:upsert', 3);
 
 // --------------------------------------------------------------
 // Build Form
@@ -86,9 +86,16 @@ class ContentUpsert extends React.Component {
     const isInsertMode = this.detectUpsertMode(modelName);
 
     this.state = {
-      preDecorators: [
+      preDecorators: tag => [
+        schemaHelper.peek(() => this.setState({
+          loadings: { ...this.state.loadings, [tag]: true },
+        })),
         schemaHelper.enumDecorator,
         schemaHelper.associationDecorator,
+        schemaHelper.loadAssociationsDecorator,
+        schemaHelper.peek(() => this.setState({
+          loadings: { ...this.state.loadings, [tag]: false },
+        })),
       ],
       isInsertMode,
       modelName,
@@ -115,35 +122,26 @@ class ContentUpsert extends React.Component {
     // if (modelName === 'colleges') {
     //   formSchema = R.pick(['id', 'name', 'name_en', 'sequences'], formSchema);
     // }
-    logger.info('[componentWillMount]', 'formSchema is', formSchema);
 
-    const withAssociations = await this.asyncWrapAssociations(formSchema);
-
-    logger.info('[componentWillMount]', 'withAssociations is', withAssociations);
-
-    const formFields = R.omit(
-      ['created_at', 'updated_at'],
-      R.mergeDeepRight(formSchema, withAssociations),
-    );
-
+    const formFields = R.omit(['created_at', 'updated_at'])(formSchema);
     logger.info('[componentWillMount]', 'form fields is', formFields);
 
     // --------------------------------------------------------------
     // Using pre decorators instead
     // --------------------------------------------------------------
-    // const filteredFields = schemaHelper.doEnumDecorator(formFields);
 
     const { preDecorators } = this.state;
-    const decoratedFields   = R.pipe(...preDecorators)(
-      // !!important!!
-      // associations is loaded in async mode, so the models may already set in state
-      // it have to be merged with fields in state
+    const decoratedFields   = await R.pipeP(...preDecorators('INIT'))(
       R.mergeDeepRight(formFields, this.state.fields),
     );
 
     this.setState({
-      wrappedFormSchema: formFields,      // 用于在更新时重新构造完整（会又被过滤的部分）的数据结构
-      fields           : decoratedFields, // 最终渲染的对象
+      wrappedFormSchema: formFields, // 用于在更新时重新构造完整（会又被过滤的部分）的数据结构
+      // !!important!!
+      // associations is loaded in async mode, so the models may already set in state
+      // it have to be merged with fields in state
+      // 即数据加载和模型初始化异步处理，数据初始化速度有时会快于模型加载
+      fields           : R.mergeDeepRight(decoratedFields, this.state.fields), // 最终渲染的对象
     });
   }
 
@@ -194,83 +192,20 @@ class ContentUpsert extends React.Component {
     return true;
   };
 
-  asyncWrapAssociations = async (fields) => {
-    this.setState({ loading: true });
-
-    if (R.compose(R.isEmpty, R.isNil)(fields)) {
-      logger.info('[asyncWrapAssociations]', 'no associations found.');
-      return {};
-    }
-
-    const { auth } = this.props;
-
-    const relationShips = [DynamicFormTypes.Association, DynamicFormTypes.ManyToMany];
-
-    const associations = R.filter(field => R.contains(field.type)(relationShips))(fields);
-    logger.info('[asyncWrapAssociations]', 'associations is', associations);
-
-    const wrappedAssociations = await Promise.all(R.values(associations).map(async (field) => {
-      const foreignKeys = R.pathOr([], ['options', 'foreignKeys'])(field);
-      logger.info('[asyncWrapAssociations]', 'handle field', field, foreignKeys);
-      if (foreignKeys && foreignKeys.length > 0) {
-        const fieldsOfAssociations = modelsProxy.getFieldsOfAssociations();
-
-        const foreignOpts = R.map((foreignKey) => {
-          const regex = foreignKey.startsWith('t_')
-            ? /t_(\w+)\.(\w+)/  // t_model.id -> model
-            : /(\w+)\.(\w+)/;   // model.id   -> model
-
-          // update model_name to model-name
-          const [, modelName, property] = foreignKey.match(regex);
-
-          const association = fieldsOfAssociations[modelName];
-          return { modelName, property, association };
-        })(foreignKeys);
-        logger.info('[asyncWrapAssociations]', 'foreignOpts is', foreignOpts);
-
-        const associationNames = R.pluck('modelName')(foreignOpts);
-        logger.info('[asyncWrapAssociations]', 'associationNames is', associationNames);
-
-        const effects = modelsProxy.listAssociationsCallable(auth, associationNames);
-        logger.info('[asyncWrapAssociations]', 'list associations callable', effects);
-
-        let allResponse = {};
-        try {
-          allResponse = await Promise.all(R.values(effects));
-          logger.info('[asyncWrapAssociations]', 'allResponse is', allResponse);
-        } catch (e) {
-          logger.error('[asyncWrapAssociations]', e);
-          message.error(`Load associations error: ${e.message}`);
-        }
-
-        const foreignKeysResponse = R.zipObj(associationNames, R.map(R.prop('data'), allResponse));
-        logger.info('[asyncWrapAssociations]', 'foreignOpts is', foreignOpts, 'foreignKeysResponse is', foreignKeysResponse);
-
-        return { ...field, foreignOpts, associations: foreignKeysResponse };
-      }
-      logger.warn('[asyncWrapAssociations]', 'no foreignKeys with association', field);
-      return { ...field, type: DynamicFormTypes.Input };
-    }));
-
-    const pairedWrappedAssociations = R.zipObj(R.keys(associations), wrappedAssociations);
-    logger.info('[asyncWrapAssociations]', 'wrapped associations', pairedWrappedAssociations);
-    this.setState({ loading: false });
-    return pairedWrappedAssociations;
-  };
-
   /**
    * Saving changed field values in props
    * @param changedFields
    */
-  handleFormChange = (changedFields) => {
+  handleFormChange = async (changedFields) => {
     if (!R.isEmpty(changedFields)) {
-      logger.log('[handleFormChange]', { changedFields });
+      logger.log('[handleFormChange]', { changedFields, state: this.state });
       const { wrappedFormSchema, fields, preDecorators } = this.state;
 
       const currentChangedFields = R.map(R.pick(['value']))(changedFields);
       const changedFieldsBefore  = R.mergeDeepRight(wrappedFormSchema, fields);
       const allChangedFields     = R.mergeDeepRight(changedFieldsBefore, currentChangedFields);
-      const decoratedFields      = R.pipe(...preDecorators)(allChangedFields);
+      // 这里只装饰变化的 fields
+      const decoratedFields      = await R.pipeP(...preDecorators('LOAD'))(allChangedFields);
       logger.info('[handleFormChange]', {
         currentChangedFields, changedFieldsBefore, allChangedFields, decoratedFields,
       });
@@ -306,13 +241,13 @@ class ContentUpsert extends React.Component {
   };
 
   render() {
-    const { fields, loading } = this.state;
+    const { fields, loadings } = this.state;
     const { auth }            = this.props;
 
-    if (R.anyPass([R.isEmpty, R.isNil])(fields) || loading) {
+    if (R.anyPass([R.isEmpty, R.isNil])(fields) || R.any(R.equals(true), R.values(loadings))) {
       return (
         <div>
-          <Icon type="loading" style={{ marginLeft: 8, fontSize: 24 }} spin />
+          <Icon type="loading" style={{ fontSize: 24 }} spin />
           {/* language=CSS */}
           <style jsx>{`
             div {

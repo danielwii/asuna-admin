@@ -81,8 +81,8 @@ export class ModelsAdapter {
     logger.log('[ModelsAdapter]', '[constructor]', { configs, modelConfigs });
     R.forEachObjIndexed((config, name) => {
       logger.info('[ModelsAdapter][constructor]', 'check', name, config);
-      if (!config.table) logger.warn('[ModelsAdapter][constructor]', name, 'should set table');
-      if (!config.model) logger.warn('[ModelsAdapter][constructor]', name, 'should set model');
+      if (!config.table) logger.warn('[ModelsAdapter]', '[constructor]', name, 'should set table');
+      if (!config.model) logger.warn('[ModelsAdapter]', '[constructor]', name, 'should set model');
     })(modelConfigs);
   }
 

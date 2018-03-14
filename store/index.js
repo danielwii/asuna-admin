@@ -27,7 +27,8 @@ import { contentReducer, contentSagas }              from './content.redux';
 import { securityReducer, securitySagas }            from './security.redux';
 import { panesReducer, panesSagas, panesCleaner }    from './panes.redux';
 
-import { createLogger } from '../adapters/logger';
+import { createStoreConnectorMiddleware } from '../adapters/storeConnector';
+import { createLogger }                   from '../adapters/logger';
 
 // --------------------------------------------------------------
 // Init
@@ -44,10 +45,6 @@ const persistConfig = {
   timeout  : 30000,
   blacklist: ['app'],
 };
-
-const loggerMiddleware = createReduxLogger({
-  collapsed: true,
-});
 
 // TODO set in debug mode only
 localForage.setItem('debug', '*');
@@ -127,14 +124,18 @@ function* rootSaga() {
 // Setup store with redux-saga
 // --------------------------------------------------------------
 
-const sagaMiddleware = createSagaMiddleware();
+const sagaMiddleware           = createSagaMiddleware();
+const loggerMiddleware         = createReduxLogger({
+  collapsed: true,
+});
+const storeConnectorMiddleware = createStoreConnectorMiddleware();
 
 export const configureStore = (state = initialState) => {
   const store = createStore(
     rootReducers,
     state,
     composeWithDevTools(
-      applyMiddleware(sagaMiddleware, loggerMiddleware),
+      applyMiddleware(sagaMiddleware, loggerMiddleware, storeConnectorMiddleware),
       autoRehydrate(),
     ),
   );

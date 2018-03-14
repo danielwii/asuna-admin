@@ -19,6 +19,7 @@ export interface IAuthService {
 // Main
 // --------------------------------------------------------------
 
+// eslint-disable-next-line no-unused-vars
 const logger = createLogger('adapters:auth');
 
 export const authProxy: IAuthService = {
