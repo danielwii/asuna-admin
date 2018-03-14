@@ -8,9 +8,11 @@ import { createLogger }     from '../adapters/logger';
 const logger = createLogger('adapters:models');
 
 export const modelsProxy = {
-  getModelConfigs: name => global.context.models.getModelConfig(name),
+  getModelConfigs      : name => global.context.models.getModelConfig(name),
+  getAssociationConfigs: name => global.context.models.getAssociationConfigs(name),
+
   // eslint-disable-next-line function-paren-newline
-  getFormSchema  : (schemas, name, values) =>
+  getFormSchema: (schemas, name, values) =>
     global.context.models.getFormSchema(schemas, name, values),
 
   getFieldsOfAssociations: () => global.context.models.getFieldsOfAssociations(),
@@ -60,16 +62,23 @@ export const modelsProxy = {
 };
 
 export class ModelsAdapter {
-  constructor(service, modelConfigs = {}) {
+  constructor(service, configs = {}, associations = {}) {
     if (!service) {
       throw new Error('service must defined');
     }
 
+    const modelConfigs = R.mapObjIndexed((config, name) => ({
+      ...config,
+      table: R.path(['tableColumns', name])(configs),
+      model: R.path(['modelColumns', name])(configs),
+    }))(R.prop('models', configs));
+
     this.service      = service;
     this.allModels    = Object.keys(modelConfigs);
     this.modelConfigs = modelConfigs;
+    this.associations = associations;
 
-    logger.info('[ModelsAdapter][constructor]', 'init', modelConfigs);
+    logger.log('[ModelsAdapter]', '[constructor]', { configs, modelConfigs });
     R.forEachObjIndexed((config, name) => {
       logger.info('[ModelsAdapter][constructor]', 'check', name, config);
       if (!config.table) logger.warn('[ModelsAdapter][constructor]', name, 'should set table');
@@ -163,6 +172,8 @@ export class ModelsAdapter {
     });
   };
 
+  getAssociationConfigs = name => R.prop(name)(this.associations);
+
   getModelConfig = (name) => {
     if (name) {
       const config = R.prop(name)(this.modelConfigs);
@@ -248,7 +259,11 @@ export class ModelsAdapter {
       return null;
     }
 
-    const fields = R.pathOr(['id', 'name'], [associationName, 'fields'])(this.getFieldsOfAssociations());
+    const defaultFields = R.pathOr(['id', 'name'], [associationName, 'fields'])(this.associations);
+    const fields        = R.pathOr(defaultFields, [associationName, 'fields'])(this.getFieldsOfAssociations());
+    logger.info('[loadAssociation]', {
+      defaultFields, fields, associationName, associations: this.associations,
+    });
     return this.service.loadAssociation({ token }, associationName, {
       fields, ...this.getModelConfig(associationName),
     });

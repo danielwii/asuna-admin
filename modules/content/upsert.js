@@ -88,6 +88,7 @@ class ContentUpsert extends React.Component {
     this.state = {
       preDecorators: [
         schemaHelper.enumDecorator,
+        schemaHelper.associationDecorator,
       ],
       isInsertMode,
       modelName,

@@ -25,7 +25,7 @@ import { PyResponseAdapter } from '../adapters/response';
 import { createLogger }      from '../adapters/logger';
 import { ApiAdapter }        from '../adapters/api';
 
-import { modelConfigs, registeredModels } from '../services/definitions';
+import { modelConfigs, registeredModels, associations } from '../services/definitions';
 
 const logger = createLogger('pages:index');
 
@@ -36,7 +36,7 @@ const logger = createLogger('pages:index');
 global.context = _.assign(global.context, {
   auth    : new AuthAdapter(authService),
   response: new PyResponseAdapter(),
-  models  : new ModelsAdapter(modelsService, modelConfigs),
+  models  : new ModelsAdapter(modelsService, modelConfigs, associations),
   menu    : new MenuAdapter(menuService, registeredModels),
   api     : new ApiAdapter(apiService),
   security: new SecurityAdapter(securityService),

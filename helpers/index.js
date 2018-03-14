@@ -4,8 +4,9 @@ import moment   from 'moment/moment';
 import * as R   from 'ramda';
 import deepDiff from 'deep-diff';
 
-import { createLogger }     from '../adapters/logger';
 import { DynamicFormTypes } from '../components/DynamicForm';
+import { modelsProxy }      from '../adapters/models';
+import { createLogger }     from '../adapters/logger';
 
 const logger = createLogger('helpers');
 
@@ -65,12 +66,54 @@ export const defaultColumns = actions => [
   commonColumns.actions(actions),
 ];
 
+export const defaultNameColumns = actions => [
+  commonColumns.id,
+  commonColumns.name,
+  commonColumns.updatedAt,
+  commonColumns.actions(actions),
+];
+
+export const defaultTitleColumns = actions => [
+  commonColumns.id,
+  commonColumns.title,
+  commonColumns.updatedAt,
+  commonColumns.actions(actions),
+];
+
 export const diff = (first, second) => {
   const verbose = deepDiff(first, second);
   return { verbose, isDifferent: !!verbose };
 };
 
 export const schemaHelper = {
+  /**
+   * 自动通过公共 associations 填充未定义的关联
+   * @param fields
+   * @returns {*}
+   */
+  associationDecorator: (fields) => {
+    logger.info('[schemaHelper][associationDecorator]', { fields });
+
+    const associationFields = R.filter(R.compose(R.not, R.isNil, R.prop('associations')))(fields);
+    if (R.not(R.isEmpty(associationFields))) {
+      logger.info('[schemaHelper][associationDecorator]', { associationFields });
+      const wrapForeignOpt = R.map(opt => ({
+        ...opt, association: modelsProxy.getAssociationConfigs(opt.modelName),
+      }));
+      const withAssociations  = R.mapObjIndexed(field => ({
+        ...field, foreignOpts: wrapForeignOpt(field.foreignOpts),
+      }))(associationFields);
+      logger.info('[schemaHelper][associationDecorator]', { withAssociations });
+
+      const wrappedFields = R.mergeDeepRight(fields, withAssociations);
+      logger.info('[schemaHelper][associationDecorator]', { wrappedFields });
+
+      return wrappedFields;
+    }
+
+    return fields;
+  },
+
   /**
    * 通过 Enum 定义中的 enum_data 的 key 值拉取相应 schema 中的关联
    * 通过所有的被选关联字段的 schema name 和 key 比较
@@ -102,7 +145,7 @@ export const schemaHelper = {
 
       const filteredNames  = R.without(current)(enums);
       const filteredFields = R.omit(filteredNames)(fields);
-      const markedFields   = current
+      const wrappedFields  = current
         ? R.mergeDeepRight(filteredFields,
           {
             [current]: {
@@ -115,11 +158,11 @@ export const schemaHelper = {
       logger.info(
         '[schemaHelper][enumDecorator]',
         {
-          filteredNames, filteredFields, markedFields, positionsField,
+          filteredNames, filteredFields, wrappedFields, positionsField,
         },
       );
 
-      return markedFields;
+      return wrappedFields;
     }
 
     return fields;
