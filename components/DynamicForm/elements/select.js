@@ -28,6 +28,7 @@ export const generateSelect = (form, {
   class MixedSelect extends React.Component {
     static propTypes = {
       value: PropTypes.oneOfType([
+        PropTypes.number,
         PropTypes.string,
         PropTypes.arrayOf(PropTypes.any),
       ]),
@@ -36,7 +37,7 @@ export const generateSelect = (form, {
     constructor(props) {
       super(props);
 
-      logger.info('[MixedSelect]', 'init', this.props);
+      logger.info('[MixedSelect]', '[constructor]', this.props);
       this.state = {
         selectedItems: this.props.value || [],
       };
@@ -117,12 +118,15 @@ export const generateSelect = (form, {
     };
 
     render() {
+      logger.info('[MixedSelect]', '[render]', { state: this.state, props: this.props });
       return (
         <React.Fragment>
           <Select
             {...this.props}
+            value={this.props.value || []} // value 为 null 时会显示一个空白框
             key={fieldName}
             showSearch
+            allowClear
             style={{ width: 200 }}
             placeholder={placeholder}
             optionFilterProp="items"

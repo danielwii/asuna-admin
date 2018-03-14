@@ -86,8 +86,12 @@ export class ModelsAdapter {
     // identify advanced types
     // --------------------------------------------------------------
 
-    if (R.endsWith('_id')(field.name) || R.path(['config', 'info'])(field.name)) {
-      return DynamicFormTypes.Association;
+    const hasForeignKeys = R.not(R.isEmpty(R.path(['config', 'foreign_keys'])(field)));
+
+    if (hasForeignKeys) {
+      return R.not(R.path(['config', 'many'])(field))
+        ? DynamicFormTypes.Association
+        : DynamicFormTypes.ManyToMany;
     }
 
     const advancedType = R.path(['config', 'info', 'type'])(field);
@@ -100,9 +104,6 @@ export class ModelsAdapter {
     if (/^EnumFilter$/i.test(advancedType)) return DynamicFormTypes.EnumFilter;
     if (/^Enum$/i.test(advancedType)) return DynamicFormTypes.Enum;
 
-    if (R.path(['config', 'many'])(field) === true) {
-      return DynamicFormTypes.ManyToMany;
-    }
 
     // --------------------------------------------------------------
     // identify basic types
@@ -259,9 +260,11 @@ export class ModelsAdapter {
 
   // eslint-disable-next-line function-paren-newline
   listAssociationsCallable = ({ token }, associationNames) => Object.assign(
-    ...associationNames.map(name => ({ [name]: this.loadAssociation({ token }, name) })));
+    ...associationNames.map(name => ({ [name]: this.loadAssociation({ token }, name) })),
+  );
 
   // eslint-disable-next-line function-paren-newline
   listSchemasCallable = ({ token }) => Object.assign(
-    ...this.allModels.map(name => ({ [name]: this.loadSchema({ token }, name) })))
+    ...this.allModels.map(name => ({ [name]: this.loadSchema({ token }, name) })),
+  )
 }

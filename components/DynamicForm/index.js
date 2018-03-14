@@ -110,11 +110,11 @@ export class DynamicForm2 extends React.Component {
 
   // TODO try PureComponent instead
   shouldComponentUpdate(nextProps, nextState, nextContext) {
-    logger.info('[shouldComponentUpdate]', nextProps, nextState, nextContext);
+    logger.info('[DynamicForm2]', '[shouldComponentUpdate]', nextProps, nextState, nextContext);
     const { fields }      = nextProps;
     const nextFingerprint = sha1(fields);
     const shouldUpdate    = !R.equals(this.fingerprint, nextFingerprint);
-    logger.info('[shouldComponentUpdate]', nextFingerprint, this.fingerprint, shouldUpdate);
+    logger.info('[DynamicForm2]', '[shouldComponentUpdate]', nextFingerprint, this.fingerprint, shouldUpdate);
     this.fingerprint = nextFingerprint;
     return shouldUpdate;
   }
@@ -134,7 +134,7 @@ export class DynamicForm2 extends React.Component {
       fields: ['id', 'name'],
     };
 
-    logger.info('[DynamicForm2][buildField]', 'build field', field, 'field index is', index, 'option is', options);
+    logger.info('[DynamicForm2]', '[buildField]', { field, index, options });
 
     // all readonly or hidden field will rendered as plain component
     if (['readonly', 'hidden'].indexOf(_.get(field, 'options.accessible')) > -1) {
@@ -174,7 +174,7 @@ export class DynamicForm2 extends React.Component {
         // --------------------------------------------------------------
         // ManyToMany RelationShip
         // --------------------------------------------------------------
-        logger.info('[DynamicForm2][buildField][ManyToMany]', field);
+        logger.info('[DynamicForm2]', '[buildField][ManyToMany]', field);
         if (R.has('foreignOpts')(field)) {
           const { modelName, association = defaultAssociation } = R.path(['foreignOpts', 0])(field);
 
@@ -196,10 +196,10 @@ export class DynamicForm2 extends React.Component {
         // --------------------------------------------------------------
         // EnumFilter / RelationShip
         // --------------------------------------------------------------
-        logger.log('[DynamicForm2][buildField][EnumFilter]', field);
+        logger.log('[DynamicForm2]', '[buildField][EnumFilter]', field);
         const items = R.path(['options', 'enum_data'])(field);
         const type  = R.path(['options', 'filter_type'])(field);
-        logger.log('[DynamicForm2][buildField][EnumFilter]', { type, items });
+        logger.log('[DynamicForm2]', '[buildField][EnumFilter]', { type, items });
         return generateSelect(form, {
           ...options,
           items,
@@ -210,7 +210,7 @@ export class DynamicForm2 extends React.Component {
         // --------------------------------------------------------------
         // Enum / RelationShip
         // --------------------------------------------------------------
-        logger.info('[DynamicForm2][buildField][Enum]', field);
+        logger.info('[DynamicForm2]', '[buildField][Enum]', field);
         const items = R.path(['options', 'enum_data'])(field);
         return generateSelect(form, {
           ...options,
@@ -222,7 +222,7 @@ export class DynamicForm2 extends React.Component {
         // --------------------------------------------------------------
         // OneToMany / OneToOne RelationShip
         // --------------------------------------------------------------
-        logger.info('[DynamicForm2][buildField][Association]', field);
+        logger.info('[DynamicForm2]', '[buildField][Association]', field);
         if (R.has('foreignOpts')(field)) {
           const { modelName, association = defaultAssociation } = R.path(['foreignOpts', 0])(field);
 
@@ -234,7 +234,7 @@ export class DynamicForm2 extends React.Component {
             getValue: R.prop(association.value || defaultAssociation.value),
           });
         }
-        logger.warn('[buildField]', 'foreignOpts is required in association.');
+        logger.warn('[DynamicForm2]', '[buildField]', 'foreignOpts is required in association.');
         return <div>association need foreignOpts.</div>;
       }
       default:
@@ -248,7 +248,7 @@ export class DynamicForm2 extends React.Component {
   };
 
   buildFieldGroup = (fieldGroup, index) => {
-    logger.info('[DynamicForm2][buildFieldGroup]', fieldGroup, 'group index is', index);
+    logger.info('[DynamicForm2]', '[buildFieldGroup]', { fieldGroup, index });
     return (
       <div>
         <Card key={index}>
@@ -266,13 +266,13 @@ export class DynamicForm2 extends React.Component {
   };
 
   handleOnSubmit = (e) => {
-    logger.info('[handleOnSubmit]', 'onSubmit', e);
+    logger.info('[DynamicForm2]', '[handleOnSubmit]', 'onSubmit', e);
     e.preventDefault();
 
     const { form, onSubmit } = this.props;
     form.validateFields((err, values) => {
       if (err) {
-        logger.error('[handleOnSubmit]', 'error occurred in form', values, err);
+        logger.error('[DynamicForm2]', '[handleOnSubmit]', 'error occurred in form', values, err);
       } else {
         onSubmit(e);
       }
@@ -281,7 +281,7 @@ export class DynamicForm2 extends React.Component {
 
   render() {
     const { fields, delegate } = this.props;
-    logger.log('[DynamicForm2][render]', { props: this.props, fields });
+    logger.log('[DynamicForm2]', '[render]', { props: this.props, fields });
 
     /*
         const fieldGroups = R.compose(
@@ -345,11 +345,11 @@ class EnhancedPureElement extends React.Component {
   };
 
   shouldComponentUpdate(nextProps, nextState) {
-    const propsDiff = diff(this.props, nextProps);
-    const stateDiff = diff(this.state, nextState);
+    const propsDiff    = diff(this.props, nextProps);
+    const stateDiff    = diff(this.state, nextState);
     const shouldUpdate = propsDiff.isDifferent || stateDiff.isDifferent;
     if (shouldUpdate) {
-      logger.log('[EnhancedPureElement][shouldComponentUpdate]', {
+      logger.info('[EnhancedPureElement]', '[shouldComponentUpdate]', {
         props: this.props,
         state: this.state,
         nextProps,
@@ -363,7 +363,7 @@ class EnhancedPureElement extends React.Component {
 
   render() {
     const { field, index, builder } = this.props;
-    logger.info('[EnhancedPureElement][render]', { props: this.props, state: this.state });
+    logger.info('[EnhancedPureElement]', '[render]', { props: this.props, state: this.state });
     return <div key={index}>{builder(field, index)}</div>;
   }
 }
