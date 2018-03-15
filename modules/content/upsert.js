@@ -166,12 +166,19 @@ class ContentUpsert extends React.Component {
     }
   }
 
+  /**
+   * 当且仅当在 state.fields 发生变化时重新渲染页面
+   * @param nextProps
+   * @param nextState
+   * @param nextContext
+   * @returns {boolean|*}
+   */
   shouldComponentUpdate(nextProps, nextState, nextContext) {
     const { key }       = this.state;
     const { activeKey } = nextProps;
-    // const propsDiff     = false;
-    const propsDiff     = diff(this.props, nextProps);
-    const stateDiff     = diff(this.state, nextState);
+    const propsDiff     = false;
+    // const propsDiff     = diff(this.props, nextProps);
+    const stateDiff     = diff(this.state, nextState, { include: ['fields'] });
     const samePane      = key === activeKey;
     const shouldUpdate  = samePane && (propsDiff.isDifferent || stateDiff.isDifferent);
     logger.log('[shouldComponentUpdate]',
@@ -242,8 +249,9 @@ class ContentUpsert extends React.Component {
 
   render() {
     const { fields, loadings } = this.state;
-    const { auth }            = this.props;
+    const { auth }             = this.props;
 
+    // loading 尽在初次加载时渲染，否则编辑器会 lose focus
     if (R.anyPass([R.isEmpty, R.isNil])(fields) || R.any(R.equals(true), R.values(loadings))) {
       return (
         <div>

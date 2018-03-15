@@ -80,8 +80,15 @@ export const defaultTitleColumns = actions => [
   commonColumns.actions(actions),
 ];
 
-export const diff = (first, second) => {
-  const verbose = deepDiff(first, second);
+export const diff = (first, second, { include, exclude } = {}) => {
+  let verbose;
+  if (R.not(R.anyPass([R.isEmpty, R.isNil])(include))) {
+    verbose = deepDiff(R.pickAll(include)(first), R.pickAll(include)(second));
+  } else if (R.not(R.anyPass([R.isEmpty, R.isNil])(exclude))) {
+    verbose = deepDiff(R.omit(include)(first), R.omit(include)(second));
+  } else {
+    verbose = deepDiff(first, second);
+  }
   return { verbose, isDifferent: !!verbose };
 };
 
