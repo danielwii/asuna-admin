@@ -29,6 +29,7 @@ const proxy        = createProxyServer({});
 const configurator = createConfigLoader();
 
 const pathNeedsProxy = pathname =>
+  pathname.startsWith('/api/') ||
   pathname.startsWith('/rest/') ||
   pathname.startsWith('/admin/') ||
   pathname.startsWith('/images/') ||

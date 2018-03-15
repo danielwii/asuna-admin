@@ -1,17 +1,27 @@
-import { put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
+import { put, select, call, take, takeEvery, takeLatest } from 'redux-saga/effects';
 
 import { reduxAction } from 'node-buffs';
 import { REHYDRATE }   from 'redux-persist/constants';
 import _               from 'lodash';
+import * as R          from 'ramda';
+
+import { Observable } from 'rxjs/Observable';
+
+import 'rxjs/scheduler/async';
+import 'rxjs/add/observable/interval';
+import 'rxjs/add/operator/delay';
+import 'rxjs/add/operator/switchMap';
+import 'rxjs/add/operator/mapTo';
 
 import { securitySagaFunctions } from './security.redux';
 import { menuSagaFunctions }     from './menu.redux';
 import { modelsSagaFunctions }   from './models.redux';
+import { routerActions }         from './router.redux';
+import { authActions }           from './auth.redux';
 
-import { routerActions } from './router.redux';
-import { authActions }   from './auth.redux';
-import { createLogger }  from '../adapters/logger';
-import { actions }       from '.';
+import { actions }      from '.';
+import { apiProxy }     from '../adapters/api';
+import { createLogger } from '../adapters/logger';
 
 const logger = createLogger('store:app');
 
@@ -26,6 +36,8 @@ const appActionTypes = {
   INIT_SUCCESS: 'app::init-success',
   SYNC_SUCCESS: 'app::sync-success',
   RESTORED    : 'app::RESTORED',
+  PING        : 'app::ping',
+  PONG        : 'app::pong',
 };
 
 const isCurrent = type => type.startsWith('app::');
@@ -41,6 +53,8 @@ const appActions = {
   syncSuccess: () => reduxAction(appActionTypes.SYNC_SUCCESS, { loading: false }),
   initSuccess: () => reduxAction(appActionTypes.INIT_SUCCESS, { loading: false }),
   restored   : () => reduxAction(appActionTypes.RESTORED, { restored: true }),
+  ping       : () => reduxAction(appActionTypes.PING),
+  pong       : version => reduxAction(appActionTypes.PONG, { version }),
 };
 
 // --------------------------------------------------------------
@@ -111,12 +125,45 @@ function* rehydrateWatcher(action) {
   }
 }
 
+/**
+ * 查询运行中的服务端版本，版本不一致时更新当前的版本，同时进行同步操作
+ */
+function* ping() {
+  try {
+    const { token }   = yield select(state => state.auth);
+    const response    = yield call(apiProxy.getVersion, { token });
+    const { version } = yield select(R.prop('app'));
+    logger.info('[ping]', { response, version });
+
+    if (!!version && R.not(R.equals(version, response.data))) {
+      yield put(appActions.sync());
+    }
+
+    yield put(appActions.pong(response.data));
+  } catch (e) {
+    logger.error('[ping]', e);
+  }
+}
+
 const appSagas = [
   // takeLatest / takeEvery (actionType, actionSage)
   takeLatest(appActionTypes.INIT, init),
   takeLatest(appActionTypes.SYNC, sync),
+  takeLatest(appActionTypes.PING, ping),
   takeEvery(REHYDRATE, rehydrateWatcher),
 ];
+
+// --------------------------------------------------------------
+// Epics by redux-observable
+// --------------------------------------------------------------
+
+const appEpics = [
+  // action$ => action$.ofType(ACTION)
+  action$ => action$.ofType(appActionTypes.INIT_SUCCESS)
+    .delay(3000)
+    .switchMap(() => Observable.interval(60 * 1000).mapTo(appActions.ping())),
+];
+
 
 // --------------------------------------------------------------
 // Module reducers
@@ -143,5 +190,6 @@ export {
   appActionTypes,
   appActions,
   appSagas,
+  appEpics,
   appReducer,
 };

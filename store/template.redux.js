@@ -19,7 +19,7 @@ const actions = {
 };
 
 // --------------------------------------------------------------
-// Module sagas
+// Sagas by redux-saga
 // function* actionSage(args) {
 //   yield call; yield put({ type: actionType, payload: {} })
 // }
@@ -27,6 +27,14 @@ const actions = {
 
 const sagas = [
   // takeLatest / takeEvery (actionType, actionSage)
+];
+
+// --------------------------------------------------------------
+// Epics by redux-observable
+// --------------------------------------------------------------
+
+const epics = [
+  // action$ => action$.ofType(ACTION)
 ];
 
 // --------------------------------------------------------------
@@ -51,5 +59,6 @@ export {
   actionTypes as moduleActionTypes,
   actions as moduleActions,
   sagas as moduleSagas,
+  epics as moduleEpics,
   reducer as moduleReducer,
 };

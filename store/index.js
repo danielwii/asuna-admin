@@ -2,9 +2,11 @@
 import withRedux       from 'next-redux-wrapper';
 import nextReduxSaga   from 'next-redux-saga';
 import * as R          from 'ramda';
-import { reduxAction } from 'node-buffs/dist/index';
+import { reduxAction } from 'node-buffs';
 
 import { applyMiddleware, combineReducers, createStore } from 'redux';
+
+import { combineEpics, createEpicMiddleware } from 'redux-observable';
 
 import createSagaMiddleware from 'redux-saga';
 import { all }              from 'redux-saga/effects';
@@ -18,14 +20,14 @@ import localForage from 'localforage';
 
 import { notificationsReducer, notificationsSagas } from './notifications.redux';
 
-import { appReducer, appSagas }                      from './app.redux';
+import { appReducer, appSagas, appEpics }            from './app.redux';
 import { authReducer, authSagas }                    from './auth.redux';
 import { routerReducer, routerSagas }                from './router.redux';
 import { menuReducer, menuSagas }                    from './menu.redux';
-import { modelsReducer, modelsSagas, modelsCleaner } from './models.redux';
+import { modelsCleaner, modelsReducer, modelsSagas } from './models.redux';
 import { contentReducer, contentSagas }              from './content.redux';
 import { securityReducer, securitySagas }            from './security.redux';
-import { panesReducer, panesSagas, panesCleaner }    from './panes.redux';
+import { panesCleaner, panesReducer, panesSagas }    from './panes.redux';
 
 import { createStoreConnectorMiddleware } from '../adapters/storeConnector';
 import { createLogger }                   from '../adapters/logger';
@@ -121,21 +123,28 @@ function* rootSaga() {
 }
 
 // --------------------------------------------------------------
+// Root epics
+// --------------------------------------------------------------
+
+export const rootEpics = combineEpics(
+  ...appEpics,
+);
+
+// --------------------------------------------------------------
 // Setup store with redux-saga
 // --------------------------------------------------------------
 
-const sagaMiddleware           = createSagaMiddleware();
-const loggerMiddleware         = createReduxLogger({
-  collapsed: true,
-});
 const storeConnectorMiddleware = createStoreConnectorMiddleware();
+const epicMiddleware           = createEpicMiddleware(rootEpics);
+const sagaMiddleware           = createSagaMiddleware();
+const loggerMiddleware         = createReduxLogger({ collapsed: true });
 
 export const configureStore = (state = initialState) => {
   const store = createStore(
     rootReducers,
     state,
     composeWithDevTools(
-      applyMiddleware(sagaMiddleware, loggerMiddleware, storeConnectorMiddleware),
+      applyMiddleware(sagaMiddleware, epicMiddleware, loggerMiddleware, storeConnectorMiddleware),
       autoRehydrate(),
     ),
   );
