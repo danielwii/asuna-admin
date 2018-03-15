@@ -13,8 +13,6 @@ const logger = createLogger('helpers', 3);
 // TODO make helpers configurable
 export const authHeader = token => ({ headers: { Authorization: token } });
 
-export const actionHelper = {};
-
 export const columnHelper = {
   generate        : (key, title, render?) => ({
     key,
@@ -112,51 +110,61 @@ export const schemaHelper = {
 
     if (R.not(R.isEmpty(associations))) {
       logger.info('[schemaHelper][loadAssociationsDecorator]', 'associations is', associations);
+
+      // 当已经拉取过数据后不再进行拉取
+      const filteredAssociations =
+              R.pickBy(field => R.not(R.has('associations', field)))(associations);
+      if (R.isEmpty(filteredAssociations)) {
+        return fields;
+      }
+
       const auth = storeConnectorProxy.getState('auth');
 
-      const wrappedAssociations = await Promise.all(R.values(associations).map(async (field) => {
-        const foreignKeys = R.pathOr([], ['options', 'foreignKeys'])(field);
-        logger.info('[schemaHelper][loadAssociationsDecorator]', 'handle field', field, foreignKeys);
-        if (foreignKeys && foreignKeys.length > 0) {
-          const fieldsOfAssociations = modelsProxy.getFieldsOfAssociations();
+      const wrappedAssociations = await Promise.all(
+        R.values(filteredAssociations).map(async (field) => {
+          const foreignKeys = R.pathOr([], ['options', 'foreignKeys'])(field);
+          logger.info('[schemaHelper][loadAssociationsDecorator]', 'handle field', field, foreignKeys);
+          if (foreignKeys && foreignKeys.length > 0) {
+            const fieldsOfAssociations = modelsProxy.getFieldsOfAssociations();
 
-          const foreignOpts = R.map((foreignKey) => {
-            const regex = foreignKey.startsWith('t_')
-              ? /t_(\w+)\.(\w+)/  // t_model.id -> model
-              : /(\w+)\.(\w+)/;   // model.id   -> model
+            const foreignOpts = R.map((foreignKey) => {
+              const regex = foreignKey.startsWith('t_')
+                ? /t_(\w+)\.(\w+)/  // t_model.id -> model
+                : /(\w+)\.(\w+)/;   // model.id   -> model
 
-            // update model_name to model-name
-            const [, modelName, property] = foreignKey.match(regex);
+              // update model_name to model-name
+              const [, modelName, property] = foreignKey.match(regex);
 
-            const association = fieldsOfAssociations[modelName];
-            return { modelName, property, association };
-          })(foreignKeys);
-          logger.info('[schemaHelper][loadAssociationsDecorator]', 'foreignOpts is', foreignOpts);
+              const association = fieldsOfAssociations[modelName];
+              return { modelName, property, association };
+            })(foreignKeys);
+            logger.info('[schemaHelper][loadAssociationsDecorator]', 'foreignOpts is', foreignOpts);
 
-          const associationNames = R.pluck('modelName')(foreignOpts);
-          logger.info('[schemaHelper][loadAssociationsDecorator]', 'associationNames is', associationNames);
+            const associationNames = R.pluck('modelName')(foreignOpts);
+            logger.info('[schemaHelper][loadAssociationsDecorator]', 'associationNames is', associationNames);
 
-          const effects = modelsProxy.listAssociationsCallable(auth, associationNames);
-          logger.info('[schemaHelper][loadAssociationsDecorator]', 'list associations callable', effects);
+            const effects = modelsProxy.listAssociationsCallable(auth, associationNames);
+            logger.info('[schemaHelper][loadAssociationsDecorator]', 'list associations callable', effects);
 
-          let allResponse = {};
-          try {
-            allResponse = await Promise.all(R.values(effects));
-            logger.info('[schemaHelper][loadAssociationsDecorator]', 'allResponse is', allResponse);
-          } catch (e) {
-            logger.error('[schemaHelper][loadAssociationsDecorator]', e);
+            let allResponse = {};
+            try {
+              allResponse = await Promise.all(R.values(effects));
+              logger.info('[schemaHelper][loadAssociationsDecorator]', 'allResponse is', allResponse);
+            } catch (e) {
+              logger.error('[schemaHelper][loadAssociationsDecorator]', e);
+            }
+
+            const foreignKeysResponse = R.zipObj(associationNames, R.map(R.prop('data'), allResponse));
+            logger.info('[schemaHelper][loadAssociationsDecorator]', 'foreignOpts is', foreignOpts, 'foreignKeysResponse is', foreignKeysResponse);
+
+            return { ...field, foreignOpts, associations: foreignKeysResponse };
           }
+          logger.warn('[schemaHelper][loadAssociationsDecorator]', 'no foreignKeys with association', field);
+          return { ...field, type: DynamicFormTypes.Input };
+        }),
+      );
 
-          const foreignKeysResponse = R.zipObj(associationNames, R.map(R.prop('data'), allResponse));
-          logger.info('[schemaHelper][loadAssociationsDecorator]', 'foreignOpts is', foreignOpts, 'foreignKeysResponse is', foreignKeysResponse);
-
-          return { ...field, foreignOpts, associations: foreignKeysResponse };
-        }
-        logger.warn('[schemaHelper][loadAssociationsDecorator]', 'no foreignKeys with association', field);
-        return { ...field, type: DynamicFormTypes.Input };
-      }));
-
-      const pairedWrappedAssociations = R.zipObj(R.keys(associations), wrappedAssociations);
+      const pairedWrappedAssociations = R.zipObj(R.keys(filteredAssociations), wrappedAssociations);
       logger.info('[schemaHelper][loadAssociationsDecorator]', 'wrapped associations', pairedWrappedAssociations);
 
       return R.mergeDeepRight(fields, pairedWrappedAssociations);
