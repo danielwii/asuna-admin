@@ -1,17 +1,6 @@
 import { ModelsAdapter }    from './models';
 import { DynamicFormTypes } from '../components/DynamicForm';
 
-// test('adds 1 + 2 to equal 3', () => {
-//   let result    = {};
-//   const service = {
-//     update: (...args) => { result = args; },
-//   };
-//   const adapter = new ModelsAdapter(service);
-//
-//   adapter.upsert({}, 'test-name', { body: { id: 1, related: 1 } });
-//   expect(result).toBe(3);
-// });
-
 test('identify types', () => {
   const adapter = new ModelsAdapter({});
 
@@ -37,9 +26,7 @@ test('identify types', () => {
 
   expect(adapter.identifyType({
     config: {
-      foreign_keys: [
-        't_models.id',
-      ],
+      foreign_keys: ['t_models.id'],
       info        : {},
       many        : true,
       selectable  : 't_models',

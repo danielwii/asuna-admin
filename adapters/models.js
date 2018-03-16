@@ -95,7 +95,11 @@ export class ModelsAdapter {
     // identify advanced types
     // --------------------------------------------------------------
 
-    const hasForeignKeys = R.not(R.isEmpty(R.path(['config', 'foreign_keys'])(field)));
+    const hasForeignKeys = R.compose(
+      R.not,
+      R.anyPass([R.isEmpty, R.isNil]),
+      R.path(['config', 'foreign_keys']),
+    )(field);
 
     if (hasForeignKeys) {
       return R.not(R.path(['config', 'many'])(field))

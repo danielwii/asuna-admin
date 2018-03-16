@@ -1,7 +1,7 @@
 import { schemaHelper } from '.';
 
-test('schemaHelper.enumDecorator', () => {
-  const decorated = schemaHelper.enumDecorator({
+test('schemaHelper.enumDecorator', async () => {
+  const decorated = await schemaHelper.enumDecorator({
     refInclude   : { name: 'refInclude' },
     refNotInclude: { name: 'refNotInclude' },
     type         :
@@ -40,16 +40,16 @@ test('schemaHelper.enumDecorator', () => {
   });
 });
 
-test('schemaHelper.enumDecorator no type found', () => {
-  const decorated = schemaHelper.enumDecorator({
+test('schemaHelper.enumDecorator no type found', async () => {
+  const decorated = await schemaHelper.enumDecorator({
     type: { value: 'refInclude' },
   });
 
   expect(decorated).toEqual({ type: { value: 'refInclude' } });
 });
 
-test('schemaHelper.enumDecorator with SortPosition', () => {
-  const decorated = schemaHelper.enumDecorator({
+test('schemaHelper.enumDecorator with SortPosition', async () => {
+  const decorated = await schemaHelper.enumDecorator({
     refInclude: { value: [1, 2, 3], type: 'ManyToMany' },
     type      : {
       type   : 'EnumFilter',
