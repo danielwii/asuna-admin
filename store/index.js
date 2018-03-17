@@ -13,7 +13,6 @@ import { all }              from 'redux-saga/effects';
 
 import { composeWithDevTools }               from 'redux-devtools-extension';
 import { createLogger as createReduxLogger } from 'redux-logger';
-import { reducer as formReducer }            from 'redux-form';
 import { autoRehydrate, persistStore }       from 'redux-persist';
 
 import localForage from 'localforage';
@@ -78,7 +77,7 @@ const combinedReducers = combineReducers({
   // mod_models   : modModelsReducer,
   security     : securityReducer,
   app          : appReducer,
-  form         : formReducer,
+  // form         : formReducer,
   global       : (previousState = initialState, action) => (
     { ...previousState, ...action }
   ),

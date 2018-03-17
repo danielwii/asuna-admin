@@ -25,7 +25,7 @@
       "ignore": [
         "dispatch", //
         "children", //
-        "form"      // supported by redux-form
+        "form"      // supported by Form.create()
       ]
     }]
   }

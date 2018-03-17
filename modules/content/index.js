@@ -36,8 +36,10 @@ class ContentIndex extends React.Component {
       <span>
         {extras && extras(auth)}
         <Button size="small" type="dashed" onClick={() => this.edit(text, record)}>Edit</Button>
-        <Divider type="vertical" />
-        <Button size="small" type="danger" onClick={() => this.remove(text, record)}>Delete</Button>
+        {R.not(R.prop('is_system', record)) && <React.Fragment>
+          <Divider type="vertical" />
+          <Button size="small" type="danger" onClick={() => this.remove(text, record)}>Delete</Button>
+        </React.Fragment>}
       </span>
     );
 
