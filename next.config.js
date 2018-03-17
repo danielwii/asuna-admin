@@ -5,7 +5,7 @@ const jarvis               = new Jarvis({ port: 1337 });
 const bundleAnalyzerPlugin = new BundleAnalyzerPlugin({ openAnalyzer: false });
 
 module.exports = {
-  webpack: (config, { buildId, dev, isServer, defaultLoaders }) => {
+  webpack: (config, { dev }) => {
     if (!dev) {
       config.devtool = 'source-map';
     }

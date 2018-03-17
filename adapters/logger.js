@@ -3,7 +3,15 @@ import debug from 'debug';
 
 export const logger = console;
 
-export const createLogger = (module, level = 2) => {
+export const lv = ({
+  trace: 0,
+  info : 1,
+  log  : 2,
+  warn : 3,
+  error: 4,
+});
+
+export const createLogger = (module, level = lv.warn) => {
   const error = debug(`${module}:error`);
   error.log   = console.error.bind(console);
   const warn  = debug(`${module}:warn`);

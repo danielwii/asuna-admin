@@ -1,16 +1,25 @@
 /* eslint-disable indent,function-paren-newline */
 import React from 'react';
 
-import { Checkbox, DatePicker, Form, Icon, Input, InputNumber, Switch, TimePicker } from 'antd';
+import {
+  Checkbox,
+  DatePicker,
+  Form,
+  Icon,
+  Input,
+  InputNumber,
+  Switch,
+  TimePicker,
+} from 'antd';
 
 import { BraftRichEditor } from '../../../components/RichEditor';
 
 import { ImagesUploader, ImageUploader } from '../images';
 import { VideoUploader }                 from '../videos';
 import { Authorities }                   from '../authorities';
-import { createLogger }                  from '../../../adapters/logger';
+import { createLogger, lv }              from '../../../adapters/logger';
 
-const logger = createLogger('components:dynamic-form:elements');
+const logger = createLogger('components:dynamic-form:elements', lv.warn);
 
 const defaultFormItemLayout = {};
 
@@ -48,17 +57,13 @@ export const generatePlain = ({ key, label, text }, formItemLayout = horizontalF
   return <Form.Item key={key || label} {...formItemLayout} label={label}>{text}</Form.Item>;
 };
 
-export const generateComponent = (
-  form,
-  { fieldName, labelName = fieldName, opts = {} },
-  component,
-  formItemLayout = {},
-) => {
+export const generateComponent = (form, options, component, formItemLayout = {}) => {
+  const { fieldName, labelName = fieldName, opts = {}, help } = options;
   if (fieldName) {
-    logger.info('[generateComponent]', fieldName, labelName, opts);
+    logger.info('[generateComponent]', options);
     const decorator = form.getFieldDecorator(fieldName, opts);
     return (
-      <Form.Item key={fieldName} {...formItemLayout} label={labelName}>
+      <Form.Item key={fieldName} {...formItemLayout} label={labelName} help={help}>
         {decorator(component)}
       </Form.Item>
     );
@@ -80,28 +85,27 @@ export const generateHidden = (form, { key, name }) => {
   return null;
 };
 
-export const generateCheckbox = (form, {
-  key, name, label,
-}, formItemLayout) => {
+export const generateCheckbox = (form, options, formItemLayout) => {
+  const { key, name, label } = options;
+
   const fieldName = key || name;
   const labelName = label || name || key;
   return generateComponent(
     form,
-    { fieldName, labelName },
+    { fieldName, labelName, ...options },
     <Checkbox />,
     formItemLayout,
   );
 };
 
-export const generateInputNumber = (form, {
-  key, name, label,
-}, formItemLayout = defaultFormItemLayout) => {
-  logger.info('[generateInputNumber]', key, name);
+export const generateInputNumber = (form, options, formItemLayout = defaultFormItemLayout) => {
+  const { key, name, label } = options;
+  logger.info('[generateInputNumber]', options);
   const fieldName = key || name;
   const labelName = label || name || key;
   return generateComponent(
     form,
-    { fieldName, labelName },
+    { fieldName, labelName, ...options },
     <InputNumber />,
     formItemLayout,
   );
@@ -112,6 +116,7 @@ export const generateInput = (form, {
   required = false, requiredMessage,
   placeholder = '',
   iconType,
+  help,
 }, formItemLayout) => {
   const fieldName = key || name;
   const labelName = label || name || key;
@@ -128,17 +133,19 @@ export const generateInput = (form, {
 
   return generateComponent(
     form,
-    { fieldName, labelName, opts: { rules: [{ required, message: requiredMessage }] } },
+    { fieldName, labelName, opts: { rules: [{ required, message: requiredMessage }] }, help },
     component,
     formItemLayout,
   );
 };
 
-export const generateTextArea = (form, { key, name, label }, formItemLayout) => {
+export const generateTextArea = (form, options, formItemLayout) => {
+  const { key, name, label } = options;
+
   const fieldName = key || name;
   const labelName = label || name || key;
   return generateComponent(
-    form, { fieldName, labelName }, (
+    form, { fieldName, labelName, ...options }, (
       <Input.TextArea />
     ), formItemLayout,
   );
@@ -146,108 +153,103 @@ export const generateTextArea = (form, { key, name, label }, formItemLayout) => 
 
 /**
  * @param form
- * @param key
- * @param name
- * @param label
- * @param mode - '' || date || time
+ * @param options
  * @param formItemLayout
  * @returns {null}
  */
-export const generateDateTime = (form, {
-  key, name, label,
-  mode = '',
-}, formItemLayout = defaultFormItemLayout) => {
-  logger.info('[generateDateTime]', key, name);
+export const generateDateTime = (form, options, formItemLayout = defaultFormItemLayout) => {
+  const { key, name, label, mode = '' } = options;
+  logger.info('[generateDateTime]', options);
   const fieldName = key || name;
   const labelName = label || name || key;
 
   if (mode === 'time') {
     return generateComponent(
-      form, { fieldName, labelName }, (
+      form, { fieldName, labelName, ...options }, (
         <TimePicker />
       ), formItemLayout,
     );
   } else if (mode === 'date') {
     return generateComponent(
-      form, { fieldName, labelName }, (
+      form, { fieldName, labelName, ...options }, (
         <DatePicker />
       ), formItemLayout,
     );
   }
   return generateComponent(
-    form, { fieldName, labelName }, (
+    form, { fieldName, labelName, ...options }, (
       <DatePicker showTime format="YYYY-MM-DD HH:mm:ss" />
     ), formItemLayout,
   );
 };
 
-export const generateSwitch = (form, {
-  key, name, label,
-}, formItemLayout = defaultFormItemLayout) => {
+export const generateSwitch = (form, options, formItemLayout = defaultFormItemLayout) => {
+  const { key, name, label } = options;
+
   const fieldName = key || name;
   const labelName = label || name || key;
   return generateComponent(
-    form, { fieldName, labelName, opts: { valuePropName: 'checked' } }, (
+    form, { fieldName, labelName, opts: { valuePropName: 'checked' }, ...options }, (
       <Switch />
     ), formItemLayout,
   );
 };
 
-export const generateImages = (form, {
-  key, name, label, auth,
-}, formItemLayout = defaultFormItemLayout) => {
+export const generateImages = (form, options, formItemLayout = defaultFormItemLayout) => {
+  const { key, name, label, auth } = options;
+
   const fieldName = key || name;
   const labelName = label || name || key;
   return generateComponent(
-    form, { fieldName, labelName }, (
+    form, { fieldName, labelName, ...options }, (
       <ImagesUploader auth={auth} />
     ), formItemLayout,
   );
 };
 
-export const generateImage = (form, {
-  key, name, label, auth,
-}, formItemLayout = defaultFormItemLayout) => {
+export const generateImage = (form, options, formItemLayout = defaultFormItemLayout) => {
+  const { key, name, label, auth } = options;
+
   const fieldName = key || name;
   const labelName = label || name || key;
   return generateComponent(
-    form, { fieldName, labelName }, (
+    form, { fieldName, labelName, ...options }, (
       <ImageUploader auth={auth} />
     ), formItemLayout,
   );
 };
 
-export const generateVideo = (form, {
-  key, name, label, auth,
-}, formItemLayout = defaultFormItemLayout) => {
+export const generateVideo = (form, options, formItemLayout = defaultFormItemLayout) => {
+  const { key, name, label, auth } = options;
+
   const fieldName = key || name;
   const labelName = label || name || key;
   return generateComponent(
-    form, { fieldName, labelName }, (
+    form, { fieldName, labelName, ...options }, (
       <VideoUploader auth={auth} />
     ), formItemLayout,
   );
 };
 
-export const generateAuthorities = (form, {
-  key, name, label,
-}, formItemLayout = defaultFormItemLayout) => {
+export const generateAuthorities = (form, options, formItemLayout = defaultFormItemLayout) => {
+  const { key, name, label } = options;
+
   const fieldName = key || name;
   const labelName = label || name || key;
   return generateComponent(
-    form, { fieldName, labelName }, (
+    form, { fieldName, labelName, ...options }, (
       <Authorities />
     ), formItemLayout,
   );
 };
 
-export const generateRichTextEditor = (form, {
-  key, name, label, auth,
-}, formItemLayout = defaultFormItemLayout) => {
+export const generateRichTextEditor = (form, options, formItemLayout = defaultFormItemLayout) => {
+  const { key, name, label, auth } = options;
+
   const fieldName = key || name;
   const labelName = label || name || key;
   return generateComponent(
-    form, { fieldName, labelName }, (
+    form, { fieldName, labelName, ...options }, (
       <BraftRichEditor auth={auth} />
     ), formItemLayout,
   );

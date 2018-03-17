@@ -119,6 +119,10 @@ class ContentUpsert extends React.Component {
 
     const formSchema = modelsProxy.getFormSchema(schemas, modelName);
 
+    // if (modelName === 'colleges') {
+    //   formSchema = R.pick(['id', 'name', 'name_en', 'sequences'], formSchema);
+    // }
+
     const formFields = R.omit(['created_at', 'updated_at'])(formSchema);
     logger.info('[componentWillMount]', 'form fields is', formFields);
 

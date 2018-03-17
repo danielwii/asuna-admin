@@ -22,11 +22,11 @@ import {
   generateVideo,
 } from './elements';
 
-import { generateSelect } from './elements/select';
-import { createLogger }   from '../../adapters/logger';
-import { diff }           from '../../helpers';
+import { generateSelect }   from './elements/select';
+import { createLogger, lv } from '../../adapters/logger';
+import { diff }             from '../../helpers';
 
-const logger = createLogger('components:dynamic-form', 3);
+const logger = createLogger('components:dynamic-form', lv.warn);
 
 // FIXME remove it
 export const buildForm = (form, definitions) => definitions.map((definition) => {
@@ -99,7 +99,7 @@ export const DynamicFormTypes = {
  *   },
  * }
  */
-// eslint-disable-next-line react/no-multi-comp
+  // eslint-disable-next-line react/no-multi-comp
 export class DynamicForm2 extends React.Component {
   static propTypes = {
     fields  : PropTypes.shape({}),
@@ -126,6 +126,7 @@ export class DynamicForm2 extends React.Component {
       ...field.options,
       key : field.key || field.name,
       name: field.name,
+      help: field.options.tooltip,
       auth,
     };
     const defaultAssociation = {
@@ -336,7 +337,7 @@ export class DynamicForm2 extends React.Component {
 /**
  * Using PureComponent to improve elements' performance
  */
-// eslint-disable-next-line react/no-multi-comp
+  // eslint-disable-next-line react/no-multi-comp
 class EnhancedPureElement extends React.Component {
   static propTypes = {
     field  : PropTypes.shape({}),
@@ -364,6 +365,11 @@ class EnhancedPureElement extends React.Component {
   render() {
     const { field, index, builder } = this.props;
     logger.info('[EnhancedPureElement]', '[render]', { props: this.props, state: this.state });
-    return <div key={index}>{builder(field, index)}</div>;
+    return (
+      <div key={index}>
+        {builder(field, index)}
+        <hr style={{ borderStyle: 'ridge' }} />
+      </div>
+    );
   }
 }
