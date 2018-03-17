@@ -313,23 +313,31 @@ export class DynamicForm2 extends React.Component {
     // });
 
     return (
-      <Form>
-        {/* {_.map(fieldGroups, this.buildFieldGroup)} */}
-        {/* {_.map(fields, this.buildField)} */}
-        {renderFields}
-        {!delegate && (
-          <Form.Item>
-            <Button
-              type="primary"
-              htmlType="submit"
-              onClick={this.handleOnSubmit}
-              // disabled={hasErrors(getFieldsError())}
-            >
-              Submit
-            </Button>
-          </Form.Item>
-        )}
-      </Form>
+      <div className="dynamic-form">
+        <Form>
+          {/* {_.map(fieldGroups, this.buildFieldGroup)} */}
+          {/* {_.map(fields, this.buildField)} */}
+          {renderFields}
+          {!delegate && (
+            <Form.Item>
+              <Button
+                type="primary"
+                htmlType="submit"
+                onClick={this.handleOnSubmit}
+                // disabled={hasErrors(getFieldsError())}
+              >
+                Submit
+              </Button>
+            </Form.Item>
+          )}
+        </Form>
+        {/* language=CSS */}
+        <style global jsx>{`
+          .dynamic-form .ant-form-item {
+            margin-bottom: 0;
+          }
+        `}</style>
+      </div>
     );
   }
 }

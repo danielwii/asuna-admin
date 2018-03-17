@@ -8,11 +8,11 @@ import { Form, Icon } from 'antd';
 
 import { DynamicForm2, DynamicFormTypes } from '../../components/DynamicForm';
 import { modelsProxy }                    from '../../adapters/models';
-import { createLogger }                   from '../../adapters/logger';
 import { modelsActions }                  from '../../store/models.redux';
 import { diff, schemaHelper }             from '../../helpers';
+import { createLogger, lv }               from '../../adapters/logger';
 
-const logger = createLogger('modules:content:upsert', 3);
+const logger = createLogger('modules:content:upsert', lv.warn);
 
 // --------------------------------------------------------------
 // Build Form
@@ -87,19 +87,20 @@ class ContentUpsert extends React.Component {
 
     this.state = {
       preDecorators: tag => [
-        schemaHelper.peek(() => this.setState({
+        schemaHelper.peek('before', () => this.setState({
           loadings: { ...this.state.loadings, [tag]: true },
         })),
         schemaHelper.enumDecorator,
         schemaHelper.associationDecorator,
         schemaHelper.loadAssociationsDecorator,
-        schemaHelper.peek(() => this.setState({
+        schemaHelper.peek('after', () => this.setState({
           loadings: { ...this.state.loadings, [tag]: false },
         })),
       ],
       isInsertMode,
       modelName,
       init         : true,
+      loadings     : { INIT: true, LOAD: true },
       fields       : {},
       key          : basis.pane.key,
     };
@@ -137,11 +138,12 @@ class ContentUpsert extends React.Component {
 
     this.setState({
       wrappedFormSchema: formFields, // 用于在更新时重新构造完整（会又被过滤的部分）的数据结构
+
       // !!important!!
       // associations is loaded in async mode, so the models may already set in state
       // it have to be merged with fields in state
       // 即数据加载和模型初始化异步处理，数据初始化速度有时会快于模型加载
-      fields           : R.mergeDeepRight(decoratedFields, this.state.fields), // 最终渲染的对象
+      fields: R.mergeDeepRight(decoratedFields, this.state.fields), // 最终渲染的对象
     });
   }
 
@@ -252,7 +254,8 @@ class ContentUpsert extends React.Component {
     const { auth }             = this.props;
 
     // loading 尽在初次加载时渲染，否则编辑器会 lose focus
-    if (R.anyPass([R.isEmpty, R.isNil])(fields) || R.any(R.equals(true), R.values(loadings))) {
+    const noFields = R.anyPass([R.isEmpty, R.isNil])(fields);
+    if (noFields || R.any(R.equals(true), R.values(loadings))) {
       return (
         <div>
           <Icon type="loading" style={{ fontSize: 24 }} spin />

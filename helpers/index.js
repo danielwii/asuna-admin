@@ -6,9 +6,9 @@ import deepDiff from 'deep-diff';
 import { DynamicFormTypes }    from '../components/DynamicForm';
 import { modelsProxy }         from '../adapters/models';
 import { storeConnectorProxy } from '../adapters/storeConnector';
-import { createLogger }        from '../adapters/logger';
+import { createLogger, lv }    from '../adapters/logger';
 
-const logger = createLogger('helpers', 3);
+const logger = createLogger('helpers', lv.warn);
 
 // TODO make helpers configurable
 export const authHeader = token => ({ headers: { Authorization: token } });
@@ -91,9 +91,9 @@ export const diff = (first, second, { include, exclude } = {}) => {
 };
 
 export const schemaHelper = {
-  peek: callback => async (fields) => {
+  peek: (message, callback) => async (fields) => {
     callback();
-    logger.log('[schemaHelper][peek]', { fields });
+    logger.log('[schemaHelper][peek]', { message, fields });
     return fields;
   },
 
