@@ -1,7 +1,7 @@
 {
-  "name": "mast-admin",
+  "name": "asuna-admin",
   "version": "0.0.2",
-  "repository": "git@github.com:danielwii/mast-admin.git",
+  "repository": "git@github.com:danielwii/asuna-admin.git",
   "author": "Daniel Wei <danielwii0326@gmail.com>",
   "license": "MIT",
   "scripts": {

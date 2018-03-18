@@ -1,4 +1,4 @@
-# Mast-Admin
+# Asuna-Admin
 
 ## Develop
 
@@ -14,7 +14,7 @@ ENV=staging yarn dev # run dev mode using staging env
 
 1. Get the package.
     ```bash
-    git clone -o mast -b master --single-branch git@github.com:danielwii/mast-admin.git admin
+    git clone -o asuna -b master --single-branch git@github.com:danielwii/mast-admin.git admin
     cd admin && yarn
     ```
 2. Setup env.
@@ -26,20 +26,20 @@ ENV=staging yarn dev # run dev mode using staging env
 ## Sonar
 
 ```bash
-sonar-scanner -Dsonar.projectKey=mast-admin -Dsonar.sources=. -Dsonar.exclusions=stories/**/*
+sonar-scanner -Dsonar.projectKey=asuna-admin -Dsonar.sources=. -Dsonar.exclusions=stories/**/*
 ```
 
 ## Using subtree
 
 1. Create
     ```bash
-    git remote add mast-admin git@github.com:danielwii/mast-admin.git
-    git subtree add --prefix mast-admin mast-admin master
+    git remote add asuna-admin git@github.com:danielwii/asuna-admin.git
+    git subtree add --prefix asuna-admin asuna-admin master
     ```
 
 2. Update.
     ```bash
-    git subtree pull --prefix mast-admin mast-admin master
+    git subtree pull --prefix asuna-admin asuna-admin master
     ```
 ## Config
 
