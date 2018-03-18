@@ -362,7 +362,7 @@ export class DynamicForm2 extends React.Component {
             </Form>
           </Col>
           <Col span={anchor ? 6 : 0}>
-            {anchor && this.buildAnchor(fields)}
+            <FormAnchor fields={fields} />
           </Col>
         </Row>
         {/* language=CSS */}
@@ -372,6 +372,51 @@ export class DynamicForm2 extends React.Component {
           }
         `}</style>
       </div>
+    );
+  }
+}
+
+class FormAnchor extends React.Component {
+  static propTypes = {
+    fields: PropTypes.shape({}),
+  };
+
+  shouldComponentUpdate(nextProps, nextState) {
+    const propsDiff    = diff(this.props, nextProps);
+    const stateDiff    = diff(this.state, nextState);
+    return propsDiff.isDifferent || stateDiff.isDifferent;
+  }
+
+  render() {
+    const { fields } = this.props;
+
+    if (R.anyPass([R.isNil, R.isEmpty])(fields)) {
+      return '';
+    }
+
+    return (
+      <Anchor>
+        {
+          R.compose(
+            R.values(),
+            R.omit(['id']),
+            R.map((field) => {
+              const fieldName = field.options.label || field.options.name || field.name;
+              const color     = field.options.required ? 'red' : '';
+              const title     = (
+                <div>
+                  {field.options.required && <span style={{ color: 'red' }}>*{' '}</span>}
+                  <Tag color={field.value ? 'green' : color}>{fieldName}</Tag>
+                </div>
+              );
+              return (
+                <Anchor.Link key={field.name} title={title} href={`#dynamic-form-${field.name}`} />
+              );
+            }),
+            R.filter(field => field.type),
+          )(fields)
+        }
+      </Anchor>
     );
   }
 }
