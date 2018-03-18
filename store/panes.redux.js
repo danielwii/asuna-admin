@@ -8,10 +8,10 @@ import * as R from 'ramda';
 
 const panesActionTypes = {
   // ACTION: 'module::action'
-  OPEN     : 'panes::open',
-  ACTIVE   : 'panes::active',
-  CLOSE    : 'panes::close',
-  CLOSE_ALL: 'panes::close-all',
+  OPEN         : 'panes::open',
+  ACTIVE       : 'panes::active',
+  CLOSE        : 'panes::close',
+  CLOSE_WITHOUT: 'panes::close-without',
 };
 
 const isCurrent = type => type.startsWith('panes::');
@@ -22,10 +22,10 @@ const isCurrent = type => type.startsWith('panes::');
 
 const panesActions = {
   // action: (args) => ({ type, payload })
-  open    : pane => ({ type: panesActionTypes.OPEN, payload: { pane } }),
-  active  : key => ({ type: panesActionTypes.ACTIVE, payload: { key } }),
-  close   : key => ({ type: panesActionTypes.CLOSE, payload: { key } }),
-  closeAll: () => ({ type: panesActionTypes.CLOSE_ALL }),
+  open          : pane => ({ type: panesActionTypes.OPEN, payload: { pane } }),
+  active        : key => ({ type: panesActionTypes.ACTIVE, payload: { key } }),
+  close         : key => ({ type: panesActionTypes.CLOSE, payload: { key } }),
+  onCloseWithout: activeKey => ({ type: panesActionTypes.CLOSE_WITHOUT, payload: { activeKey } }),
 };
 
 // --------------------------------------------------------------
@@ -76,7 +76,12 @@ const panesReducer = (previousState = initialState, action) => {
           : nextKeys[_.min([index, nextKeys.length - 1])];
         return { activeKey: nextKey, panes: nextPanes };
       }
-      case panesActionTypes.CLOSE_ALL: {
+      case panesActionTypes.CLOSE_WITHOUT: {
+        const { payload: { activeKey } } = action;
+        if (activeKey) {
+          const panes = R.pick([activeKey])(previousState.panes);
+          return R.merge(previousState, { panes });
+        }
         return {};
       }
       default:

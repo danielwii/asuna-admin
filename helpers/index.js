@@ -50,6 +50,7 @@ export const commonColumns = {
   title     : columnHelper.generate('title', '标题'),
   name_en   : columnHelper.generate('name_en', '英文名称'),
   email     : columnHelper.generate('email', 'Email'),
+  type      : columnHelper.generate('type', '类型'),
   createdAt : columnHelper.generateCalendar('createdAt', '创建时间'),
   created_at: columnHelper.generateCalendar('created_at', '创建时间'),
   updatedAt : columnHelper.generateCalendar('updatedAt', '更新时间'),

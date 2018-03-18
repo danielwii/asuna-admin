@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import _         from 'lodash';
 import * as R    from 'ramda';
 
-import { Button, Tabs } from 'antd';
+import { Button, Tabs, Divider } from 'antd';
 
 import { createLogger } from '../adapters/logger';
 import ModulesLoader    from '../modules';
@@ -14,11 +14,11 @@ const { TabPane } = Tabs;
 
 class Panes extends React.Component {
   static propTypes = {
-    activeKey : PropTypes.string,
-    onActive  : PropTypes.func.isRequired,
-    onClose   : PropTypes.func.isRequired,
-    onCloseAll: PropTypes.func.isRequired,
-    panes     : PropTypes.shape({
+    activeKey     : PropTypes.string,
+    onActive      : PropTypes.func.isRequired,
+    onClose       : PropTypes.func.isRequired,
+    onCloseWithout: PropTypes.func.isRequired,
+    panes         : PropTypes.shape({
       key: PropTypes.shape({
         title   : PropTypes.string,
         composed: PropTypes.shape({
@@ -44,11 +44,6 @@ class Panes extends React.Component {
     }
   };
 
-  onCloseAll = () => {
-    const { onCloseAll } = this.props;
-    onCloseAll();
-  };
-
   onTitleChange = (key, newTitle) => {
     logger.log('onTitleChange', key, newTitle);
     if (key && newTitle) {
@@ -59,7 +54,7 @@ class Panes extends React.Component {
   render() {
     const { titles } = this.state;
 
-    const { activeKey, panes, onActive, onCloseAll } = this.props;
+    const { activeKey, panes, onActive, onCloseWithout } = this.props;
 
     if (!activeKey) {
       return <div>^_^ - Hello kitty.</div>;
@@ -67,7 +62,17 @@ class Panes extends React.Component {
 
     const title = titles[activeKey];
 
-    const operations = panes && <Button icon="close-square" onClick={onCloseAll} />;
+    const operations = (
+      <React.Fragment>
+        {panes && <Button icon="close-square" onClick={() => onCloseWithout()} />}
+        {panes && R.keys(panes).length > 1 && (
+          <React.Fragment>
+            <Divider type="vertical" />
+            <Button icon="minus-square" onClick={() => onCloseWithout(activeKey)} />
+          </React.Fragment>
+        )}
+      </React.Fragment>
+    );
 
     return (
       <Tabs
