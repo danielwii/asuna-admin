@@ -382,8 +382,8 @@ class FormAnchor extends React.Component {
   };
 
   shouldComponentUpdate(nextProps, nextState) {
-    const propsDiff    = diff(this.props, nextProps);
-    const stateDiff    = diff(this.state, nextState);
+    const propsDiff = diff(this.props, nextProps);
+    const stateDiff = diff(this.state, nextState);
     return propsDiff.isDifferent || stateDiff.isDifferent;
   }
 
@@ -401,12 +401,14 @@ class FormAnchor extends React.Component {
             R.values(),
             R.omit(['id']),
             R.map((field) => {
-              const fieldName = field.options.label || field.options.name || field.name;
-              const color     = field.options.required ? 'red' : '';
-              const title     = (
+              const fieldName     = field.options.label || field.options.name || field.name;
+              const requiredColor = field.options.required ? 'red' : '';
+              // const color         = R.isNil(field.value) || R.isEmpty(field.value)
+              const color         = !field.value || R.isEmpty(field.value) ? requiredColor : 'green';
+              const title         = (
                 <div>
                   {field.options.required && <span style={{ color: 'red' }}>*{' '}</span>}
-                  <Tag color={field.value ? 'green' : color}>{fieldName}</Tag>
+                  <Tag color={color}>{fieldName}</Tag>
                 </div>
               );
               return (
