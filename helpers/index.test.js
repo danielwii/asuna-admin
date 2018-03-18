@@ -48,7 +48,7 @@ test('schemaHelper.enumDecorator no type found', async () => {
   expect(decorated).toEqual({ type: { value: 'refInclude' } });
 });
 
-test('schemaHelper.enumDecorator with SortPosition', async () => {
+test('schemaHelper.enumDecorator SortPosition with no value', async () => {
   const decorated = await schemaHelper.enumDecorator({
     refInclude: { value: [1, 2, 3], type: 'ManyToMany' },
     type      : {
@@ -56,7 +56,7 @@ test('schemaHelper.enumDecorator with SortPosition', async () => {
       value  : 'refInclude',
       options: {
         filter_type: 'Sort',
-        enum_data: [{
+        enum_data  : [{
           key: 'refInclude', value: 'refValue1',
         }],
       },
@@ -66,23 +66,113 @@ test('schemaHelper.enumDecorator with SortPosition', async () => {
 
   expect(decorated).toEqual({
     refInclude: {
-      type: 'ManyToMany',
+      type         : 'ManyToMany',
       isFilterField: true,
-      options: {
+      options      : {
         filter_type: 'Sort',
       },
-      value: [1, 2, 3],
+      value        : [1, 2, 3],
     },
     type      : {
       type   : 'EnumFilter',
       value  : 'refInclude',
       options: {
         filter_type: 'Sort',
-        enum_data: [{
+        enum_data  : [{
           key: 'refInclude', value: 'refValue1',
         }],
       },
     },
     positions : { options: { type: 'SortPosition' }, value: [1, 2, 3] },
+  });
+});
+
+test('schemaHelper.enumDecorator SortPosition with value', async () => {
+  const decorated = await schemaHelper.enumDecorator({
+    refInclude: { value: [1, 2, 3], type: 'ManyToMany' },
+    type      : {
+      type   : 'EnumFilter',
+      value  : 'refInclude',
+      options: {
+        filter_type: 'Sort',
+        enum_data  : [{
+          key: 'refInclude', value: 'refValue1',
+        }],
+      },
+    },
+    positions : {
+      options: { type: 'SortPosition' },
+      value  : [3, 1, 2],
+    },
+  });
+
+  expect(decorated).toEqual({
+    refInclude: {
+      type         : 'ManyToMany',
+      isFilterField: true,
+      options      : {
+        filter_type: 'Sort',
+      },
+      value        : [3, 1, 2],
+    },
+    type      : {
+      type   : 'EnumFilter',
+      value  : 'refInclude',
+      options: {
+        filter_type: 'Sort',
+        enum_data  : [{
+          key: 'refInclude', value: 'refValue1',
+        }],
+      },
+    },
+    positions : {
+      options: { type: 'SortPosition' },
+      value  : [3, 1, 2],
+    },
+  });
+});
+
+test('schemaHelper.enumDecorator SortPosition with str value', async () => {
+  const decorated = await schemaHelper.enumDecorator({
+    refInclude: { value: [1, 2, 3], type: 'ManyToMany' },
+    type      : {
+      type   : 'EnumFilter',
+      value  : 'refInclude',
+      options: {
+        filter_type: 'Sort',
+        enum_data  : [{
+          key: 'refInclude', value: 'refValue1',
+        }],
+      },
+    },
+    positions : {
+      options: { type: 'SortPosition', json: 'str' },
+      value  : '[3, 1, 2]',
+    },
+  });
+
+  expect(decorated).toEqual({
+    refInclude: {
+      type         : 'ManyToMany',
+      isFilterField: true,
+      options      : {
+        filter_type: 'Sort',
+      },
+      value        : [3, 1, 2],
+    },
+    type      : {
+      type   : 'EnumFilter',
+      value  : 'refInclude',
+      options: {
+        filter_type: 'Sort',
+        enum_data  : [{
+          key: 'refInclude', value: 'refValue1',
+        }],
+      },
+    },
+    positions : {
+      options: { type: 'SortPosition', json: 'str' },
+      value  : [3, 1, 2],
+    },
   });
 });

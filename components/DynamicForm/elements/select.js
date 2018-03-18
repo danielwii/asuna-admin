@@ -9,9 +9,9 @@ import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-ho
 import { Select }            from 'antd';
 import { generateComponent } from '.';
 
-import { createLogger } from '../../../adapters/logger';
+import { createLogger, lv } from '../../../adapters/logger';
 
-const logger = createLogger('components:dynamic-form:elements');
+const logger = createLogger('components:dynamic-form:elements', lv.warn);
 
 const defaultFormItemLayout = {};
 
@@ -27,7 +27,8 @@ export const generateSelect = (form, {
 
   class MixedSelect extends React.Component {
     static propTypes = {
-      value: PropTypes.oneOfType([
+      onChange: PropTypes.func,
+      value   : PropTypes.oneOfType([
         PropTypes.number,
         PropTypes.string,
         PropTypes.arrayOf(PropTypes.any),
@@ -44,9 +45,10 @@ export const generateSelect = (form, {
     }
 
     onSortEnd      = ({ oldIndex, newIndex }) => {
-      this.setState({
-        selectedItems: arrayMove(this.state.selectedItems, oldIndex, newIndex),
-      });
+      const { onChange }  = this.props;
+      const selectedItems = arrayMove(this.state.selectedItems, oldIndex, newIndex);
+      onChange(selectedItems);
+      this.setState({ selectedItems });
     };
     renderSortTree = () => {
       const { selectedItems } = this.state;

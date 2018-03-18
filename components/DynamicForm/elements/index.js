@@ -53,8 +53,8 @@ const horizontalFormItemLayout = {
 
 // eslint-disable-next-line react/prop-types
 export const generatePlain = ({ key, label, text }, formItemLayout = horizontalFormItemLayout) => {
-  logger.info('[generatePlain]', key, label, text);
-  return <Form.Item key={key || label} {...formItemLayout} label={label}>{text}</Form.Item>;
+  logger.info('[generatePlain]', { key, label, text });
+  return <Form.Item key={key || label} {...formItemLayout} label={label}>{`${text}`}</Form.Item>;
 };
 
 export const generateComponent = (form, options, component, formItemLayout = {}) => {

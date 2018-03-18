@@ -225,9 +225,18 @@ export const schemaHelper = {
       const current = R.pathOr('', ['value'])(enumFilterField);
       logger.info('[schemaHelper][enumDecorator]', { enums, current });
 
-      // save positions value
-      const positionsField = R.compose(
-        R.map(field => ({ ...field, value: R.path([current, 'value'])(fields) })),
+      // check if positions has value already
+      // save positions value if no value exists, update models' sequence for else
+      const positionsFieldPair = R.compose(
+        R.toPairs,
+        R.map((field) => {
+          if (field.value) {
+            return field.options.json === 'str'
+              ? { ...field, value: JSON.parse(field.value) }
+              : field;
+          }
+          return { ...field, value: R.path([current, 'value'])(fields) };
+        }),
         R.filter(R.pathEq(['options', 'type'], 'SortPosition')),
       )(fields);
 
@@ -239,16 +248,14 @@ export const schemaHelper = {
             [current]: {
               isFilterField: true,
               options      : { filter_type: R.path(['options', 'filter_type'])(enumFilterField) },
+              value        : R.path([0, 1, 'value'])(positionsFieldPair),
             },
-            ...positionsField,
+            ...R.fromPairs(positionsFieldPair),
           })
         : filteredFields;
-      logger.info(
-        '[schemaHelper][enumDecorator]',
-        {
-          filteredNames, filteredFields, wrappedFields, positionsField,
-        },
-      );
+      logger.info('[schemaHelper][enumDecorator]', {
+        filteredNames, filteredFields, wrappedFields, positionsFieldPair,
+      });
 
       return wrappedFields;
     }
