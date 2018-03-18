@@ -13,6 +13,7 @@ const StyledLogoImg = styled.img`
   height: 32px;
   margin: 16px 28px 16px 0;
   float: left;
+  border-radius: 0.1rem;
 `;
 
 export default class extends React.Component {

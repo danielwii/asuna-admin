@@ -87,20 +87,20 @@ class ContentUpsert extends React.Component {
 
     this.state = {
       preDecorators: tag => [
-        schemaHelper.peek('before', () => this.setState({
+        schemaHelper.peek(`before-${tag}`, () => this.setState({
           loadings: { ...this.state.loadings, [tag]: true },
         })),
         schemaHelper.enumDecorator,
         schemaHelper.associationDecorator,
         schemaHelper.loadAssociationsDecorator,
-        schemaHelper.peek('after', () => this.setState({
+        schemaHelper.peek(`after-${tag}`, () => this.setState({
           loadings: { ...this.state.loadings, [tag]: false },
         })),
       ],
       isInsertMode,
       modelName,
       init         : true,
-      loadings     : { INIT: true, LOAD: true },
+      loadings     : { INIT: true, LOAD: !isInsertMode },
       fields       : {},
       key          : basis.pane.key,
     };
@@ -253,6 +253,8 @@ class ContentUpsert extends React.Component {
     const { fields, loadings } = this.state;
     const { auth }             = this.props;
 
+    logger.log('[render]', { props: this.props, state: this.state });
+
     // loading 尽在初次加载时渲染，否则编辑器会 lose focus
     const noFields = R.anyPass([R.isEmpty, R.isNil])(fields);
     if (noFields || R.any(R.equals(true), R.values(loadings))) {
@@ -270,8 +272,6 @@ class ContentUpsert extends React.Component {
         </div>
       );
     }
-
-    logger.log('[render]', { props: this.props, state: this.state });
 
     return (
       <div>
