@@ -1,10 +1,11 @@
+/* eslint-disable react/no-multi-comp */
 import React     from 'react';
 import PropTypes from 'prop-types';
 import _         from 'lodash';
 import * as R    from 'ramda';
 import { sha1 }  from 'object-hash';
 
-import { Button, Card, Form } from 'antd';
+import { Button, Card, Form, Anchor, Row, Col, Tag } from 'antd';
 
 import {
   generateAuthorities,
@@ -105,6 +106,7 @@ export class DynamicForm2 extends React.Component {
     fields  : PropTypes.shape({}),
     auth    : PropTypes.shape({}),
     onSubmit: PropTypes.func,
+    anchor  : PropTypes.bool,
     delegate: PropTypes.bool,
   };
 
@@ -266,6 +268,31 @@ export class DynamicForm2 extends React.Component {
     );
   };
 
+  buildAnchor = fields => (
+    <Anchor>
+      {
+        R.compose(
+          R.values(),
+          R.omit(['id']),
+          R.map((field) => {
+            const fieldName = field.options.label || field.options.name || field.name;
+            const color     = field.options.required ? 'red' : '';
+            const title     = (
+              <div>
+                {field.options.required && <span style={{ color: 'red' }}>*{' '}</span>}
+                <Tag color={field.value ? 'green' : color}>{fieldName}</Tag>
+              </div>
+            );
+            return (
+              <Anchor.Link key={field.name} title={title} href={`#dynamic-form-${field.name}`} />
+            );
+          }),
+          R.filter(field => field.type),
+        )(fields)
+      }
+    </Anchor>
+  );
+
   handleOnSubmit = (e) => {
     logger.info('[DynamicForm2]', '[handleOnSubmit]', 'onSubmit', e);
     e.preventDefault();
@@ -281,8 +308,8 @@ export class DynamicForm2 extends React.Component {
   };
 
   render() {
-    const { fields, delegate } = this.props;
-    logger.log('[DynamicForm2]', '[render]', { props: this.props, fields });
+    const { fields, delegate, anchor } = this.props;
+    logger.log('[DynamicForm2]', '[render]', { props: this.props });
 
     /*
         const fieldGroups = R.compose(
@@ -314,23 +341,30 @@ export class DynamicForm2 extends React.Component {
 
     return (
       <div className="dynamic-form">
-        <Form>
-          {/* {_.map(fieldGroups, this.buildFieldGroup)} */}
-          {/* {_.map(fields, this.buildField)} */}
-          {renderFields}
-          {!delegate && (
-            <Form.Item>
-              <Button
-                type="primary"
-                htmlType="submit"
-                onClick={this.handleOnSubmit}
-                // disabled={hasErrors(getFieldsError())}
-              >
-                Submit
-              </Button>
-            </Form.Item>
-          )}
-        </Form>
+        <Row type="flex" gutter={anchor ? 16 : 0}>
+          <Col span={anchor ? 18 : 24}>
+            <Form>
+              {/* {_.map(fieldGroups, this.buildFieldGroup)} */}
+              {/* {_.map(fields, this.buildField)} */}
+              {renderFields}
+              {!delegate && (
+                <Form.Item>
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    onClick={this.handleOnSubmit}
+                    // disabled={hasErrors(getFieldsError())}
+                  >
+                    Submit
+                  </Button>
+                </Form.Item>
+              )}
+            </Form>
+          </Col>
+          <Col span={anchor ? 6 : 0}>
+            {anchor && this.buildAnchor(fields)}
+          </Col>
+        </Row>
         {/* language=CSS */}
         <style global jsx>{`
           .dynamic-form .ant-form-item {
@@ -345,7 +379,6 @@ export class DynamicForm2 extends React.Component {
 /**
  * Using PureComponent to improve elements' performance
  */
-  // eslint-disable-next-line react/no-multi-comp
 class EnhancedPureElement extends React.Component {
   static propTypes = {
     field  : PropTypes.shape({}),
@@ -374,7 +407,7 @@ class EnhancedPureElement extends React.Component {
     const { field, index, builder } = this.props;
     logger.info('[EnhancedPureElement]', '[render]', { props: this.props, state: this.state });
     return (
-      <div key={index}>
+      <div key={index} id={`dynamic-form-${field.name}`}>
         {builder(field, index)}
         <hr style={{ borderStyle: 'ridge' }} />
       </div>

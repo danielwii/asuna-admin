@@ -277,6 +277,7 @@ class ContentUpsert extends React.Component {
       <div>
         <hr />
         <ContentForm
+          anchor
           auth={auth}
           fields={fields}
           onChange={this.handleFormChange}
