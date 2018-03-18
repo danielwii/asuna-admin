@@ -230,12 +230,12 @@ export const schemaHelper = {
       const positionsFieldPair = R.compose(
         R.toPairs,
         R.map((field) => {
-          if (field.value) {
-            return field.options.json === 'str'
-              ? { ...field, value: JSON.parse(field.value) }
-              : field;
+          // raw is the original value, if exists, means it's update request
+          if (field.value && !field.raw) {
+            const value = R.is(String, field.value) ? JSON.parse(field.value) : field.value;
+            return { ...field, value, raw: field.value };
           }
-          return { ...field, value: R.path([current, 'value'])(fields) };
+          return { ...field, value: R.path([current, 'value'])(fields), raw: field.value };
         }),
         R.filter(R.pathEq(['options', 'type'], 'SortPosition')),
       )(fields);
