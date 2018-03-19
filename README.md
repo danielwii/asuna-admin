@@ -10,6 +10,17 @@ yarn dev             # run server as dev mode
 ENV=staging yarn dev # run dev mode using staging env
 ```
 
+## Debug
+
+```bash
+# build with code
+docker build -t asuna-admin .
+
+# build with asuna
+asuna docker
+docker run --rm -it --env ENV=staging -p 3000:3000 asuna-admin yarn dev
+```
+
 ## Quick Start
 
 1. Get the package.
