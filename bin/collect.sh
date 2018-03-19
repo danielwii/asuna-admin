@@ -1,5 +1,7 @@
 #!/usr/bin/env sh
 
+set -ex
+
 mkdir -p static/libs
 rm -f static/libs/*
 
