@@ -5,10 +5,10 @@ import _         from 'lodash';
 
 import { Icon, message, Modal, Upload } from 'antd';
 
-import { createLogger } from '../../adapters/logger';
-import { apiProxy }     from '../../adapters/api';
+import { apiProxy }         from '../../adapters/api';
+import { createLogger, lv } from '../../adapters/logger';
 
-const logger = createLogger('components:dynamic-form:images');
+const logger = createLogger('components:dynamic-form:images', lv.log);
 
 // --------------------------------------------------------------
 // Functions
@@ -60,7 +60,7 @@ export class ImageUploader extends React.Component {
   static propTypes = {
     auth    : PropTypes.shape({}), // auth token object
     value   : PropTypes.arrayOf(PropTypes.shape({
-      bucket: PropTypes.string,
+      bucket  : PropTypes.string,
       filename: PropTypes.string,
       mode    : PropTypes.string,
       prefix  : PropTypes.string,
@@ -87,7 +87,7 @@ export class ImageUploader extends React.Component {
     const { auth, onChange, value: images } = this.props;
 
     const image = images ? images[0] : null;
-    logger.log('[ImageUploader][render]', 'image is', images, image);
+    logger.log('[ImageUploader][render]', { images, image });
 
     const uploadButton = (
       <div>
@@ -108,7 +108,9 @@ export class ImageUploader extends React.Component {
           beforeUpload={beforeUpload}
           onChange={this.handleChange}
         >
-          {image ? <img style={{ width: '100%' }} src={`${image.prefix}/${image.filename}`} alt="" /> : uploadButton}
+          {image
+            ? <img style={{ width: '100%' }} src={`${image.prefix}/${image.filename}`} alt="" />
+            : uploadButton}
         </Upload>
       </div>
     );

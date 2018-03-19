@@ -92,6 +92,7 @@ class ContentUpsert extends React.Component {
         schemaHelper.peek(`before-${tag}`, () => this.setState({
           loadings: { ...this.state.loadings, [tag]: true },
         })),
+        schemaHelper.jsonDecorator,
         schemaHelper.enumDecorator,
         schemaHelper.associationDecorator,
         schemaHelper.loadAssociationsDecorator,

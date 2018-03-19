@@ -202,6 +202,20 @@ export const schemaHelper = {
     return fields;
   },
 
+  jsonDecorator: async (fields) => {
+    logger.log('[schemaHelper][jsonDecorator]', { fields });
+
+    const jsonFields = R.filter(R.pathEq(['options', 'json'], 'str'))(fields);
+    if (R.not(R.isEmpty(jsonFields))) {
+      const toJson         = value => (R.is(String, value) ? JSON.parse(value) : value);
+      const transformValue = R.over(R.lens(R.prop('value'), R.assoc('value')), toJson);
+      const transformedFields = R.map(transformValue)(jsonFields);
+      return R.mergeDeepRight(fields, transformedFields);
+    }
+
+    return fields;
+  },
+
   /**
    * 通过 Enum 定义中的 enum_data 的 key 值拉取相应 schema 中的关联
    * 通过所有的被选关联字段的 schema name 和 key 比较

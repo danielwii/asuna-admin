@@ -128,7 +128,7 @@ test('schemaHelper.enumDecorator SortPosition with value', async () => {
     positions : {
       options: { type: 'SortPosition' },
       value  : [3, 1, 2],
-      raw  : [3, 1, 2],
+      raw    : [3, 1, 2],
     },
   });
 });
@@ -223,5 +223,15 @@ test('schemaHelper.enumDecorator SortPosition with value and already resolved', 
       value  : [3, 2, 1],
       raw    : '[3, 1, 2]',
     },
+  });
+});
+
+test('schemaHelper.jsonDecorator', async () => {
+  const decorated = await schemaHelper.jsonDecorator({
+    refInclude: { value: '[3, 2, 1]', type: 'ManyToMany', options: { json: 'str' } },
+  });
+
+  expect(decorated).toEqual({
+    refInclude: { value: [3, 2, 1], type: 'ManyToMany', options: { json: 'str' } },
   });
 });
