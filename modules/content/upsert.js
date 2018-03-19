@@ -21,7 +21,9 @@ const logger = createLogger('modules:content:upsert', lv.warn);
 const ContentForm = Form.create({
   mapPropsToFields({ fields }) {
     const mappedFields = R.map((field) => {
-      if (field.value && field.type === DynamicFormTypes.DateTime) {
+      // DatePicker for antd using moment instance
+      const isDate = R.contains(field.type)([DynamicFormTypes.Date, DynamicFormTypes.DateTime]);
+      if (field.value && isDate) {
         return Form.createFormField({ ...field, value: moment(field.value) });
       }
       return Form.createFormField({ ...field });
