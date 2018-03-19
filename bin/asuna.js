@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable no-console */
 
 const path    = require('path');
 const spawn   = require('cross-spawn');
@@ -6,6 +7,7 @@ const program = require('commander');
 const colors  = require('colors');
 const { ncp } = require('ncp');
 const Promise = require('bluebird');
+const shell   = require('shelljs');
 
 ncp.limit = 16;
 
@@ -39,7 +41,7 @@ function buildImage() {
   console.log('[x] buildImage asuna-admin...');
   const asunaBuildPath = path.join(process.env.PWD, '.asuna');
   const proc           = spawn('docker', ['build', '-t', 'asuna-admin', asunaBuildPath], {
-    stdio: 'inherit', customFds: [0, 1, 2],
+    stdio: 'inherit',
   });
   proc.on('close', (code, signal) => {
     if (code !== null) {
@@ -61,6 +63,8 @@ function buildImage() {
   return proc;
 }
 
+spawn('mkdir', [path.join(process.env.PWD, '.asuna')]);
+
 // --------------------------------------------------------------
 // Program
 // --------------------------------------------------------------
@@ -68,42 +72,44 @@ function buildImage() {
 program
   .version('0.1.0');
 
-program
+const dockerCommand = program
   .command('docker')
-  .description('run server in docker.')
+  .description('build docker image');
+
+dockerCommand
   .action(() => {
-    console.log('[x] run server in docker.');
+    console.log('[x] build docker image');
+
     const appPath   = process.env.PWD;
     const asunaPath = path.join(__dirname, '../');
     console.log('[x] appPath is `%s`', appPath);
     console.log('[x] asunaPath is `%s`', asunaPath);
+
+    console.log('[x] refresh dependencies...');
+    shell.exec(`cd ${appPath} && yarn`);
+
     console.log('[x] sync .asuna ...');
-    spawn('mkdir', [path.join(appPath, '.asuna')], { stdio: 'inherit', customFds: [0, 1, 2] });
 
     Promise.all([
       new Promise((resolve, reject) => {
         console.log('[x] sync [dependencies] -> start');
-        try {
-          ncp(asunaPath, path.join(appPath, '.asuna'), {
-            filter: (filename) => {
-              const test = /.*asuna-admin\/(node_modules|.git|.next|.idea).*/.test(filename);
-              if (!test) {
-                console.log('-->', filename, test);
-              }
-              return !test;
-            },
-            clobber: false,
-          }, (err) => {
-            if (err) {
-              console.log('[x] sync [dependencies] -> error', err);
-              reject(err);
+        ncp(asunaPath, path.join(appPath, '.asuna'), {
+          filter : (filename) => {
+            const test = /.*asuna-admin\/(node_modules|.git|.next|.idea|.asuna).*/.test(filename);
+            if (!test) {
+              console.log('-->', colors.green(filename));
             }
-            console.log('[x] sync [dependencies] -> success');
-            resolve();
-          });
-        } catch (e) {
-          console.log('error here...');
-        }
+            return !test;
+          },
+          clobber: false,
+        }, (err) => {
+          if (err) {
+            console.log('[x] sync [dependencies] -> error', err);
+            reject(err);
+          }
+          console.log('[x] sync [dependencies] -> success');
+          resolve();
+        });
       }),
       new Promise((resolve, reject) => {
         console.log('[x] sync [services] -> start');

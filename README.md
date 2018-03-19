@@ -10,7 +10,7 @@ yarn dev             # run server as dev mode
 ENV=staging yarn dev # run dev mode using staging env
 ```
 
-## Debug
+## Run in docker
 
 ```bash
 # build with code
