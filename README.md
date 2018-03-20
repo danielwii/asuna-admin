@@ -17,7 +17,7 @@ ENV=staging yarn dev # run dev mode using staging env
 docker build -t asuna-admin .
 
 # build with asuna
-asuna docker
+yarn asuna docker
 docker run --rm -it --env ENV=staging -p 3000:3000 asuna-admin yarn dev
 ```
 

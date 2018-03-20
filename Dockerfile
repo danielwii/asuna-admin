@@ -1,6 +1,6 @@
 FROM node:9
 
-COPY package.json yarn.lock /app/
+COPY package.json /app/
 COPY bin /app/bin
 
 WORKDIR /app
