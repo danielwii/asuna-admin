@@ -5,7 +5,7 @@ const path    = require('path');
 const spawn   = require('cross-spawn');
 const program = require('commander');
 const colors  = require('colors');
-const async  = require('async');
+const async   = require('async');
 const rimraf  = require('rimraf');
 const { ncp } = require('ncp');
 const shell   = require('shelljs');
@@ -64,8 +64,6 @@ function buildImage() {
   return proc;
 }
 
-spawn('mkdir', [path.join(process.env.PWD, '.asuna')]);
-
 // --------------------------------------------------------------
 // Program
 // --------------------------------------------------------------
@@ -83,7 +81,7 @@ dockerCommand
 
     const appPath   = process.env.PWD;
     const asunaPath = path.join(__dirname, '../');
-    const asunaDist = path.join(appPath, '.asuna');
+    const asunaDist = path.join(appPath, '.asuna/');
     console.log('[x] appPath is `%s`', appPath);
     console.log('[x] asunaPath is `%s`', asunaPath);
 
@@ -94,20 +92,26 @@ dockerCommand
         shell.exec(`cd ${appPath} && yarn`);
         callback();
       },
-      clean: (callback) => {
+      clean  : (callback) => {
         console.log('[x] clean .asuna ...');
         rimraf(asunaDist, () => { callback(); });
       },
-      sync: ['refresh', 'clean', (results, callback) => {
+      init   : ['clean', (results, callback) => {
+        spawn.sync('mkdir', [asunaDist]);
+        callback();
+      }],
+      sync   : ['refresh', 'init', (results, callback) => {
         console.log('[x] sync .asuna ...');
         Promise.all([
           new Promise((resolve, reject) => {
             console.log('[x] sync [dependencies] -> start');
+            console.log('[x] sync [dependencies] -> cp',
+              colors.yellow(asunaPath), 'to', colors.yellow(asunaDist));
             ncp(asunaPath, asunaDist, {
-              filter : (filename) => {
+              filter: (filename) => {
                 const test = /.*asuna-admin\/(node_modules|.git|.next|.idea|.asuna).*/.test(filename);
                 if (!test) {
-                  console.log('-->', colors.green(filename));
+                  console.log('D++>', colors.green(filename));
                 }
                 return !test;
               },
@@ -122,27 +126,33 @@ dockerCommand
           }),
           new Promise((resolve, reject) => {
             console.log('[x] sync [services] -> start');
-            ncp(path.join(appPath, 'services'), path.join(appPath, '.asuna/services'), (err) => {
+            const source = path.join(appPath, 'services');
+            const dest   = path.join(appPath, '.asuna/services');
+            console.log('[x] sync [services] -> cp',
+              colors.yellow(source), 'to', colors.yellow(dest));
+            ncp(source, dest, {
+              filter: (filename) => {
+                console.log('S++>', colors.green(filename));
+                return true;
+              },
+            }, (err) => {
               if (err) {
-                console.error(colors('[x] sync [services] -> error'), err);
+                console.error(colors.red('[x] sync [services] -> error'), err);
                 reject(err);
               }
               console.log('[x] sync [services] -> success');
               resolve();
             });
           }),
-        ])
-          .then(() => {
-            callback();
-          })
-          .catch((err) => {
-            console.log('run sync error', err);
-            callback(err);
-          });
+        ]).then(() => {
+          callback();
+        }).catch((err) => {
+          callback(err);
+        });
       }],
     }, (err) => {
       if (err) {
-        console.error(colors.red('build image error'), err);
+        console.error(colors.red('[x] run sync error'), err);
       } else {
         console.log('[x] try build image ...');
         buildImage();
