@@ -5,8 +5,9 @@ const path    = require('path');
 const spawn   = require('cross-spawn');
 const program = require('commander');
 const colors  = require('colors');
+const async  = require('async');
+const rimraf  = require('rimraf');
 const { ncp } = require('ncp');
-const Promise = require('bluebird');
 const shell   = require('shelljs');
 
 ncp.limit = 16;
@@ -82,54 +83,71 @@ dockerCommand
 
     const appPath   = process.env.PWD;
     const asunaPath = path.join(__dirname, '../');
+    const asunaDist = path.join(appPath, '.asuna');
     console.log('[x] appPath is `%s`', appPath);
     console.log('[x] asunaPath is `%s`', asunaPath);
 
-    console.log('[x] refresh dependencies...');
-    shell.exec(`cd ${appPath} && yarn`);
 
-    console.log('[x] sync .asuna ...');
-
-    Promise.all([
-      new Promise((resolve, reject) => {
-        console.log('[x] sync [dependencies] -> start');
-        ncp(asunaPath, path.join(appPath, '.asuna'), {
-          filter : (filename) => {
-            const test = /.*asuna-admin\/(node_modules|.git|.next|.idea|.asuna).*/.test(filename);
-            if (!test) {
-              console.log('-->', colors.green(filename));
-            }
-            return !test;
-          },
-          clobber: false,
-        }, (err) => {
-          if (err) {
-            console.log('[x] sync [dependencies] -> error', err);
-            reject(err);
-          }
-          console.log('[x] sync [dependencies] -> success');
-          resolve();
-        });
-      }),
-      new Promise((resolve, reject) => {
-        console.log('[x] sync [services] -> start');
-        ncp(path.join(appPath, 'services'), path.join(appPath, '.asuna/services'), (err) => {
-          if (err) {
-            console.log('[x] sync [services] -> error', err);
-            reject(err);
-          }
-          console.log('[x] sync [services] -> success');
-          resolve();
-        });
-      }),
-    ])
-      .then(() => {
+    async.auto({
+      refresh: (callback) => {
+        console.log('[x] refresh dependencies ...');
+        shell.exec(`cd ${appPath} && yarn`);
+        callback();
+      },
+      clean: (callback) => {
+        console.log('[x] clean .asuna ...');
+        rimraf(asunaDist, () => { callback(); });
+      },
+      sync: ['refresh', 'clean', (results, callback) => {
+        console.log('[x] sync .asuna ...');
+        Promise.all([
+          new Promise((resolve, reject) => {
+            console.log('[x] sync [dependencies] -> start');
+            ncp(asunaPath, asunaDist, {
+              filter : (filename) => {
+                const test = /.*asuna-admin\/(node_modules|.git|.next|.idea|.asuna).*/.test(filename);
+                if (!test) {
+                  console.log('-->', colors.green(filename));
+                }
+                return !test;
+              },
+            }, (err) => {
+              if (err) {
+                console.error(colors.red('[x] sync [dependencies] -> error'), err);
+                reject(err);
+              }
+              console.log('[x] sync [dependencies] -> success');
+              resolve();
+            });
+          }),
+          new Promise((resolve, reject) => {
+            console.log('[x] sync [services] -> start');
+            ncp(path.join(appPath, 'services'), path.join(appPath, '.asuna/services'), (err) => {
+              if (err) {
+                console.error(colors('[x] sync [services] -> error'), err);
+                reject(err);
+              }
+              console.log('[x] sync [services] -> success');
+              resolve();
+            });
+          }),
+        ])
+          .then(() => {
+            callback();
+          })
+          .catch((err) => {
+            console.log('run sync error', err);
+            callback(err);
+          });
+      }],
+    }, (err) => {
+      if (err) {
+        console.error(colors.red('build image error'), err);
+      } else {
         console.log('[x] try build image ...');
         buildImage();
-      })
-      .catch((err) => {
-        console.log('error', err);
-      });
+      }
+    });
   });
 
 program
