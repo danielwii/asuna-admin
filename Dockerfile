@@ -1,4 +1,4 @@
-FROM node:9
+FROM node
 
 COPY package.json /app/
 COPY bin /app/bin

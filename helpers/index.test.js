@@ -235,3 +235,23 @@ test('schemaHelper.jsonDecorator', async () => {
     refInclude: { value: [3, 2, 1], type: 'ManyToMany', options: { json: 'str' } },
   });
 });
+
+test('schemaHelper.jsonDecorator empty string', async () => {
+  const decorated = await schemaHelper.jsonDecorator({
+    refInclude: { value: '', type: 'ManyToMany', options: { json: 'str' } },
+  });
+
+  expect(decorated).toEqual({
+    refInclude: { value: null, type: 'ManyToMany', options: { json: 'str' } },
+  });
+});
+
+test('schemaHelper.jsonDecorator return null for wrong json format', async () => {
+  const decorated = await schemaHelper.jsonDecorator({
+    refInclude: { value: 'test', type: 'ManyToMany', options: { json: 'str' } },
+  });
+
+  expect(decorated).toEqual({
+    refInclude: { value: null, type: 'ManyToMany', options: { json: 'str' } },
+  });
+});

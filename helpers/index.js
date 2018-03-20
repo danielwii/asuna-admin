@@ -207,8 +207,21 @@ export const schemaHelper = {
 
     const jsonFields = R.filter(R.pathEq(['options', 'json'], 'str'))(fields);
     if (R.not(R.isEmpty(jsonFields))) {
-      const toJson         = value => (R.is(String, value) ? JSON.parse(value) : value);
-      const transformValue = R.over(R.lens(R.prop('value'), R.assoc('value')), toJson);
+      logger.info('[schemaHelper][jsonDecorator]', { jsonFields });
+
+      const toJson = (value) => {
+        if (R.is(String, value) && value.length) {
+          try {
+            return JSON.parse(value);
+          } catch (e) {
+            logger.warn('[schemaHelper][jsonDecorator]', e);
+            return null;
+          }
+        }
+        return null;
+      };
+
+      const transformValue    = R.over(R.lens(R.prop('value'), R.assoc('value')), toJson);
       const transformedFields = R.map(transformValue)(jsonFields);
       return R.mergeDeepRight(fields, transformedFields);
     }
