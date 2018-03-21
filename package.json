@@ -7,6 +7,18 @@
   "bin": {
     "asuna": "bin/asuna.js"
   },
+  "jest": {
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/test/",
+      "/.asuna"
+    ],
+    "coverageThreshold": {
+      "global": {
+      }
+    },
+    "collectCoverage": true
+  },
   "scripts": {
     "autod": "autod",
     "dev": "yarn && NODE_ENV=dev node $NODE_DEBUG_OPTION server.js",

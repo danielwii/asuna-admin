@@ -92,9 +92,15 @@ export const diff = (first, second, { include, exclude } = {}) => {
 };
 
 export const schemaHelper = {
-  peek: (message, callback) => async (fields) => {
-    callback();
+  peek: (message, callback?) => (fields) => {
+    if (callback) callback();
     logger.log('[schemaHelper][peek]', { message, fields });
+    return fields;
+  },
+
+  asyncPeek: (message, callback?) => async (fields) => {
+    if (callback) callback();
+    logger.log('[schemaHelper][asyncPeek]', { message, fields });
     return fields;
   },
 
@@ -103,14 +109,15 @@ export const schemaHelper = {
    * @param fields
    * @returns {Promise<*>}
    */
-  loadAssociationsDecorator: async (fields) => {
-    logger.log('[schemaHelper][loadAssociationsDecorator]', { fields });
+  asyncLoadAssociationsDecorator: async (fields) => {
+    const TAG = '[schemaHelper][asyncLoadAssociationsDecorator]';
+    logger.log(TAG, { fields });
 
     const relationShips = [DynamicFormTypes.Association, DynamicFormTypes.ManyToMany];
     const associations  = R.filter(field => R.contains(field.type)(relationShips))(fields);
 
     if (R.not(R.isEmpty(associations))) {
-      logger.info('[schemaHelper][loadAssociationsDecorator]', 'associations is', associations);
+      logger.info(TAG, 'associations is', associations);
 
       // 当已经拉取过数据后不再进行拉取
       const filteredAssociations =
@@ -124,7 +131,7 @@ export const schemaHelper = {
       const wrappedAssociations = await Promise.all(
         R.values(filteredAssociations).map(async (field) => {
           const foreignKeys = R.pathOr([], ['options', 'foreignKeys'])(field);
-          logger.info('[schemaHelper][loadAssociationsDecorator]', 'handle field', field, foreignKeys);
+          logger.info(TAG, 'handle field', field, foreignKeys);
           if (foreignKeys && foreignKeys.length > 0) {
             const fieldsOfAssociations = modelsProxy.getFieldsOfAssociations();
 
@@ -139,34 +146,34 @@ export const schemaHelper = {
               const association = fieldsOfAssociations[modelName];
               return { modelName, property, association };
             })(foreignKeys);
-            logger.info('[schemaHelper][loadAssociationsDecorator]', 'foreignOpts is', foreignOpts);
+            logger.info(TAG, 'foreignOpts is', foreignOpts);
 
             const associationNames = R.pluck('modelName')(foreignOpts);
-            logger.info('[schemaHelper][loadAssociationsDecorator]', 'associationNames is', associationNames);
+            logger.info(TAG, 'associationNames is', associationNames);
 
             const effects = modelsProxy.listAssociationsCallable(auth, associationNames);
-            logger.info('[schemaHelper][loadAssociationsDecorator]', 'list associations callable', effects);
+            logger.info(TAG, 'list associations callable', effects);
 
             let allResponse = {};
             try {
               allResponse = await Promise.all(R.values(effects));
-              logger.info('[schemaHelper][loadAssociationsDecorator]', 'allResponse is', allResponse);
+              logger.info(TAG, 'allResponse is', allResponse);
             } catch (e) {
-              logger.error('[schemaHelper][loadAssociationsDecorator]', e);
+              logger.error(TAG, e);
             }
 
             const foreignKeysResponse = R.zipObj(associationNames, R.map(R.prop('data'), allResponse));
-            logger.info('[schemaHelper][loadAssociationsDecorator]', 'foreignOpts is', foreignOpts, 'foreignKeysResponse is', foreignKeysResponse);
+            logger.info(TAG, 'foreignOpts is', foreignOpts, 'foreignKeysResponse is', foreignKeysResponse);
 
             return { ...field, foreignOpts, associations: foreignKeysResponse };
           }
-          logger.warn('[schemaHelper][loadAssociationsDecorator]', 'no foreignKeys with association', field);
+          logger.warn(TAG, 'no foreignKeys with association', field);
           return { ...field, type: DynamicFormTypes.Input };
         }),
       );
 
       const pairedWrappedAssociations = R.zipObj(R.keys(filteredAssociations), wrappedAssociations);
-      logger.info('[schemaHelper][loadAssociationsDecorator]', 'wrapped associations', pairedWrappedAssociations);
+      logger.info(TAG, 'wrapped associations', pairedWrappedAssociations);
 
       return R.mergeDeepRight(fields, pairedWrappedAssociations);
     }
@@ -179,7 +186,7 @@ export const schemaHelper = {
    * @param fields
    * @returns {*}
    */
-  associationDecorator: async (fields) => {
+  associationDecorator: (fields) => {
     logger.log('[schemaHelper][associationDecorator]', { fields });
 
     const associationFields = R.filter(R.compose(R.not, R.isNil, R.prop('associations')))(fields);
@@ -202,19 +209,20 @@ export const schemaHelper = {
     return fields;
   },
 
-  jsonDecorator: async (fields) => {
-    logger.log('[schemaHelper][jsonDecorator]', { fields });
+  jsonDecorator: (fields) => {
+    const TAG = '[schemaHelper][jsonDecorator]';
+    logger.log(TAG, { fields });
 
     const jsonFields = R.filter(R.pathEq(['options', 'json'], 'str'))(fields);
     if (R.not(R.isEmpty(jsonFields))) {
-      logger.info('[schemaHelper][jsonDecorator]', { jsonFields });
+      logger.info(TAG, { jsonFields });
 
       const toJson = (value) => {
         if (R.is(String, value) && value.length) {
           try {
             return JSON.parse(value);
           } catch (e) {
-            logger.warn('[schemaHelper][jsonDecorator]', e);
+            logger.warn(TAG, e);
             return null;
           }
         }
@@ -236,21 +244,22 @@ export const schemaHelper = {
    * @param fields
    * @returns {*}
    */
-  enumDecorator: async (fields) => {
-    logger.log('[schemaHelper][enumDecorator]', { fields });
+  enumDecorator: (fields) => {
+    const TAG = '[schemaHelper][enumDecorator]';
+    logger.log(TAG, { fields });
 
     const enumFilterFields = R.filter(R.propEq('type', DynamicFormTypes.EnumFilter))(fields);
     if (R.not(R.isEmpty(enumFilterFields))) {
       const [, enumFilterField] = R.toPairs(enumFilterFields)[0];
       // console.log(enumFilterField);
-      logger.info('[schemaHelper][enumDecorator]', { enumFilterField });
+      logger.info(TAG, { enumFilterField });
 
       const enums   = R.compose(
         R.map(R.prop('key')),
         R.path(['options', 'enum_data']),
       )(enumFilterField);
       const current = R.pathOr('', ['value'])(enumFilterField);
-      logger.info('[schemaHelper][enumDecorator]', { enums, current });
+      logger.info(TAG, { enums, current });
 
       // check if positions has value already
       // save positions value if no value exists, update models' sequence for else
@@ -280,7 +289,7 @@ export const schemaHelper = {
             ...R.fromPairs(positionsFieldPair),
           })
         : filteredFields;
-      logger.info('[schemaHelper][enumDecorator]', {
+      logger.info(TAG, {
         filteredNames, filteredFields, wrappedFields, positionsFieldPair,
       });
 

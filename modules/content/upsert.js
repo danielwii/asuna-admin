@@ -88,24 +88,29 @@ class ContentUpsert extends React.Component {
     const isInsertMode = this.detectUpsertMode(modelName);
 
     this.state = {
-      preDecorators: tag => [
+      preDecorators  : tag => [
         schemaHelper.peek(`before-${tag}`, () => this.setState({
           loadings: { ...this.state.loadings, [tag]: true },
         })),
         schemaHelper.jsonDecorator,
         schemaHelper.enumDecorator,
         schemaHelper.associationDecorator,
-        schemaHelper.loadAssociationsDecorator,
         schemaHelper.peek(`after-${tag}`, () => this.setState({
           loadings: { ...this.state.loadings, [tag]: false },
         })),
       ],
+      asyncDecorators: tag => [
+        // TODO 目前异步数据拉取无法在页面上显示对应字段的 loading 状态
+        schemaHelper.asyncPeek(`before-async-${tag}`),
+        schemaHelper.asyncLoadAssociationsDecorator,
+        schemaHelper.asyncPeek(`after-async-${tag}`),
+      ],
       isInsertMode,
       modelName,
-      init         : true,
-      loadings     : { INIT: true, LOAD: !isInsertMode },
-      fields       : {},
-      key          : basis.pane.key,
+      init           : true,
+      loadings       : { INIT: true, LOAD: !isInsertMode },
+      fields         : {},
+      key            : basis.pane.key,
     };
   }
 
@@ -134,8 +139,8 @@ class ContentUpsert extends React.Component {
     // Using pre decorators instead
     // --------------------------------------------------------------
 
-    const { preDecorators } = this.state;
-    const decoratedFields   = await R.pipeP(...preDecorators('INIT'))(
+    const { preDecorators, asyncDecorators } = this.state;
+    const decoratedFields   = R.pipe(...preDecorators('INIT'))(
       R.mergeDeepRight(formFields, this.state.fields),
     );
 
@@ -148,6 +153,9 @@ class ContentUpsert extends React.Component {
       // 即数据加载和模型初始化异步处理，数据初始化速度有时会快于模型加载
       fields: R.mergeDeepRight(decoratedFields, this.state.fields), // 最终渲染的对象
     });
+
+    const asyncDecoratedFields = await R.pipeP(...asyncDecorators('ASSOCIATIONS'))(decoratedFields);
+    this.setState({ fields: asyncDecoratedFields });
   }
 
   /**
@@ -211,20 +219,21 @@ class ContentUpsert extends React.Component {
   handleFormChange = async (changedFields) => {
     if (!R.isEmpty(changedFields)) {
       logger.log('[handleFormChange]', { changedFields, state: this.state });
-      const { wrappedFormSchema, fields, preDecorators } = this.state;
+      const { wrappedFormSchema, fields, preDecorators, asyncDecorators } = this.state;
 
       const currentChangedFields = R.map(R.pick(['value']))(changedFields);
       const changedFieldsBefore  = R.mergeDeepRight(wrappedFormSchema, fields);
       const allChangedFields     = R.mergeDeepRight(changedFieldsBefore, currentChangedFields);
       // 这里只装饰变化的 fields
-      const decoratedFields      = await R.pipeP(...preDecorators('LOAD'))(allChangedFields);
+      const decoratedFields      = R.pipe(...preDecorators('LOAD'))(allChangedFields);
       logger.info('[handleFormChange]', {
         currentChangedFields, changedFieldsBefore, allChangedFields, decoratedFields,
       });
 
-      this.setState({
-        fields: decoratedFields,
-      });
+      this.setState({ fields: decoratedFields });
+
+      const asyncDecoratedFields = await R.pipeP(...asyncDecorators('ASSOCIATIONS'))(decoratedFields);
+      this.setState({ fields: asyncDecoratedFields });
     }
   };
 
