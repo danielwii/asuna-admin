@@ -1,6 +1,6 @@
 {
   "name": "asuna-admin",
-  "version": "0.1.9",
+  "version": "0.2.0",
   "repository": "git@github.com:danielwii/asuna-admin.git",
   "author": "Daniel Wei <danielwii0326@gmail.com>",
   "license": "MIT",
@@ -14,8 +14,7 @@
       "/.asuna"
     ],
     "coverageThreshold": {
-      "global": {
-      }
+      "global": {}
     },
     "collectCoverage": true
   },
