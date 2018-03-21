@@ -8,13 +8,16 @@ import { createLogger } from '../adapters/logger';
 const logger = createLogger('components:login');
 
 // TODO using DynamicForm's component instead
-function generateInput(form, name, required, message, placeholder, iconType) {
+function generateInput(form, name, type, required, message, placeholder, iconType) {
   const decorator = form.getFieldDecorator(name, { rules: [{ required, message }] });
   if (iconType) {
-    return decorator(<Input
-      prefix={<Icon type={iconType} style={{ color: 'rgba(0,0,0,.25)' }} />}
-      placeholder={placeholder}
-    />);
+    return decorator(
+      <Input
+        type={type}
+        prefix={<Icon type={iconType} style={{ color: 'rgba(0,0,0,.25)' }} />}
+        placeholder={placeholder}
+      />,
+    );
   }
   return decorator(<Input placeholder={placeholder} />);
 }
@@ -35,8 +38,8 @@ class NormalLoginForm extends React.Component {
   render() {
     const { form } = this.props;
 
-    const usernameInput = generateInput(form, 'username', true, 'Please input your username!', 'Username', 'user');
-    const passwordInput = generateInput(form, 'password', true, 'Please input your Password!', 'Password', 'lock');
+    const usernameInput = generateInput(form, 'username', 'input', true, 'Please input your username!', 'Username', 'user');
+    const passwordInput = generateInput(form, 'password', 'password', true, 'Please input your Password!', 'Password', 'lock');
 
     return (
       <Form onSubmit={this.handleSubmit} className="login-form">
