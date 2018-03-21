@@ -122,6 +122,7 @@ export const schemaHelper = {
       // 当已经拉取过数据后不再进行拉取
       const filteredAssociations =
               R.pickBy(field => R.not(R.has('associations', field)))(associations);
+      logger.log(TAG, { filteredAssociations });
       if (R.isEmpty(filteredAssociations)) {
         return fields;
       }
@@ -225,6 +226,8 @@ export const schemaHelper = {
             logger.warn(TAG, e);
             return null;
           }
+        } else if (R.is(Object, value)) {
+          return value;
         }
         return null;
       };

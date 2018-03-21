@@ -139,7 +139,7 @@ class ContentUpsert extends React.Component {
     // Using pre decorators instead
     // --------------------------------------------------------------
 
-    const { preDecorators, asyncDecorators } = this.state;
+    const { preDecorators } = this.state;
     const decoratedFields   = R.pipe(...preDecorators('INIT'))(
       R.mergeDeepRight(formFields, this.state.fields),
     );
@@ -153,9 +153,6 @@ class ContentUpsert extends React.Component {
       // 即数据加载和模型初始化异步处理，数据初始化速度有时会快于模型加载
       fields: R.mergeDeepRight(decoratedFields, this.state.fields), // 最终渲染的对象
     });
-
-    const asyncDecoratedFields = await R.pipeP(...asyncDecorators('ASSOCIATIONS'))(decoratedFields);
-    this.setState({ fields: asyncDecoratedFields });
   }
 
   /**

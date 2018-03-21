@@ -8,7 +8,7 @@ import { Icon, message, Modal, Upload } from 'antd';
 import { apiProxy }         from '../../adapters/api';
 import { createLogger, lv } from '../../adapters/logger';
 
-const logger = createLogger('components:dynamic-form:images', lv.log);
+const logger = createLogger('components:dynamic-form:images', lv.warn);
 
 // --------------------------------------------------------------
 // Functions
@@ -121,7 +121,12 @@ export class ImageUploader extends React.Component {
 export class ImagesUploader extends React.Component {
   static propTypes = {
     auth    : PropTypes.shape({}), // auth token object
-    value   : PropTypes.string,    // image url in db
+    value   : PropTypes.arrayOf(PropTypes.shape({
+      bucket  : PropTypes.string,
+      filename: PropTypes.string,
+      mode    : PropTypes.string,
+      prefix  : PropTypes.string,
+    })),
     onChange: PropTypes.func,
   };
 
@@ -136,8 +141,8 @@ export class ImagesUploader extends React.Component {
    */
   componentWillMount() {
     logger.info('[componentWillMount]', this.props);
-    const { value: imageUrls } = this.props;
-    this.wrapImageUrlsToFileList(imageUrls);
+    const { value: images } = this.props;
+    this.wrapImagesToFileList(images);
   }
 
   /**
@@ -147,19 +152,18 @@ export class ImagesUploader extends React.Component {
    */
   componentWillReceiveProps(nextProps, nextContext) {
     logger.info('[componentWillReceiveProps]', nextProps, nextContext);
-    const { value: imageUrls } = nextProps;
-    this.wrapImageUrlsToFileList(imageUrls);
+    const { value: images } = nextProps;
+    this.wrapImagesToFileList(images);
   }
 
-  wrapImageUrlsToFileList = (imageUrls) => {
-    const files = _.compact(_.split(imageUrls, ','));
-    logger.info('[wrapImageUrlsToFileList]', 'files is', files);
-    const fileList = _.map(files, (file, index) => ({
+  wrapImagesToFileList = (images) => {
+    logger.info('[wrapImagesToFileList]', 'images is', images);
+    const fileList = _.map(images, (image, index) => ({
       uid   : index,
       status: 'done',
-      url   : file,
+      url   : `${image.prefix}/${image.filename}`,
     }));
-    logger.info('[wrapImageUrlsToFileList]', 'fileList is', fileList);
+    logger.info('[wrapImagesToFileList]', 'fileList is', fileList);
     this.setState({ fileList });
   };
 
@@ -175,12 +179,11 @@ export class ImagesUploader extends React.Component {
   handleChange = ({ fileList }) => this.setState({ fileList });
 
   render() {
+    const { auth, onChange, value: images }          = this.props;
     const { previewVisible, previewImage, fileList } = this.state;
 
-    const { auth, onChange } = this.props;
-
     const files = R.map(R.prop('url')())(fileList);
-    logger.info('[render]', 'files is', fileList, files);
+    logger.info('[render]', { fileList, files });
 
     const uploadButton = (
       <div>
@@ -195,7 +198,7 @@ export class ImagesUploader extends React.Component {
           listType="picture-card"
           fileList={fileList}
           supportServerRender
-          customRequest={(...args) => upload(auth, onChange, files, ...args)}
+          customRequest={(...args) => upload(auth, onChange, images, ...args)}
           beforeUpload={beforeUpload}
           onPreview={this.handlePreview}
           onChange={this.handleChange}

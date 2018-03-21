@@ -255,3 +255,23 @@ test('schemaHelper.jsonDecorator return null for wrong json format', async () =>
     refInclude: { value: null, type: 'ManyToMany', options: { json: 'str' } },
   });
 });
+
+test('schemaHelper.jsonDecorator handle json format', async () => {
+  const decorated = await schemaHelper.jsonDecorator({
+    bg: {
+      value  : [
+        { bucket: 'images_uploader', filename: 'wallhaven-82908_thfrL3.jpg', mode: 'local', prefix: 'images/images_uploader' },
+      ],
+      type: 'Image',
+      options: { json: 'str' },
+    },
+  });
+
+  expect(decorated).toEqual({
+    bg: { value: [
+      { bucket: 'images_uploader', filename: 'wallhaven-82908_thfrL3.jpg', mode: 'local', prefix: 'images/images_uploader' },
+    ],
+    type: 'Image',
+    options: { json: 'str' } },
+  });
+});
