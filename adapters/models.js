@@ -217,16 +217,17 @@ export class ModelsAdapter {
       R.mergeAll,
       R.map(formatted => ({ [formatted.name]: formatted })),
       R.map((field) => {
-        const ref = R.pathOr(field.name, ['config', 'info', 'ref'])(field);
+        const ref      = R.pathOr(field.name, ['config', 'info', 'ref'])(field);
+        const required = R.not(R.pathOr(true, ['config', 'nullable'])(field));
         return ({
           name   : ref || field.name,
           ref,
           type   : this.identifyType(field),
           options: {
-            label      : R.path(['config', 'info', 'name'])(field),
             ...R.path(['config', 'info'])(field),
+            label      : R.pathOr(null, ['config', 'info', 'name'])(field),
             foreignKeys: R.path(['config', 'foreign_keys'])(field),
-            required   : R.not(R.pathOr(true, ['config', 'nullable'])(field)),
+            required   : required || R.pathOr(false, ['config', 'info', 'required'])(field),
           },
           value  : R.prop(field.name)(values),
         });
@@ -284,5 +285,5 @@ export class ModelsAdapter {
   // eslint-disable-next-line function-paren-newline
   listSchemasCallable = ({ token }) => Object.assign(
     ...this.allModels.map(name => ({ [name]: this.loadSchema({ token }, name) })),
-  )
+  );
 }
