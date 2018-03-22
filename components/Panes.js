@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import _         from 'lodash';
 import * as R    from 'ramda';
 
-import { Button, Tabs, Divider } from 'antd';
+import { Button, Divider, Tabs } from 'antd';
 
 import { createLogger } from '../adapters/logger';
 import ModulesLoader    from '../modules';

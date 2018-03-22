@@ -5,6 +5,7 @@ import styled    from 'styled-components';
 import { Button, Dropdown, Icon, Layout, Menu } from 'antd';
 
 import { authActions } from '../store/auth.redux';
+import pkg             from '../package.json';
 
 const { Header } = Layout;
 
@@ -14,6 +15,10 @@ const StyledLogoImg = styled.img`
   margin: 16px 28px 16px 0;
   float: left;
   border-radius: 0.1rem;
+`;
+const StyledVersion = styled.span`
+  color: silver;
+  vertical-align: baseline;
 `;
 
 export default class extends React.Component {
@@ -46,6 +51,7 @@ export default class extends React.Component {
         <div className="logo">
           <StyledLogoImg src="/static/logo.png" alt="mast" />
         </div>
+        <StyledVersion>v{pkg.version}</StyledVersion>
         {/*
         <Menu
           theme="dark"

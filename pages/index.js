@@ -22,13 +22,13 @@ import { SecurityAdapter }       from '../adapters/security';
 import { ModelsAdapter }         from '../adapters/models';
 import { MenuAdapter }           from '../adapters/menu';
 import { PyResponseAdapter }     from '../adapters/response';
-import { createLogger }          from '../adapters/logger';
 import { ApiAdapter }            from '../adapters/api';
 import { StoreConnectorAdapter } from '../adapters/storeConnector';
+import { createLogger, lv }      from '../adapters/logger';
 
-import { modelConfigs, registeredModels, associations } from '../services/definitions';
+import { associations, modelConfigs, registeredModels } from '../services/definitions';
 
-const logger = createLogger('pages:index');
+const logger = createLogger('pages:index', lv.warn);
 
 // --------------------------------------------------------------
 // Setup context
@@ -63,22 +63,33 @@ const DynamicMainLayoutLoading = dynamic(
 
 class Index extends React.Component {
   static propTypes = {
-    auth: PropTypes.shape({}),
-    app : PropTypes.shape({
+    appInfo: PropTypes.shape({}),
+    auth   : PropTypes.shape({}),
+    app    : PropTypes.shape({
       loading: PropTypes.bool,
     }),
   };
 
+  static async getInitialProps({ req }) {
+    const userAgent = req ? req.headers['user-agent'] : navigator.userAgent;
+    return {
+      appInfo: { userAgent },
+    };
+  }
+
   componentWillMount() {
-    logger.log('componentWillMount...', this.props);
+    logger.info('[componentWillMount]', this.props);
     const { dispatch } = this.props;
     dispatch(appActions.init());
   }
 
   render() {
-    const { auth, app: { loading } } = this.props;
+    const { auth, app: { loading }, appInfo } = this.props;
+    logger.info('[render]', this.props);
 
-    return loading ? <Loading /> : <DynamicMainLayoutLoading auth={auth} />;
+    return loading
+      ? <Loading />
+      : <DynamicMainLayoutLoading auth={auth} appInfo={appInfo} />;
   }
 }
 
