@@ -24,7 +24,12 @@ export const columnHelper = {
     key,
     title,
     dataIndex: key,
-    render   : text => (render ? render(text) : moment(text).calendar()),
+    render   : (text) => {
+      if (text) {
+        return render ? render(text) : moment(text).calendar();
+      }
+      return 'n/a';
+    },
   }),
   /**
    * 生成动作按钮
@@ -60,22 +65,22 @@ export const commonColumns = {
 
 export const defaultColumns = actions => [
   commonColumns.id,
-  // commonColumns.createdAt,
-  commonColumns.updatedAt,
+  // TODO 需要一个基本字段名称转换的参数来选择使用的渲染配置
+  commonColumns.updated_at,
   commonColumns.actions(actions),
 ];
 
 export const defaultNameColumns = actions => [
   commonColumns.id,
   commonColumns.name,
-  commonColumns.updatedAt,
+  commonColumns.updated_at,
   commonColumns.actions(actions),
 ];
 
 export const defaultTitleColumns = actions => [
   commonColumns.id,
   commonColumns.title,
-  commonColumns.updatedAt,
+  commonColumns.updated_at,
   commonColumns.actions(actions),
 ];
 

@@ -5,14 +5,14 @@ import * as R      from 'ramda';
 
 import { Button, Divider, Modal, Table } from 'antd';
 
-import { panesActions }   from '../../store/panes.redux';
-import { contentActions } from '../../store/content.redux';
-import { modelsActions }  from '../../store/models.redux';
-import { modelsProxy }    from '../../adapters/models';
-import { responseProxy }  from '../../adapters/response';
-import { createLogger }   from '../../adapters/logger';
+import { panesActions }     from '../../store/panes.redux';
+import { contentActions }   from '../../store/content.redux';
+import { modelsActions }    from '../../store/models.redux';
+import { modelsProxy }      from '../../adapters/models';
+import { responseProxy }    from '../../adapters/response';
+import { createLogger, lv } from '../../adapters/logger';
 
-const logger = createLogger('modules:content:index');
+const logger = createLogger('modules:content:index', lv.warn);
 
 class ContentIndex extends React.Component {
   static propTypes = {
@@ -38,7 +38,11 @@ class ContentIndex extends React.Component {
         <Button size="small" type="dashed" onClick={() => this.edit(text, record)}>Edit</Button>
         {R.not(R.prop('is_system', record)) && <React.Fragment>
           <Divider type="vertical" />
-          <Button size="small" type="danger" onClick={() => this.remove(text, record)}>Delete</Button>
+          <Button
+            size="small"
+            type="danger"
+            onClick={() => this.remove(text, record)}
+          >Delete</Button>
         </React.Fragment>}
       </span>
     );
