@@ -17,5 +17,5 @@ export class ApiAdapter {
     return this.service.upload({ token }, file, options);
   };
 
-  getVersion = ({ token }) => this.service.getVersion({ token })
+  getVersion = ({ token }) => this.service.getVersion({ token });
 }

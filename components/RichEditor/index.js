@@ -1,10 +1,10 @@
 import React     from 'react';
 import PropTypes from 'prop-types';
 
-import { createLogger } from '../../adapters/logger';
-import { apiProxy }     from '../../adapters/api';
+import { apiProxy }         from '../../adapters/api';
+import { createLogger, lv } from '../../adapters/logger';
 
-const logger = createLogger('components:rich-editor');
+const logger = createLogger('components:rich-editor', lv.warn);
 
 let BraftEditor;
 
@@ -80,8 +80,11 @@ export class BraftRichEditor extends React.Component {
     logger.info('[uploadFn]', 'response is', response);
 
     if (response.status === 200) {
+      // TODO 返回值的结构应该在未来包含于 adapter 中由异构系统自定义
+      const image = response.data[0];
       param.success({
-        url: response.data,
+        image,
+        url: `${image.prefix}/${image.filename}`,
       });
     } else {
       param.error({
