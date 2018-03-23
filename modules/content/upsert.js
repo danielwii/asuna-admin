@@ -9,7 +9,8 @@ import { Form, Icon } from 'antd';
 import { DynamicForm2, DynamicFormTypes } from '../../components/DynamicForm';
 import { modelsProxy }                    from '../../adapters/models';
 import { modelsActions }                  from '../../store/models.redux';
-import { diff, schemaHelper }             from '../../helpers';
+import { diff }                           from '../../helpers';
+import * as schemaHelper                  from '../../helpers/schema';
 import { createLogger, lv }               from '../../adapters/logger';
 
 const logger = createLogger('modules:content:upsert', lv.warn);
@@ -92,6 +93,7 @@ class ContentUpsert extends React.Component {
         schemaHelper.peek(`before-${tag}`, () => this.setState({
           loadings: { ...this.state.loadings, [tag]: true },
         })),
+        schemaHelper.hiddenComponentDecorator,
         schemaHelper.jsonDecorator,
         schemaHelper.enumDecorator,
         schemaHelper.associationDecorator,
@@ -101,9 +103,10 @@ class ContentUpsert extends React.Component {
       ],
       asyncDecorators: tag => [
         // TODO 目前异步数据拉取无法在页面上显示对应字段的 loading 状态
-        schemaHelper.asyncPeek(`before-async-${tag}`),
+        async fields => R.curry(schemaHelper.peek(`before-async-${tag}`))(fields),
+        async fields => schemaHelper.hiddenComponentDecorator(fields),
         schemaHelper.asyncLoadAssociationsDecorator,
-        schemaHelper.asyncPeek(`after-async-${tag}`),
+        async fields => R.curry(schemaHelper.peek(`after-async-${tag}`))(fields),
       ],
       isInsertMode,
       modelName,

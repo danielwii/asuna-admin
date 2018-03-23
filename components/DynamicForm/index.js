@@ -416,6 +416,7 @@ class FormAnchor extends React.Component {
               );
             }),
             R.filter(field => field.type),
+            R.filter(R.compose(R.not, R.pathOr(false, ['options', 'hidden']))),
           )(fields)
         }
       </Anchor>
@@ -453,8 +454,11 @@ class EnhancedPureElement extends React.Component {
   render() {
     const { field, index, builder } = this.props;
     logger.info('[EnhancedPureElement]', '[render]', { props: this.props, state: this.state });
+
+    // options.hidden = true 时需要隐藏该元素
+    const hidden = R.pathOr(false, ['options', 'hidden'])(field);
     return (
-      <div key={index} id={`dynamic-form-${field.name}`}>
+      <div key={index} id={`dynamic-form-${field.name}`} hidden={hidden}>
         {builder(field, index)}
         <hr style={{ borderStyle: 'ridge' }} />
       </div>
