@@ -127,10 +127,7 @@ class ContentIndex extends React.Component {
 
     const { items: dataSource, pagination } = responseProxy.extract(response);
 
-    logger.info('[render]', 'models is', models);
-    logger.info('[render]', 'dataSource is', dataSource);
-    logger.info('[render]', 'columns is', columns);
-    logger.info('[render]', 'pagination is', pagination);
+    logger.info('[render]', { models, dataSource, columns, pagination });
 
     return (
       <div>

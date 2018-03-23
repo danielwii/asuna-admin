@@ -1,14 +1,15 @@
 import { all, call, put, select, takeLatest } from 'redux-saga/effects';
 
+import { message }     from 'antd';
 import { reduxAction } from 'node-buffs';
 import * as R          from 'ramda';
 import _               from 'lodash';
 
-import { message }      from 'antd';
-import { modelsProxy }  from '../adapters/models';
-import { createLogger } from '../adapters/logger';
+import { contentActions }   from './content.redux';
+import { modelsProxy }      from '../adapters/models';
+import { createLogger, lv } from '../adapters/logger';
 
-const logger = createLogger('store:models');
+const logger = createLogger('store:models', lv.warn);
 
 // --------------------------------------------------------------
 // Module actionTypes
@@ -87,6 +88,8 @@ const modelsSagaFunctions = {
         logger.log('[upsert]', 'response of upsert model is', response);
         // save model data when upsert is success
         yield put(modelsActions.fetchSuccess(modelName, response.data));
+        // refresh models in content index
+        yield put(contentActions.loadModels(modelName));
       } catch (e) {
         logger.warn('[upsert]', 'CATCH -> upsert model error', e);
         message.error(e.message);
