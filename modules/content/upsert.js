@@ -103,15 +103,19 @@ class ContentUpsert extends React.Component {
       ],
       asyncDecorators: tag => [
         // TODO 目前异步数据拉取无法在页面上显示对应字段的 loading 状态
-        async fields => R.curry(schemaHelper.peek(`before-async-${tag}`))(fields),
-        async fields => schemaHelper.hiddenComponentDecorator(fields),
+        async fields => R.curry(schemaHelper.peek(`before-async-${tag}`, this.setState({
+          loadings: { ...this.state.loadings, [tag]: true },
+        })))(fields),
+        // async fields => schemaHelper.hiddenComponentDecorator(fields),
         schemaHelper.asyncLoadAssociationsDecorator,
-        async fields => R.curry(schemaHelper.peek(`after-async-${tag}`))(fields),
+        async fields => R.curry(schemaHelper.peek(`after-async-${tag}`, this.setState({
+          loadings: { ...this.state.loadings, [tag]: false },
+        })))(fields),
       ],
       isInsertMode,
       modelName,
       init           : true,
-      loadings       : { INIT: true, LOAD: !isInsertMode },
+      loadings       : { INIT: true, LOAD: !isInsertMode, ASSOCIATIONS: true },
       fields         : {},
       key            : basis.pane.key,
     };
@@ -142,8 +146,8 @@ class ContentUpsert extends React.Component {
     // Using pre decorators instead
     // --------------------------------------------------------------
 
-    const { preDecorators } = this.state;
-    const decoratedFields   = R.pipe(...preDecorators('INIT'))(
+    const { preDecorators, asyncDecorators } = this.state;
+    const decoratedFields                    = R.pipe(...preDecorators('INIT'))(
       R.mergeDeepRight(formFields, this.state.fields),
     );
 
@@ -155,6 +159,12 @@ class ContentUpsert extends React.Component {
       // it have to be merged with fields in state
       // 即数据加载和模型初始化异步处理，数据初始化速度有时会快于模型加载
       fields: R.mergeDeepRight(decoratedFields, this.state.fields), // 最终渲染的对象
+    });
+
+    // 在 setTimeout 中运行是为了保证 loadings.INIT 为 false
+    setTimeout(async () => {
+      const asyncDecoratedFields = await R.pipeP(...asyncDecorators('ASSOCIATIONS'))(decoratedFields);
+      this.setState({ fields: asyncDecoratedFields });
     });
   }
 
@@ -168,6 +178,7 @@ class ContentUpsert extends React.Component {
       props: this.props, state: this.state, nextProps,
     });
     const { isInsertMode, modelName, init } = this.state;
+    // 初次更新时加载数据
     if (!isInsertMode && init) {
       const { models, basis: { pane: { data: { record } } } } = nextProps;
 
@@ -191,7 +202,7 @@ class ContentUpsert extends React.Component {
     const { activeKey } = nextProps;
     const propsDiff     = false;
     // const propsDiff     = diff(this.props, nextProps);
-    const stateDiff     = diff(this.state, nextState, { include: ['fields'] });
+    const stateDiff     = diff(this.state, nextState, { include: ['fields', 'loadings'] });
     const samePane      = key === activeKey;
     const shouldUpdate  = samePane && (propsDiff.isDifferent || stateDiff.isDifferent);
     logger.log('[shouldComponentUpdate]',
@@ -232,8 +243,11 @@ class ContentUpsert extends React.Component {
 
       this.setState({ fields: decoratedFields });
 
-      const asyncDecoratedFields = await R.pipeP(...asyncDecorators('ASSOCIATIONS'))(decoratedFields);
-      this.setState({ fields: asyncDecoratedFields });
+      // 仅在类型为 EnumFilter 的数据发生变更时刷新关联数据
+      if (!R.isEmpty(R.filter(R.propEq('type', 'EnumFilter'), changedFields))) {
+        const asyncDecoratedFields = await R.pipeP(...asyncDecorators('ASSOCIATIONS'))(decoratedFields);
+        this.setState({ fields: asyncDecoratedFields });
+      }
     }
   };
 
