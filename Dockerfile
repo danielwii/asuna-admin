@@ -5,7 +5,7 @@ COPY bin /app/bin
 
 WORKDIR /app
 
-RUN yarn
+RUN yarn && yarn build
 
 ADD . /app
 
