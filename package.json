@@ -27,6 +27,8 @@
     "build-storybook": "NODE_ENV=dev build-storybook",
     "collect": "sh ./bin/collect.sh",
     "pre-commit": "jest",
+    "changelog": "conventional-changelog -p asuna-admin -i CHANGELOG.md",
+    "init-changelog": "conventional-changelog -p asuna-admin -i CHANGELOG.md -r 0",
     "postinstall": "yarn collect"
   },
   "dependencies": {
@@ -91,6 +93,7 @@
     "babel-jest": "^23.0.0-alpha.0",
     "babel-plugin-import": "^1.6.7",
     "babel-plugin-styled-components": "^1.5.1",
+    "cz-conventional-changelog": "^2.1.0",
     "eslint": "^4.19.0",
     "eslint-config-airbnb": "^16.1.0",
     "eslint-plugin-flowtype": "^2.46.1",
@@ -104,5 +107,10 @@
     "jest": "^22.4.2",
     "webpack-bundle-analyzer": "^2.11.1",
     "webpack-jarvis": "0.3.0"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }

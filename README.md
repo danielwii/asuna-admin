@@ -1,5 +1,7 @@
 # Asuna-Admin
 
+[changelog](https://github.com/danielwii/asuna-admin/blob/master/CHANGELOG.md)
+
 ## Develop
 
 根据 `.env.example` 创建 `.env` 并配置对应的服务地址。
@@ -70,7 +72,3 @@ modelColumns = {
   },
 }
 ```
-
-## Changelog
-
-- 0.0.2 - Mar 2 2018 - 修改视频对象结构为 JSON。
