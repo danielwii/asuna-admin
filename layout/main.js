@@ -8,6 +8,8 @@ import HeaderContainer   from '../containers/Header';
 import PanesContainer    from '../containers/Panes';
 import SideMenuContainer from '../containers/SideMenu';
 
+import ProgressBar from '../components/ProgressBar';
+
 const StyledContentDiv = styled.div`
   background: #fff;
   padding: .5rem;
@@ -18,6 +20,7 @@ const StyledContentDiv = styled.div`
 export default () => (
   <AntdLayout>
     <Layout>
+      <ProgressBar />
       <HeaderContainer />
       <Layout>
         <SideMenuContainer />
