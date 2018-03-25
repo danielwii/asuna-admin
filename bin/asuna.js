@@ -71,11 +71,9 @@ function buildImage() {
 program
   .version('0.1.0');
 
-const dockerCommand = program
+program
   .command('docker')
-  .description('build docker image');
-
-dockerCommand
+  .description('build docker image')
   .action(() => {
     console.log('[x] build docker image');
 
@@ -168,6 +166,13 @@ program
     const asunaRoot = path.join(__dirname, '../server.js');
     console.log('[x] %s', asunaRoot);
     startProcess();
+  });
+
+program
+  .command('env')
+  .description('generate .env.example in current folder')
+  .action(() => {
+    shell.cp(path.join(__dirname, '../.env.example'), process.env.PWD);
   });
 
 if (!process.argv.slice(2).length) {
