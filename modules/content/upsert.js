@@ -50,9 +50,13 @@ const ContentForm = Form.create({
         }
         return { ...field, value };
       }),
+      // remove fields when validating=true
+      R.filter(field => !R.prop('validating', field)),
     )(changedFields);
-    logger.info('[ContentForm][onFieldsChange]', 'real changed fields is', filteredChangedFields);
-    props.onChange(filteredChangedFields);
+    if (!R.isEmpty(filteredChangedFields)) {
+      logger.info('[ContentForm][onFieldsChange]', 'real changed fields is', filteredChangedFields);
+      props.onChange(filteredChangedFields);
+    }
   },
 })(DynamicForm2);
 
@@ -90,16 +94,12 @@ class ContentUpsert extends React.Component {
 
     this.state = {
       preDecorators  : tag => [
-        schemaHelper.peek(`before-${tag}`, () => this.setState({
-          loadings: { ...this.state.loadings, [tag]: true },
-        })),
+        schemaHelper.peek(`before-${tag}`),
         schemaHelper.hiddenComponentDecorator,
         schemaHelper.jsonDecorator,
         schemaHelper.enumDecorator,
         schemaHelper.associationDecorator,
-        schemaHelper.peek(`after-${tag}`, () => this.setState({
-          loadings: { ...this.state.loadings, [tag]: false },
-        })),
+        schemaHelper.peek(`after-${tag}`),
       ],
       asyncDecorators: tag => [
         // TODO 目前异步数据拉取无法在页面上显示对应字段的 loading 状态
@@ -159,6 +159,7 @@ class ContentUpsert extends React.Component {
       // it have to be merged with fields in state
       // 即数据加载和模型初始化异步处理，数据初始化速度有时会快于模型加载
       fields: R.mergeDeepRight(decoratedFields, this.state.fields), // 最终渲染的对象
+      loadings: { ...this.state.loadings, INIT: false },
     });
 
     // 在 setTimeout 中运行是为了保证 loadings.INIT 为 false
@@ -240,14 +241,25 @@ class ContentUpsert extends React.Component {
       const allChangedFields     = R.mergeDeepRight(changedFieldsBefore, currentChangedFields);
       // 这里只装饰变化的 fields
       const decoratedFields      = R.pipe(...preDecorators('LOAD'))(allChangedFields);
+
+      const stateDiff = diff(this.state, { fields: decoratedFields }, { include: ['fields'] });
       logger.info('[handleFormChange]', {
-        currentChangedFields, changedFieldsBefore, allChangedFields, decoratedFields,
+        fields,
+        decoratedFields,
+        stateDiff,
+        currentChangedFields,
+        changedFieldsBefore,
+        allChangedFields,
       });
 
-      this.setState({ fields: decoratedFields });
+      this.setState({
+        fields: decoratedFields,
+        loadings: { ...this.state.loadings, LOAD: false },
+      });
 
       // 仅在类型为 EnumFilter 的数据发生变更时刷新关联数据
       if (!R.isEmpty(R.filter(R.propEq('type', 'EnumFilter'), changedFields))) {
+        logger.info('[handleFormChange]', 'load async decorated fields');
         const asyncDecoratedFields = await R.pipeP(...asyncDecorators('ASSOCIATIONS'))(decoratedFields);
         this.setState({ fields: asyncDecoratedFields });
       }
