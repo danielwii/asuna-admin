@@ -140,6 +140,7 @@ class ContentIndex extends React.Component {
         <hr />
 
         <Table
+          className="asuna-content-table"
           dataSource={dataSource}
           rowKey="id"
           loading={loading}
@@ -147,6 +148,12 @@ class ContentIndex extends React.Component {
           pagination={pagination}
           onChange={this.handleTableChange}
         />
+        {/* language=CSS */}
+        <style jsx global>{`
+        .asuna-content-table td {
+          padding: 0.3rem !important;
+        }
+        `}</style>
       </div>
     );
   }

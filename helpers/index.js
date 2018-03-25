@@ -1,7 +1,11 @@
 // export const authHeader = token => ({ headers: { Authorization: `Bearer ${token}` } });
+import React    from 'react';
 import moment   from 'moment/moment';
 import * as R   from 'ramda';
 import deepDiff from 'deep-diff';
+import Truncate from 'react-truncate';
+
+import { Tooltip } from 'antd';
 
 import { createLogger, lv } from '../adapters/logger';
 
@@ -16,7 +20,16 @@ export const columnHelper = {
     key,
     title,
     dataIndex: key,
-    render   : text => (render ? render(text) : text),
+    render   : (text) => {
+      const value = render ? render(text) : text;
+      return (
+        <Truncate
+          trimWhitespace
+          lines={1}
+          ellipsis={<Tooltip title={value}>...</Tooltip>}
+        >{value}</Truncate>
+      );
+    },
   }),
   generateCalendar: (key, title, render?) => ({
     key,
@@ -24,7 +37,14 @@ export const columnHelper = {
     dataIndex: key,
     render   : (text) => {
       if (text) {
-        return render ? render(text) : moment(text).calendar();
+        const value = render ? render(text) : moment(text).calendar();
+        return (
+          <Truncate
+            trimWhitespace
+            lines={1}
+            ellipsis={<Tooltip title={value}>...</Tooltip>}
+          >{value}</Truncate>
+        );
       }
       return 'n/a';
     },
