@@ -34,6 +34,15 @@ export const hiddenComponentDecorator = (fields) => {
   return wrappedFields;
 };
 
+export const asyncLoadAssociationsMerger = (fields, rightFields) => {
+  const TAG = '[asyncLoadAssociationsMerger]';
+  logger.log(TAG, { fields, rightFields });
+
+  return R.mergeWith((l, r) => ({
+    ...R.mergeDeepRight(l, r), value: l.value }
+  ))(fields, rightFields);
+};
+
 /**
  * 异步加载所有的关联对象，用于下拉菜单提示
  * @param fields

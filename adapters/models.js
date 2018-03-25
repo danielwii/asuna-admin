@@ -229,7 +229,7 @@ export class ModelsAdapter {
             foreignKeys: R.path(['config', 'foreign_keys'])(field),
             required   : required || R.pathOr(false, ['config', 'info', 'required'])(field),
           },
-          value  : R.prop(field.name)(values),
+          value  : R.propOr(null, field.name)(values),
         });
       }),
     )(schema);

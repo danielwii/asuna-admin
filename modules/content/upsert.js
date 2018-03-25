@@ -164,7 +164,10 @@ class ContentUpsert extends React.Component {
     // 在 setTimeout 中运行是为了保证 loadings.INIT 为 false
     setTimeout(async () => {
       const asyncDecoratedFields = await R.pipeP(...asyncDecorators('ASSOCIATIONS'))(decoratedFields);
-      this.setState({ fields: asyncDecoratedFields });
+      const fields               = schemaHelper.asyncLoadAssociationsMerger(
+        this.state.fields, asyncDecoratedFields,
+      );
+      this.setState({ fields });
     });
   }
 
