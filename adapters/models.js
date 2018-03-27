@@ -229,7 +229,9 @@ export class ModelsAdapter {
             foreignKeys: R.path(['config', 'foreign_keys'])(field),
             required   : required || R.pathOr(false, ['config', 'info', 'required'])(field),
           },
-          value  : R.propOr(null, field.name)(values),
+          // 不存在时返回 undefined，而不能返回 null
+          // null 会被当作值在更新时被传递
+          value  : R.prop(field.name)(values),
         });
       }),
     )(schema);

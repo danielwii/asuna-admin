@@ -60,167 +60,187 @@ describe('identify types', () => {
   });
 });
 
-test('getFormSchema matched related fields', () => {
-  const adapter = new ModelsAdapter({});
-  const fields  = adapter.getFormSchema({
-    test_schema: [
-      {
-        config: {
-          foreign_keys: [
+describe('getFormSchema', () => {
+  it('should return undefined when value not exists', () => {
+    const adapter = new ModelsAdapter({});
+    const fields  = adapter.getFormSchema({
+      test_schema: [{
+        name: 'test_name',
+      }],
+    }, 'test_schema', { test_related_id: 1 });
+    expect(fields).toEqual({
+      test_name: {
+        name : 'test_name',
+        type: undefined,
+        ref : 'test_name',
+        options: { foreignKeys: undefined, label: null, required: false },
+        value: undefined,
+      },
+    });
+  });
+
+  it('should matched related fields', () => {
+    const adapter = new ModelsAdapter({});
+    const fields  = adapter.getFormSchema({
+      test_schema: [
+        {
+          config: {
+            foreign_keys: [
+              't_test_relates.id',
+            ],
+            info        : {
+              name   : 'TEST_NAME',
+              ref    : 'test_related',
+              tooltip: 'tooltip-info',
+            },
+            nullable    : true,
+            primary_key : false,
+            type        : 'INTEGER',
+          },
+          name  : 'test_related_id',
+        },
+      ],
+    }, 'test_schema', { test_related_id: 1 });
+    expect(fields).toEqual({
+      test_related: {
+        name   : 'test_related',
+        options: {
+          foreignKeys: [
             't_test_relates.id',
           ],
-          info        : {
-            name   : 'TEST_NAME',
-            ref    : 'test_related',
-            tooltip: 'tooltip-info',
+          label      : 'TEST_NAME',
+          name       : 'TEST_NAME',
+          ref        : 'test_related',
+          required   : false,
+          tooltip    : 'tooltip-info',
+        },
+        ref    : 'test_related',
+        type   : 'Association',
+        value  : 1,
+      },
+    });
+  });
+
+  it('should handle nullable fields', () => {
+    const adapter            = new ModelsAdapter({});
+    const fieldsWithNullable = adapter.getFormSchema({
+      test_schema: [
+        {
+          config: {
+            foreign_keys: [],
+            info        : {},
+            nullable    : true,
+            primary_key : false,
+            type        : 'INTEGER',
           },
-          nullable    : true,
-          primary_key : false,
-          type        : 'INTEGER',
+          name  : 'test-nullable',
         },
-        name  : 'test_related_id',
-      },
-    ],
-  }, 'test_schema', { test_related_id: 1 });
-  expect(fields).toEqual({
-    test_related: {
-      name   : 'test_related',
-      options: {
-        foreignKeys: [
-          't_test_relates.id',
-        ],
-        label      : 'TEST_NAME',
-        name       : 'TEST_NAME',
-        ref        : 'test_related',
-        required   : false,
-        tooltip    : 'tooltip-info',
-      },
-      ref    : 'test_related',
-      type   : 'Association',
-      value  : 1,
-    },
-  });
-});
+      ],
+    }, 'test_schema', { 'test-nullable': 1 });
 
-test('getFormSchema nullable handler', () => {
-  const adapter            = new ModelsAdapter({});
-  const fieldsWithNullable = adapter.getFormSchema({
-    test_schema: [
-      {
-        config: {
-          foreign_keys: [],
-          info        : {},
-          nullable    : true,
-          primary_key : false,
-          type        : 'INTEGER',
+    expect(fieldsWithNullable).toEqual({
+      'test-nullable': {
+        name   : 'test-nullable',
+        options: {
+          foreignKeys: [],
+          required   : false,
+          label      : null,
         },
-        name  : 'test-nullable',
+        ref    : 'test-nullable',
+        type   : 'InputNumber',
+        value  : 1,
       },
-    ],
-  }, 'test_schema', { 'test-nullable': 1 });
+    });
 
-  expect(fieldsWithNullable).toEqual({
-    'test-nullable': {
-      name   : 'test-nullable',
-      options: {
-        foreignKeys: [],
-        required   : false,
-        label      : null,
-      },
-      ref    : 'test-nullable',
-      type   : 'InputNumber',
-      value  : 1,
-    },
-  });
-
-  const fieldsWithRequired = adapter.getFormSchema({
-    test_schema: [
-      {
-        config: {
-          foreign_keys: [],
-          info        : {},
-          nullable    : false,
-          primary_key : false,
-          type        : 'INTEGER',
-        },
-        name  : 'test-nullable',
-      },
-    ],
-  }, 'test_schema', { 'test-nullable': 1 });
-
-  expect(fieldsWithRequired).toEqual({
-    'test-nullable': {
-      name   : 'test-nullable',
-      options: {
-        foreignKeys: [],
-        required   : true,
-        label      : null,
-      },
-      ref    : 'test-nullable',
-      type   : 'InputNumber',
-      value  : 1,
-    },
-  });
-
-  const fieldsWithRequiredInInfo = adapter.getFormSchema({
-    test_schema: [
-      {
-        config: {
-          foreign_keys: [],
-          info        : {
-            required: true,
+    const fieldsWithRequired = adapter.getFormSchema({
+      test_schema: [
+        {
+          config: {
+            foreign_keys: [],
+            info        : {},
+            nullable    : false,
+            primary_key : false,
+            type        : 'INTEGER',
           },
-          nullable    : true,
-          primary_key : false,
-          type        : 'INTEGER',
+          name  : 'test-nullable',
         },
-        name  : 'test-nullable',
-      },
-    ],
-  }, 'test_schema', { 'test-nullable': 1 });
+      ],
+    }, 'test_schema', { 'test-nullable': 1 });
 
-  expect(fieldsWithRequiredInInfo).toEqual({
-    'test-nullable': {
-      name   : 'test-nullable',
-      options: {
-        foreignKeys: [],
-        required   : true,
-        label      : null,
+    expect(fieldsWithRequired).toEqual({
+      'test-nullable': {
+        name   : 'test-nullable',
+        options: {
+          foreignKeys: [],
+          required   : true,
+          label      : null,
+        },
+        ref    : 'test-nullable',
+        type   : 'InputNumber',
+        value  : 1,
       },
-      ref    : 'test-nullable',
-      type   : 'InputNumber',
-      value  : 1,
-    },
-  });
+    });
 
-  const fieldsWithRequiredInInfoConflict = adapter.getFormSchema({
-    test_schema: [
-      {
-        config: {
-          foreign_keys: [],
-          info        : {
-            required: true,
+    const fieldsWithRequiredInInfo = adapter.getFormSchema({
+      test_schema: [
+        {
+          config: {
+            foreign_keys: [],
+            info        : {
+              required: true,
+            },
+            nullable    : true,
+            primary_key : false,
+            type        : 'INTEGER',
           },
-          nullable    : false,
-          primary_key : false,
-          type        : 'INTEGER',
+          name  : 'test-nullable',
         },
-        name  : 'test-nullable',
-      },
-    ],
-  }, 'test_schema', { 'test-nullable': 1 });
+      ],
+    }, 'test_schema', { 'test-nullable': 1 });
 
-  expect(fieldsWithRequiredInInfoConflict).toEqual({
-    'test-nullable': {
-      name   : 'test-nullable',
-      options: {
-        foreignKeys: [],
-        required   : true,
-        label      : null,
+    expect(fieldsWithRequiredInInfo).toEqual({
+      'test-nullable': {
+        name   : 'test-nullable',
+        options: {
+          foreignKeys: [],
+          required   : true,
+          label      : null,
+        },
+        ref    : 'test-nullable',
+        type   : 'InputNumber',
+        value  : 1,
       },
-      ref    : 'test-nullable',
-      type   : 'InputNumber',
-      value  : 1,
-    },
+    });
+
+    const fieldsWithRequiredInInfoConflict = adapter.getFormSchema({
+      test_schema: [
+        {
+          config: {
+            foreign_keys: [],
+            info        : {
+              required: true,
+            },
+            nullable    : false,
+            primary_key : false,
+            type        : 'INTEGER',
+          },
+          name  : 'test-nullable',
+        },
+      ],
+    }, 'test_schema', { 'test-nullable': 1 });
+
+    expect(fieldsWithRequiredInInfoConflict).toEqual({
+      'test-nullable': {
+        name   : 'test-nullable',
+        options: {
+          foreignKeys: [],
+          required   : true,
+          label      : null,
+        },
+        ref    : 'test-nullable',
+        type   : 'InputNumber',
+        value  : 1,
+      },
+    });
   });
 });
