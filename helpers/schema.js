@@ -226,13 +226,15 @@ export const enumDecorator = (fields) => {
           [current]: {
             isFilterField: true,
             options      : { filter_type: R.path(['options', 'filter_type'])(enumFilterField) },
-            value        : R.path([0, 1, 'value'])(positionsFieldPair),
+            value        : R.isEmpty(positionsFieldPair)
+              ? R.path([current, 'value'])(filteredFields)
+              : R.path([0, 1, 'value'])(positionsFieldPair),
           },
           ...R.fromPairs(positionsFieldPair),
         })
       : filteredFields;
     logger.info(TAG, {
-      filteredNames, filteredFields, wrappedFields, positionsFieldPair,
+      current, filteredNames, filteredFields, wrappedFields, positionsFieldPair,
     });
 
     return wrappedFields;
