@@ -106,6 +106,8 @@ const modelsSagaFunctions = {
         logger.log('[remove]', 'response of remove model is', response);
         // save model data when remove is success
         yield put(modelsActions.fetchSuccess(modelName, response.data));
+        // refresh models in content index
+        yield put(contentActions.loadModels(modelName));
       } catch (e) {
         logger.warn('[remove]', 'CATCH -> remove model error', e);
         message.error(e.message);
