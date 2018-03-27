@@ -150,7 +150,7 @@ class ContentIndex extends React.Component {
         />
         {/* language=CSS */}
         <style jsx global>{`
-        .asuna-content-table td {
+        .asuna-content-table td, th {
           padding: 0.3rem !important;
         }
         `}</style>
