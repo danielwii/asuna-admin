@@ -3,9 +3,8 @@ import React     from 'react';
 import PropTypes from 'prop-types';
 import _         from 'lodash';
 import * as R    from 'ramda';
-import { sha1 }  from 'object-hash';
 
-import { Button, Card, Form, Anchor, Row, Col, Tag } from 'antd';
+import { Anchor, Button, Card, Col, Form, Row, Tag } from 'antd';
 
 import {
   generateAuthorities,
@@ -109,17 +108,6 @@ export class DynamicForm2 extends React.Component {
     anchor  : PropTypes.bool,
     delegate: PropTypes.bool,
   };
-
-  // TODO try PureComponent instead
-  shouldComponentUpdate(nextProps, nextState, nextContext) {
-    logger.info('[DynamicForm2]', '[shouldComponentUpdate]', nextProps, nextState, nextContext);
-    const { fields }      = nextProps;
-    const nextFingerprint = sha1(fields);
-    const shouldUpdate    = !R.equals(this.fingerprint, nextFingerprint);
-    logger.info('[DynamicForm2]', '[shouldComponentUpdate]', nextFingerprint, this.fingerprint, shouldUpdate);
-    this.fingerprint = nextFingerprint;
-    return shouldUpdate;
-  }
 
   buildField = (field, index) => {
     const { form, auth } = this.props;
@@ -435,9 +423,10 @@ class EnhancedPureElement extends React.Component {
   };
 
   shouldComponentUpdate(nextProps, nextState) {
+    const isRequired   = R.path(['options', 'required'])(nextProps.field);
     const propsDiff    = diff(this.props, nextProps);
     const stateDiff    = diff(this.state, nextState);
-    const shouldUpdate = propsDiff.isDifferent || stateDiff.isDifferent;
+    const shouldUpdate = isRequired || propsDiff.isDifferent || stateDiff.isDifferent;
     if (shouldUpdate) {
       logger.info('[EnhancedPureElement]', '[shouldComponentUpdate]', {
         props: this.props,
@@ -446,6 +435,7 @@ class EnhancedPureElement extends React.Component {
         nextState,
         propsDiff,
         stateDiff,
+        isRequired,
       }, shouldUpdate);
     }
     return shouldUpdate;
