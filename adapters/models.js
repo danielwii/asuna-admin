@@ -3,9 +3,9 @@ import _      from 'lodash';
 
 import { DynamicFormTypes } from '../components/DynamicForm';
 import { defaultColumns }   from '../helpers/index';
-import { createLogger }     from '../adapters/logger';
+import { createLogger, lv } from '../adapters/logger';
 
-const logger = createLogger('adapters:models');
+const logger = createLogger('adapters:models', lv.warn);
 
 export const modelsProxy = {
   getModelConfigs      : name => global.context.models.getModelConfig(name),
@@ -253,6 +253,7 @@ export class ModelsAdapter {
 
   // eslint-disable-next-line no-unused-vars
   loadModels = ({ token }, name, { pagination = {}, filters, sorter }) => {
+    logger.info('[loadModels]', { name, pagination, filters, sorter });
     const { current: page, pageSize: size } = pagination;
     return this.service.loadModels({ token }, name, {
       pagination: { page, size },

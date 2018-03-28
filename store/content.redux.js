@@ -4,10 +4,10 @@ import * as R          from 'ramda';
 import { reduxAction } from 'node-buffs';
 import { message }     from 'antd';
 
-import { modelsProxy }  from '../adapters/models';
-import { createLogger } from '../adapters/logger';
+import { modelsProxy }      from '../adapters/models';
+import { createLogger, lv } from '../adapters/logger';
 
-const logger = createLogger('store:content');
+const logger = createLogger('store:content', lv.warn);
 
 // --------------------------------------------------------------
 // Module actionTypes
@@ -28,9 +28,9 @@ const isCurrent = type => type.startsWith('content::');
 
 const contentActions = {
   // action: (args) => ({ type, payload })
-  loadModels       : (name, data) => reduxAction(contentActionTypes.CONTENT_LOAD_MODELS, {
+  loadModels       : (name, extras) => reduxAction(contentActionTypes.CONTENT_LOAD_MODELS, {
     name,
-    models: { [name]: { data, loading: true } },
+    models: { [name]: { extras, loading: true } },
   }),
   loadModelsSuccess: data => reduxAction(contentActionTypes.CONTENT_LOAD_MODELS_SUCCESS, {
     models: data,
@@ -46,14 +46,15 @@ const contentActions = {
 // }
 // --------------------------------------------------------------
 
-function* loadModels({ payload: { name, data } }) {
+function* loadModels({ payload: { name, models } }) {
   const { token } = yield select(state => state.auth);
   if (token) {
     try {
-      logger.info('[loadModels]', 'loading content', { name, data });
+      const { [name]: { extras } } = models;
+      logger.info('[loadModels]', 'loading content', { name, extras });
       message.loading(`loading content '${name}'...`);
 
-      const response = yield call(modelsProxy.loadModels, { token }, name, data);
+      const response = yield call(modelsProxy.loadModels, { token }, name, extras);
       message.success(`load content '${name}' success`);
       logger.log('[loadModels]', 'loaded content', { name, response });
 
