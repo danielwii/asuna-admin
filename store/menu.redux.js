@@ -2,16 +2,16 @@ import { put, select, takeLatest } from 'redux-saga/effects';
 
 import * as R from 'ramda';
 
-import { menuProxy }    from '../adapters/menu';
-import { createLogger } from '../adapters/logger';
+import { menuProxy }        from '../adapters/menu';
+import { createLogger, lv } from '../adapters/logger';
 
-const logger = createLogger('store:menu');
+const logger = createLogger('store:menu', lv.warn);
 
 // --------------------------------------------------------------
-// Module actionTypes
+// Module menuActionTypes
 // --------------------------------------------------------------
 
-const actionTypes = {
+const menuActionTypes = {
   // ACTION: 'module::action'
   INIT        : 'menu::init',
   INIT_SUCCESS: 'menu::init-success',
@@ -20,21 +20,21 @@ const actionTypes = {
 const isCurrent = type => type.startsWith('menu::');
 
 // --------------------------------------------------------------
-// Module actions
+// Module menuActions
 // --------------------------------------------------------------
 
-const actions = {
-  init: () => ({ type: actionTypes.INIT }),
+const menuActions = {
+  init: () => ({ type: menuActionTypes.INIT }),
 };
 
 // --------------------------------------------------------------
-// Module sagas
+// Module menuSagas
 // function* actionSage(args) {
 //   yield call; yield puy({ type: actionType, payload: {} })
 // }
 // --------------------------------------------------------------
 
-const sagaFunctions = {
+const menuSagaFunctions = {
   * init() {
     try {
       const { roles, user } = yield select(state => state.security);
@@ -50,11 +50,15 @@ const sagaFunctions = {
           const isSysAdmin = !!R.find(role => role.name === 'SYS_ADMIN')(currentRoles);
           logger.info('[init]', 'current user isSysAdmin', isSysAdmin);
 
-          const authoritiesList = R.map((role) => {
-            const each = R.prop('authorities')(role);
+          const authoritiesList = R.compose(
+            // remove null values
+            R.filter(R.identity),
             // 后端返回字符串时需要反序列化为 JSON
-            return R.is(String, each) ? JSON.parse(each) : each;
-          })(currentRoles);
+            R.map((role) => {
+              const each = R.prop('authorities')(role);
+              return R.is(String, each) ? JSON.parse(each) : each;
+            }),
+          )(currentRoles);
           logger.info('[init]', 'current authoritiesList is', authoritiesList);
 
           const authorities = R.reduce(R.mergeWith(R.or), {})(authoritiesList);
@@ -63,7 +67,7 @@ const sagaFunctions = {
           const menus = yield menuProxy.init(isSysAdmin, authorities);
           logger.log('[init]', 'init sage, menus is', menus);
 
-          yield put({ type: actionTypes.INIT_SUCCESS, payload: { menus } });
+          yield put({ type: menuActionTypes.INIT_SUCCESS, payload: { menus } });
         } else {
           logger.warn('[init]', 'cannot found any roles');
         }
@@ -77,9 +81,9 @@ const sagaFunctions = {
 };
 
 
-const sagas = [
+const menuSagas = [
   // takeLatest / takeEvery (actionType, actionSage)
-  takeLatest(actionTypes.INIT, sagaFunctions.init),
+  takeLatest(menuActionTypes.INIT, menuSagaFunctions.init),
 ];
 
 // --------------------------------------------------------------
@@ -93,7 +97,7 @@ const initialState = {
   menus: [],
 };
 
-const reducer = (previousState = initialState, action) => {
+const menuReducer = (previousState = initialState, action) => {
   if (isCurrent(action.type)) {
     switch (action.type) {
       default:
@@ -105,9 +109,9 @@ const reducer = (previousState = initialState, action) => {
 };
 
 export {
-  actionTypes as menuActionTypes,
-  actions as menuActions,
-  sagas as menuSagas,
-  reducer as menuReducer,
-  sagaFunctions as menuSagaFunctions,
+  menuActionTypes,
+  menuActions,
+  menuSagas,
+  menuReducer,
+  menuSagaFunctions,
 };
