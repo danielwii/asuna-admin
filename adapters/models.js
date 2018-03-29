@@ -62,7 +62,14 @@ export const modelsProxy = {
 };
 
 export class ModelsAdapter {
+  /**
+   * @param service
+   * @param configs      - models: 模型定义; tableColumns: 模型列表定义; modelColumns: 模型表单定义
+   *                       模型定义中出现的的元素才会作为最终元素
+   * @param associations
+   */
   constructor(service, configs = {}, associations = {}) {
+    logger.log('[ModelsAdapter][constructor]', { service, configs, associations });
     if (!service) {
       throw new Error('service must defined');
     }
@@ -228,6 +235,7 @@ export class ModelsAdapter {
             label      : R.pathOr(null, ['config', 'info', 'name'])(field),
             foreignKeys: R.path(['config', 'foreign_keys'])(field),
             required   : required || R.pathOr(false, ['config', 'info', 'required'])(field),
+            ...R.path(['model', 'settings', field.name], this.getModelConfig(name)),
           },
           // 不存在时返回 undefined，而不能返回 null
           // null 会被当作值在更新时被传递

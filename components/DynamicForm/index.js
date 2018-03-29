@@ -116,7 +116,7 @@ export class DynamicForm2 extends React.Component {
       ...field.options,
       key : field.key || field.name,
       name: field.name,
-      help: field.options.tooltip,
+      help: field.options.tooltip || field.options.help,
       auth,
     };
     const defaultAssociation = {
@@ -125,16 +125,24 @@ export class DynamicForm2 extends React.Component {
       fields: ['id', 'name'],
     };
 
-    logger.info('[DynamicForm2]', '[buildField]', { field, index, options });
+    logger.log('[DynamicForm2]', '[buildField]', { field, index, options });
 
     // all readonly or hidden field will rendered as plain component
     if (['readonly', 'hidden'].indexOf(_.get(field, 'options.accessible')) > -1) {
-      return generatePlain({ key: index, label: options.name, text: field.value });
+      return generatePlain({
+        key: index, label: options.name, text: field.value, help: options.help,
+      });
+    } else if (['hide-value'].indexOf(_.get(field, 'options.accessible')) > -1) {
+      return generatePlain({
+        key: index, label: options.name, text: null, help: options.help,
+      });
     }
 
     switch (field.type) {
       case DynamicFormTypes.Plain:
-        return generatePlain({ key: index, label: options.name, text: field.value });
+        return generatePlain({
+          key: index, label: options.name, text: field.value, help: options.help,
+        });
       case DynamicFormTypes.Input:
         return generateInput(form, options);
       case DynamicFormTypes.Checkbox:

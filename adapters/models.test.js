@@ -61,6 +61,51 @@ describe('identify types', () => {
 });
 
 describe('getFormSchema', () => {
+  it('should return settings and associations', () => {
+    const adapter = new ModelsAdapter({}, {
+      tableColumns: {},
+      modelColumns: {
+        users: {
+          associations: {
+            roles: {
+              fields: ['id', 'name'],
+              name  : 'name',
+            },
+          },
+          settings    : {
+            password: {
+              help      : '新建用户后在列表页面设置密码',
+              accessible: 'readonly',
+            },
+          },
+        },
+      },
+      models      : {
+        users: {},
+      },
+    });
+    const fields  = adapter.getFormSchema(
+      { users: [{ name: 'password' }] },
+      'users',
+      {},
+    );
+    expect(fields).toEqual({
+      password: {
+        name   : 'password',
+        type   : undefined,
+        ref    : 'password',
+        options: {
+          foreignKeys: undefined,
+          label      : null,
+          required   : false,
+          help       : '新建用户后在列表页面设置密码',
+          accessible : 'readonly',
+        },
+        value  : undefined,
+      },
+    });
+  });
+
   it('should return undefined when value not exists', () => {
     const adapter = new ModelsAdapter({});
     const fields  = adapter.getFormSchema({
@@ -70,11 +115,11 @@ describe('getFormSchema', () => {
     }, 'test_schema', { test_related_id: 1 });
     expect(fields).toEqual({
       test_name: {
-        name : 'test_name',
-        type: undefined,
-        ref : 'test_name',
+        name   : 'test_name',
+        type   : undefined,
+        ref    : 'test_name',
         options: { foreignKeys: undefined, label: null, required: false },
-        value: undefined,
+        value  : undefined,
       },
     });
   });

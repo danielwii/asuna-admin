@@ -1,16 +1,7 @@
 /* eslint-disable indent,function-paren-newline */
 import React from 'react';
 
-import {
-  Checkbox,
-  DatePicker,
-  Form,
-  Icon,
-  Input,
-  InputNumber,
-  Switch,
-  TimePicker,
-} from 'antd';
+import { Checkbox, DatePicker, Form, Icon, Input, InputNumber, Switch, TimePicker, } from 'antd';
 
 import { BraftRichEditor } from '../../../components/RichEditor';
 
@@ -52,19 +43,24 @@ const horizontalFormItemLayout = {
 // --------------------------------------------------------------
 
 // eslint-disable-next-line react/prop-types
-export const generatePlain = ({ key, label, text }, formItemLayout = horizontalFormItemLayout) => {
-  logger.info('[generatePlain]', { key, label, text });
-  return <Form.Item key={key || label} {...formItemLayout} label={label}>{`${text}`}</Form.Item>;
+export const generatePlain = ({ key, label, text, help }, formItemLayout = horizontalFormItemLayout) => {
+  logger.log('[generatePlain]', { key, label, text, help });
+  return (<Form.Item
+    key={key || label}
+    {...formItemLayout}
+    label={label}
+    help={help}
+  >{`${text}`}</Form.Item>);
 };
 
-export const generateComponent = (form, options, component, formItemLayout = {}) => {
+export const generateComponent = (form, options, Component, formItemLayout = {}) => {
   const { fieldName, labelName = fieldName, opts = {}, help } = options;
   if (fieldName) {
     logger.info('[generateComponent]', options);
     const decorator = form.getFieldDecorator(fieldName, opts);
     return (
       <Form.Item key={fieldName} {...formItemLayout} label={labelName} help={help}>
-        {decorator(component)}
+        {decorator(Component)}
       </Form.Item>
     );
   }
