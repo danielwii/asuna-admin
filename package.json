@@ -35,7 +35,7 @@
     "@fortawesome/fontawesome": "^1.1.5",
     "@fortawesome/fontawesome-free-solid": "^5.0.9",
     "@fortawesome/react-fontawesome": "^0.0.18",
-    "antd": "^3.3.3",
+    "antd": "^3.4.0",
     "async": "^2.6.0",
     "axios": "^0.18.0",
     "braft-editor": "^1.8.3",

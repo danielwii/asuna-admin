@@ -103,18 +103,18 @@ class ContentUpsert extends React.Component {
       ],
       asyncDecorators: tag => [
         // TODO 目前异步数据拉取无法在页面上显示对应字段的 loading 状态
-        async fields => R.curry(schemaHelper.peek(`before-async-${tag}`, this.setState({
-          loadings: { ...this.state.loadings, [tag]: true },
-        })))(fields),
+        async fields => R.curry(schemaHelper.peek(`before-async-${tag}`))(fields),
         // async fields => schemaHelper.hiddenComponentDecorator(fields),
         schemaHelper.asyncLoadAssociationsDecorator,
-        async fields => R.curry(schemaHelper.peek(`after-async-${tag}`, this.setState({
-          loadings: { ...this.state.loadings, [tag]: false },
-        })))(fields),
+        async fields => R.curry(schemaHelper.peek(`after-async-${tag}`))(fields),
       ],
       isInsertMode,
       modelName,
       init           : true,
+      /**
+       * Insert: Init Schema
+       * Update: Init Schema -> Load Data -> Load associations
+       */
       loadings       : { INIT: true, LOAD: !isInsertMode, ASSOCIATIONS: true },
       fields         : {},
       key            : basis.pane.key,
@@ -124,6 +124,7 @@ class ContentUpsert extends React.Component {
   async componentWillMount() {
     logger.log('[componentWillMount]', { props: this.props, state: this.state });
     const { basis, schemas } = this.props;
+    const { isInsertMode }   = this.state;
 
     // content::create::name::timestamp => name
     const modelName = R.compose(R.nth(2), R.split(/::/), R.path(['pane', 'key']))(basis);
@@ -147,28 +148,18 @@ class ContentUpsert extends React.Component {
     // --------------------------------------------------------------
 
     const { preDecorators, asyncDecorators } = this.state;
-    const decoratedFields                    = R.pipe(...preDecorators('INIT'))(
-      R.mergeDeepRight(formFields, this.state.fields),
-    );
+
+    let decoratedFields = R.pipe(...preDecorators('INIT'))(formFields);
+
+    // INSERT-MODE: 仅在新增模式下拉取数据
+    if (isInsertMode) {
+      decoratedFields = await R.pipeP(...asyncDecorators('ASSOCIATIONS'))(decoratedFields);
+    }
 
     this.setState({
-      wrappedFormSchema: formFields, // 用于在更新时重新构造完整（会又被过滤的部分）的数据结构
-
-      // !!important!!
-      // associations is loaded in async mode, so the models may already set in state
-      // it have to be merged with fields in state
-      // 即数据加载和模型初始化异步处理，数据初始化速度有时会快于模型加载
-      fields: R.mergeDeepRight(decoratedFields, this.state.fields), // 最终渲染的对象
-      loadings: { ...this.state.loadings, INIT: false },
-    });
-
-    // 在 setTimeout 中运行是为了保证 loadings.INIT 为 false
-    setTimeout(async () => {
-      const asyncDecoratedFields = await R.pipeP(...asyncDecorators('ASSOCIATIONS'))(decoratedFields);
-      const fields               = schemaHelper.asyncLoadAssociationsMerger(
-        this.state.fields, asyncDecoratedFields,
-      );
-      this.setState({ fields });
+      fields           : decoratedFields,
+      wrappedFormSchema: formFields,
+      loadings         : { ...this.state.loadings, INIT: false, ASSOCIATIONS: false },
     });
   }
 
@@ -190,7 +181,7 @@ class ContentUpsert extends React.Component {
       const fieldValues = R.pathOr({}, [modelName, record.id])(models);
       logger.log('[componentWillReceiveProps]', 'field values is', fieldValues);
       this.handleFormChange(R.map(value => ({ value }))(fieldValues));
-      this.setState({ init: false, originalFieldValues: fieldValues });
+      this.setState({ originalFieldValues: fieldValues });
     }
   }
 
@@ -232,6 +223,7 @@ class ContentUpsert extends React.Component {
    * @param changedFields
    */
   handleFormChange = async (changedFields) => {
+    const { isInsertMode, init } = this.state;
     if (!R.isEmpty(changedFields)) {
       logger.log('[handleFormChange]', { changedFields, state: this.state });
       const { wrappedFormSchema, fields, preDecorators, asyncDecorators } = this.state;
@@ -252,16 +244,27 @@ class ContentUpsert extends React.Component {
         allChangedFields,
       });
 
-      this.setState({
-        fields: decoratedFields,
-        loadings: { ...this.state.loadings, LOAD: false },
-      });
+      // UPDATE-MODE: 初次加载时获得的 changedFields 只有 value 属性，需要增加判断才能正常加载关联
 
-      // 仅在类型为 EnumFilter 的数据发生变更时刷新关联数据
-      if (!R.isEmpty(R.filter(R.propEq('type', 'EnumFilter'), changedFields))) {
+      const updateModeAtTheFirstTime = !isInsertMode && init;
+      const hasEnumFilterFields      = !R.isEmpty(R.filter(R.propEq('type', 'EnumFilter'), changedFields));
+
+      if (updateModeAtTheFirstTime || hasEnumFilterFields) {
+        this.setState({
+          loadings: { ...this.state.loadings, ASSOCIATIONS: true },
+        });
         logger.info('[handleFormChange]', 'load async decorated fields');
         const asyncDecoratedFields = await R.pipeP(...asyncDecorators('ASSOCIATIONS'))(decoratedFields);
-        this.setState({ fields: asyncDecoratedFields });
+        this.setState({
+          init    : false,
+          loadings: { ...this.state.loadings, LOAD: false, ASSOCIATIONS: false },
+          fields  : asyncDecoratedFields,
+        });
+      } else {
+        this.setState({
+          fields  : decoratedFields,
+          loadings: { ...this.state.loadings, LOAD: false, ASSOCIATIONS: false },
+        });
       }
     }
   };
