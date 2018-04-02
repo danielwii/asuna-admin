@@ -1,7 +1,7 @@
 /* eslint-disable indent,function-paren-newline */
 import React from 'react';
 
-import { Checkbox, DatePicker, Form, Icon, Input, InputNumber, Switch, TimePicker, } from 'antd';
+import { Checkbox, DatePicker, Form, Icon, Input, InputNumber, Switch, TimePicker } from 'antd';
 
 import { BraftRichEditor } from '../../../components/RichEditor';
 

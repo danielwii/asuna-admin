@@ -19,11 +19,11 @@ const defaultFormItemLayout = {};
 export const generateSelect = (form, {
   key, name, label, placeholder, items, mode,
   getName = R.prop('name'), getValue = R.prop('value'),
-  withSortTree = false,
+  withSortTree = false, enumSelector = {},
 }, formItemLayout = defaultFormItemLayout) => {
   const fieldName = key || name;
   const labelName = label || name || key;
-  logger.info('[generateSelect]', 'items is', items);
+  logger.info('[generateSelect]', { items, enumSelector });
 
   class MixedSelect extends React.Component {
     static propTypes = {
@@ -139,12 +139,19 @@ export const generateSelect = (form, {
               return itemStr.indexOf(input.toLowerCase()) >= 0;
             }}
           >
-            {(items || []).map(item => (
-              <Select.Option
-                key={getValue(item)}
-                value={getValue(item)}
-              >{'#'}{getValue(item)}{': '}{getName(item)}</Select.Option>
-            ))}
+            {(items || []).map((item) => {
+              const optionName  = enumSelector.name
+                ? R.compose(enumSelector.name, getValue)(item)
+                : getName(item);
+              const optionValue = enumSelector.value
+                ? R.compose(enumSelector.value, getValue)(item)
+                : getValue(item);
+              return (
+                <Select.Option key={optionValue} value={optionValue}>
+                  {'#'}{optionValue}{': '}{optionName}
+                </Select.Option>
+              );
+            })}
           </Select>
           {withSortTree && this.renderSortTree()}
         </React.Fragment>
