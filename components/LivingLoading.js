@@ -1,8 +1,38 @@
 /* eslint-disable no-undef,no-param-reassign */
-import React from 'react';
-import _     from 'lodash';
+import React     from 'react';
+import PropTypes from 'prop-types';
+import _         from 'lodash';
+
+import styled from 'styled-components';
+
+const StyledHeartbeat = styled.div`
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 5rem;
+  margin: auto;
+  width: 20rem;
+  display: inline;
+  
+  text-align: center;
+  padding: 0.5rem;
+  color: #fff;
+  background-color: ${({ heartbeat }) => (heartbeat ? '#449d44' : '#c9302c')};
+  border-color: ${({ heartbeat }) => (heartbeat ? '#4cae4c' : '#d43f3a')};
+  border-radius: 0.5rem;
+  box-shadow: ${
+  ({ heartbeat }) => (
+    heartbeat
+      ? 'inset 0 0.1rem 0.1rem rgba(0,0,0,.075), 0 0 0.75rem rgba(76, 174, 76, 0.6)'
+      : 'inset 0 0.1rem 0.1rem rgba(0,0,0,.075), 0 0 0.75rem rgba(212, 63, 58, 0.6)'
+  )};
+`;
 
 export default class extends React.Component {
+  static propTypes = {
+    heartbeat: PropTypes.bool,
+  };
+
   componentDidMount() {
     const { canvas } = this;
     canvas.width     = 200;
@@ -38,19 +68,23 @@ export default class extends React.Component {
   }
 
   render() {
+    const { heartbeat } = this.props;
     return (
       <React.Fragment>
+        <StyledHeartbeat heartbeat={heartbeat}>
+          {heartbeat ? 'Loading from backend...' : 'Backend server unavailable.'}
+        </StyledHeartbeat>
         <canvas ref={(canvas) => { this.canvas = canvas; }}>Canvas Not Support?!</canvas>
         {/* language=CSS */}
         <style jsx>{`
-        canvas {
-          position: absolute;
-          top: 0;
-          right: 0;
-          bottom: 0;
-          left: 0;
-          margin: auto;
-        }
+          canvas {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            margin: auto;
+          }
         `}</style>
       </React.Fragment>
     );

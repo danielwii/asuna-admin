@@ -9,7 +9,8 @@ import 'moment/locale/zh-cn';
 import { withReduxSaga } from '../store';
 import { appActions }    from '../store/app.redux';
 
-import Loading from '../components/LivingLoading';
+import AntdLayout from '../layout/antd';
+import Loading    from '../components/LivingLoading';
 
 import { authService }     from '../services/auth';
 import { securityService } from '../services/security';
@@ -84,11 +85,11 @@ class Index extends React.Component {
   }
 
   render() {
-    const { auth, app: { loading }, appInfo } = this.props;
+    const { auth, app: { loading, heartbeat }, appInfo } = this.props;
     logger.info('[render]', this.props);
 
-    return loading
-      ? <Loading />
+    return (loading || !heartbeat)
+      ? <AntdLayout><Loading heartbeat={heartbeat} /></AntdLayout>
       : <DynamicMainLayoutLoading auth={auth} appInfo={appInfo} />;
   }
 }

@@ -1,4 +1,4 @@
-import { put, select, call, take, takeEvery, takeLatest } from 'redux-saga/effects';
+import { call, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 
 import { reduxAction } from 'node-buffs';
 import { REHYDRATE }   from 'redux-persist/constants';
@@ -31,13 +31,15 @@ const logger = createLogger('store:app');
 
 const appActionTypes = {
   // ACTION: 'module::action'
-  INIT        : 'app::init',
-  SYNC        : 'app::sync',
-  INIT_SUCCESS: 'app::init-success',
-  SYNC_SUCCESS: 'app::sync-success',
-  RESTORED    : 'app::RESTORED',
-  PING        : 'app::ping',
-  PONG        : 'app::pong',
+  INIT           : 'app::init',
+  SYNC           : 'app::sync',
+  INIT_SUCCESS   : 'app::init-success',
+  SYNC_SUCCESS   : 'app::sync-success',
+  RESTORED       : 'app::RESTORED',
+  PING           : 'app::ping',
+  PONG           : 'app::pong',
+  HEARTBEAT_START: 'app::heartbeat-start',
+  HEARTBEAT_STOP : 'app::heartbeat-stop',
 };
 
 const isCurrent = type => type.startsWith('app::');
@@ -48,13 +50,15 @@ const isCurrent = type => type.startsWith('app::');
 
 const appActions = {
   // action: (args) => ({ type, payload })
-  sync       : () => reduxAction(appActionTypes.SYNC, { loading: true }),
-  init       : () => reduxAction(appActionTypes.INIT, { loading: true }),
-  syncSuccess: () => reduxAction(appActionTypes.SYNC_SUCCESS, { loading: false }),
-  initSuccess: () => reduxAction(appActionTypes.INIT_SUCCESS, { loading: false }),
-  restored   : () => reduxAction(appActionTypes.RESTORED, { restored: true }),
-  ping       : () => reduxAction(appActionTypes.PING),
-  pong       : version => reduxAction(appActionTypes.PONG, { version }),
+  sync          : () => reduxAction(appActionTypes.SYNC, { loading: true }),
+  init          : () => reduxAction(appActionTypes.INIT, { loading: true }),
+  syncSuccess   : () => reduxAction(appActionTypes.SYNC_SUCCESS, { loading: false }),
+  initSuccess   : () => reduxAction(appActionTypes.INIT_SUCCESS, { loading: false }),
+  restored      : () => reduxAction(appActionTypes.RESTORED, { restored: true }),
+  ping          : () => reduxAction(appActionTypes.PING),
+  pong          : version => reduxAction(appActionTypes.PONG, { version }),
+  heartbeatStart: () => reduxAction(appActionTypes.HEARTBEAT_START, { heartbeat: true }),
+  heartbeatStop : () => reduxAction(appActionTypes.HEARTBEAT_STOP, { heartbeat: false }),
 };
 
 // --------------------------------------------------------------
@@ -129,8 +133,10 @@ function* rehydrateWatcher(action) {
  * 查询运行中的服务端版本，版本不一致时更新当前的版本，同时进行同步操作
  */
 function* ping() {
+  const { token }     = yield select(state => state.auth);
+  const { heartbeat } = yield select(state => state.app);
+
   try {
-    const { token }   = yield select(state => state.auth);
     const response    = yield call(apiProxy.getVersion, { token });
     const { version } = yield select(R.prop('app'));
     logger.info('[ping]', { response, version });
@@ -140,8 +146,14 @@ function* ping() {
     }
 
     yield put(appActions.pong(response.data));
+    if (!heartbeat) {
+      yield put(appActions.heartbeatStart());
+    }
   } catch (e) {
     logger.error('[ping]', e);
+    if (heartbeat) {
+      yield put(appActions.heartbeatStop());
+    }
   }
 }
 
@@ -171,8 +183,9 @@ const appEpics = [
 // --------------------------------------------------------------
 
 const initialState = {
-  loading : true,  // 初始化状态，用于加载 loading 图
-  restored: false, // 标记恢复状态，恢复后不再等待恢复信息
+  heartbeat: true,
+  loading  : true,  // 初始化状态，用于加载 loading 图
+  restored : false, // 标记恢复状态，恢复后不再等待恢复信息
 };
 
 const appReducer = (previousState = initialState, action) => {
