@@ -7,23 +7,26 @@ const bundleAnalyzerPlugin = new BundleAnalyzerPlugin({ openAnalyzer: false });
 
 module.exports = {
   webpack: (config, options) => {
-    console.log('> Options is', options);
-    config.plugins = config.plugins || [];
-    if (!options.dev) {
-      config.devtool = 'source-map';
+    const { dev, isServer, buildId } = options;
+    console.log(`> [webpack] [${isServer ? 'Server' : 'Client'}] ...`);
 
-      // https://github.com/zeit/next.js/issues/1582
-      config.plugins = config.plugins.filter(plugin => {
-        return plugin.constructor.name !== 'UglifyJsPlugin';
-      });
-    } else {
+    if (isServer) {
+      config.plugins = config.plugins || [];
       config.plugins.push(jarvis);
       config.plugins.push(bundleAnalyzerPlugin);
+    } else {
+      if (!dev) {
+        config.devtool = 'source-map';
 
+        // https://github.com/zeit/next.js/issues/1582
+        config.plugins = config.plugins.filter(plugin => {
+          return plugin.constructor.name !== 'UglifyJsPlugin';
+        });
+      }
+
+      // Fixes npm packages that depend on `fs` module
+      config.node = { fs: 'empty' };
     }
-
-    // Fixes npm packages that depend on `fs` module
-    config.node = { fs: 'empty' };
 
     config.module.rules.push({
       test: /\.css$/, use: [{
@@ -47,4 +50,18 @@ module.exports = {
 
     return config;
   },
+
+  webpackDevMiddleware: config => {
+    console.log('> [webpackDevMiddleware] ...');
+    // Perform customizations to webpack dev middleware config
+
+    // Important: return the modified config
+    return config;
+  },
+
+  serverRuntimeConfig: {
+    isServer: true,
+  },
+
+  publicRuntimeConfig: {},
 };
