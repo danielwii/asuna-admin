@@ -36,14 +36,16 @@ class ContentIndex extends React.Component {
       <span>
         {extras && extras(auth)}
         <Button size="small" type="dashed" onClick={() => this.edit(text, record)}>Edit</Button>
-        {R.not(R.prop('is_system', record)) && <React.Fragment>
-          <Divider type="vertical" />
-          <Button
-            size="small"
-            type="danger"
-            onClick={() => this.remove(text, record)}
-          >Delete</Button>
-        </React.Fragment>}
+        {R.not(R.prop('is_system', record)) && (
+          <React.Fragment>
+            <Divider type="vertical" />
+            <Button
+              size="small"
+              type="danger"
+              onClick={() => this.remove(text, record)}
+            >Delete</Button>
+          </React.Fragment>
+        )}
       </span>
     );
 
@@ -150,9 +152,9 @@ class ContentIndex extends React.Component {
         />
         {/* language=CSS */}
         <style jsx global>{`
-        .asuna-content-table td, th {
-          padding: 0.3rem !important;
-        }
+          .asuna-content-table td, th {
+            padding: 0.3rem !important;
+          }
         `}</style>
       </div>
     );

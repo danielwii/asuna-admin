@@ -1,15 +1,14 @@
 /* eslint-disable indent,function-paren-newline */
-import React  from 'react';
-import * as R from 'ramda';
-
+import React     from 'react';
 import PropTypes from 'prop-types';
+import * as R    from 'ramda';
+
+import { Select } from 'antd';
 
 import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc';
 
-import { Select }            from 'antd';
 import { generateComponent } from '.';
-
-import { createLogger, lv } from '../../../adapters/logger';
+import { createLogger, lv }  from '../../../adapters/logger';
 
 const logger = createLogger('components:dynamic-form:elements', lv.warn);
 
@@ -44,57 +43,78 @@ export const generateSelect = (form, {
       };
     }
 
-    onSortEnd      = ({ oldIndex, newIndex }) => {
+    onSortEnd = ({ oldIndex, newIndex }) => {
       const { onChange }  = this.props;
       const selectedItems = arrayMove(this.state.selectedItems, oldIndex, newIndex);
       onChange(selectedItems);
       this.setState({ selectedItems });
     };
+
+    extractName = item => (
+      enumSelector.name
+        ? R.compose(enumSelector.name, getValue)(item)
+        : getName(item)
+    );
+
+    extractValue = item => (
+      enumSelector.value
+        ? R.compose(enumSelector.value, getValue)(item)
+        : getValue(item)
+    );
+
     renderSortTree = () => {
       const { selectedItems } = this.state;
-      const SortableItem      = SortableElement(({ value, sortIndex }) =>
-        (<React.Fragment>
-          <li><span className="sort-index">#{' '}{sortIndex}</span>{value}</li>
-          {/* language=CSS */}
-          <style jsx>{`
-            li {
-              position: relative;
-              display: block;
-              padding: .4rem .4rem .4rem 2.5rem;
-              margin: .5rem 0;
-              background: #93C775;
-              height: 2rem;
-              line-height: 1rem;
-              color: #000;
-              text-decoration: none;
-              border-radius: 10rem;
-              transition: all .1s ease-out;
-            }
+      const SortableItem      = SortableElement(({ value, sortIndex }) => {
+        const item        = items.find(current => current.id === value);
+        const optionName  = this.extractName(item);
+        const optionValue = this.extractValue(item);
+        return (
+          <React.Fragment>
+            <li>
+              <span className="sort-index">No.{' '}{sortIndex}</span>
+              <span>{'#'}{optionValue}{': '}{optionName}</span>
+            </li>
+            {/* language=CSS */}
+            <style jsx>{`
+              li {
+                position: relative;
+                display: block;
+                padding: .5rem .5rem .5rem 3.5rem;
+                margin: .5rem 0;
+                /*height: 2rem;*/
+                line-height: 1rem;
+                color: #000;
+                text-decoration: none;
+                border-radius: 0.2rem;
+                transition: all .1s ease-out;
+                box-shadow: 0 0 0.5rem grey;
+              }
 
-            li .sort-index {
-              position: absolute;
-              left: -1.3rem;
-              top: 50%;
-              margin-top: -1.3rem;
-              background: #93C775;
-              /*height: 2rem;*/
-              width: 3rem;
-              line-height: 2rem;
-              border: .3rem solid #fff;
-              text-align: center;
-              font-weight: bold;
-              border-radius: 2rem;
-              color: #FFF;
-            }
+              li .sort-index {
+                position: absolute;
+                left: -1.3rem;
+                /*top: 50%;*/
+                top: 1rem;
+                margin-top: -1.3rem;
+                width: 4rem;
+                line-height: 2rem;
+                border: .3rem solid #fff;
+                text-align: center;
+                font-weight: bold;
+                border-radius: 0.2rem;
+                background-color: white;
+                box-shadow: 0 0 0.5rem grey;
+              }
 
-            li:hover {
-              background: #d6d4d4;
-              text-decoration: none;
-              transform: scale(1.02);
-            }
-          `}</style>
-        </React.Fragment>),
-      );
+              li:hover {
+                background: #d6d4d4;
+                text-decoration: none;
+                transform: scale(1.02);
+              }
+            `}</style>
+          </React.Fragment>
+        );
+      });
       const SortableList      = SortableContainer(({ selectedSortedItems }) => (
         <ul>
           {selectedSortedItems.map((value, index) => (
@@ -129,7 +149,7 @@ export const generateSelect = (form, {
             key={fieldName}
             showSearch
             allowClear
-            style={{ width: 200 }}
+            // style={{ width: 300 }}
             placeholder={placeholder}
             optionFilterProp="items"
             mode={mode}
@@ -140,12 +160,8 @@ export const generateSelect = (form, {
             }}
           >
             {(items || []).map((item) => {
-              const optionName  = enumSelector.name
-                ? R.compose(enumSelector.name, getValue)(item)
-                : getName(item);
-              const optionValue = enumSelector.value
-                ? R.compose(enumSelector.value, getValue)(item)
-                : getValue(item);
+              const optionName  = this.extractName(item);
+              const optionValue = this.extractValue(item);
               return (
                 <Select.Option key={optionValue} value={optionValue}>
                   {'#'}{optionValue}{': '}{optionName}

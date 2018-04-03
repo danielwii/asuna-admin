@@ -458,7 +458,15 @@ class EnhancedPureElement extends React.Component {
     return (
       <div key={index} id={`dynamic-form-${field.name}`} hidden={hidden}>
         {builder(field, index)}
-        <hr style={{ borderStyle: 'ridge' }} />
+        <hr />
+        {/* language=CSS */}
+        <style jsx>{`
+          hr {
+            border-style: none;
+            border-bottom: 0.05rem solid #bfbfbf;
+            box-shadow: #bfbfbf 0 0 0.3rem;
+          }
+        `}</style>
       </div>
     );
   }
