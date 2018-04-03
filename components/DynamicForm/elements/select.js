@@ -100,7 +100,6 @@ export const generateSelect = (form, {
                 line-height: 2rem;
                 border: .3rem solid #fff;
                 text-align: center;
-                font-weight: bold;
                 border-radius: 0.2rem;
                 background-color: white;
                 box-shadow: 0 0 0.5rem grey;

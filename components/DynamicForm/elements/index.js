@@ -15,8 +15,8 @@ const logger = createLogger('components:dynamic-form:elements', lv.warn);
 const defaultFormItemLayout = {};
 
 const horizontalFormItemLayout = {
-  labelCol  : { offset: 0, span: 4 },
-  wrapperCol: { offset: 0, span: 20 },
+  labelCol  : { offset: 0, span: 5 },
+  wrapperCol: { offset: 0, span: 19 },
 };
 
 // --------------------------------------------------------------
