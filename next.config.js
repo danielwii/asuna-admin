@@ -10,10 +10,17 @@ module.exports = {
     const { dev, isServer, buildId } = options;
     console.log(`> [webpack] [${isServer ? 'Server' : 'Client'}] ...`);
 
+    if (buildId) {
+      console.log('> [webpack] building...', buildId);
+    }
+
+    config.plugins = config.plugins || [];
+
     if (isServer) {
-      config.plugins = config.plugins || [];
-      config.plugins.push(jarvis);
-      config.plugins.push(bundleAnalyzerPlugin);
+      if (dev) {
+        config.plugins.push(jarvis);
+        config.plugins.push(bundleAnalyzerPlugin);
+      }
     } else {
       if (!dev) {
         config.devtool = 'source-map';
