@@ -6,6 +6,7 @@ import styled      from 'styled-components';
 
 import AntdLayout        from '../layout/antd';
 import Login             from '../components/Login';
+import Loading           from '../components/LivingLoading';
 import Snow              from '../components/Snow';
 import LogoCanvas        from '../components/LogoCanvas';
 import { withReduxSaga } from '../store';
@@ -56,6 +57,9 @@ const StyledLogoWrapper = styled.div`
 class LoginPage extends React.Component {
   static propTypes = {
     global: PropTypes.shape(),
+    app   : PropTypes.shape({
+      heartbeat: PropTypes.bool,
+    }),
   };
 
   // --------------------------------------------------------------
@@ -144,17 +148,23 @@ class LoginPage extends React.Component {
   }
 
   render() {
+    const { app: { heartbeat } } = this.props;
     return (
       <AntdLayout>
-        <StyledFullFlexContainer>
-          <Snow />
-          <StyledLogoWrapper>
-            <LogoCanvas />
-          </StyledLogoWrapper>
-          <StyledLoginWrapper>
-            <Login {...this.props} />
-          </StyledLoginWrapper>
-        </StyledFullFlexContainer>
+        {
+          heartbeat
+            ? (
+              <StyledFullFlexContainer>
+                <Snow />
+                <StyledLogoWrapper>
+                  <LogoCanvas />
+                </StyledLogoWrapper>
+                <StyledLoginWrapper>
+                  <Login {...this.props} />
+                </StyledLoginWrapper>
+              </StyledFullFlexContainer>)
+            : <Loading heartbeat={heartbeat} />
+        }
       </AntdLayout>
     );
   }
@@ -162,6 +172,7 @@ class LoginPage extends React.Component {
 
 const mapStateToProps = state => ({
   global: state.global,
+  app   : state.app,
 });
 
 export default withReduxSaga(connect(mapStateToProps)(LoginPage));
