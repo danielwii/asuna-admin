@@ -1,5 +1,9 @@
 {
   "dependencies": {
-    "asuna-admin": "../../../asuna-admin"
+    "antd": "^3.4.0",
+    "asuna-admin": "^0.2.14",
+    "axios": "^0.18.0",
+    "ramda": "^0.25.0",
+    "react": "^16.3.1"
   }
 }

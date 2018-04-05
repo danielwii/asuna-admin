@@ -9,7 +9,7 @@ const contextReplacementPlugin = new webpack.ContextReplacementPlugin(/moment[\/
 module.exports = {
   webpack: (config, options) => {
     const { dev, isServer, buildId } = options;
-    console.log(`> [webpack] [${isServer ? 'Server' : 'Client'}] ...`, options);
+    console.log(`> [webpack] [${isServer ? 'Server' : 'Client'}] ...`);
 
     if (buildId) {
       console.log('> [webpack] building...', buildId);

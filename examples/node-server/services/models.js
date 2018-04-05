@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-import { createLogger } from '../adapters/logger';
-import { authHeader }   from '../helpers';
+import { createLogger } from 'asuna-admin/adapters/logger';
+import { authHeader }   from 'asuna-admin/helpers';
 
 const logger = createLogger('service:models');
 

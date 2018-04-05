@@ -276,8 +276,9 @@ assign-symbols@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/assign-symbols/-/assign-symbols-1.0.0.tgz#59667f41fadd4f20ccbc2bb96b8d4f7f78ec0367"
 
-asuna-admin@../../../asuna-admin:
-  version "0.2.13"
+asuna-admin@^0.2.14:
+  version "0.2.14"
+  resolved "https://registry.yarnpkg.com/asuna-admin/-/asuna-admin-0.2.14.tgz#85cbc5ac048e51faa1c1c649c55bb25c7b5a6f77"
   dependencies:
     "@fortawesome/fontawesome" "^1.1.5"
     "@fortawesome/fontawesome-free-solid" "^5.0.9"
@@ -4238,7 +4239,7 @@ react-truncate@^2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/react-truncate/-/react-truncate-2.3.0.tgz#d469b355aff1f83ae9e0f2fed0d47dfd061e5d2e"
 
-react@^16.3.0:
+react@^16.3.0, react@^16.3.1:
   version "16.3.1"
   resolved "https://registry.yarnpkg.com/react/-/react-16.3.1.tgz#4a2da433d471251c69b6033ada30e2ed1202cfd8"
   dependencies:

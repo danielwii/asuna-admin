@@ -1,9 +1,9 @@
 // @flow weak
 import axios from 'axios';
 
-import { authHeader } from '../helpers';
+import { authHeader } from 'asuna-admin/helpers';
 
-import type { ISecurityService } from '../adapters/security';
+import type { ISecurityService } from 'asuna-admin/adapters/security';
 
 
 const instance = axios.create({

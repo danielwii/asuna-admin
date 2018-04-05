@@ -1,8 +1,8 @@
 // @flow
-import axios                 from 'axios';
-import * as R                from 'ramda';
+import axios  from 'axios';
+import * as R from 'ramda';
 
-import type { IAuthService } from '../adapters/auth';
+import type { IAuthService } from 'asuna-admin/adapters/auth';
 
 const instance = axios.create({
   baseURL: '/',

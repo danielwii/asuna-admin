@@ -4,13 +4,13 @@ import * as R from 'ramda';
 
 import { Button, Checkbox, Divider } from 'antd';
 
-import { createLogger }  from '../adapters/logger';
-import { securityProxy } from '../adapters/security';
+import { createLogger }  from 'asuna-admin/adapters/logger';
+import { securityProxy } from 'asuna-admin/adapters/security';
 
-import { columnHelper, commonColumns, defaultNameColumns, defaultTitleColumns } from '../helpers';
+import { columnHelper, commonColumns, defaultNameColumns, defaultTitleColumns } from 'asuna-admin/helpers';
 
-import { DynamicFormTypes } from '../components/DynamicForm';
-import { FormModal }        from '../components/FormModal';
+import { DynamicFormTypes } from 'asuna-admin/components/DynamicForm';
+import { FormModal }        from 'asuna-admin/components/FormModal';
 
 
 const logger = createLogger('service:definitions');

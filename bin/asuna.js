@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* eslint-disable no-console */
+/* eslint-disable no-console,import/no-dynamic-require,global-require */
 
 const path    = require('path');
 const spawn   = require('cross-spawn');
@@ -9,6 +9,8 @@ const async   = require('async');
 const rimraf  = require('rimraf');
 const { ncp } = require('ncp');
 const shell   = require('shelljs');
+const R       = require('ramda');
+const fs      = require('fs');
 
 ncp.limit = 16;
 
@@ -71,6 +73,31 @@ function buildImage(buildArg, devMode) {
   return proc;
 }
 
+function mergeDependencies() {
+  const appPackagePath   = path.join(process.env.PWD, '/package.json');
+  const asunaPackagePath = path.join(__dirname, '../package.json');
+  const distPackagePath  = path.join(process.env.PWD, '/.asuna/package.json');
+  console.log('[x] appPackagePath is `%s`', appPackagePath);
+  console.log('[x] asunaPackagePath is `%s`', asunaPackagePath);
+  console.log('[x] distPackagePath is `%s`', distPackagePath);
+
+  const appPackage   = require(appPackagePath);
+  const asunaPackage = require(asunaPackagePath);
+  // console.log('[x] app dependencies is', appPackage.dependencies);
+  // console.log('[x] asuna dependencies is', asunaPackage.dependencies);
+
+  const mergedDependencies = Object.assign(
+    asunaPackage.dependencies,
+    R.omit(['asuna-admin'], appPackage.dependencies),
+  );
+  // console.log('[x] merged dependencies is', mergedDependencies);
+  if (!R.equals(mergedDependencies, asunaPackage.dependencies)) {
+    console.log('[x] packages has difference...');
+    fs.writeFileSync(distPackagePath, { ...asunaPackage, dependencies: mergedDependencies });
+    console.log('[x] dependencies merged.');
+  }
+}
+
 // --------------------------------------------------------------
 // Program
 // --------------------------------------------------------------
@@ -109,6 +136,7 @@ program
         callback();
       }],
       sync   : ['refresh', 'init', (results, callback) => {
+        console.log('[x] sync .asuna ...');
         console.log('[x] sync .asuna ...');
         Promise.all([
           new Promise((resolve, reject) => {
@@ -154,6 +182,7 @@ program
             });
           }),
         ]).then(() => {
+          console.log('[x] sync .asuna done');
           callback();
         }).catch((err) => {
           callback(err);
@@ -163,6 +192,8 @@ program
       if (err) {
         console.error(colors.red('[x] run sync error'), err);
       } else {
+        console.log('[x] merge dependencies ...');
+        mergeDependencies();
         console.log('[x] try build image ...');
         buildImage(options.buildArg, options.dev);
       }
