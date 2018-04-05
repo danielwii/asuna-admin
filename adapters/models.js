@@ -130,12 +130,12 @@ export class ModelsAdapter {
 
     const type = R.path(['config', 'type'])(field);
 
-    if (/^VARCHAR.+$/.test(type)) return DynamicFormTypes.Input;
-    if (/^INTEGER|FLOAT$/.test(type)) return DynamicFormTypes.InputNumber;
-    if (/^TEXT$/.test(type)) return DynamicFormTypes.TextArea;
-    if (/^DATETIME$/.test(type)) return DynamicFormTypes.DateTime;
-    if (/^DATE$/.test(type)) return DynamicFormTypes.Date;
-    if (/^BOOLEAN$/.test(type)) return DynamicFormTypes.Switch;
+    if (/^(VARCHAR.+|String)$/i.test(type)) return DynamicFormTypes.Input;
+    if (/^INTEGER|FLOAT$/i.test(type)) return DynamicFormTypes.InputNumber;
+    if (/^TEXT$/i.test(type)) return DynamicFormTypes.TextArea;
+    if (/^DATETIME$/i.test(type)) return DynamicFormTypes.DateTime;
+    if (/^DATE$/i.test(type)) return DynamicFormTypes.Date;
+    if (/^BOOLEAN$/i.test(type)) return DynamicFormTypes.Switch;
 
     logger.warn('[identifyType]', 'type', type, 'cannot identified.');
     return type;

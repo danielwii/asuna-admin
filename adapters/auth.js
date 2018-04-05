@@ -37,5 +37,12 @@ export class AuthAdapter implements IAuthService {
 
   login        = args => this.service.login(args);
   logout       = () => this.service.logout();
-  extractToken = args => this.service.extractToken(args);
+  extractToken = (payload) => {
+    const token = this.service.extractToken(payload);
+    if (!token) {
+      logger.warn('[extractToken]', 'extract token error from', payload);
+      throw new Error('extract token error from response');
+    }
+    return token;
+  };
 }

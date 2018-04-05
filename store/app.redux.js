@@ -38,7 +38,7 @@ const appActionTypes = {
   RESTORED       : 'app::RESTORED',
   PING           : 'app::ping',
   PONG           : 'app::pong',
-  HEARTBEAT_START: 'app::heartbeat-start',
+  HEARTBEAT_ALIVE: 'app::heartbeat-alive',
   HEARTBEAT_STOP : 'app::heartbeat-stop',
 };
 
@@ -57,7 +57,7 @@ const appActions = {
   restored      : () => reduxAction(appActionTypes.RESTORED, { restored: true }),
   ping          : () => reduxAction(appActionTypes.PING),
   pong          : version => reduxAction(appActionTypes.PONG, { version }),
-  heartbeatStart: () => reduxAction(appActionTypes.HEARTBEAT_START, { heartbeat: true }),
+  heartbeatAlive: () => reduxAction(appActionTypes.HEARTBEAT_ALIVE, { heartbeat: true }),
   heartbeatStop : () => reduxAction(appActionTypes.HEARTBEAT_STOP, { heartbeat: false }),
 };
 
@@ -147,7 +147,7 @@ function* ping() {
 
     yield put(appActions.pong(response.data));
     if (!heartbeat) {
-      yield put(appActions.heartbeatStart());
+      yield put(appActions.heartbeatAlive());
     }
   } catch (e) {
     logger.error('[ping]', e);

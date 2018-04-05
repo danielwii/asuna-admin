@@ -289,3 +289,27 @@ describe('getFormSchema', () => {
     });
   });
 });
+
+describe('listSchemasCallable', () => {
+  it('should return future callable functions', () => {
+    const adapter         = new ModelsAdapter({
+      loadSchema: ({ token }, name, config) => ({ token, name, config }),
+    }, {
+      // tableColumns,
+      // modelColumns,
+      models: {
+        abouts          : {},
+        about_categories: {},
+        admin__users    : {
+          endpoint: 'admin/auth/users',
+        },
+        admin__roles    : {
+          endpoint: 'admin/auth/roles',
+        },
+      },
+    });
+    const schemasCallable = adapter.listSchemasCallable({ token: 'test-token' });
+    expect(Object.keys(schemasCallable))
+      .toEqual(['abouts', 'about_categories', 'admin__users', 'admin__roles']);
+  });
+});
