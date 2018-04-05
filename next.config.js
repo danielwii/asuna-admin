@@ -2,13 +2,14 @@ const webpack              = require('webpack');
 const Jarvis               = require('webpack-jarvis');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
-const jarvis               = new Jarvis({ port: 1337 });
-const bundleAnalyzerPlugin = new BundleAnalyzerPlugin({ openAnalyzer: false });
+const jarvis                   = new Jarvis({ port: 1337 });
+const bundleAnalyzerPlugin     = new BundleAnalyzerPlugin({ openAnalyzer: false });
+const contextReplacementPlugin = new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /zh/);
 
 module.exports = {
   webpack: (config, options) => {
     const { dev, isServer, buildId } = options;
-    console.log(`> [webpack] [${isServer ? 'Server' : 'Client'}] ...`);
+    console.log(`> [webpack] [${isServer ? 'Server' : 'Client'}] ...`, options);
 
     if (buildId) {
       console.log('> [webpack] building...', buildId);
@@ -50,7 +51,7 @@ module.exports = {
     });
 
     // https://github.com/moment/moment/issues/2517
-    config.plugins.push(new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /zh/));
+    config.plugins.push(contextReplacementPlugin);
 
     // fix `react-dom/server could not be resolved` issue in next v5.0.0
     // delete config.resolve.alias['react-dom'];

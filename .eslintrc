@@ -8,6 +8,14 @@
     "plugin:flowtype/recommended",
     "plugin:jest/recommended"
   ],
+  "settings": {
+    "import/resolver": {
+//      "asuna-admin": {}
+    },
+    "import/ignore": [
+      "asuna-admin.*"
+    ]
+  },
   "parser": "babel-eslint",
   "plugins": [
     "flowtype", "jest"

@@ -38,12 +38,19 @@ function startProcess() {
   return proc;
 }
 
-function buildImage() {
+function buildImage(buildArg, devMode) {
   console.log('[x] buildImage asuna-admin...');
   const asunaBuildPath = path.join(process.env.PWD, '.asuna');
-  const proc           = spawn('docker', ['build', '-t', 'asuna-admin', asunaBuildPath], {
-    stdio: 'inherit',
-  });
+  const command        = ['build', '-t', 'asuna-admin'];
+  if (buildArg) {
+    command.push('--build-arg', buildArg);
+  }
+  if (devMode) {
+    command.push('-f', `${asunaBuildPath}/Dockerfile.dev`);
+  }
+  console.log('[x] buildImage run command:', command.join(' '));
+
+  const proc = spawn('docker', [...command, asunaBuildPath], { stdio: 'inherit' });
   proc.on('close', (code, signal) => {
     if (code !== null) {
       process.exit(code);
@@ -73,16 +80,19 @@ program
 
 program
   .command('docker')
+  .option('-d, --dev', 'build in dev mode')
+  .option('-b, --build-arg [value]', 'to set REGISTRY, e.g: --build-arg REGISTRY=...')
   .description('build docker image')
-  .action(() => {
+  .action((options) => {
     console.log('[x] build docker image');
+    console.log('[x] build arg:', options.buildArg);
+    console.log('[x] build dev mode:', options.dev);
 
     const appPath   = process.env.PWD;
     const asunaPath = path.join(__dirname, '../');
     const asunaDist = path.join(appPath, '.asuna/');
     console.log('[x] appPath is `%s`', appPath);
     console.log('[x] asunaPath is `%s`', asunaPath);
-
 
     async.auto({
       refresh: (callback) => {
@@ -107,11 +117,12 @@ program
               colors.yellow(asunaPath), 'to', colors.yellow(asunaDist));
             ncp(asunaPath, asunaDist, {
               filter: (filename) => {
-                const test = /.*asuna-admin\/(node_modules|.git|.next|.idea|.asuna).*/.test(filename);
-                if (!test) {
+                const isIgnored = /.+\/asuna-admin\/(node_modules|.git|.next|.idea|.asuna).+/.test(filename);
+                // console.log({ filename, isIgnored, isInnerNodeModule })
+                if (!isIgnored) {
                   console.log('D++>', colors.green(filename));
                 }
-                return !test;
+                return !isIgnored;
               },
             }, (err) => {
               if (err) {
@@ -153,7 +164,7 @@ program
         console.error(colors.red('[x] run sync error'), err);
       } else {
         console.log('[x] try build image ...');
-        buildImage();
+        buildImage(options.buildArg, options.dev);
       }
     });
   });
