@@ -28,12 +28,13 @@ const logger = createLogger('pages:index', lv.warn);
 // --------------------------------------------------------------
 
 global.context = _.assign(global.context, {
-  auth          : new AuthAdapter(Register.authService),
-  response      : new PyResponseAdapter(),
-  menu          : new MenuAdapter(Register.menuService, Register.definitions.registeredModels),
-  api           : new ApiAdapter(Register.apiService),
-  security      : new SecurityAdapter(Register.securityService),
-  models        : new ModelsAdapter(
+  config  : Register.config,
+  auth    : new AuthAdapter(Register.authService),
+  response: new PyResponseAdapter(),
+  menu    : new MenuAdapter(Register.menuService, Register.definitions.registeredModels),
+  api     : new ApiAdapter(Register.apiService),
+  security: new SecurityAdapter(Register.securityService),
+  models  : new ModelsAdapter(
     Register.modelsService, Register.definitions.modelConfigs, Register.definitions.associations,
   ),
 });

@@ -7,6 +7,8 @@ import Truncate from 'react-truncate';
 
 import { Tooltip } from 'antd';
 
+import { ConfigKeys, AuthHeader } from '../app/configure';
+
 import { createLogger, lv } from './logger';
 
 // eslint-disable-next-line no-unused-vars
@@ -14,8 +16,14 @@ const logger = createLogger('helpers', lv.warn);
 
 export * from './logger';
 
-// TODO make helpers configurable
-export const authHeader = token => ({ headers: { Authorization: `Bearer ${token}` } });
+const { config } = global;
+
+export const authHeader = (token) => {
+  if (config.is(ConfigKeys.AUTH_HEADER, AuthHeader.AuthHeaderAsBearerToken)) {
+    return { headers: { Authorization: `Bearer ${token}` } };
+  }
+  return { headers: { Authorization: token } };
+};
 
 export const columnHelper = {
   generate        : (key, title, render?) => ({

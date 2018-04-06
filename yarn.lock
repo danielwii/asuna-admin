@@ -6437,9 +6437,9 @@ no-case@^2.2.0:
   dependencies:
     lower-case "^1.1.1"
 
-node-buffs@^0.3.4:
-  version "0.3.4"
-  resolved "https://registry.yarnpkg.com/node-buffs/-/node-buffs-0.3.4.tgz#621a5952e7c1dd4620912353832c9c5d04665ae9"
+node-buffs@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/node-buffs/-/node-buffs-0.4.0.tgz#75fe999428c16a90f5ee9bd91aeb15b0e7884405"
   dependencies:
     dotenv "^5.0.1"
     lodash "^4.17.5"
