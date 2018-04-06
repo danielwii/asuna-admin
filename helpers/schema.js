@@ -3,6 +3,7 @@ import * as R from 'ramda';
 import { DynamicFormTypes } from '../components/DynamicForm';
 import { modelsProxy }      from '../adapters/models';
 import { storeConnector }   from '../store';
+import { cast }             from '../helpers';
 import { createLogger, lv } from './logger';
 
 const logger = createLogger('helpers:schema', lv.warn);
@@ -17,7 +18,7 @@ export const hiddenComponentDecorator = (fields) => {
   const TAG = '[hiddenComponentDecorator]';
   logger.log(TAG, { fields });
 
-  let wrappedFields = R.omit(['created_at', 'updated_at'])(fields);
+  let wrappedFields = R.omit([cast('createdAt'), cast('updatedAt')])(fields);
   if (R.has('id', wrappedFields)) {
     const hidden  = R.isNil(wrappedFields.id.value);
     wrappedFields = R.mergeDeepRight(wrappedFields, { id: { options: { hidden } } });

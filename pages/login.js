@@ -22,8 +22,7 @@ const logger = createLogger('pages:login');
 // --------------------------------------------------------------
 
 global.context = _.assign(global.context, {
-  config: Register.config,
-  auth  : new AuthAdapter(Register.authService),
+  auth: new AuthAdapter(Register.createAuthService()),
 });
 
 logger.log('global context is', global.context);

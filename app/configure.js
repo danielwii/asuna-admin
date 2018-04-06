@@ -26,9 +26,11 @@ const defaultConfiguration = {
   AUTH_HEADER    : AuthHeader.AuthHeaderAsBearerToken,
 };
 
-export default class Config {
-  constructor(opts = {}) {
-    this.opts = Object.assign(defaultConfiguration, opts);
+class Config {
+  opts = defaultConfiguration;
+
+  update(opts = {}) {
+    this.opts = Object.assign(this.opts, opts);
   }
 
   get(key, defaultValue?) {
@@ -39,3 +41,7 @@ export default class Config {
     return this.opts[key] === value;
   }
 }
+
+const config = new Config();
+
+export default config;

@@ -7,7 +7,9 @@ import Truncate from 'react-truncate';
 
 import { Tooltip } from 'antd';
 
-import { ConfigKeys, AuthHeader } from '../app/configure';
+import config, { ConfigKeys, AuthHeader } from '../app/configure';
+
+import { cast } from './cast';
 
 import { createLogger, lv } from './logger';
 
@@ -15,8 +17,7 @@ import { createLogger, lv } from './logger';
 const logger = createLogger('helpers', lv.warn);
 
 export * from './logger';
-
-const { config } = global;
+export * from './cast';
 
 export const authHeader = (token) => {
   if (config.is(ConfigKeys.AUTH_HEADER, AuthHeader.AuthHeaderAsBearerToken)) {
@@ -77,38 +78,36 @@ export const columnHelper = {
  * 通用配置
  */
 export const commonColumns = {
-  any       : any => columnHelper.generate(any, any.toUpperCase()),
-  id        : columnHelper.generate('id', 'ID'),
-  name      : columnHelper.generate('name', '名称'),
-  title     : columnHelper.generate('title', '标题'),
-  name_en   : columnHelper.generate('name_en', '英文名称'),
-  email     : columnHelper.generate('email', 'Email'),
-  type      : columnHelper.generate('type', '类型'),
-  createdAt : columnHelper.generateCalendar('createdAt', '创建时间'),
-  created_at: columnHelper.generateCalendar('created_at', '创建时间'),
-  updatedAt : columnHelper.generateCalendar('updatedAt', '更新时间'),
-  updated_at: columnHelper.generateCalendar('updated_at', '更新时间'),
-  actions   : columnHelper.generateActions,
+  any      : any => columnHelper.generate(any, any.toUpperCase()),
+  id       : columnHelper.generate('id', 'ID'),
+  name     : columnHelper.generate('name', '名称'),
+  title    : columnHelper.generate('title', '标题'),
+  nameEn   : columnHelper.generate(cast('nameEn'), '英文名称'),
+  email    : columnHelper.generate('email', 'Email'),
+  type     : columnHelper.generate('type', '类型'),
+  createdAt: columnHelper.generateCalendar(cast('createdAt'), '创建时间'),
+  updatedAt: columnHelper.generateCalendar(cast('updatedAt'), '更新时间'),
+  actions  : columnHelper.generateActions,
 };
 
 export const defaultColumns = actions => [
   commonColumns.id,
   // TODO 需要一个基本字段名称转换的参数来选择使用的渲染配置
-  commonColumns.updated_at,
+  commonColumns.updatedAt,
   commonColumns.actions(actions),
 ];
 
 export const defaultNameColumns = actions => [
   commonColumns.id,
   commonColumns.name,
-  commonColumns.updated_at,
+  commonColumns.updatedAt,
   commonColumns.actions(actions),
 ];
 
 export const defaultTitleColumns = actions => [
   commonColumns.id,
   commonColumns.title,
-  commonColumns.updated_at,
+  commonColumns.updatedAt,
   commonColumns.actions(actions),
 ];
 

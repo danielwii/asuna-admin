@@ -1,5 +1,5 @@
 // @flow
-import { createLogger } from '../helpers';
+import { createLogger, lv } from '../helpers';
 
 // --------------------------------------------------------------
 // Types
@@ -20,7 +20,7 @@ export interface IAuthService {
 // --------------------------------------------------------------
 
 // eslint-disable-next-line no-unused-vars
-const logger = createLogger('adapters:auth');
+const logger = createLogger('adapters:auth', lv.warn);
 
 export const authProxy: IAuthService = {
   login       : args => global.context.auth.login(args),
