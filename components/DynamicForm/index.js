@@ -23,7 +23,7 @@ import {
 } from './elements';
 
 import { generateSelect }   from './elements/select';
-import { createLogger, lv } from '../../adapters/logger';
+import { createLogger, lv } from '../../helpers';
 import { diff }             from '../../helpers';
 
 const logger = createLogger('components:dynamic-form', lv.warn);

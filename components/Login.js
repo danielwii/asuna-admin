@@ -3,7 +3,7 @@ import React from 'react';
 import { Button, Form, Icon, Input } from 'antd';
 
 import { authActions }  from '../store/auth.redux';
-import { createLogger } from '../adapters/logger';
+import { createLogger } from '../helpers';
 
 const logger = createLogger('components:login');
 

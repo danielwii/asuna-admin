@@ -2,7 +2,7 @@ import React     from 'react';
 import PropTypes from 'prop-types';
 
 import { apiProxy }         from '../../adapters/api';
-import { createLogger, lv } from '../../adapters/logger';
+import { createLogger, lv } from '../../helpers';
 
 const logger = createLogger('components:rich-editor', lv.warn);
 

@@ -7,7 +7,7 @@ import _               from 'lodash';
 
 import { contentActions }   from './content.redux';
 import { modelsProxy }      from '../adapters/models';
-import { createLogger, lv } from '../adapters/logger';
+import { createLogger, lv } from '../helpers';
 
 const logger = createLogger('store:models', lv.warn);
 

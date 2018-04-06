@@ -3,7 +3,7 @@ import _      from 'lodash';
 
 import { DynamicFormTypes } from '../components/DynamicForm';
 import { defaultColumns }   from '../helpers/index';
-import { createLogger, lv } from '../adapters/logger';
+import { createLogger, lv } from '../helpers';
 
 const logger = createLogger('adapters:models', lv.warn);
 

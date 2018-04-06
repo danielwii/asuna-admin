@@ -11,7 +11,7 @@ import { modelsProxy }                    from '../../adapters/models';
 import { modelsActions }                  from '../../store/models.redux';
 import { diff }                           from '../../helpers';
 import * as schemaHelper                  from '../../helpers/schema';
-import { createLogger, lv }               from '../../adapters/logger';
+import { createLogger, lv }               from '../../helpers';
 
 const logger = createLogger('modules:content:upsert', lv.warn);
 

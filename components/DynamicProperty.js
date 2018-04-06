@@ -5,7 +5,7 @@ import styled    from 'styled-components';
 
 import { Button, Divider, Form, Icon, List } from 'antd';
 
-import { createLogger } from '../adapters/logger';
+import { createLogger } from '../helpers';
 
 import { DynamicForm2, DynamicFormTypes } from '../components/DynamicForm';
 

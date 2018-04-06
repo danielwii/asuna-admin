@@ -1,4 +1,4 @@
-import { createLogger } from '../adapters/logger';
+import { createLogger } from '../helpers';
 
 const logger = createLogger('adapters:api');
 

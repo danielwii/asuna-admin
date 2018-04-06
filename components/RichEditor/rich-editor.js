@@ -9,7 +9,7 @@ import {
   faAlignRight,
 } from '@fortawesome/fontawesome-free-solid';
 
-import { createLogger } from '../../adapters/logger';
+import { createLogger } from '../../helpers';
 
 const logger = createLogger('components:dynamic-form:rich-editor');
 

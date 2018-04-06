@@ -5,7 +5,7 @@ import * as R    from 'ramda';
 
 import { Button, Divider, Tabs } from 'antd';
 
-import { createLogger } from '../adapters/logger';
+import { createLogger } from '../helpers';
 import ModulesLoader    from '../modules';
 
 const logger = createLogger('components:panes');

@@ -12,12 +12,7 @@ import { appActions }    from '../store/app.redux';
 import AntdLayout from '../layout/antd';
 import Loading    from '../components/LivingLoading';
 
-import { authService }     from '../services/auth';
-import { securityService } from '../services/security';
-import { modelsService }   from '../services/models';
-import { menuService }     from '../services/menu';
-import { apiService }      from '../services/api';
-
+import Register                  from '../services/register';
 import { AuthAdapter }           from '../adapters/auth';
 import { SecurityAdapter }       from '../adapters/security';
 import { ModelsAdapter }         from '../adapters/models';
@@ -25,9 +20,7 @@ import { MenuAdapter }           from '../adapters/menu';
 import { PyResponseAdapter }     from '../adapters/response';
 import { ApiAdapter }            from '../adapters/api';
 import { StoreConnectorAdapter } from '../adapters/storeConnector';
-import { createLogger, lv }      from '../adapters/logger';
-
-import { associations, modelConfigs, registeredModels } from '../services/definitions';
+import { createLogger, lv }      from '../helpers';
 
 const logger = createLogger('pages:index', lv.warn);
 
@@ -36,13 +29,15 @@ const logger = createLogger('pages:index', lv.warn);
 // --------------------------------------------------------------
 
 global.context = _.assign(global.context, {
-  auth          : new AuthAdapter(authService),
+  auth          : new AuthAdapter(Register.authService),
   response      : new PyResponseAdapter(),
-  models        : new ModelsAdapter(modelsService, modelConfigs, associations),
-  menu          : new MenuAdapter(menuService, registeredModels),
-  api           : new ApiAdapter(apiService),
-  security      : new SecurityAdapter(securityService),
+  menu          : new MenuAdapter(Register.menuService, Register.definitions.registeredModels),
+  api           : new ApiAdapter(Register.apiService),
+  security      : new SecurityAdapter(Register.securityService),
   storeConnector: new StoreConnectorAdapter(),
+  models        : new ModelsAdapter(
+    Register.modelsService, Register.definitions.modelConfigs, Register.definitions.associations,
+  ),
 });
 
 logger.info('global context is', global.context);

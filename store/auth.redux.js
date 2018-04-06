@@ -6,7 +6,7 @@ import { message }   from 'antd';
 import { REHYDRATE } from 'redux-persist/constants';
 
 import { authProxy }     from '../adapters/auth';
-import { createLogger }  from '../adapters/logger';
+import { createLogger }  from '../helpers';
 import { routerActions } from './router.redux';
 
 const logger = createLogger('store:auth');

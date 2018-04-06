@@ -3,7 +3,7 @@ import * as R from 'ramda';
 import { DynamicFormTypes }    from '../components/DynamicForm';
 import { modelsProxy }         from '../adapters/models';
 import { storeConnectorProxy } from '../adapters/storeConnector';
-import { createLogger, lv }    from '../adapters/logger';
+import { createLogger, lv }    from './logger';
 
 const logger = createLogger('helpers:schema', lv.warn);
 

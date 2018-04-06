@@ -30,7 +30,7 @@ import { securityReducer, securitySagas }            from './security.redux';
 import { panesCleaner, panesReducer, panesSagas }    from './panes.redux';
 
 import { createStoreConnectorMiddleware } from '../adapters/storeConnector';
-import { createLogger }                   from '../adapters/logger';
+import { createLogger }                   from '../helpers';
 
 const { serverRuntimeConfig, publicRuntimeConfig } = getConfig();
 

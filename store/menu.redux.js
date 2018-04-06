@@ -3,7 +3,7 @@ import { put, select, takeLatest } from 'redux-saga/effects';
 import * as R from 'ramda';
 
 import { menuProxy }        from '../adapters/menu';
-import { createLogger, lv } from '../adapters/logger';
+import { createLogger, lv } from '../helpers';
 
 const logger = createLogger('store:menu', lv.warn);
 

@@ -21,7 +21,7 @@ import { authActions }           from './auth.redux';
 
 import { actions }      from '.';
 import { apiProxy }     from '../adapters/api';
-import { createLogger } from '../adapters/logger';
+import { createLogger } from '../helpers';
 
 const logger = createLogger('store:app');
 

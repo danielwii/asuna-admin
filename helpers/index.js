@@ -7,13 +7,15 @@ import Truncate from 'react-truncate';
 
 import { Tooltip } from 'antd';
 
-import { createLogger, lv } from '../adapters/logger';
+import { createLogger, lv } from './logger';
 
 // eslint-disable-next-line no-unused-vars
 const logger = createLogger('helpers', lv.warn);
 
+export * from './logger';
+
 // TODO make helpers configurable
-export const authHeader = token => ({ headers: { Authorization: token } });
+export const authHeader = token => ({ headers: { Authorization: `Bearer ${token}` } });
 
 export const columnHelper = {
   generate        : (key, title, render?) => ({

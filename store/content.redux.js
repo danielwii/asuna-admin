@@ -5,7 +5,7 @@ import { reduxAction } from 'node-buffs';
 import { message }     from 'antd';
 
 import { modelsProxy }      from '../adapters/models';
-import { createLogger, lv } from '../adapters/logger';
+import { createLogger, lv } from '../helpers';
 
 const logger = createLogger('store:content', lv.warn);
 

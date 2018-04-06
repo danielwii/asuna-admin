@@ -6,7 +6,7 @@ import _         from 'lodash';
 import { Icon, message, Modal, Upload } from 'antd';
 
 import { apiProxy }         from '../../adapters/api';
-import { createLogger, lv } from '../../adapters/logger';
+import { createLogger, lv } from '../../helpers';
 
 const logger = createLogger('components:dynamic-form:images', lv.warn);
 

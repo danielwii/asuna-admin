@@ -2,7 +2,7 @@ import React   from 'react';
 import dynamic from 'next/dynamic';
 import _       from 'lodash';
 
-import { createLogger } from '../adapters/logger';
+import { createLogger } from '../helpers';
 
 const logger = createLogger('modules:index');
 

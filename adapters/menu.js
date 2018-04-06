@@ -1,7 +1,7 @@
 // @flow
 import * as R from 'ramda';
 
-import { createLogger } from '../adapters/logger';
+import { createLogger } from '../helpers';
 
 // --------------------------------------------------------------
 // Types
