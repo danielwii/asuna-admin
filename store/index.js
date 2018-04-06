@@ -29,8 +29,11 @@ import { contentReducer, contentSagas }              from './content.redux';
 import { securityReducer, securitySagas }            from './security.redux';
 import { panesCleaner, panesReducer, panesSagas }    from './panes.redux';
 
-import { createStoreConnectorMiddleware } from '../adapters/storeConnector';
-import { createLogger }                   from '../helpers';
+import { createStoreConnectorMiddleware, storeConnector } from './middlewares/store-connector';
+
+import { createLogger } from '../helpers';
+
+export { storeConnector };
 
 const { serverRuntimeConfig, publicRuntimeConfig } = getConfig();
 

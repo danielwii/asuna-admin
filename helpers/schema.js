@@ -1,9 +1,9 @@
 import * as R from 'ramda';
 
-import { DynamicFormTypes }    from '../components/DynamicForm';
-import { modelsProxy }         from '../adapters/models';
-import { storeConnectorProxy } from '../adapters/storeConnector';
-import { createLogger, lv }    from './logger';
+import { DynamicFormTypes } from '../components/DynamicForm';
+import { modelsProxy }      from '../adapters/models';
+import { storeConnector }   from '../store';
+import { createLogger, lv } from './logger';
 
 const logger = createLogger('helpers:schema', lv.warn);
 
@@ -57,7 +57,7 @@ export const asyncLoadAssociationsDecorator = async (fields) => {
       return fields;
     }
 
-    const auth = storeConnectorProxy.getState('auth');
+    const auth = storeConnector.getState('auth');
 
     const wrappedAssociations = await Promise.all(
       R.values(filteredAssociations).map(async (field) => {

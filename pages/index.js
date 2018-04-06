@@ -12,15 +12,14 @@ import { appActions }    from '../store/app.redux';
 import AntdLayout from '../layout/antd';
 import Loading    from '../components/LivingLoading';
 
-import Register                  from '../services/register';
-import { AuthAdapter }           from '../adapters/auth';
-import { SecurityAdapter }       from '../adapters/security';
-import { ModelsAdapter }         from '../adapters/models';
-import { MenuAdapter }           from '../adapters/menu';
-import { PyResponseAdapter }     from '../adapters/response';
-import { ApiAdapter }            from '../adapters/api';
-import { StoreConnectorAdapter } from '../adapters/storeConnector';
-import { createLogger, lv }      from '../helpers';
+import Register              from '../services/register';
+import { AuthAdapter }       from '../adapters/auth';
+import { SecurityAdapter }   from '../adapters/security';
+import { ModelsAdapter }     from '../adapters/models';
+import { MenuAdapter }       from '../adapters/menu';
+import { PyResponseAdapter } from '../adapters/response';
+import { ApiAdapter }        from '../adapters/api';
+import { createLogger, lv }  from '../helpers';
 
 const logger = createLogger('pages:index', lv.warn);
 
@@ -34,7 +33,6 @@ global.context = _.assign(global.context, {
   menu          : new MenuAdapter(Register.menuService, Register.definitions.registeredModels),
   api           : new ApiAdapter(Register.apiService),
   security      : new SecurityAdapter(Register.securityService),
-  storeConnector: new StoreConnectorAdapter(),
   models        : new ModelsAdapter(
     Register.modelsService, Register.definitions.modelConfigs, Register.definitions.associations,
   ),
