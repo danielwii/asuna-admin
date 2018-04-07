@@ -4,6 +4,12 @@ export const StringCase = {
   Camel: 'Camel',
 };
 
+export const ApiResponsePageMode = {
+  SQLAlchemy: 'SQLAlchemy',
+  SpringJPA : 'SpringJPA',
+  Default   : 'Default',
+};
+
 export const AuthHeader = {
   /**
    * header: Authorization: token
@@ -22,8 +28,9 @@ export const ConfigKeys = {
 };
 
 const defaultConfiguration = {
-  MODEL_KEYS_CASE: StringCase.none,
-  AUTH_HEADER    : AuthHeader.AuthHeaderAsBearerToken,
+  MODEL_KEYS_CASE       : StringCase.none,
+  AUTH_HEADER           : AuthHeader.AuthHeaderAsBearerToken,
+  API_RESPONSE_PAGE_MODE: ApiResponsePageMode.Default,
 };
 
 class Config {
