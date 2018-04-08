@@ -5,11 +5,11 @@ import * as R        from 'ramda';
 import { message }   from 'antd';
 import { REHYDRATE } from 'redux-persist/constants';
 
-import { authProxy }     from '../adapters/auth';
-import { createLogger }  from '../helpers';
-import { routerActions } from './router.redux';
+import { authProxy }        from '../adapters/auth';
+import { routerActions }    from './router.redux';
+import { createLogger, lv } from '../helpers';
 
-const logger = createLogger('store:auth');
+const logger = createLogger('store:auth', lv.warn);
 
 // --------------------------------------------------------------
 // Login actionTypes

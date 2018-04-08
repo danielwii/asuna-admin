@@ -1,0 +1,16 @@
+{
+  "type": "sqlite",
+  "database": "database.sqlite",
+  "autoSchemaSync": true,
+  "synchronize": true,
+  "logging": true,
+  "logger": "simple-console",
+  "entities": ["src/entities/**/*.ts"],
+  "migrations": ["src/migrations/**/*.ts"],
+  "subscribers": ["src/subscriber/**/*.ts"],
+  "cli": {
+    "entitiesDir": "src/entities",
+    "migrationsDir": "src/migrations",
+    "subscribersDir": "src/subscriber"
+  }
+}
