@@ -11,8 +11,8 @@ describe('schemaHelper.enumDecorator', () => {
           ref    : 'type',
           type   : 'EnumFilter',
           options: {
-            filter_type: 'Sort',
-            enum_data  : [
+            filterType: 'Sort',
+            enumData  : [
               { key: 'refInclude', value: 'refValue1' },
               { key: 'refNotInclude', value: 'refValue2' },
             ],
@@ -25,7 +25,7 @@ describe('schemaHelper.enumDecorator', () => {
       refInclude: {
         name         : 'refInclude',
         isFilterField: true,
-        options      : { filter_type: 'Sort' },
+        options      : { filterType: 'Sort' },
         value        : [1],
       },
       type      :
@@ -34,8 +34,8 @@ describe('schemaHelper.enumDecorator', () => {
           ref    : 'type',
           type   : 'EnumFilter',
           options: {
-            filter_type: 'Sort',
-            enum_data  : [{
+            filterType: 'Sort',
+            enumData  : [{
               key: 'refInclude', value: 'refValue1',
             }, {
               key: 'refNotInclude', value: 'refValue2',
@@ -61,8 +61,8 @@ describe('schemaHelper.enumDecorator', () => {
         type   : 'EnumFilter',
         value  : 'refInclude',
         options: {
-          filter_type: 'Sort',
-          enum_data  : [{
+          filterType: 'Sort',
+          enumData  : [{
             key: 'refInclude', value: 'refValue1',
           }],
         },
@@ -75,7 +75,7 @@ describe('schemaHelper.enumDecorator', () => {
         type         : 'ManyToMany',
         isFilterField: true,
         options      : {
-          filter_type: 'Sort',
+          filterType: 'Sort',
         },
         value        : [1, 2, 3],
       },
@@ -83,8 +83,8 @@ describe('schemaHelper.enumDecorator', () => {
         type   : 'EnumFilter',
         value  : 'refInclude',
         options: {
-          filter_type: 'Sort',
-          enum_data  : [{
+          filterType: 'Sort',
+          enumData  : [{
             key: 'refInclude', value: 'refValue1',
           }],
         },
@@ -100,8 +100,8 @@ describe('schemaHelper.enumDecorator', () => {
         type   : 'EnumFilter',
         value  : 'refInclude',
         options: {
-          filter_type: 'Sort',
-          enum_data  : [{
+          filterType: 'Sort',
+          enumData  : [{
             key: 'refInclude', value: 'refValue1',
           }],
         },
@@ -117,7 +117,7 @@ describe('schemaHelper.enumDecorator', () => {
         type         : 'ManyToMany',
         isFilterField: true,
         options      : {
-          filter_type: 'Sort',
+          filterType: 'Sort',
         },
         value        : [3, 1, 2],
       },
@@ -125,8 +125,8 @@ describe('schemaHelper.enumDecorator', () => {
         type   : 'EnumFilter',
         value  : 'refInclude',
         options: {
-          filter_type: 'Sort',
-          enum_data  : [{
+          filterType: 'Sort',
+          enumData  : [{
             key: 'refInclude', value: 'refValue1',
           }],
         },
@@ -146,8 +146,8 @@ describe('schemaHelper.enumDecorator', () => {
         type   : 'EnumFilter',
         value  : 'refInclude',
         options: {
-          filter_type: 'Sort',
-          enum_data  : [{
+          filterType: 'Sort',
+          enumData  : [{
             key: 'refInclude', value: 'refValue1',
           }],
         },
@@ -163,7 +163,7 @@ describe('schemaHelper.enumDecorator', () => {
         type         : 'ManyToMany',
         isFilterField: true,
         options      : {
-          filter_type: 'Sort',
+          filterType: 'Sort',
         },
         value        : [3, 1, 2],
       },
@@ -171,8 +171,8 @@ describe('schemaHelper.enumDecorator', () => {
         type   : 'EnumFilter',
         value  : 'refInclude',
         options: {
-          filter_type: 'Sort',
-          enum_data  : [{
+          filterType: 'Sort',
+          enumData  : [{
             key: 'refInclude', value: 'refValue1',
           }],
         },
@@ -192,8 +192,8 @@ describe('schemaHelper.enumDecorator', () => {
         type   : 'EnumFilter',
         value  : 'refInclude',
         options: {
-          filter_type: 'Sort',
-          enum_data  : [{
+          filterType: 'Sort',
+          enumData  : [{
             key: 'refInclude', value: 'refValue1',
           }],
         },
@@ -210,7 +210,7 @@ describe('schemaHelper.enumDecorator', () => {
         type         : 'ManyToMany',
         isFilterField: true,
         options      : {
-          filter_type: 'Sort',
+          filterType: 'Sort',
         },
         value        : [3, 2, 1],
       },
@@ -218,8 +218,8 @@ describe('schemaHelper.enumDecorator', () => {
         type   : 'EnumFilter',
         value  : 'refInclude',
         options: {
-          filter_type: 'Sort',
-          enum_data  : [{
+          filterType: 'Sort',
+          enumData  : [{
             key: 'refInclude', value: 'refValue1',
           }],
         },
@@ -287,13 +287,12 @@ describe('schemaHelper.jsonDecorator', () => {
   });
 });
 
-
 describe('schemaHelper.hiddenComponentDecorator', () => {
   it('should hidden id when value not exists', () => {
     const decorated = schemaHelper.hiddenComponentDecorator({
-      id        : { value: null },
-      created_at: { value: null },
-      updated_at: { value: null },
+      id       : { value: null },
+      createdAt: { value: null },
+      updatedAt: { value: null },
     });
 
     expect(decorated).toEqual({
@@ -303,9 +302,9 @@ describe('schemaHelper.hiddenComponentDecorator', () => {
 
   it('should not hidden id with value', () => {
     const decorated = schemaHelper.hiddenComponentDecorator({
-      id        : { value: 1 },
-      created_at: { value: null },
-      updated_at: { value: null },
+      id       : { value: 1 },
+      createdAt: { value: null },
+      updatedAt: { value: null },
     });
 
     expect(decorated).toEqual({
@@ -325,8 +324,8 @@ describe('schemaHelper.hiddenComponentDecorator', () => {
 
   it('should remove createdAt and updatedAt fields', () => {
     const decorated = schemaHelper.hiddenComponentDecorator({
-      created_at: { value: null },
-      updated_at: { value: null },
+      createdAt: { value: null },
+      updatedAt: { value: null },
     });
 
     expect(decorated).toEqual({});

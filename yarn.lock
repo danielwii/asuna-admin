@@ -558,9 +558,9 @@ ansi-to-html@^0.6.3:
   dependencies:
     entities "^1.1.1"
 
-antd@^3.4.0:
-  version "3.4.0"
-  resolved "https://registry.yarnpkg.com/antd/-/antd-3.4.0.tgz#ad67872ab3d3e31d32b2b6feabc2fa5f5b27a48e"
+antd@^3.4.1:
+  version "3.4.1"
+  resolved "https://registry.yarnpkg.com/antd/-/antd-3.4.1.tgz#9f93c712e14d692a3db70fa3f254c79874cd3822"
   dependencies:
     array-tree-filter "^2.0.0"
     babel-runtime "6.x"
@@ -2095,9 +2095,9 @@ braces@^2.3.0, braces@^2.3.1:
     split-string "^3.0.2"
     to-regex "^3.0.1"
 
-braft-editor@^1.8.3:
-  version "1.8.3"
-  resolved "https://registry.yarnpkg.com/braft-editor/-/braft-editor-1.8.3.tgz#692de02e2abd6adae39b2e32dbdfa3f2007fb0bf"
+braft-editor@^1.8.4:
+  version "1.8.4"
+  resolved "https://registry.yarnpkg.com/braft-editor/-/braft-editor-1.8.4.tgz#5837a07884aafea98c1701cfd5d817fb2381060b"
   dependencies:
     draft-convert "^2.0.0"
     draft-js "^0.10.3"

@@ -178,7 +178,7 @@ export class DynamicForm2 extends React.Component {
           const { modelName, association = defaultAssociation } = R.path(['foreignOpts', 0])(field);
 
           const items = R.path(['associations', modelName, 'items'])(field);
-          const type  = R.path(['options', 'filter_type'])(field);
+          const type  = R.path(['options', 'filterType'])(field);
           return generateSelect(form, {
             ...options,
             items,
@@ -196,8 +196,8 @@ export class DynamicForm2 extends React.Component {
         // EnumFilter / RelationShip
         // --------------------------------------------------------------
         logger.log('[DynamicForm2]', '[buildField][EnumFilter]', field);
-        const items = R.path(['options', 'enum_data'])(field);
-        const type  = R.path(['options', 'filter_type'])(field);
+        const items = R.path(['options', 'enumData'])(field);
+        const type  = R.path(['options', 'filterType'])(field);
         logger.log('[DynamicForm2]', '[buildField][EnumFilter]', { type, items });
         return generateSelect(form, {
           ...options,
@@ -210,7 +210,7 @@ export class DynamicForm2 extends React.Component {
         // Enum / RelationShip
         // --------------------------------------------------------------
         logger.info('[DynamicForm2]', '[buildField][Enum]', field);
-        const items = R.path(['options', 'enum_data'])(field);
+        const items = R.path(['options', 'enumData'])(field);
         return generateSelect(form, {
           ...options,
           items,

@@ -27,19 +27,19 @@ describe('identify types', () => {
 
     expect(adapter.identifyType({
       config: {
-        foreign_keys: ['t_models.id'],
-        info        : {},
-        many        : true,
-        selectable  : 't_models',
+        foreignKeys: ['t_models.id'],
+        info       : {},
+        many       : true,
+        selectable : 't_models',
       },
       name  : 'models',
     })).toBe(DynamicFormTypes.ManyToMany);
 
     expect(adapter.identifyType({
       config: {
-        foreign_keys: [],
-        info        : {
-          enum_data: [
+        foreignKeys: [],
+        info       : {
+          enumData: [
             {
               key  : 'model1s',
               value: 'model1s',
@@ -49,11 +49,11 @@ describe('identify types', () => {
               value: 'model2s',
             },
           ],
-          type     : 'EnumFilter',
+          type    : 'EnumFilter',
         },
-        nullable    : true,
-        primary_key : false,
-        type        : 'VARCHAR(8)',
+        nullable   : true,
+        primaryKey : false,
+        type       : 'VARCHAR(8)',
       },
       name  : 'type',
     })).toBe(DynamicFormTypes.EnumFilter);
@@ -130,17 +130,17 @@ describe('getFormSchema', () => {
       test_schema: [
         {
           config: {
-            foreign_keys: [
+            foreignKeys: [
               't_test_relates.id',
             ],
-            info        : {
+            info       : {
               name   : 'TEST_NAME',
               ref    : 'test_related',
               tooltip: 'tooltip-info',
             },
-            nullable    : true,
-            primary_key : false,
-            type        : 'INTEGER',
+            nullable   : true,
+            primaryKey : false,
+            type       : 'INTEGER',
           },
           name  : 'test_related_id',
         },
@@ -172,11 +172,11 @@ describe('getFormSchema', () => {
       test_schema: [
         {
           config: {
-            foreign_keys: [],
-            info        : {},
-            nullable    : true,
-            primary_key : false,
-            type        : 'INTEGER',
+            foreignKeys: [],
+            info       : {},
+            nullable   : true,
+            primaryKey : false,
+            type       : 'INTEGER',
           },
           name  : 'test-nullable',
         },
@@ -201,11 +201,11 @@ describe('getFormSchema', () => {
       test_schema: [
         {
           config: {
-            foreign_keys: [],
-            info        : {},
-            nullable    : false,
-            primary_key : false,
-            type        : 'INTEGER',
+            foreignKeys: [],
+            info       : {},
+            nullable   : false,
+            primaryKey : false,
+            type       : 'INTEGER',
           },
           name  : 'test-nullable',
         },
@@ -230,13 +230,13 @@ describe('getFormSchema', () => {
       test_schema: [
         {
           config: {
-            foreign_keys: [],
-            info        : {
+            foreignKeys: [],
+            info       : {
               required: true,
             },
-            nullable    : true,
-            primary_key : false,
-            type        : 'INTEGER',
+            nullable   : true,
+            primaryKey : false,
+            type       : 'INTEGER',
           },
           name  : 'test-nullable',
         },
@@ -261,13 +261,13 @@ describe('getFormSchema', () => {
       test_schema: [
         {
           config: {
-            foreign_keys: [],
-            info        : {
+            foreignKeys: [],
+            info       : {
               required: true,
             },
-            nullable    : false,
-            primary_key : false,
-            type        : 'INTEGER',
+            nullable   : false,
+            primaryKey : false,
+            type       : 'INTEGER',
           },
           name  : 'test-nullable',
         },
