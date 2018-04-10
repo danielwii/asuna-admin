@@ -62,28 +62,17 @@ export const asyncLoadAssociationsDecorator = async (fields) => {
 
     const wrappedAssociations = await Promise.all(
       R.values(filteredAssociations).map(async (field) => {
-        const foreignKeys = R.pathOr([], ['options', 'foreignKeys'])(field);
-        logger.info(TAG, 'handle field', field, foreignKeys);
-        if (foreignKeys && foreignKeys.length > 0) {
+        const selectable = R.pathOr([], ['options', 'selectable'])(field);
+        logger.info(TAG, 'handle field', { field, selectable });
+        if (selectable) {
           const fieldsOfAssociations = modelsProxy.getFieldsOfAssociations();
 
-          const foreignOpts = R.map((foreignKey) => {
-            const regex = foreignKey.startsWith('t_')
-              ? /t_(\w+)\.(\w+)/  // t_model.id -> model
-              : /(\w+)\.(\w+)/;   // model.id   -> model
-
-            // update model_name to model-name
-            const [, modelName, property] = foreignKey.match(regex);
-
-            const association = fieldsOfAssociations[modelName];
-            return { modelName, property, association };
-          })(foreignKeys);
+          const foreignOpts = [{
+            modelName: selectable, association: fieldsOfAssociations[selectable],
+          }];
           logger.info(TAG, 'foreignOpts is', foreignOpts);
 
-          const associationNames = R.pluck('modelName')(foreignOpts);
-          logger.info(TAG, 'associationNames is', associationNames);
-
-          const effects = modelsProxy.listAssociationsCallable(auth, associationNames);
+          const effects = modelsProxy.listAssociationsCallable(auth, [selectable]);
           logger.info(TAG, 'list associations callable', effects);
 
           let allResponse = {};
@@ -94,7 +83,7 @@ export const asyncLoadAssociationsDecorator = async (fields) => {
             logger.error(TAG, e);
           }
 
-          const foreignKeysResponse = R.zipObj(associationNames, R.map(R.prop('data'), allResponse));
+          const foreignKeysResponse = R.zipObj([selectable], R.map(R.prop('data'), allResponse));
           logger.info(TAG, 'foreignOpts is', foreignOpts, 'foreignKeysResponse is', foreignKeysResponse);
 
           return { ...field, foreignOpts, associations: foreignKeysResponse };
@@ -190,7 +179,7 @@ export const enumDecorator = (fields) => {
 
     const enums   = R.compose(
       R.map(R.prop('key')),
-      R.path(['options', 'enum_data']),
+      R.path(['options', 'enumData']),
     )(enumFilterField);
     const current = R.pathOr('', ['value'])(enumFilterField);
     logger.info(TAG, { enums, current });
@@ -217,7 +206,7 @@ export const enumDecorator = (fields) => {
         {
           [current]: {
             isFilterField: true,
-            options      : { filter_type: R.path(['options', 'filter_type'])(enumFilterField) },
+            options      : { filterType: R.path(['options', 'filterType'])(enumFilterField) },
             value        : R.isEmpty(positionsFieldPair)
               ? R.path([current, 'value'])(filteredFields)
               : R.path([0, 1, 'value'])(positionsFieldPair),

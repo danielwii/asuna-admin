@@ -2,10 +2,10 @@ import * as R from 'ramda';
 import _      from 'lodash';
 
 import { DynamicFormTypes } from '../components/DynamicForm';
-import { defaultColumns }   from '../helpers/index';
-import { createLogger, lv } from '../helpers';
 
 const logger = createLogger('adapters:models', lv.warn);
+import { createLogger, defaultColumns, lv } from '../helpers';
+
 
 export const modelsProxy = {
   getModelConfigs      : name => global.context.models.getModelConfig(name),
@@ -105,10 +105,10 @@ export class ModelsAdapter {
     const hasForeignKeys = R.compose(
       R.not,
       R.anyPass([R.isEmpty, R.isNil]),
-      R.path(['config', 'foreign_keys']),
+      R.path(['config', 'foreignKeys']),
     )(field);
 
-    if (hasForeignKeys) {
+    if (hasForeignKeys || R.path(['config', 'selectable'], field)) {
       return R.not(R.path(['config', 'many'])(field))
         ? DynamicFormTypes.Association
         : DynamicFormTypes.ManyToMany;
@@ -131,7 +131,7 @@ export class ModelsAdapter {
     const type = R.path(['config', 'type'])(field);
 
     if (/^(VARCHAR.+|String)$/i.test(type)) return DynamicFormTypes.Input;
-    if (/^INTEGER|FLOAT$/i.test(type)) return DynamicFormTypes.InputNumber;
+    if (/^INTEGER|FLOAT|Number$/i.test(type)) return DynamicFormTypes.InputNumber;
     if (/^TEXT$/i.test(type)) return DynamicFormTypes.TextArea;
     if (/^DATETIME$/i.test(type)) return DynamicFormTypes.DateTime;
     if (/^DATE$/i.test(type)) return DynamicFormTypes.Date;
@@ -233,7 +233,8 @@ export class ModelsAdapter {
           options: {
             ...R.path(['config', 'info'])(field),
             label      : R.pathOr(null, ['config', 'info', 'name'])(field),
-            foreignKeys: R.path(['config', 'foreign_keys'])(field),
+            // foreignKeys: R.path(['config', 'foreignKeys'])(field), // @deprecated
+            selectable : R.path(['config', 'selectable'])(field),
             required   : required || R.pathOr(false, ['config', 'info', 'required'])(field),
             ...R.path(['model', 'settings', field.name], this.getModelConfig(name)),
           },

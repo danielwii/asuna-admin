@@ -35,7 +35,7 @@ import { createLogger } from '../helpers';
 
 export { storeConnector };
 
-const { serverRuntimeConfig, publicRuntimeConfig } = getConfig();
+const { serverRuntimeConfig, publicRuntimeConfig } = getConfig() || {};
 
 // --------------------------------------------------------------
 // Init

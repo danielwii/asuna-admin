@@ -1,11 +1,12 @@
 import { put, select, takeLatest } from 'redux-saga/effects';
 
 import * as R from 'ramda';
+import _ from 'lodash';
 
 import { menuProxy }        from '../adapters/menu';
 import { createLogger, lv } from '../helpers';
 
-const logger = createLogger('store:menu', lv.warn);
+const logger = createLogger('store:menu', lv.info);
 
 // --------------------------------------------------------------
 // Module menuActionTypes
@@ -40,9 +41,16 @@ const menuSagaFunctions = {
       const { roles, user } = yield select(state => state.security);
 
       if (user) {
-        if (R.prop('items')(roles)) {
+        if (roles && roles.items) {
           const currentRoles = R.compose(
-            R.filter(role => R.contains(role.id)(user.roles)),
+            R.filter((role) => {
+              // 判断返回的是否是 ids
+              if (user.roles && _.isObjectLike(user.roles[0])) {
+                return R.contains(role.id)(R.values(R.pluck('id', user.roles)));
+              } else {
+                return R.contains(role.id)(user.roles);
+              }
+            }),
             R.propOr([], 'items'),
           )(roles);
           logger.info('[init]', 'current roles is', currentRoles);
@@ -79,7 +87,6 @@ const menuSagaFunctions = {
     }
   },
 };
-
 
 const menuSagas = [
   // takeLatest / takeEvery (actionType, actionSage)
