@@ -192,37 +192,37 @@ export const generateSwitch = (form, options, formItemLayout = defaultFormItemLa
 };
 
 export const generateImages = (form, options, formItemLayout = defaultFormItemLayout) => {
-  const { key, name, label, auth } = options;
+  const { key, name, label, auth, api } = options;
 
   const fieldName = key || name;
   const labelName = label || name || key;
   return generateComponent(
     form, { fieldName, labelName, ...options }, (
-      <ImagesUploader auth={auth} />
+      <ImagesUploader auth={auth} api={api} />
     ), formItemLayout,
   );
 };
 
 export const generateImage = (form, options, formItemLayout = defaultFormItemLayout) => {
-  const { key, name, label, auth } = options;
+  const { key, name, label, auth, api } = options;
 
   const fieldName = key || name;
   const labelName = label || name || key;
   return generateComponent(
     form, { fieldName, labelName, ...options }, (
-      <ImageUploader auth={auth} />
+      <ImageUploader auth={auth} api={api} />
     ), formItemLayout,
   );
 };
 
 export const generateVideo = (form, options, formItemLayout = defaultFormItemLayout) => {
-  const { key, name, label, auth } = options;
+  const { key, name, label, auth, api } = options;
 
   const fieldName = key || name;
   const labelName = label || name || key;
   return generateComponent(
     form, { fieldName, labelName, ...options }, (
-      <VideoUploader auth={auth} />
+      <VideoUploader auth={auth} api={api} />
     ), formItemLayout,
   );
 };

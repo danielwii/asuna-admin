@@ -28,9 +28,14 @@ export const AuthHeader = {
 };
 
 export const ConfigKeys = {
-  MODEL_KEYS_CASE              : 'MODEL_KEYS_CASE',
-  AUTH_HEADER                  : 'AUTH_HEADER',
+  MODEL_KEYS_CASE: 'MODEL_KEYS_CASE',
+  AUTH_HEADER    : 'AUTH_HEADER',
+
+  API_RESPONSE_PAGE_MODE       : 'API_RESPONSE_PAGE_MODE',
   API_RESPONSE_ASSOCIATION_MODE: 'API_RESPONSE_ASSOCIATION_MODE',
+
+  IMAGE_API: 'IMAGE_API',
+  VIDEO_API: 'VIDEO_API',
 };
 
 const defaultConfiguration = {

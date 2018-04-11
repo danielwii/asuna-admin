@@ -33,16 +33,9 @@ async function upload(auth, onChange, files, args) {
   const response = await apiProxy.upload(auth, args.file);
   logger.log('[upload]', 'response is', response);
 
-  if (response.status === 200) {
+  if (/^20\d$/.test(response.status)) {
     message.success('upload successfully.');
     args.onSuccess();
-
-    // const urls = R.compose(
-    //   R.join(','),
-    //   R.filter(R.identity),
-    //   R.concat(files),
-    // )(response.data);
-    // logger.log('[upload]', files, urls);
 
     onChange(response.data);
   } else {
@@ -59,6 +52,7 @@ async function upload(auth, onChange, files, args) {
 export class VideoUploader extends React.Component {
   static propTypes = {
     auth    : PropTypes.shape({}), // auth token object
+    api     : PropTypes.string.isRequired,
     value   : PropTypes.arrayOf(PropTypes.shape({
       bucket  : PropTypes.string,
       filename: PropTypes.string,
@@ -114,14 +108,16 @@ export class VideoUploader extends React.Component {
   renderPlayer = (video) => {
     logger.info('[VideoUploader][renderPlayer]', video);
 
+    const { api } = this.props;
+
     if (video) {
       const videoJsOptions = {
-        width   : 640,
-        height  : 320,
+        // width   : '100%',
+        // height  : 320,
         autoplay: false,
         controls: true,
         sources : [{
-          src : `${video.prefix}/${video.filename}`,
+          src : `${api}/${video.filename}?prefix=${video.prefix}`,
           type: 'video/mp4',
         }],
       };
@@ -179,6 +175,13 @@ export default class VideoPlayer extends React.Component {
       <div data-vjs-player>
         {/* eslint-disable-next-line no-return-assign */}
         <video ref={node => this.videoNode = node} className="video-js" />
+        {/* language=CSS */}
+        <style jsx>{`
+          div[data-vjs-player] {
+            width: 100%;
+            height: 20rem;
+          }
+        `}</style>
       </div>
     );
   }
