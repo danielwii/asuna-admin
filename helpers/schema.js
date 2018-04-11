@@ -1,4 +1,5 @@
 import * as R from 'ramda';
+import _      from 'lodash';
 
 import { DynamicFormTypes }       from '../components/DynamicForm';
 import { modelsProxy }            from '../adapters/models';
@@ -93,18 +94,23 @@ export const asyncLoadAssociationsDecorator = async (fields) => {
     );
 
     const pairedWrappedAssociations = R.zipObj(R.keys(filteredAssociations), wrappedAssociations);
-    logger.info(TAG, 'wrapped associations', pairedWrappedAssociations);
+    logger.info(TAG, 'wrapped associations', { pairedWrappedAssociations });
 
     // FIXME 临时解决关联数据从 entities 到 ids 的转换
 
-    const transformedAssociations = R.map(
-      association => ({
-        ...association,
-        value: association.value
+    const transformedAssociations = R.map((association) => {
+      let value;
+      if (_.isArrayLike(association.value)) {
+        value = association.value
           ? R.map(entity => R.propOr(entity, 'id', entity))(association.value)
-          : undefined,
-      }),
-    )(pairedWrappedAssociations);
+          : undefined;
+      } else {
+        value = association.value
+          ? R.propOr(association.value, 'id', association.value)
+          : undefined;
+      }
+      return { ...association, value };
+    })(pairedWrappedAssociations);
 
     logger.info(TAG, 'transformed associations', transformedAssociations);
 
@@ -134,19 +140,7 @@ export const associationDecorator = (fields) => {
     }))(associationFields);
     logger.info(TAG, { withAssociations });
 
-    // FIXME 临时解决关联数据从 entities 到 ids 的转换
-
-    const transformedAssociations = R.map(
-      association => ({
-        ...association,
-        value: association.value
-          ? R.map(entity => R.propOr(entity, 'id', entity))(association.value)
-          : undefined,
-      }),
-    )(withAssociations);
-    logger.info(TAG, 'transformed associations', transformedAssociations);
-
-    const wrappedFields = R.mergeDeepRight(fields, transformedAssociations);
+    const wrappedFields = R.mergeDeepRight(fields, withAssociations);
     logger.info(TAG, { wrappedFields });
 
     return wrappedFields;
