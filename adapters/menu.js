@@ -1,7 +1,7 @@
 // @flow
 import * as R from 'ramda';
 
-import { createLogger } from '../helpers';
+import { createLogger, lv } from '../helpers';
 
 // --------------------------------------------------------------
 // Types
@@ -22,7 +22,7 @@ declare interface IMenuService {
 // Main
 // --------------------------------------------------------------
 
-const logger = createLogger('adapters:menu');
+const logger = createLogger('adapters:menu', lv.warn);
 
 export const menuProxy: IMenuService = {
   init               : (...args) => global.context.menu.init(...args),

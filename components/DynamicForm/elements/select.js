@@ -16,9 +16,16 @@ const defaultFormItemLayout = {};
 
 // eslint-disable-next-line import/prefer-default-export
 export const generateSelect = (form, {
-  key, name, label, placeholder, items, mode,
-  getName = R.prop('name'), getValue = R.prop('value'),
-  withSortTree = false, enumSelector = {},
+  key,
+  name,
+  label,
+  placeholder,
+  items,
+  mode,
+  getName = R.prop('name'),
+  getValue = R.prop('value'),
+  withSortTree = false,
+  enumSelector = {},
 }, formItemLayout = defaultFormItemLayout) => {
   const fieldName = key || name;
   const labelName = label || name || key;

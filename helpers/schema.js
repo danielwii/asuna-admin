@@ -1,10 +1,9 @@
 import * as R from 'ramda';
 
-import { DynamicFormTypes } from '../components/DynamicForm';
-import { modelsProxy }      from '../adapters/models';
-import { storeConnector }   from '../store';
-import { cast }             from '../helpers';
-import { createLogger, lv } from './logger';
+import { DynamicFormTypes }       from '../components/DynamicForm';
+import { modelsProxy }            from '../adapters/models';
+import { storeConnector }         from '../store';
+import { cast, createLogger, lv } from '.';
 
 const logger = createLogger('helpers:schema', lv.warn);
 
@@ -96,7 +95,20 @@ export const asyncLoadAssociationsDecorator = async (fields) => {
     const pairedWrappedAssociations = R.zipObj(R.keys(filteredAssociations), wrappedAssociations);
     logger.info(TAG, 'wrapped associations', pairedWrappedAssociations);
 
-    return R.mergeDeepRight(fields, pairedWrappedAssociations);
+    // FIXME 临时解决关联数据从 entities 到 ids 的转换
+
+    const transformedAssociations = R.map(
+      association => ({
+        ...association,
+        value: association.value
+          ? R.map(entity => R.propOr(entity, 'id', entity))(association.value)
+          : undefined,
+      }),
+    )(pairedWrappedAssociations);
+
+    logger.info(TAG, 'transformed associations', transformedAssociations);
+
+    return R.mergeDeepRight(fields, transformedAssociations);
   }
 
   return fields;
@@ -108,21 +120,34 @@ export const asyncLoadAssociationsDecorator = async (fields) => {
  * @returns {*}
  */
 export const associationDecorator = (fields) => {
-  logger.log('[associationDecorator]', { fields });
+  const TAG = '[associationDecorator]';
+  logger.log(TAG, { fields });
 
   const associationFields = R.filter(R.compose(R.not, R.isNil, R.prop('associations')))(fields);
   if (R.not(R.isEmpty(associationFields))) {
-    logger.info('[associationDecorator]', { associationFields });
+    logger.info(TAG, { associationFields });
     const wrapForeignOpt   = R.map(opt => ({
       ...opt, association: modelsProxy.getAssociationConfigs(opt.modelName),
     }));
     const withAssociations = R.mapObjIndexed(field => ({
       ...field, foreignOpts: wrapForeignOpt(field.foreignOpts),
     }))(associationFields);
-    logger.info('[associationDecorator]', { withAssociations });
+    logger.info(TAG, { withAssociations });
 
-    const wrappedFields = R.mergeDeepRight(fields, withAssociations);
-    logger.info('[associationDecorator]', { wrappedFields });
+    // FIXME 临时解决关联数据从 entities 到 ids 的转换
+
+    const transformedAssociations = R.map(
+      association => ({
+        ...association,
+        value: association.value
+          ? R.map(entity => R.propOr(entity, 'id', entity))(association.value)
+          : undefined,
+      }),
+    )(withAssociations);
+    logger.info(TAG, 'transformed associations', transformedAssociations);
+
+    const wrappedFields = R.mergeDeepRight(fields, transformedAssociations);
+    logger.info(TAG, { wrappedFields });
 
     return wrappedFields;
   }
