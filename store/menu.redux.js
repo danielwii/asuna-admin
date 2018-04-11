@@ -6,7 +6,7 @@ import _ from 'lodash';
 import { menuProxy }        from '../adapters/menu';
 import { createLogger, lv } from '../helpers';
 
-const logger = createLogger('store:menu', lv.info);
+const logger = createLogger('store:menu', lv.warn);
 
 // --------------------------------------------------------------
 // Module menuActionTypes

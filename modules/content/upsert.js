@@ -9,9 +9,8 @@ import { Form, Icon } from 'antd';
 import { DynamicForm2, DynamicFormTypes } from '../../components/DynamicForm';
 import { modelsProxy }                    from '../../adapters/models';
 import { modelsActions }                  from '../../store/models.redux';
-import { diff }                           from '../../helpers';
 import * as schemaHelper                  from '../../helpers/schema';
-import { createLogger, lv }               from '../../helpers';
+import { createLogger, diff, lv }         from '../../helpers';
 
 const logger = createLogger('modules:content:upsert', lv.warn);
 
@@ -212,7 +211,7 @@ class ContentUpsert extends React.Component {
     const record = R.path(['pane', 'data', 'record'])(basis);
     if (record) {
       logger.info('[detectUpsertMode]', 'set to update mode and load model...', record);
-      dispatch(modelsActions.fetch(modelName, { id: record.id }));
+      dispatch(modelsActions.fetch(modelName, { id: record.id, profile: 'detail' }));
       return false;
     }
     return true;
