@@ -38,7 +38,7 @@ async function upload(auth, onChange, files, args) {
   const response = await apiProxy.upload(auth, args.file);
   logger.log('[upload]', 'response is', response);
 
-  if (response.status === 200) {
+  if (/^20\d$/.test(response.status)) {
     message.success('upload successfully.');
     args.onSuccess();
 
@@ -59,6 +59,7 @@ async function upload(auth, onChange, files, args) {
 export class ImageUploader extends React.Component {
   static propTypes = {
     auth    : PropTypes.shape({}), // auth token object
+    api     : PropTypes.string.isRequired,
     value   : PropTypes.arrayOf(PropTypes.shape({
       bucket  : PropTypes.string,
       filename: PropTypes.string,
@@ -84,7 +85,7 @@ export class ImageUploader extends React.Component {
   };
 
   render() {
-    const { auth, onChange, value: images } = this.props;
+    const { auth, onChange, value: images, api } = this.props;
 
     const image = images ? images[0] : null;
     logger.log('[ImageUploader][render]', { images, image });
@@ -109,7 +110,7 @@ export class ImageUploader extends React.Component {
           onChange={this.handleChange}
         >
           {image
-            ? <img style={{ width: '100%' }} src={`${image.prefix}/${image.filename}`} alt="" />
+            ? <img style={{ width: '100%' }} src={`${api}/${image.filename}?prefix=${image.prefix}`} alt="" />
             : uploadButton}
         </Upload>
       </div>
@@ -121,6 +122,7 @@ export class ImageUploader extends React.Component {
 export class ImagesUploader extends React.Component {
   static propTypes = {
     auth    : PropTypes.shape({}), // auth token object
+    api     : PropTypes.string.isRequired,
     value   : PropTypes.arrayOf(PropTypes.shape({
       bucket  : PropTypes.string,
       filename: PropTypes.string,
@@ -157,11 +159,12 @@ export class ImagesUploader extends React.Component {
   }
 
   wrapImagesToFileList = (images) => {
+    const { api } = this.props;
     logger.info('[wrapImagesToFileList]', 'images is', images);
     const fileList = _.map(images, (image, index) => ({
       uid   : index,
       status: 'done',
-      url   : `${image.prefix}/${image.filename}`,
+      url   : `${api}/${image.filename}?prefix=${image.prefix}`,
     }));
     logger.info('[wrapImagesToFileList]', 'fileList is', fileList);
     this.setState({ fileList });

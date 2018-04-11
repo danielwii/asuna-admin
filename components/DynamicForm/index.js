@@ -24,6 +24,7 @@ import {
 
 import { generateSelect }         from './elements/select';
 import { diff, createLogger, lv } from '../../helpers';
+import { config, ConfigKeys }     from '../../app/configure';
 
 const logger = createLogger('components:dynamic-form', lv.warn);
 
@@ -157,13 +158,13 @@ export class DynamicForm2 extends React.Component {
       case DynamicFormTypes.Date:
         return generateDateTime(form, { ...options, mode: 'date' });
       case DynamicFormTypes.Video:
-        return generateVideo(form, options);
+        return generateVideo(form, { ...options, api: config.get(ConfigKeys.VIDEO_API) });
       case DynamicFormTypes.Authorities:
         return generateAuthorities(form, options);
       case DynamicFormTypes.Image:
-        return generateImage(form, options);
+        return generateImage(form, { ...options, api: config.get(ConfigKeys.IMAGE_API) });
       case DynamicFormTypes.Images:
-        return generateImages(form, options);
+        return generateImages(form, { ...options, api: config.get(ConfigKeys.IMAGE_API) });
       case DynamicFormTypes.Switch:
         return generateSwitch(form, options);
       case DynamicFormTypes.RichText:
