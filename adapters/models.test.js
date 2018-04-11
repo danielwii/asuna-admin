@@ -95,11 +95,11 @@ describe('getFormSchema', () => {
         type   : undefined,
         ref    : 'password',
         options: {
-          foreignKeys: undefined,
-          label      : null,
-          required   : false,
-          help       : '新建用户后在列表页面设置密码',
-          accessible : 'readonly',
+          label     : null,
+          required  : false,
+          help      : '新建用户后在列表页面设置密码',
+          accessible: 'readonly',
+          selectable: undefined,
         },
         value  : undefined,
       },
@@ -118,7 +118,7 @@ describe('getFormSchema', () => {
         name   : 'test_name',
         type   : undefined,
         ref    : 'test_name',
-        options: { foreignKeys: undefined, label: null, required: false },
+        options: { selectable: undefined, label: null, required: false },
         value  : undefined,
       },
     });
@@ -130,17 +130,15 @@ describe('getFormSchema', () => {
       test_schema: [
         {
           config: {
-            foreignKeys: [
-              't_test_relates.id',
-            ],
-            info       : {
-              name   : 'TEST_NAME',
-              ref    : 'test_related',
-              tooltip: 'tooltip-info',
+            info      : {
+              name: 'TEST_NAME',
+              ref : 'test_related',
+              help: 'tooltip-info',
             },
-            nullable   : true,
-            primaryKey : false,
-            type       : 'INTEGER',
+            nullable  : true,
+            primaryKey: false,
+            type      : 'INTEGER',
+            selectable: 'other-relation',
           },
           name  : 'test_related_id',
         },
@@ -150,14 +148,12 @@ describe('getFormSchema', () => {
       test_related: {
         name   : 'test_related',
         options: {
-          foreignKeys: [
-            't_test_relates.id',
-          ],
-          label      : 'TEST_NAME',
-          name       : 'TEST_NAME',
-          ref        : 'test_related',
-          required   : false,
-          tooltip    : 'tooltip-info',
+          label     : 'TEST_NAME',
+          name      : 'TEST_NAME',
+          ref       : 'test_related',
+          required  : false,
+          help      : 'tooltip-info',
+          selectable: 'other-relation',
         },
         ref    : 'test_related',
         type   : 'Association',
@@ -187,9 +183,9 @@ describe('getFormSchema', () => {
       'test-nullable': {
         name   : 'test-nullable',
         options: {
-          foreignKeys: [],
-          required   : false,
-          label      : null,
+          selectable: undefined,
+          required  : false,
+          label     : null,
         },
         ref    : 'test-nullable',
         type   : 'InputNumber',
@@ -216,9 +212,9 @@ describe('getFormSchema', () => {
       'test-nullable': {
         name   : 'test-nullable',
         options: {
-          foreignKeys: [],
-          required   : true,
-          label      : null,
+          selectable: undefined,
+          required  : true,
+          label     : null,
         },
         ref    : 'test-nullable',
         type   : 'InputNumber',
@@ -247,9 +243,9 @@ describe('getFormSchema', () => {
       'test-nullable': {
         name   : 'test-nullable',
         options: {
-          foreignKeys: [],
-          required   : true,
-          label      : null,
+          selectable: undefined,
+          required  : true,
+          label     : null,
         },
         ref    : 'test-nullable',
         type   : 'InputNumber',
@@ -278,9 +274,9 @@ describe('getFormSchema', () => {
       'test-nullable': {
         name   : 'test-nullable',
         options: {
-          foreignKeys: [],
-          required   : true,
-          label      : null,
+          selectable: undefined,
+          required  : true,
+          label     : null,
         },
         ref    : 'test-nullable',
         type   : 'InputNumber',

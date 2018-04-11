@@ -3,9 +3,9 @@ import _      from 'lodash';
 
 import { DynamicFormTypes } from '../components/DynamicForm';
 
-const logger = createLogger('adapters:models', lv.warn);
 import { createLogger, defaultColumns, lv } from '../helpers';
 
+const logger = createLogger('adapters:models', lv.warn);
 
 export const modelsProxy = {
   getModelConfigs      : name => global.context.models.getModelConfig(name),
@@ -102,13 +102,9 @@ export class ModelsAdapter {
     // identify advanced types
     // --------------------------------------------------------------
 
-    const hasForeignKeys = R.compose(
-      R.not,
-      R.anyPass([R.isEmpty, R.isNil]),
-      R.path(['config', 'foreignKeys']),
-    )(field);
+    const hasForeignKeys = R.path(['config', 'selectable'], field);
 
-    if (hasForeignKeys || R.path(['config', 'selectable'], field)) {
+    if (hasForeignKeys) {
       return R.not(R.path(['config', 'many'])(field))
         ? DynamicFormTypes.Association
         : DynamicFormTypes.ManyToMany;

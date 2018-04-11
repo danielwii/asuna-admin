@@ -7,7 +7,7 @@ import Truncate from 'react-truncate';
 
 import { Tooltip } from 'antd';
 
-import config, { ConfigKeys, AuthHeader } from '../app/configure';
+import { config, ConfigKeys, AuthHeader } from '../app/configure';
 
 import { cast } from './cast';
 

@@ -1,6 +1,6 @@
 import { toCamelCase, toUnderscore } from 'node-buffs';
 
-import config, { ConfigKeys, StringCase } from '../app/configure';
+import { config, ConfigKeys, StringCase } from '../app/configure';
 
 // eslint-disable-next-line import/prefer-default-export
 export function cast(key) {
