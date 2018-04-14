@@ -1,10 +1,11 @@
 import { createLogger } from 'helpers';
+import { appContext }   from 'app/context';
 
 // --------------------------------------------------------------
 // Types
 // --------------------------------------------------------------
 
-interface IApiService {
+export interface IApiService {
   upload(param: { token: string }, file: any, options: any): any;
 
   getVersion(param: { token: string }): any;
@@ -18,8 +19,8 @@ interface IApiService {
 const logger = createLogger('adapters:api');
 
 export const apiProxy = {
-  upload    : ({ token }, file, options) => global.context.api.upload({ token }, file, options),
-  getVersion: ({ token }) => global.context.api.getVersion({ token }),
+  upload    : ({ token }, file, options) => appContext.ctx.api.upload({ token }, file, options),
+  getVersion: ({ token }) => appContext.ctx.api.getVersion({ token }),
 };
 
 export class ApiAdapter {

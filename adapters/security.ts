@@ -1,9 +1,13 @@
-import { createLogger }   from 'helpers';
-import { IRequestConfig } from './interface';
+import { createLogger } from 'helpers';
+import { appContext }   from 'app/context';
 
 // --------------------------------------------------------------
 // Types
 // --------------------------------------------------------------
+
+interface IRequestConfig {
+  endpoint?: string,
+}
 
 interface CurrentUserParams {
   opts: { token: string },
@@ -37,9 +41,9 @@ export interface ISecurityService {
 const logger = createLogger('adapters:security');
 
 export const securityProxy = {
-  currentUser   : args => global.context.security.currentUser(args),
-  roles         : args => global.context.security.roles(args),
-  updatePassword: args => global.context.security.updatePassword(args),
+  currentUser   : args => appContext.ctx.security.currentUser(args),
+  roles         : args => appContext.ctx.security.roles(args),
+  updatePassword: args => appContext.ctx.security.updatePassword(args),
 };
 
 export class SecurityAdapter {

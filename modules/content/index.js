@@ -8,7 +8,7 @@ import { Button, Divider, Modal, Table } from 'antd';
 import { panesActions }     from '../../store/panes.redux';
 import { contentActions }   from '../../store/content.redux';
 import { modelsActions }    from '../../store/models.redux';
-import { modelsProxy }      from '../../adapters/models';
+import { modelProxy }       from '../../adapters/models';
 import { responseProxy }    from '../../adapters/response';
 import { createLogger, lv } from '../../helpers/index';
 
@@ -51,7 +51,7 @@ class ContentIndex extends React.Component {
 
     // content::name => name
     const modelName = R.compose(R.nth(1), R.split(/::/), R.path(['pane', 'key']))(basis);
-    const configs   = modelsProxy.getModelConfigs(modelName);
+    const configs   = modelProxy.getModelConfigs(modelName);
     logger.info('[constructor]', 'load table from configs', configs, 'by', modelName);
 
     const columns = R.prop('table')(configs)(actions);

@@ -7,7 +7,7 @@ import moment      from 'moment';
 import { Form, Icon } from 'antd';
 
 import { DynamicForm2, DynamicFormTypes } from '../../components/DynamicForm';
-import { modelsProxy }                    from '../../adapters/models';
+import { modelProxy }                     from '../../adapters/models';
 import { modelsActions }                  from '../../store/models.redux';
 import * as schemaHelper                  from '../../helpers/schema';
 import { createLogger, diff, lv }         from '../../helpers/index';
@@ -133,7 +133,7 @@ class ContentUpsert extends React.Component {
     // Build form fields with all needed data
     // --------------------------------------------------------------
 
-    const formSchema = modelsProxy.getFormSchema(schemas, modelName);
+    const formSchema = modelProxy.getFormSchema(schemas, modelName);
 
     // if (modelName === 'colleges') {
     //   formSchema = R.pick(['id', 'name', 'name_en', 'sequences'], formSchema);
