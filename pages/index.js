@@ -19,7 +19,7 @@ import { ModelsAdapter }    from '../adapters/models';
 import { MenuAdapter }      from '../adapters/menu';
 import { ResponseAdapter }  from '../adapters/response';
 import { ApiAdapter }       from '../adapters/api';
-import { createLogger, lv } from '../helpers';
+import { createLogger, lv } from '../helpers/index';
 
 const logger = createLogger('pages:index', lv.warn);
 

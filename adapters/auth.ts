@@ -1,38 +1,31 @@
-// @flow
-import { createLogger, lv } from '../helpers';
+import { createLogger, lv } from 'helpers';
 
 // --------------------------------------------------------------
 // Types
 // --------------------------------------------------------------
 
-declare type LoginParams = { body: { username: string, password: string } }
-
-declare var ExtractToken: any;
-
 export interface IAuthService {
-  login: LoginParams => any,
-  logout: () => any,
-  extractToken: ExtractToken => string,
+  login(body: { username: string, password: string }): void;
+
+  logout(): void;
+
+  extractToken(payload): string;
 }
 
 // --------------------------------------------------------------
 // Main
 // --------------------------------------------------------------
 
-// eslint-disable-next-line no-unused-vars
 const logger = createLogger('adapters:auth', lv.warn);
 
-export const authProxy: IAuthService = {
+export const authProxy = {
   login       : args => global.context.auth.login(args),
   logout      : () => global.context.auth.logout(),
   extractToken: args => global.context.auth.extractToken(args),
 };
 
-export class AuthAdapter implements IAuthService {
-  service: IAuthService;
-
-  constructor(service: IAuthService) {
-    this.service = service;
+export class AuthAdapter {
+  constructor(private service: IAuthService) {
   }
 
   login        = args => this.service.login(args);

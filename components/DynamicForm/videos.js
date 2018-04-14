@@ -7,7 +7,7 @@ import * as R    from 'ramda';
 import { Button, Icon, message, Upload } from 'antd';
 
 import { apiProxy }     from '../../adapters/api';
-import { createLogger } from '../../helpers';
+import { createLogger } from '../../helpers/index';
 
 const logger = createLogger('components:dynamic-form:video');
 

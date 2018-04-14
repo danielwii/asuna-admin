@@ -4,7 +4,7 @@ import * as R from 'ramda';
 import _ from 'lodash';
 
 import { menuProxy }        from '../adapters/menu';
-import { createLogger, lv } from '../helpers';
+import { createLogger, lv } from '../helpers/index';
 
 const logger = createLogger('store:menu', lv.warn);
 
@@ -47,9 +47,8 @@ const menuSagaFunctions = {
               // 判断返回的是否是 ids
               if (user.roles && _.isObjectLike(user.roles[0])) {
                 return R.contains(role.id)(R.values(R.pluck('id', user.roles)));
-              } else {
-                return R.contains(role.id)(user.roles);
               }
+              return R.contains(role.id)(user.roles);
             }),
             R.propOr([], 'items'),
           )(roles);

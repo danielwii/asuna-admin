@@ -1,21 +1,27 @@
-// @flow
 import * as R from 'ramda';
 
-import { createLogger, lv } from '../helpers';
+import { createLogger, lv } from 'helpers';
 
 // --------------------------------------------------------------
 // Types
 // --------------------------------------------------------------
 
-
-declare type InitParams = {
-  isSysAdmin: boolean,
-  authorities: any,
+interface SubMenu {
+  key: string;
+  title: string;
+  linkTo: string;
 }
 
-declare interface IMenuService {
-  init: InitParams => any,
-  getRegisteredModels: () => any,
+interface Menu {
+  key: string;
+  title: string;
+  subMenus: SubMenu[];
+}
+
+interface IMenuService {
+  init(isSysAdmin: boolean, authorities: string): Menu[];
+
+  getRegisteredModels(): Menu[];
 }
 
 // --------------------------------------------------------------
@@ -24,21 +30,18 @@ declare interface IMenuService {
 
 const logger = createLogger('adapters:menu', lv.warn);
 
-export const menuProxy: IMenuService = {
+export const menuProxy = {
   init               : (...args) => global.context.menu.init(...args),
   getRegisteredModels: () => global.context.menu.getRegisteredModels(),
 };
 
-export class MenuAdapter implements IMenuService {
-  service: IMenuService;
-  registeredModels: any;
+export class MenuAdapter {
 
-  constructor(service: IMenuService, registeredModels: any) {
-    this.service          = service;
-    this.registeredModels = registeredModels;
+  constructor(private service: IMenuService,
+              private registeredModels: Menu[]) {
   }
 
-  getRegisteredModels = () => this.registeredModels;
+  getRegisteredModels = (): Menu[] => this.registeredModels;
 
   init = (isSysAdmin, authorities) => {
     logger.log('[MenuAdapter][init]', 'isSysAdmin', isSysAdmin, 'authorities', authorities);
@@ -48,13 +51,13 @@ export class MenuAdapter implements IMenuService {
       return this.getRegisteredModels();
     }
 
-    const includedSubMenus = menu =>
-      R.filter(subMenu => R.propOr(false, `${menu.key}::${subMenu.key}`)(authorities))(menu.subMenus);
+    const includedSubMenus = (menu: Menu): SubMenu[] =>
+      R.filter((subMenu: SubMenu) => R.propOr(false, `${menu.key}::${subMenu.key}`)(authorities))(menu.subMenus);
 
     const menus = R.compose(
-      R.filter(menu => R.not(R.isEmpty(R.prop('subMenus')(menu)))),
-      R.map(menu => ({ ...menu, subMenus: includedSubMenus(menu) })),
-    )(this.getRegisteredModels());
+      R.filter<Menu>(menu => R.not(R.isEmpty(R.prop('subMenus', menu)))),
+      R.map<Menu, Menu>(menu => ({ ...menu, subMenus: includedSubMenus(menu) })) as any,
+    )(this.getRegisteredModels()) as any as Menu[];
     logger.log('[MenuAdapter][init]', 'filtered menus is', menus);
 
     return [...menus];

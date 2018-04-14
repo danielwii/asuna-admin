@@ -1,9 +1,92 @@
 import * as R from 'ramda';
-import _      from 'lodash';
+import * as _ from 'lodash';
 
 import { DynamicFormTypes } from '../components/DynamicForm';
 
-import { createLogger, defaultColumns, lv } from '../helpers';
+import { createLogger, defaultColumns, lv } from 'helpers';
+
+// --------------------------------------------------------------
+// Types
+// --------------------------------------------------------------
+
+interface FRecordRender {
+  (actions: () => any): any;
+}
+
+interface ModelConfig {
+  table?: FRecordRender,
+  model?: {},
+}
+
+interface ModelConfigs {
+  [member: string]: ModelConfig;
+}
+
+interface ModelOpts {
+  models?: {
+    [member: string]: {
+      endpoint?: string,
+    }
+  },
+  tableColumns?: {
+    [member: string]: FRecordRender,
+  },
+  modelColumns?: {
+    [member: string]: {
+      associations?: {
+        [member: string]: {
+          name?: string,
+          value?: string,
+          ref?: string,
+          fields?: string[],
+        },
+      },
+      settings?: {
+        [member: string]: {
+          type: { enumSelector: { name: string, value: string } },
+          target: { enumSelector: { name: string, value: string } },
+        },
+      },
+    },
+  },
+}
+
+interface Associations {
+  [member: string]: {
+    name?: string,
+    fields?: string[],
+  }
+}
+
+interface IModelsService {
+  getModelConfigs(name: string);
+
+  getAssociationConfigs(name: string);
+
+  getFormSchema(schemas, name, values);
+
+  getFieldsOfAssociations();
+
+  loadModels(authToken: { token: string }, name: string, data: {});
+
+  loadSchema(authToken: { token: string }, payload: { name: string });
+
+  listSchemasCallable(authToken: { token: string });
+
+  listAssociationsCallable(authToken: { token: string }, associationNames: string);
+
+  fetch(authToken: { token: string }, name: string, data: {});
+
+  remove(authToken: { token: string }, name: string, data: {});
+
+  upsert(authToken: { token: string, schemas: {} }, name: string, data: {});
+
+  update(param: { token: any }, name: any, param3);
+}
+
+// --------------------------------------------------------------
+// Main
+// --------------------------------------------------------------
 
 const logger = createLogger('adapters:models', lv.warn);
 
@@ -62,13 +145,18 @@ export const modelsProxy = {
 };
 
 export class ModelsAdapter {
+  private service: IModelsService;
+  private allModels: string[];
+  private modelConfigs: ModelConfigs;
+  private associations: {};
+
   /**
    * @param service
    * @param configs      - models: 模型定义; tableColumns: 模型列表定义; modelColumns: 模型表单定义
    *                       模型定义中出现的的元素才会作为最终元素
    * @param associations
    */
-  constructor(service, configs = {}, associations = {}) {
+  constructor(service: IModelsService, configs: ModelOpts = {}, associations: Associations = {}) {
     logger.log('[ModelsAdapter][constructor]', { service, configs, associations });
     if (!service) {
       throw new Error('service must defined');
@@ -78,7 +166,7 @@ export class ModelsAdapter {
       ...config,
       table: R.path(['tableColumns', name])(configs),
       model: R.path(['modelColumns', name])(configs),
-    }))(R.prop('models', configs));
+    }))(R.prop('models', configs)) as ModelConfigs;
 
     this.service      = service;
     this.allModels    = Object.keys(modelConfigs);
@@ -110,7 +198,7 @@ export class ModelsAdapter {
         : DynamicFormTypes.ManyToMany;
     }
 
-    const advancedType = R.path(['config', 'info', 'type'])(field);
+    const advancedType = R.path(['config', 'info', 'type'])(field) as string;
 
     if (/^RichText$/i.test(advancedType)) return DynamicFormTypes.RichText;
     if (/^Image$/i.test(advancedType)) return DynamicFormTypes.Image;
@@ -124,7 +212,7 @@ export class ModelsAdapter {
     // identify basic types
     // --------------------------------------------------------------
 
-    const type = R.path(['config', 'type'])(field);
+    const type = R.path(['config', 'type'])(field) as string;
 
     if (/^(VARCHAR.+|String)$/i.test(type)) return DynamicFormTypes.Input;
     if (/^INTEGER|FLOAT|Number$/i.test(type)) return DynamicFormTypes.InputNumber;
@@ -181,29 +269,26 @@ export class ModelsAdapter {
 
   getAssociationConfigs = name => R.prop(name)(this.associations);
 
-  getModelConfig = (name) => {
-    if (name) {
-      const config = R.prop(name)(this.modelConfigs);
-      if (config) {
-        logger.info('[getModelConfig]', name, 'config is', config);
+  getModelConfig = (name): ModelConfig => {
+    const config = R.prop(name)(this.modelConfigs);
+    if (config) {
+      logger.info('[getModelConfig]', name, 'config is', config);
 
-        // 未定义具体模型时，使用默认定义
-        if (!config.model) {
-          config.model = {};
-        }
-        if (!config.table) {
-          config.table = defaultColumns;
-        }
-
-        return config;
+      // 未定义具体模型时，使用默认定义
+      if (!config.model) {
+        config.model = {};
       }
-      logger.warn('[getModelConfig]', `'${name}' not found in`, this.modelConfigs, 'generate a default one.');
-      return { model: {}, table: defaultColumns };
+      if (!config.table) {
+        config.table = defaultColumns;
+      }
+
+      return config;
     }
-    return this.modelConfigs;
+    logger.warn('[getModelConfig]', `'${name}' not found in`, this.modelConfigs, 'generate a default one.');
+    return { model: {}, table: defaultColumns };
   };
 
-  getFormSchema = (schemas, name, values) => {
+  getFormSchema = (schemas, name, values?) => {
     if (!schemas || !name) {
       logger.error('[getFormSchema]', 'schemas or name is required. schemas is', schemas, 'name is', name);
       return {};
@@ -228,10 +313,10 @@ export class ModelsAdapter {
           type   : this.identifyType(field),
           options: {
             ...R.path(['config', 'info'])(field),
-            label      : R.pathOr(null, ['config', 'info', 'name'])(field),
+            label     : R.pathOr(null, ['config', 'info', 'name'])(field),
             // foreignKeys: R.path(['config', 'foreignKeys'])(field), // @deprecated
-            selectable : R.path(['config', 'selectable'])(field),
-            required   : required || R.pathOr(false, ['config', 'info', 'required'])(field),
+            selectable: R.path(['config', 'selectable'])(field),
+            required  : required || R.pathOr(false, ['config', 'info', 'required'])(field),
             ...R.path(['model', 'settings', field.name], this.getModelConfig(name)),
           },
           // 不存在时返回 undefined，而不能返回 null

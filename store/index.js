@@ -31,7 +31,7 @@ import { panesCleaner, panesReducer, panesSagas }    from './panes.redux';
 
 import { createStoreConnectorMiddleware, storeConnector } from './middlewares/store-connector';
 
-import { createLogger } from '../helpers';
+import { createLogger } from '../helpers/index';
 
 export { storeConnector };
 

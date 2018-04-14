@@ -10,7 +10,7 @@ import { contentActions }   from '../../store/content.redux';
 import { modelsActions }    from '../../store/models.redux';
 import { modelsProxy }      from '../../adapters/models';
 import { responseProxy }    from '../../adapters/response';
-import { createLogger, lv } from '../../helpers';
+import { createLogger, lv } from '../../helpers/index';
 
 const logger = createLogger('modules:content:index', lv.warn);
 

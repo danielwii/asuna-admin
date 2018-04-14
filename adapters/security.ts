@@ -1,30 +1,32 @@
-// @flow
-import { createLogger } from '../helpers';
+import { createLogger }   from 'helpers';
+import { IRequestConfig } from './interface';
 
 // --------------------------------------------------------------
 // Types
 // --------------------------------------------------------------
 
-type CurrentUserParams = {
+interface CurrentUserParams {
   opts: { token: string },
   config: IRequestConfig
 }
 
-type RolesParams = {
+interface RolesParams {
   opts: { token: string },
   config: IRequestConfig
 }
 
-type UpdatePasswordParams = {
+interface UpdatePasswordParams {
   opts: { token: string },
   data: { body: { email: string, password: string } },
   config: IRequestConfig,
 }
 
 export interface ISecurityService {
-  currentUser: CurrentUserParams => any,
-  roles: RolesParams => any,
-  updatePassword: UpdatePasswordParams => any,
+  currentUser(params: CurrentUserParams): any,
+
+  roles(params: RolesParams): any,
+
+  updatePassword(params: UpdatePasswordParams): any,
 }
 
 // --------------------------------------------------------------
@@ -34,17 +36,14 @@ export interface ISecurityService {
 // eslint-disable-next-line no-unused-vars
 const logger = createLogger('adapters:security');
 
-export const securityProxy: ISecurityService = {
+export const securityProxy = {
   currentUser   : args => global.context.security.currentUser(args),
   roles         : args => global.context.security.roles(args),
   updatePassword: args => global.context.security.updatePassword(args),
 };
 
-export class SecurityAdapter implements ISecurityService {
-  service: ISecurityService;
-
-  constructor(service: ISecurityService) {
-    this.service = service;
+export class SecurityAdapter {
+  constructor(private service: ISecurityService) {
   }
 
   currentUser    = args => this.service.currentUser(args);

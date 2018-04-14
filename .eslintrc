@@ -5,7 +5,6 @@
   },
   "extends": [
     "airbnb",
-    "plugin:flowtype/recommended",
     "plugin:jest/recommended"
   ],
   "settings": {
@@ -18,7 +17,7 @@
   },
   "parser": "babel-eslint",
   "plugins": [
-    "flowtype", "jest"
+    "jest"
   ],
   "rules": {
     "function-paren-newline": ["error", "consistent"],

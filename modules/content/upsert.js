@@ -10,7 +10,7 @@ import { DynamicForm2, DynamicFormTypes } from '../../components/DynamicForm';
 import { modelsProxy }                    from '../../adapters/models';
 import { modelsActions }                  from '../../store/models.redux';
 import * as schemaHelper                  from '../../helpers/schema';
-import { createLogger, diff, lv }         from '../../helpers';
+import { createLogger, diff, lv }         from '../../helpers/index';
 
 const logger = createLogger('modules:content:upsert', lv.warn);
 

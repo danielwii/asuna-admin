@@ -8,7 +8,7 @@ import { BraftRichEditor } from '../../../components/RichEditor';
 import { ImagesUploader, ImageUploader } from '../images';
 import { VideoUploader }                 from '../videos';
 import { Authorities }                   from '../authorities';
-import { createLogger, lv }              from '../../../helpers';
+import { createLogger, lv }              from '../../../helpers/index';
 
 const logger = createLogger('components:dynamic-form:elements', lv.warn);
 

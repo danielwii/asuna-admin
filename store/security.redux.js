@@ -4,7 +4,7 @@ import { reduxAction } from 'node-buffs';
 import { message }     from 'antd';
 
 import { securityProxy } from '../adapters/security';
-import { createLogger }  from '../helpers';
+import { createLogger }  from '../helpers/index';
 import { authActions }   from './auth.redux';
 
 const logger = createLogger('store:security');

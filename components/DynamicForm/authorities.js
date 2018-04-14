@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import { Checkbox, Table } from 'antd';
 
 import { menuProxy }    from '../../adapters/menu';
-import { createLogger } from '../../helpers';
+import { createLogger } from '../../helpers/index';
 
 const logger = createLogger('components:authorities');
 

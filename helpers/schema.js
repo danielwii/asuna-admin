@@ -8,7 +8,7 @@ import { cast, createLogger, lv } from '.';
 
 const logger = createLogger('helpers:schema', lv.warn);
 
-export const peek = (message, callback?) => (fields) => {
+export const peek = (message, callback) => (fields) => {
   if (callback) callback();
   logger.log('[peek]', { message, fields });
   return fields;
