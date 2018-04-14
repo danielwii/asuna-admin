@@ -8,7 +8,7 @@ import { Select } from 'antd';
 import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc';
 
 import { generateComponent } from '.';
-import { createLogger, lv }  from '../../../helpers';
+import { createLogger, lv }  from '../../../helpers/index';
 
 const logger = createLogger('components:dynamic-form:elements', lv.warn);
 

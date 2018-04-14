@@ -5,7 +5,7 @@ import _         from 'lodash';
 import { Form, Modal } from 'antd';
 
 import { DynamicForm2 } from './DynamicForm';
-import { createLogger } from '../helpers';
+import { createLogger } from '../helpers/index';
 
 const logger = createLogger('components:form-modal');
 

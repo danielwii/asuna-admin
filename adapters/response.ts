@@ -1,6 +1,6 @@
-import _ from 'lodash';
+import * as _ from 'lodash';
 
-import { ApiResponsePageMode } from '../app/configure';
+import { ApiResponsePageMode, config, ConfigKeys } from 'app/configure';
 
 export const responseProxy = {
   extract: apiResponse => global.context.response.extract(apiResponse),
@@ -8,7 +8,7 @@ export const responseProxy = {
 
 export class ResponseAdapter {
   extractPageable = (apiResponse) => {
-    switch (ApiResponsePageMode) {
+    switch (config.get(ConfigKeys.API_RESPONSE_PAGE_MODE)) {
       case (ApiResponsePageMode.SpringJPA): {
         const names = [
           'first',

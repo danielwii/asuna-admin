@@ -13,7 +13,7 @@ import { withReduxSaga } from '../store';
 
 import Register         from '../services/register';
 import { AuthAdapter }  from '../adapters/auth';
-import { createLogger } from '../helpers';
+import { createLogger } from '../helpers/index';
 
 const logger = createLogger('pages:login');
 

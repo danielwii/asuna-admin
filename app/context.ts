@@ -1,17 +1,30 @@
-import { AuthAdapter }       from '../adapters/auth';
-import { SecurityAdapter }   from '../adapters/security';
-import { ModelsAdapter }     from '../adapters/models';
-import { MenuAdapter }       from '../adapters/menu';
-import { PyResponseAdapter } from '../adapters/response';
-import { ApiAdapter }        from '../adapters/api';
+import { AuthAdapter }     from 'adapters/auth';
+import { SecurityAdapter } from 'adapters/security';
+import { ModelsAdapter }   from 'adapters/models';
+import { MenuAdapter }     from 'adapters/menu';
+import { ResponseAdapter } from 'adapters/response';
+import { ApiAdapter }      from 'adapters/api';
 
 // --------------------------------------------------------------
 // Setup context
 // --------------------------------------------------------------
 
-export const AppContext = {
-  setConfig(config) {
-    AppContext.config  = config;
+export interface AppContext {
+  config: any,
+  context?: {
+    auth: any,
+    response: any,
+    menu: any,
+    api: any,
+    security: any,
+    models: any,
+  },
+  init: any,
+}
+
+export const AppContext: AppContext = {
+  set config(config) {
+    AppContext.config = config;
   },
   init(Register) {
     console.log('[AppContext] init ...', Register);
@@ -19,7 +32,7 @@ export const AppContext = {
     AppContext.config  = Register.config;
     AppContext.context = {
       auth    : new AuthAdapter(Register.authService),
-      response: new PyResponseAdapter(),
+      response: new ResponseAdapter(),
       menu    : new MenuAdapter(Register.menuService, Register.definitions.registeredModels),
       api     : new ApiAdapter(Register.apiService),
       security: new SecurityAdapter(Register.securityService),
