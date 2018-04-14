@@ -4,7 +4,7 @@ import * as R          from 'ramda';
 import { reduxAction } from 'node-buffs';
 import { message }     from 'antd';
 
-import { modelsProxy }      from '../adapters/models';
+import { modelProxy }       from '../adapters/models';
 import { createLogger, lv } from '../helpers/index';
 
 const logger = createLogger('store:content', lv.warn);
@@ -54,7 +54,7 @@ function* loadModels({ payload: { name, models } }) {
       logger.info('[loadModels]', 'loading content', { name, extras });
       message.loading(`loading content '${name}'...`);
 
-      const response = yield call(modelsProxy.loadModels, { token }, name, extras);
+      const response = yield call(modelProxy.loadModels, { token }, name, extras);
       message.success(`load content '${name}' success`);
       logger.log('[loadModels]', 'loaded content', { name, response });
 

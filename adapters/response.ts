@@ -1,9 +1,10 @@
 import * as _ from 'lodash';
 
 import { ApiResponsePageMode, config, ConfigKeys } from 'app/configure';
+import { appContext }                              from 'app/context';
 
 export const responseProxy = {
-  extract: apiResponse => global.context.response.extract(apiResponse),
+  extract: apiResponse => appContext.ctx.response.extract(apiResponse),
 };
 
 export class ResponseAdapter {

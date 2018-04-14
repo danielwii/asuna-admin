@@ -1,4 +1,5 @@
 import { createLogger, lv } from 'helpers';
+import { appContext }       from 'app/context';
 
 // --------------------------------------------------------------
 // Types
@@ -19,9 +20,9 @@ export interface IAuthService {
 const logger = createLogger('adapters:auth', lv.warn);
 
 export const authProxy = {
-  login       : args => global.context.auth.login(args),
-  logout      : () => global.context.auth.logout(),
-  extractToken: args => global.context.auth.extractToken(args),
+  login       : args => appContext.ctx.auth.login(args),
+  logout      : () => appContext.ctx.auth.logout(),
+  extractToken: args => appContext.ctx.auth.extractToken(args),
 };
 
 export class AuthAdapter {

@@ -2,7 +2,6 @@ import React       from 'react';
 import { connect } from 'react-redux';
 import dynamic     from 'next/dynamic';
 import PropTypes   from 'prop-types';
-import _           from 'lodash';
 
 import 'moment/locale/zh-cn';
 
@@ -12,14 +11,9 @@ import { appActions }    from '../store/app.redux';
 import AntdLayout from '../layout/antd';
 import Loading    from '../components/LivingLoading';
 
-import Register             from '../services/register';
-import { AuthAdapter }      from '../adapters/auth';
-import { SecurityAdapter }  from '../adapters/security';
-import { ModelsAdapter }    from '../adapters/models';
-import { MenuAdapter }      from '../adapters/menu';
-import { ResponseAdapter }  from '../adapters/response';
-import { ApiAdapter }       from '../adapters/api';
-import { createLogger, lv } from '../helpers/index';
+import { register }         from '../services/register';
+import { createLogger, lv } from '../helpers';
+import { appContext }       from '../app/context';
 
 const logger = createLogger('pages:index', lv.warn);
 
@@ -27,23 +21,7 @@ const logger = createLogger('pages:index', lv.warn);
 // Setup context
 // --------------------------------------------------------------
 
-global.context = _.assign(global.context, {
-  auth    : new AuthAdapter(Register.createAuthService()),
-  response: new ResponseAdapter(),
-  menu    : new MenuAdapter(
-    Register.createMenuService(),
-    Register.createDefinitions().registeredModels,
-  ),
-  api     : new ApiAdapter(Register.createApiService()),
-  security: new SecurityAdapter(Register.createSecurityService()),
-  models  : new ModelsAdapter(
-    Register.createModelsService(),
-    Register.createDefinitions().modelConfigs,
-    Register.createDefinitions().associations,
-  ),
-});
-
-logger.info('global context is', global.context);
+appContext.setup({ module: 'index', register });
 
 // --------------------------------------------------------------
 // Dynamic load main layout

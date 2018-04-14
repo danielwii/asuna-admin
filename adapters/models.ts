@@ -4,6 +4,7 @@ import * as _ from 'lodash';
 import { DynamicFormTypes } from '../components/DynamicForm';
 
 import { createLogger, defaultColumns, lv } from 'helpers';
+import { appContext }                       from 'app/context';
 
 // --------------------------------------------------------------
 // Types
@@ -58,7 +59,7 @@ interface Associations {
   }
 }
 
-interface IModelsService {
+export interface IModelService {
   getModelConfigs(name: string);
 
   getAssociationConfigs(name: string);
@@ -90,15 +91,15 @@ interface IModelsService {
 
 const logger = createLogger('adapters:models', lv.warn);
 
-export const modelsProxy = {
-  getModelConfigs      : name => global.context.models.getModelConfig(name),
-  getAssociationConfigs: name => global.context.models.getAssociationConfigs(name),
+export const modelProxy = {
+  getModelConfigs      : name => appContext.ctx.models.getModelConfig(name),
+  getAssociationConfigs: name => appContext.ctx.models.getAssociationConfigs(name),
 
   // eslint-disable-next-line function-paren-newline
   getFormSchema: (schemas, name, values) =>
-    global.context.models.getFormSchema(schemas, name, values),
+    appContext.ctx.models.getFormSchema(schemas, name, values),
 
-  getFieldsOfAssociations: () => global.context.models.getFieldsOfAssociations(),
+  getFieldsOfAssociations: () => appContext.ctx.models.getFieldsOfAssociations(),
 
   /**
    * load schema list
@@ -109,7 +110,7 @@ export const modelsProxy = {
    */
   // eslint-disable-next-line function-paren-newline
   loadModels: ({ token }, name, data = {}) =>
-    global.context.models.loadModels({ token }, name, data),
+    appContext.ctx.models.loadModels({ token }, name, data),
 
   /**
    * load definition of schema
@@ -117,21 +118,21 @@ export const modelsProxy = {
    * @param name
    * @returns {*}
    */
-  loadSchema: ({ token }, { name }) => global.context.models.loadSchema({ token }, { name }),
+  loadSchema: ({ token }, { name }) => appContext.ctx.models.loadSchema({ token }, { name }),
 
   /**
    * load all schemas
    * @param token
    * @returns {*}
    */
-  listSchemasCallable: ({ token }) => global.context.models.listSchemasCallable({ token }),
+  listSchemasCallable: ({ token }) => appContext.ctx.models.listSchemasCallable({ token }),
 
   listAssociationsCallable: ({ token }, associationNames) =>
-    global.context.models.listAssociationsCallable({ token }, associationNames),
+    appContext.ctx.models.listAssociationsCallable({ token }, associationNames),
 
-  fetch: ({ token }, name, data) => global.context.models.fetch({ token }, name, data),
+  fetch: ({ token }, name, data) => appContext.ctx.models.fetch({ token }, name, data),
 
-  remove: ({ token }, name, data) => global.context.models.remove({ token }, name, data),
+  remove: ({ token }, name, data) => appContext.ctx.models.remove({ token }, name, data),
 
   /**
    * update model if id exists in body, insert new one or else.
@@ -141,11 +142,11 @@ export const modelsProxy = {
    * @returns {*}
    */
   upsert: ({ token, schemas }, name, data) =>
-    global.context.models.upsert({ token, schemas }, name, data),
+    appContext.ctx.models.upsert({ token, schemas }, name, data),
 };
 
-export class ModelsAdapter {
-  private service: IModelsService;
+export class ModelAdapter {
+  private service: IModelService;
   private allModels: string[];
   private modelConfigs: ModelConfigs;
   private associations: {};
@@ -156,8 +157,8 @@ export class ModelsAdapter {
    *                       模型定义中出现的的元素才会作为最终元素
    * @param associations
    */
-  constructor(service: IModelsService, configs: ModelOpts = {}, associations: Associations = {}) {
-    logger.log('[ModelsAdapter][constructor]', { service, configs, associations });
+  constructor(service: IModelService, configs: ModelOpts = {}, associations: Associations = {}) {
+    logger.log('[ModelAdapter][constructor]', { service, configs, associations });
     if (!service) {
       throw new Error('service must defined');
     }
@@ -173,11 +174,11 @@ export class ModelsAdapter {
     this.modelConfigs = modelConfigs;
     this.associations = associations;
 
-    logger.log('[ModelsAdapter]', '[constructor]', { configs, modelConfigs });
+    logger.log('[ModelAdapter]', '[constructor]', { configs, modelConfigs });
     R.forEachObjIndexed((config, name) => {
-      logger.info('[ModelsAdapter][constructor]', 'check', name, config);
-      if (!config.table) logger.warn('[ModelsAdapter]', '[constructor]', name, 'should set table');
-      if (!config.model) logger.warn('[ModelsAdapter]', '[constructor]', name, 'should set model');
+      logger.info('[ModelAdapter][constructor]', 'check', name, config);
+      if (!config.table) logger.warn('[ModelAdapter]', '[constructor]', name, 'should set table');
+      if (!config.model) logger.warn('[ModelAdapter]', '[constructor]', name, 'should set model');
     })(modelConfigs);
   }
 

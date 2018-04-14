@@ -2,7 +2,7 @@ import * as R from 'ramda';
 import _      from 'lodash';
 
 import { DynamicFormTypes }       from '../components/DynamicForm';
-import { modelsProxy }            from '../adapters/models';
+import { modelProxy }             from '../adapters/models';
 import { storeConnector }         from '../store';
 import { cast, createLogger, lv } from '.';
 
@@ -65,14 +65,14 @@ export const asyncLoadAssociationsDecorator = async (fields) => {
         const selectable = R.pathOr([], ['options', 'selectable'])(field);
         logger.info(TAG, 'handle field', { field, selectable });
         if (selectable) {
-          const fieldsOfAssociations = modelsProxy.getFieldsOfAssociations();
+          const fieldsOfAssociations = modelProxy.getFieldsOfAssociations();
 
           const foreignOpts = [{
             modelName: selectable, association: fieldsOfAssociations[selectable],
           }];
           logger.info(TAG, 'foreignOpts is', foreignOpts);
 
-          const effects = modelsProxy.listAssociationsCallable(auth, [selectable]);
+          const effects = modelProxy.listAssociationsCallable(auth, [selectable]);
           logger.info(TAG, 'list associations callable', effects);
 
           let allResponse = {};
@@ -133,7 +133,7 @@ export const associationDecorator = (fields) => {
   if (R.not(R.isEmpty(associationFields))) {
     logger.info(TAG, { associationFields });
     const wrapForeignOpt   = R.map(opt => ({
-      ...opt, association: modelsProxy.getAssociationConfigs(opt.modelName),
+      ...opt, association: modelProxy.getAssociationConfigs(opt.modelName),
     }));
     const withAssociations = R.mapObjIndexed(field => ({
       ...field, foreignOpts: wrapForeignOpt(field.foreignOpts),

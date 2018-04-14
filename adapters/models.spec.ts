@@ -1,8 +1,8 @@
-import { ModelsAdapter }    from './models';
+import { ModelAdapter }     from './models';
 import { DynamicFormTypes } from '../components/DynamicForm';
 
 describe('identify types', () => {
-  const adapter = new ModelsAdapter({});
+  const adapter = new ModelAdapter({});
 
   it('return right type', () => {
     expect(adapter.identifyType({
@@ -62,7 +62,7 @@ describe('identify types', () => {
 
 describe('getFormSchema', () => {
   it('should return settings and associations', () => {
-    const adapter = new ModelsAdapter({}, {
+    const adapter = new ModelAdapter({}, {
       tableColumns: {},
       modelColumns: {
         users: {
@@ -107,7 +107,7 @@ describe('getFormSchema', () => {
   });
 
   it('should return undefined when value not exists', () => {
-    const adapter = new ModelsAdapter({});
+    const adapter = new ModelAdapter({});
     const fields  = adapter.getFormSchema({
       test_schema: [{
         name: 'test_name',
@@ -125,7 +125,7 @@ describe('getFormSchema', () => {
   });
 
   it('should matched related fields', () => {
-    const adapter = new ModelsAdapter({});
+    const adapter = new ModelAdapter({});
     const fields  = adapter.getFormSchema({
       test_schema: [
         {
@@ -163,7 +163,7 @@ describe('getFormSchema', () => {
   });
 
   it('should handle nullable fields', () => {
-    const adapter            = new ModelsAdapter({});
+    const adapter            = new ModelAdapter({});
     const fieldsWithNullable = adapter.getFormSchema({
       test_schema: [
         {
@@ -288,7 +288,7 @@ describe('getFormSchema', () => {
 
 describe('listSchemasCallable', () => {
   it('should return future callable functions', () => {
-    const adapter         = new ModelsAdapter({
+    const adapter         = new ModelAdapter({
       loadSchema: ({ token }, name, config) => ({ token, name, config }),
     }, {
       // tableColumns,

@@ -15,13 +15,6 @@ export const enum ApiResponseAssociationMode {
   ENTITY = 'entity',
 }
 
-type Alias = { num: number }
-interface Interface {
-  num: number;
-}
-declare function aliased(arg: Alias): Alias;
-declare function interfaced(arg: Interface): Interface;
-
 export const enum AuthHeader {
   /**
    * header: Authorization: token
@@ -45,7 +38,16 @@ export const enum ConfigKeys {
   VIDEO_API                     = 'VIDEO_API',
 }
 
-const defaultConfiguration = {
+interface ConfigOpts {
+  MODEL_KEYS_CASE?: StringCase;
+  AUTH_HEADER?: AuthHeader;
+  API_RESPONSE_PAGE_MODE?: ApiResponsePageMode;
+  API_RESPONSE_ASSOCIATION_MODE?: ApiResponseAssociationMode;
+  IMAGE_API?: string;
+  VIDEO_API?: string;
+}
+
+const defaultConfiguration: ConfigOpts = {
   MODEL_KEYS_CASE              : StringCase.None,
   AUTH_HEADER                  : AuthHeader.AuthHeaderAsBearerToken,
   API_RESPONSE_PAGE_MODE       : ApiResponsePageMode.Default,
@@ -58,7 +60,7 @@ const defaultConfiguration = {
 class Config {
   opts = defaultConfiguration;
 
-  update(opts = {}) {
+  update(opts: ConfigOpts = {}) {
     this.opts = Object.assign(this.opts, opts);
   }
 

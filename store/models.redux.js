@@ -6,7 +6,7 @@ import * as R          from 'ramda';
 import _               from 'lodash';
 
 import { contentActions }   from './content.redux';
-import { modelsProxy }      from '../adapters/models';
+import { modelProxy }       from '../adapters/models';
 import { createLogger, lv } from '../helpers/index';
 
 const logger = createLogger('store:models', lv.warn);
@@ -67,7 +67,7 @@ const modelsSagaFunctions = {
     if (token) {
       message.loading(`loading model '${modelName}'...`);
       try {
-        const response = yield call(modelsProxy.fetch, { token }, modelName, data);
+        const response = yield call(modelProxy.fetch, { token }, modelName, data);
         message.success(`load model '${modelName}' success!`);
         logger.log('[fetch]', 'response of load model is', response);
         yield put(modelsActions.fetchSuccess(modelName, response.data));
@@ -83,7 +83,7 @@ const modelsSagaFunctions = {
     if (token) {
       message.info(`upsert model '${modelName}'...`);
       try {
-        const response = yield call(modelsProxy.upsert, { token, schemas }, modelName, data);
+        const response = yield call(modelProxy.upsert, { token, schemas }, modelName, data);
         message.success(`upsert model '${modelName}' success!`);
         logger.log('[upsert]', 'response of upsert model is', response);
         // save model data when upsert is success
@@ -101,7 +101,7 @@ const modelsSagaFunctions = {
     if (token) {
       message.info(`remove model '${modelName}'...`);
       try {
-        const response = yield call(modelsProxy.remove, { token }, modelName, data);
+        const response = yield call(modelProxy.remove, { token }, modelName, data);
         message.success(`remove model '${modelName}' success!`);
         logger.log('[remove]', 'response of remove model is', response);
         // save model data when remove is success
@@ -120,7 +120,7 @@ const modelsSagaFunctions = {
     if (token) {
       message.loading('loading all schemas...');
       try {
-        const effects     = modelsProxy.listSchemasCallable({ token });
+        const effects     = modelProxy.listSchemasCallable({ token });
         const allResponse = yield all(effects);
 
         logger.log('[loadAllSchemas]', 'allResponse is', allResponse);

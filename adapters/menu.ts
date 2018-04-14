@@ -1,6 +1,7 @@
 import * as R from 'ramda';
 
 import { createLogger, lv } from 'helpers';
+import { appContext }       from 'app/context';
 
 // --------------------------------------------------------------
 // Types
@@ -18,7 +19,7 @@ interface Menu {
   subMenus: SubMenu[];
 }
 
-interface IMenuService {
+export interface IMenuService {
   init(isSysAdmin: boolean, authorities: string): Menu[];
 
   getRegisteredModels(): Menu[];
@@ -31,8 +32,8 @@ interface IMenuService {
 const logger = createLogger('adapters:menu', lv.warn);
 
 export const menuProxy = {
-  init               : (...args) => global.context.menu.init(...args),
-  getRegisteredModels: () => global.context.menu.getRegisteredModels(),
+  init               : (...args) => appContext.ctx.menu.init(...args),
+  getRegisteredModels: () => appContext.ctx.menu.getRegisteredModels(),
 };
 
 export class MenuAdapter {

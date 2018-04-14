@@ -20,6 +20,8 @@
     "jest"
   ],
   "rules": {
+    "import/extensions": ["error", "never", { "packages": "always" }],
+    "import/no-unresolved": "off",
     "function-paren-newline": ["error", "consistent"],
     "func-names": ["error", "never"],
     "key-spacing": 0,

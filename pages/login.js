@@ -1,7 +1,6 @@
 import React       from 'react';
 import { connect } from 'react-redux';
 import PropTypes   from 'prop-types';
-import _           from 'lodash';
 import styled      from 'styled-components';
 
 import AntdLayout        from '../layout/antd';
@@ -11,9 +10,9 @@ import Snow              from '../components/Snow';
 import LogoCanvas        from '../components/LogoCanvas';
 import { withReduxSaga } from '../store';
 
-import Register         from '../services/register';
-import { AuthAdapter }  from '../adapters/auth';
-import { createLogger } from '../helpers/index';
+import { register }     from '../services/register';
+import { createLogger } from '../helpers';
+import { appContext }   from '../app/context';
 
 const logger = createLogger('pages:login');
 
@@ -21,11 +20,7 @@ const logger = createLogger('pages:login');
 // Setup context
 // --------------------------------------------------------------
 
-global.context = _.assign(global.context, {
-  auth: new AuthAdapter(Register.createAuthService()),
-});
-
-logger.log('global context is', global.context);
+appContext.setup({ module  : 'login', register });
 
 // --------------------------------------------------------------
 // Main

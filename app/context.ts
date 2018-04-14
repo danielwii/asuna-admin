@@ -1,49 +1,89 @@
-import { AuthAdapter }     from 'adapters/auth';
-import { SecurityAdapter } from 'adapters/security';
-import { ModelsAdapter }   from 'adapters/models';
-import { MenuAdapter }     from 'adapters/menu';
-import { ResponseAdapter } from 'adapters/response';
-import { ApiAdapter }      from 'adapters/api';
+import { AuthAdapter, IAuthService }         from 'adapters/auth';
+import { ISecurityService, SecurityAdapter } from 'adapters/security';
+import { IModelService, ModelAdapter }       from 'adapters/models';
+import { IMenuService, MenuAdapter }         from 'adapters/menu';
+import { ResponseAdapter }                   from 'adapters/response';
+import { ApiAdapter, IApiService }           from 'adapters/api';
 
 // --------------------------------------------------------------
 // Setup context
 // --------------------------------------------------------------
 
-export interface AppContext {
-  config: any,
-  context?: {
-    auth: any,
-    response: any,
-    menu: any,
-    api: any,
-    security: any,
-    models: any,
-  },
-  init: any,
+export interface ILoginRegister {
+  createAuthService(): IAuthService;
 }
 
-export const AppContext: AppContext = {
-  set config(config) {
-    AppContext.config = config;
-  },
-  init(Register) {
-    console.log('[AppContext] init ...', Register);
+export interface IIndexRegister extends ILoginRegister {
+  createAuthService(): IAuthService;
 
-    AppContext.config  = Register.config;
-    AppContext.context = {
-      auth    : new AuthAdapter(Register.authService),
-      response: new ResponseAdapter(),
-      menu    : new MenuAdapter(Register.menuService, Register.definitions.registeredModels),
-      api     : new ApiAdapter(Register.apiService),
-      security: new SecurityAdapter(Register.securityService),
-      models  : new ModelsAdapter(
-        Register.modelsService,
-        Register.definitions.modelConfigs,
-        Register.definitions.associations,
-      ),
-    };
-    console.log('[AppContext] AppContext is', AppContext);
-  },
-};
+  createModelService(): IModelService;
 
-export default AppContext;
+  createMenuService(): IMenuService;
+
+  createApiService(): IApiService;
+
+  createSecurityService(): ISecurityService;
+
+  createDefinitions(): {
+    associations: any;
+    modelConfigs: any;
+    registeredModels: any;
+
+  };
+}
+
+type LoginModuleRegister = {
+  module: 'login';
+  register: ILoginRegister,
+}
+
+type IndexModuleRegister = {
+  module: 'index';
+  register: IIndexRegister,
+}
+
+class AppContext {
+  private context: {
+    auth: AuthAdapter;
+    response: ResponseAdapter;
+    menu: MenuAdapter;
+    api: ApiAdapter;
+    security: SecurityAdapter;
+    models: ModelAdapter;
+  };
+
+  public setup(moduleRegister: LoginModuleRegister | IndexModuleRegister): void {
+    console.log('[AppContext]', { moduleRegister });
+    if (moduleRegister.module === 'login') {
+      this.context = {
+        ...this.context,
+        auth: new AuthAdapter(moduleRegister.register.createAuthService()),
+      }
+    } else {
+      this.context = {
+        auth    : new AuthAdapter(moduleRegister.register.createAuthService()),
+        response: new ResponseAdapter(),
+        menu    : new MenuAdapter(
+          moduleRegister.register.createMenuService(),
+          moduleRegister.register.createDefinitions().registeredModels,
+        ),
+        api     : new ApiAdapter(moduleRegister.register.createApiService()),
+        security: new SecurityAdapter(moduleRegister.register.createSecurityService()),
+        models  : new ModelAdapter(
+          moduleRegister.register.createModelService(),
+          moduleRegister.register.createDefinitions().modelConfigs,
+          moduleRegister.register.createDefinitions().associations,
+        ),
+      }
+    }
+  }
+
+  get ctx() {
+    console.log('[AppContext]', { AppContext });
+    return this.context;
+  }
+}
+
+const appContext = new AppContext();
+
+export { appContext };
