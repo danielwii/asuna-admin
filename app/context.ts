@@ -79,7 +79,6 @@ class AppContext {
   }
 
   get ctx() {
-    console.log('[AppContext]', { AppContext });
     return this.context;
   }
 }
