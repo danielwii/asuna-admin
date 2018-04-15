@@ -9,6 +9,6 @@ trim_trailing_whitespace = true
 insert_final_newline = true
 
 ; NodeJS / HTML
-[*.{js,es6,ts,html,jade,pug,tpl,css}]
+[*.{js,jsx,es6,ts,tsx,html,jade,pug,tpl,css}]
 indent_style = space
 indent_size = 2
