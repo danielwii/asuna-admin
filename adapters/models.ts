@@ -5,6 +5,7 @@ import { DynamicFormTypes } from '../components/DynamicForm';
 
 import { createLogger, defaultColumns, lv } from 'helpers';
 import { appContext }                       from 'app/context';
+import { Pageable }                         from 'adapters/response';
 
 // --------------------------------------------------------------
 // Types
@@ -81,31 +82,19 @@ interface ModelOpts {
 }
 
 export interface IModelService {
-  getModelConfigs(name: string);
-
-  getAssociationConfigs(name: string);
-
-  getFormSchema(schemas: ModelSchemas, name: string, values?: { [member: string]: any }): FormSchemas;
-
-  getFieldsOfAssociations();
-
-  loadModels(authToken: { token: string }, name: string, data: { pagination, where, sort });
+  loadModels(authToken: { token: string }, name: string, data: { endpoint?: string, pagination: Pageable, filters, sorter });
 
   loadSchema(authToken: { token: string }, payload: { name: string }, data);
 
-  listSchemasCallable(authToken: { token: string });
+  fetch(authToken: { token: string }, name: string, data: { endpoint?: string, id: number, profile?: string });
 
-  listAssociationsCallable(authToken: { token: string }, associationNames: string);
+  remove(authToken: { token: string }, name: string, data: { endpoint?: string, id: number });
 
-  fetch(authToken: { token: string }, name: string, data: {});
-
-  remove(authToken: { token: string }, name: string, data: {});
-
-  insert(authToken: { token: string, schemas?: {} }, name: string, data: {});
+  insert(authToken: { token: string, schemas?: {} }, name: string, data: { endpoint?: string, body: any });
 
   update(authToken: { token: string }, name: any, param3);
 
-  loadAssociation(authToken: { token: string }, associationName: string, data: { fields: any; table?: FRecordRender; model?: {} }): null | any;
+  loadAssociation(authToken: { token: string }, associationName: string, data: { endpoint?: string, fields: string[] });
 }
 
 // --------------------------------------------------------------

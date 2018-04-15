@@ -6,11 +6,11 @@ import { appContext }       from 'app/context';
 // --------------------------------------------------------------
 
 export interface IAuthService {
-  login(body: { username: string, password: string }): void;
+  login(params: { body: { username: string, password: string } }): Promise<any>;
 
-  logout(): void;
+  logout(): Promise<any>;
 
-  extractToken(payload): string;
+  extractToken(payload): string | undefined;
 }
 
 // --------------------------------------------------------------

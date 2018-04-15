@@ -7,7 +7,7 @@ const TsconfigPathsPlugin  = require('tsconfig-paths-webpack-plugin');
 const jarvis                   = new Jarvis({ port: 1337 });
 const bundleAnalyzerPlugin     = new BundleAnalyzerPlugin({ openAnalyzer: false });
 const contextReplacementPlugin = new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /zh/);
-const tsconfigPathsPlugin      = new TsconfigPathsPlugin({ /*configFile: "./path/to/tsconfig.json" */ });
+const tsconfigPathsPlugin      = new TsconfigPathsPlugin();
 
 module.exports = withTypescript({
   webpack: (config, options) => {
@@ -63,14 +63,6 @@ module.exports = withTypescript({
     // fix `react-dom/server could not be resolved` issue in next v5.0.0
     // delete config.resolve.alias['react-dom'];
 
-    return config;
-  },
-
-  webpackDevMiddleware: config => {
-    console.log('> [webpackDevMiddleware] ...');
-    // Perform customizations to webpack dev middleware config
-
-    // Important: return the modified config
     return config;
   },
 

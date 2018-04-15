@@ -20,9 +20,6 @@ interface Menu {
 }
 
 export interface IMenuService {
-  init(isSysAdmin: boolean, authorities: string): Menu[];
-
-  getRegisteredModels(): Menu[];
 }
 
 // --------------------------------------------------------------
