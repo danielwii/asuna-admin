@@ -3,12 +3,21 @@ import * as _ from 'lodash';
 import { ApiResponsePageMode, config, ConfigKeys } from 'app/configure';
 import { appContext }                              from 'app/context';
 
+interface TablePagination {
+  showSizeChanger: boolean;
+  showTotal: number | Function;
+  current: number;
+  pageSize: number;
+  total: number;
+  pageSizeOptions: string[];
+}
+
 export const responseProxy = {
   extract: apiResponse => appContext.ctx.response.extract(apiResponse),
 };
 
 export class ResponseAdapter {
-  extractPageable = (apiResponse) => {
+  extractPageable = (apiResponse): { page: number, size: number, total: number } => {
     switch (config.get(ConfigKeys.API_RESPONSE_PAGE_MODE)) {
       case (ApiResponsePageMode.SpringJPA): {
         const names = [
@@ -48,7 +57,7 @@ export class ResponseAdapter {
     }
   };
 
-  extractPagination = (apiResponse) => {
+  extractPagination = (apiResponse): TablePagination => {
     const { page, size, total: totalElements } = this.extractPageable(apiResponse);
     return {
       showSizeChanger: true,
@@ -60,9 +69,8 @@ export class ResponseAdapter {
     };
   };
 
-  extract = (apiResponse) => {
+  extract = (apiResponse): { items: any[], pagination: TablePagination } => {
     const { items } = apiResponse;
     return { items, pagination: this.extractPagination(apiResponse) };
   };
 }
-

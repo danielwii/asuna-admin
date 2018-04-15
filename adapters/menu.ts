@@ -32,7 +32,7 @@ export interface IMenuService {
 const logger = createLogger('adapters:menu', lv.warn);
 
 export const menuProxy = {
-  init               : (...args) => appContext.ctx.menu.init(...args),
+  init               : (isSysAdmin, authorities) => appContext.ctx.menu.init(isSysAdmin, authorities),
   getRegisteredModels: () => appContext.ctx.menu.getRegisteredModels(),
 };
 

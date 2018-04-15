@@ -15,12 +15,45 @@ interface FRecordRender {
 }
 
 interface ModelConfig {
-  table?: FRecordRender,
-  model?: {},
+  table?: FRecordRender;
+  model?: {};
 }
 
-interface ModelConfigs {
-  [member: string]: ModelConfig;
+type ModelConfigs = { [member: string]: ModelConfig };
+
+interface FormSchema {
+  name: string;
+  ref?: string;
+  type: string;
+  value: any;
+  options: {
+    label?: string;
+    selectable?: string;
+    required?: boolean;
+    json?: string;
+  };
+}
+
+type FormSchemas = { [member: string]: FormSchema };
+
+interface ModelSchema {
+  name: string;
+  config: {};
+}
+
+interface ModelSchemas {
+  [memeber: string]: ModelSchema[];
+}
+
+interface Association {
+  name?: string;
+  value?: string;
+  ref?: string;
+  fields?: string[];
+}
+
+type Associations = {
+  [member: string]: Association;
 }
 
 interface ModelOpts {
@@ -34,29 +67,17 @@ interface ModelOpts {
   },
   modelColumns?: {
     [member: string]: {
-      associations?: {
-        [member: string]: {
-          name?: string,
-          value?: string,
-          ref?: string,
-          fields?: string[],
-        },
-      },
+      associations?: Associations,
       settings?: {
         [member: string]: {
-          type: { enumSelector: { name: string, value: string } },
-          target: { enumSelector: { name: string, value: string } },
+          help?: string,
+          accessible?: 'readonly' | 'hidden',
+          type?: { enumSelector: { name: string, value: string } },
+          target?: { enumSelector: { name: string, value: string } },
         },
       },
     },
   },
-}
-
-interface Associations {
-  [member: string]: {
-    name?: string,
-    fields?: string[],
-  }
 }
 
 export interface IModelService {
@@ -64,13 +85,13 @@ export interface IModelService {
 
   getAssociationConfigs(name: string);
 
-  getFormSchema(schemas, name, values);
+  getFormSchema(schemas: ModelSchemas, name: string, values?: { [member: string]: any }): FormSchemas;
 
   getFieldsOfAssociations();
 
-  loadModels(authToken: { token: string }, name: string, data: {});
+  loadModels(authToken: { token: string }, name: string, data: { pagination, where, sort });
 
-  loadSchema(authToken: { token: string }, payload: { name: string });
+  loadSchema(authToken: { token: string }, payload: { name: string }, data);
 
   listSchemasCallable(authToken: { token: string });
 
@@ -80,16 +101,18 @@ export interface IModelService {
 
   remove(authToken: { token: string }, name: string, data: {});
 
-  upsert(authToken: { token: string, schemas: {} }, name: string, data: {});
+  insert(authToken: { token: string, schemas?: {} }, name: string, data: {});
 
-  update(param: { token: any }, name: any, param3);
+  update(authToken: { token: string }, name: any, param3);
+
+  loadAssociation(authToken: { token: string }, associationName: string, data: { fields: any; table?: FRecordRender; model?: {} }): null | any;
 }
 
 // --------------------------------------------------------------
 // Main
 // --------------------------------------------------------------
 
-const logger = createLogger('adapters:models', lv.warn);
+const logger = createLogger('adapters:models', lv.log);
 
 export const modelProxy = {
   getModelConfigs      : name => appContext.ctx.models.getModelConfig(name),
@@ -245,10 +268,7 @@ export class ModelAdapter {
     const fixKeys     = _.mapKeys(data.body, (value, key) => _.get(fields, `${key}.ref`, key));
     const transformed = _.mapValues(fixKeys, (value, key) => {
       // json 用于描述该字段需要通过字符串转换处理，目前用于服务器端不支持 JSON 数据格式的情况
-      if (_.get(fields, `${key}.options.json`) === 'str') {
-        return JSON.stringify(value);
-      }
-      return value;
+      return _.get(fields, `${key}.options.json`) as any as string === 'str' ? JSON.stringify(value) : value;
     });
     logger.info('[upsert]', 'transformed is', transformed);
 
@@ -289,7 +309,7 @@ export class ModelAdapter {
     return { model: {}, table: defaultColumns };
   };
 
-  getFormSchema = (schemas, name, values?) => {
+  getFormSchema = (schemas: ModelSchemas, name: string, values?: { [member: string]: any }): FormSchemas => {
     if (!schemas || !name) {
       logger.error('[getFormSchema]', 'schemas or name is required. schemas is', schemas, 'name is', name);
       return {};
@@ -304,8 +324,8 @@ export class ModelAdapter {
     logger.log('[getFormSchema]', 'schema is', schema, 'name is', name);
     return R.compose(
       R.mergeAll,
-      R.map(formatted => ({ [formatted.name]: formatted })),
-      R.map((field) => {
+      R.map<FormSchema, any>(formatted => ({ [formatted.name]: formatted })),
+      R.map<ModelSchema, FormSchema>((field) => {
         const ref      = R.pathOr(field.name, ['config', 'info', 'ref'])(field);
         const required = R.not(R.pathOr(true, ['config', 'nullable'])(field));
         return ({
@@ -316,16 +336,16 @@ export class ModelAdapter {
             ...R.path(['config', 'info'])(field),
             label     : R.pathOr(null, ['config', 'info', 'name'])(field),
             // foreignKeys: R.path(['config', 'foreignKeys'])(field), // @deprecated
-            selectable: R.path(['config', 'selectable'])(field),
+            selectable: R.path<string>(['config', 'selectable'])(field),
             required  : required || R.pathOr(false, ['config', 'info', 'required'])(field),
             ...R.path(['model', 'settings', field.name], this.getModelConfig(name)),
           },
           // 不存在时返回 undefined，而不能返回 null
           // null 会被当作值在更新时被传递
-          value  : R.prop(field.name)(values),
+          value  : values ? R.prop(field.name)(values) : undefined,
         });
       }),
-    )(schema);
+    )(schema) as { [member: string]: FormSchema };
   };
 
   getFieldsOfAssociations = R.memoize(() => {
@@ -372,12 +392,11 @@ export class ModelAdapter {
     this.service.loadSchema({ token }, name, this.getModelConfig(name));
 
   // eslint-disable-next-line function-paren-newline
-  listAssociationsCallable = ({ token }, associationNames) => Object.assign(
+  listAssociationsCallable = ({ token }, associationNames) => Object.assign({},
     ...associationNames.map(name => ({ [name]: this.loadAssociation({ token }, name) })),
   );
 
-  // eslint-disable-next-line function-paren-newline
-  listSchemasCallable = ({ token }) => Object.assign(
+  listSchemasCallable = ({ token }) => Object.assign({},
     ...this.allModels.map(name => ({ [name]: this.loadSchema({ token }, name) })),
   );
 }

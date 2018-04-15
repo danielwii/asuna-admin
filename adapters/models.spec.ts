@@ -1,8 +1,8 @@
-import { ModelAdapter }     from './models';
-import { DynamicFormTypes } from '../components/DynamicForm';
+import { IModelService, ModelAdapter } from './models';
+import { DynamicFormTypes }            from '../components/DynamicForm';
 
 describe('identify types', () => {
-  const adapter = new ModelAdapter({});
+  const adapter = new ModelAdapter({} as IModelService);
 
   it('return right type', () => {
     expect(adapter.identifyType({
@@ -62,7 +62,7 @@ describe('identify types', () => {
 
 describe('getFormSchema', () => {
   it('should return settings and associations', () => {
-    const adapter = new ModelAdapter({}, {
+    const adapter = new ModelAdapter({} as IModelService, {
       tableColumns: {},
       modelColumns: {
         users: {
@@ -107,7 +107,7 @@ describe('getFormSchema', () => {
   });
 
   it('should return undefined when value not exists', () => {
-    const adapter = new ModelAdapter({});
+    const adapter = new ModelAdapter({} as IModelService);
     const fields  = adapter.getFormSchema({
       test_schema: [{
         name: 'test_name',
@@ -125,7 +125,7 @@ describe('getFormSchema', () => {
   });
 
   it('should matched related fields', () => {
-    const adapter = new ModelAdapter({});
+    const adapter = new ModelAdapter({} as IModelService);
     const fields  = adapter.getFormSchema({
       test_schema: [
         {
@@ -163,7 +163,7 @@ describe('getFormSchema', () => {
   });
 
   it('should handle nullable fields', () => {
-    const adapter            = new ModelAdapter({});
+    const adapter            = new ModelAdapter({} as IModelService);
     const fieldsWithNullable = adapter.getFormSchema({
       test_schema: [
         {
@@ -290,7 +290,7 @@ describe('listSchemasCallable', () => {
   it('should return future callable functions', () => {
     const adapter         = new ModelAdapter({
       loadSchema: ({ token }, name, config) => ({ token, name, config }),
-    }, {
+    } as IModelService, {
       // tableColumns,
       // modelColumns,
       models: {
