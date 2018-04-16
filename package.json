@@ -1,6 +1,6 @@
 {
   "name": "asuna-admin",
-  "version": "0.3.0-beta.8",
+  "version": "0.3.0-beta.9",
   "repository": "git@github.com:danielwii/asuna-admin.git",
   "author": "Daniel Wei <danielwii0326@gmail.com>",
   "license": "MIT",
@@ -95,6 +95,7 @@
     "@storybook/addon-actions": "^3.4.1",
     "@storybook/addon-links": "^3.4.1",
     "@storybook/react": "^3.4.1",
+    "@types/axios": "^0.14.0",
     "@types/braft-editor": "^1.1.2",
     "@types/jest": "^22.2.3",
     "@types/lodash": "^4.14.106",
