@@ -38,6 +38,7 @@
     "./.storybook",
     "./dist",
     "./services",
+    "./bin",
     "**/*.spec.ts"
   ]
 }
