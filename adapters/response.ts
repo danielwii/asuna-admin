@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import { ApiResponsePageMode, config, ConfigKeys } from 'app/configure';
 import { appContext }                              from 'app/context';
 
-interface TablePagination {
+export interface TablePagination {
   showSizeChanger: boolean;
   showTotal: number | Function;
   current: number;

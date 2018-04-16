@@ -48,6 +48,8 @@ const StyledLogoWrapper = styled.div`
 `;
 
 class LoginPage extends React.Component {
+  props: any;
+
   static propTypes = {
     global: PropTypes.shape({}),
     app   : PropTypes.shape({
@@ -168,4 +170,4 @@ const mapStateToProps = state => ({
   app   : state.app,
 });
 
-export const DefaultLoginPage = withReduxSaga(connect(mapStateToProps)(LoginPage));
+export const DefaultLoginPage = withReduxSaga(connect(mapStateToProps)(LoginPage as any));

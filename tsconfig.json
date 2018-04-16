@@ -4,7 +4,6 @@
     "target": "esnext",
     "module": "esnext",
     "jsx": "preserve",
-    "allowJs": true,
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "pretty": true,
@@ -15,8 +14,12 @@
     "strictNullChecks": true,
     "sourceMap": true,
     "skipLibCheck": true,
+    "allowJs": true,
+//    "declaration": true,
+//    "declarationDir": "dist/types",
     "baseUrl": ".",
-    "outDir": "./dist",
+    "outDir": "dist",
+//    "outDir": "dist/lib",
     "typeRoots": [
       "./node_modules/@types",
       "./@types"
@@ -26,5 +29,15 @@
       "es2015",
       "es2016"
     ]
-  }
+  },
+  "exclude": [
+    "./examples",
+    "./stories",
+    "./.next",
+    "./coverage",
+    "./.storybook",
+    "./dist",
+    "./services",
+    "**/*.spec.ts"
+  ]
 }

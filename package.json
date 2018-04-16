@@ -7,6 +7,9 @@
   "bin": {
     "asuna": "bin/asuna.js"
   },
+  "files": [
+    "dist"
+  ],
   "jest": {
     "coveragePathIgnorePatterns": [
       "/node_modules/",
@@ -24,7 +27,10 @@
   "scripts": {
     "autod": "autod",
     "dev": "yarn && NODE_ENV=dev node $NODE_DEBUG_OPTION server.js",
-    "build": "next build",
+    "prebuild": "rimraf dist",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "next:build": "next build",
     "start": "NODE_ENV=production node server.js",
     "storybook": "NODE_ENV=dev start-storybook -p 6006",
     "build-storybook": "NODE_ENV=dev build-storybook",

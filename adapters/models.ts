@@ -5,7 +5,7 @@ import { DynamicFormTypes } from '../components/DynamicForm';
 
 import { createLogger, defaultColumns, lv } from 'helpers';
 import { appContext }                       from 'app/context';
-import { Pageable }                         from 'adapters/response';
+import { Pageable, TablePagination }        from 'adapters/response';
 
 // --------------------------------------------------------------
 // Types
@@ -121,7 +121,7 @@ export const modelProxy = {
    * @returns {*}
    */
   // eslint-disable-next-line function-paren-newline
-  loadModels: ({ token }, name, data = {}) =>
+  loadModels: ({ token }, name, data) =>
     appContext.ctx.models.loadModels({ token }, name, data),
 
   /**
@@ -254,7 +254,7 @@ export class ModelAdapter {
     const fields = this.getFormSchema(schemas, name);
     logger.info('[upsert]', 'fields is', fields);
 
-    const fixKeys     = _.mapKeys(data.body, (value, key) => _.get(fields, `${key}.ref`, key));
+    const fixKeys     = _.mapKeys(data.body, (_, key) => _.get(fields, `${key}.ref`, key));
     const transformed = _.mapValues(fixKeys, (value, key) => {
       // json 用于描述该字段需要通过字符串转换处理，目前用于服务器端不支持 JSON 数据格式的情况
       return _.get(fields, `${key}.options.json`) as any as string === 'str' ? JSON.stringify(value) : value;
@@ -346,18 +346,23 @@ export class ModelAdapter {
       R.filter(isNotEmpty),
       R.values,
       R.map(R.path(['model', 'associations'])),
-    )(this.modelConfigs);
+    )(this.modelConfigs as any);
     logger.log('[getFieldsOfAssociations]', 'associationsFields is', associationsFields);
     return associationsFields;
   });
 
   // eslint-disable-next-line no-unused-vars
-  loadModels = ({ token }, name, { pagination = {}, filters, sorter }) => {
+  loadModels = ({ token }, name, {
+    pagination = {
+      current : 1,
+      pageSize: 10
+    }, filters, sorter
+  }: { pagination: TablePagination, filters?, sorter? }) => {
     logger.info('[loadModels]', { name, pagination, filters, sorter });
     const { current: page, pageSize: size } = pagination;
     return this.service.loadModels({ token }, name, {
       pagination: { page, size },
-      ...this.getModelConfig(name),
+      ...this.getModelConfig(name) as any,
     });
   };
 
@@ -373,7 +378,7 @@ export class ModelAdapter {
       defaultFields, fields, associationName, associations: this.associations,
     });
     return this.service.loadAssociation({ token }, associationName, {
-      fields, ...this.getModelConfig(associationName),
+      fields, ...this.getModelConfig(associationName) as any,
     });
   };
 
