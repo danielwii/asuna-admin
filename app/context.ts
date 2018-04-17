@@ -1,9 +1,9 @@
-import { AuthAdapter, IAuthService }         from 'adapters/auth';
-import { ISecurityService, SecurityAdapter } from 'adapters/security';
-import { IModelService, ModelAdapter }       from 'adapters/models';
-import { IMenuService, MenuAdapter }         from 'adapters/menu';
-import { ResponseAdapter }                   from 'adapters/response';
-import { ApiAdapter, IApiService }           from 'adapters/api';
+import { AuthAdapter, IAuthService }         from '../adapters/auth';
+import { ISecurityService, SecurityAdapter } from '../adapters/security';
+import { IModelService, ModelAdapter }       from '../adapters/models';
+import { IMenuService, MenuAdapter }         from '../adapters/menu';
+import { ResponseAdapter }                   from '../adapters/response';
+import { ApiAdapter, IApiService }           from '../adapters/api';
 
 // --------------------------------------------------------------
 // Setup context
@@ -53,7 +53,7 @@ class AppContext {
   };
 
   public setup(moduleRegister: LoginModuleRegister | IndexModuleRegister): void {
-    console.log('[AppContext]', { moduleRegister });
+    // console.log('[AppContext]', { moduleRegister });
     if (moduleRegister.module === 'login') {
       this.context = {
         ...this.context,

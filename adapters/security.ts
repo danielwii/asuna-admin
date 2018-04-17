@@ -1,5 +1,5 @@
-import { createLogger } from 'helpers';
-import { appContext }   from 'app/context';
+import { createLogger } from '../helpers';
+import { appContext }   from '../app/context';
 
 // --------------------------------------------------------------
 // Types
@@ -9,16 +9,6 @@ interface IRequestConfig {
   endpoint?: string,
 }
 
-interface CurrentUserParams {
-  opts: { token: string },
-  config: IRequestConfig
-}
-
-interface RolesParams {
-  opts: { token: string },
-  config: IRequestConfig
-}
-
 interface UpdatePasswordParams {
   opts: { token: string },
   data: { body: { email: string, password: string } },
@@ -26,11 +16,15 @@ interface UpdatePasswordParams {
 }
 
 export interface ISecurityService {
-  currentUser(params: CurrentUserParams): any,
+  currentUser(opts: { token: string },
+              configs?: IRequestConfig): Promise<any>,
 
-  roles(params: RolesParams): any,
+  roles(opts: { token: string },
+        configs?: IRequestConfig): Promise<any>,
 
-  updatePassword(params: UpdatePasswordParams): any,
+  updatePassword(opts: { token: string },
+                 data: { body: { email: string, password: string } },
+                 configs?: IRequestConfig): Promise<any>,
 }
 
 // --------------------------------------------------------------
@@ -41,16 +35,34 @@ export interface ISecurityService {
 const logger = createLogger('adapters:security');
 
 export const securityProxy = {
-  currentUser   : args => appContext.ctx.security.currentUser(args),
-  roles         : args => appContext.ctx.security.roles(args),
-  updatePassword: args => appContext.ctx.security.updatePassword(args),
+  currentUser: (opts: { token: string },
+                configs?: IRequestConfig) =>
+    appContext.ctx.security.currentUser(opts, configs),
+
+  roles: (opts: { token: string },
+          configs?: IRequestConfig) =>
+    appContext.ctx.security.roles(opts, configs),
+
+  updatePassword: (opts: { token: string },
+                   data: { body: { email: string, password: string } },
+                   configs?: IRequestConfig) =>
+    appContext.ctx.security.updatePassword(opts, data, configs),
 };
 
 export class SecurityAdapter {
   constructor(private service: ISecurityService) {
   }
 
-  currentUser    = args => this.service.currentUser(args);
-  roles          = args => this.service.roles(args);
-  updatePassword = args => this.service.updatePassword(args);
+  currentUser = (opts: { token: string },
+                 configs?: IRequestConfig) =>
+    this.service.currentUser(opts, configs);
+
+  roles = (opts: { token: string },
+           configs?: IRequestConfig) =>
+    this.service.roles(opts, configs);
+
+  updatePassword = (opts: { token: string },
+                    data: { body: { email: string, password: string } },
+                    configs?: IRequestConfig) =>
+    this.service.updatePassword(opts, data, configs);
 }

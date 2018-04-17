@@ -4,7 +4,7 @@ import * as R      from 'ramda';
 import Header         from '../components/Header';
 import { appActions } from '../store/app.redux';
 
-const mapStateToProps    = R.pick(['auth']);
+const mapStateToProps    = R.pick(['auth', 'app']);
 const mapDispatchToProps = dispatch => ({
   dispatch,
   onSync: () => dispatch(appActions.sync()),

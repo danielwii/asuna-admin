@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 
-import { ApiResponsePageMode, config, ConfigKeys } from 'app/configure';
-import { appContext }                              from 'app/context';
+import { ApiResponsePageMode, config, ConfigKeys } from '../app/configure';
+import { appContext }                              from '../app/context';
 
 export interface TablePagination {
   showSizeChanger: boolean;

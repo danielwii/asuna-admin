@@ -1,4 +1,4 @@
-import * as React  from 'react';
+import React  from 'react';
 import * as moment from 'moment';
 import * as R      from 'ramda';
 import deepDiff    from 'deep-diff';
@@ -6,11 +6,11 @@ import Truncate    from 'react-truncate';
 
 import { Tooltip } from 'antd';
 
-import { AuthHeader, config, ConfigKeys } from 'app/configure';
+import { AuthHeader, config, ConfigKeys } from '../app/configure';
 
-import { cast } from 'helpers/cast';
+import { cast } from './cast';
 
-import { createLogger, lv } from 'helpers/logger';
+import { createLogger, lv } from './logger';
 
 const logger = createLogger('helpers', lv.warn);
 

@@ -3,9 +3,9 @@ import * as _ from 'lodash';
 
 import { DynamicFormTypes } from '../components/DynamicForm';
 
-import { createLogger, defaultColumns, lv } from 'helpers';
-import { appContext }                       from 'app/context';
-import { Pageable, TablePagination }        from 'adapters/response';
+import { appContext }                       from '../app/context';
+
+import { createLogger, defaultColumns, lv } from '../helpers';
 
 // --------------------------------------------------------------
 // Types
@@ -81,20 +81,39 @@ interface ModelOpts {
   },
 }
 
+interface Pageable {
+  current: number;
+  pageSize: number;
+}
+
 export interface IModelService {
-  loadModels(authToken: { token: string }, name: string, data: { endpoint?: string, pagination: Pageable, filters, sorter });
+  loadModels(authToken: { token: string },
+             name: string,
+             configs?: { endpoint?: string, pagination?: Pageable, filters?, sorter? });
 
-  loadSchema(authToken: { token: string }, payload: { name: string }, data);
+  loadSchema(authToken: { token: string },
+             payload: { name: string },
+             data);
 
-  fetch(authToken: { token: string }, name: string, data: { endpoint?: string, id: number, profile?: string });
+  fetch(authToken: { token: string },
+        name: string,
+        data: { endpoint?: string, id: number, profile?: string });
 
-  remove(authToken: { token: string }, name: string, data: { endpoint?: string, id: number });
+  remove(authToken: { token: string },
+         name: string,
+         data: { endpoint?: string, id: number });
 
-  insert(authToken: { token: string, schemas?: {} }, name: string, data: { endpoint?: string, body: any });
+  insert(authToken: { token: string, schemas?: {} },
+         name: string,
+         data: { endpoint?: string, body: any });
 
-  update(authToken: { token: string }, name: any, param3);
+  update(authToken: { token: string },
+         name: any,
+         param3);
 
-  loadAssociation(authToken: { token: string }, associationName: string, data: { endpoint?: string, fields: string[] });
+  loadAssociation(authToken: { token: string },
+                  associationName: string,
+                  data: { endpoint?: string, fields: string[] });
 }
 
 // --------------------------------------------------------------
@@ -107,7 +126,6 @@ export const modelProxy = {
   getModelConfigs      : name => appContext.ctx.models.getModelConfig(name),
   getAssociationConfigs: name => appContext.ctx.models.getAssociationConfigs(name),
 
-  // eslint-disable-next-line function-paren-newline
   getFormSchema: (schemas, name, values) =>
     appContext.ctx.models.getFormSchema(schemas, name, values),
 
@@ -115,14 +133,17 @@ export const modelProxy = {
 
   /**
    * load schema list
-   * @param token
+   * @param authToken
    * @param name
-   * @param data - { pagination, filters, sorter }
+   * @param configs
    * @returns {*}
    */
-  // eslint-disable-next-line function-paren-newline
-  loadModels: ({ token }, name, data) =>
-    appContext.ctx.models.loadModels({ token }, name, data),
+  loadModels: (authToken: { token: string },
+               name: string,
+               configs?: { endpoint?: string, pagination?: Pageable, filters?, sorter? }) => {
+    logger.log('[modelProxy.loadModels]', { authToken, name, configs });
+    return appContext.ctx.models.loadModels(authToken, name, configs);
+  },
 
   /**
    * load definition of schema
@@ -351,16 +372,11 @@ export class ModelAdapter {
     return associationsFields;
   });
 
-  // eslint-disable-next-line no-unused-vars
-  loadModels = ({ token }, name, {
-    pagination = {
-      current : 1,
-      pageSize: 10
-    }, filters, sorter
-  }: { pagination: TablePagination, filters?, sorter? }) => {
-    logger.info('[loadModels]', { name, pagination, filters, sorter });
-    const { current: page, pageSize: size } = pagination;
-    return this.service.loadModels({ token }, name, {
+  loadModels = ({ token }, name, configs?) => {
+    logger.info('[loadModels]', {name, configs});
+    const page = R.pathOr(1, ['pagination', 'current'], configs);
+    const size = R.pathOr(1, ['pagination', 'pageSize'], configs);
+    return this.service.loadModels({token}, name, {
       pagination: { page, size },
       ...this.getModelConfig(name) as any,
     });
@@ -385,7 +401,6 @@ export class ModelAdapter {
   loadSchema = ({ token }, name) =>
     this.service.loadSchema({ token }, name, this.getModelConfig(name));
 
-  // eslint-disable-next-line function-paren-newline
   listAssociationsCallable = ({ token }, associationNames) => Object.assign({},
     ...associationNames.map(name => ({ [name]: this.loadAssociation({ token }, name) })),
   );
