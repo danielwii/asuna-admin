@@ -10,9 +10,9 @@ import Snow              from '../components/Snow';
 import LogoCanvas        from '../components/LogoCanvas';
 import { withReduxSaga } from '../store';
 
-import { register }     from 'services/register';
-import { createLogger } from 'helpers';
-import { appContext }   from 'app/context';
+import { register }     from '../services/register';
+import { createLogger } from '../helpers';
+import { appContext }   from '../app/context';
 
 const logger = createLogger('pages:login');
 
@@ -62,8 +62,8 @@ class LoginPage extends React.Component {
   // --------------------------------------------------------------
 
   /**
-   * componentWillMount会在组件render之前执行，并且永远都只执行一次。
-   * 由于这个方法始终只执行一次，所以如果在这里定义了setState方法之后，页面永远都只会在加载前更新一次。
+   * componentWillMount 会在组件 render 之前执行，并且永远都只执行一次。
+   * 由于这个方法始终只执行一次，所以如果在这里定义了 setState 方法之后，页面永远都只会在加载前更新一次。
    */
   componentWillMount() {
     logger.log('componentWillMount...');

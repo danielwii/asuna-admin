@@ -57,7 +57,7 @@ const securitySagaFunctions = {
     if (token) {
       message.loading('loading all roles...');
       try {
-        const response = yield call(securityProxy.roles, { opts: { token } });
+        const response = yield call(securityProxy.roles, { token });
         message.success('load all roles success!');
         logger.log('[loadAllRoles]', 'response of load all roles is', response);
         yield put(securityActions.loadAllRolesSuccess(response.data));
@@ -74,7 +74,7 @@ const securitySagaFunctions = {
       message.loading('loading current user...');
       try {
         logger.log('[getCurrentUser]', 'get current user after rehydrate...');
-        const response = yield call(securityProxy.currentUser, { opts: { token } });
+        const response = yield call(securityProxy.currentUser, { token });
         message.success('get current user success!');
         logger.log('[getCurrentUser]', 'response of get current user is', response);
         yield put(securityActions.getCurrentUserSuccess(response.data));

@@ -5,6 +5,7 @@ import styled    from 'styled-components';
 import { Button, Dropdown, Icon, Layout, Menu } from 'antd';
 
 import { authActions } from '../store/auth.redux';
+// eslint-disable-next-line import/extensions
 import pkg             from '../package.json';
 
 const { Header } = Layout;
@@ -24,6 +25,7 @@ const StyledVersion = styled.span`
 export default class extends React.Component {
   static propTypes = {
     auth  : PropTypes.shape({}),
+    app   : PropTypes.shape({}),
     onSync: PropTypes.func,
   };
 
@@ -45,13 +47,13 @@ export default class extends React.Component {
   );
 
   render() {
-    const { auth, onSync } = this.props;
+    const { auth, app, onSync } = this.props;
     return (
       <Header className="header">
         <div className="logo">
           <StyledLogoImg src="/static/logo.png" alt="mast" />
         </div>
-        <StyledVersion>v{pkg.version}</StyledVersion>
+        <StyledVersion>v{pkg.version}::{app.version}</StyledVersion>
         {/*
         <Menu
           theme="dark"

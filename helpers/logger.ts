@@ -1,7 +1,4 @@
-/* eslint-disable no-console */
 import debug from 'debug';
-
-export const logger = console;
 
 export const lv = ({
   trace: 0,
@@ -25,19 +22,19 @@ export const createLogger = (module, level = lv.warn) => {
 
   return {
     trace: (...args) => {
-      if (level < 1) trace(...args);
+      if (level < 1) (trace as any)(...args);
     },
     info : (...args) => {
-      if (level < 2) info(...args);
+      if (level < 2) (info as any)(...args);
     },
     log  : (...args) => {
-      if (level < 3) log(...args);
+      if (level < 3) (log as any)(...args);
     },
     warn : (...args) => {
-      if (level < 4) warn(...args);
+      if (level < 4) (warn as any)(...args);
     },
     error: (...args) => {
-      if (level < 5) error(...args);
+      if (level < 5) (error as any)(...args);
     },
   };
 };

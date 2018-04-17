@@ -1,5 +1,5 @@
-import { createLogger, lv } from 'helpers';
-import { appContext }       from 'app/context';
+import { createLogger, lv } from '../helpers';
+import { appContext }       from '../app/context';
 
 // --------------------------------------------------------------
 // Types
