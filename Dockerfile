@@ -13,3 +13,5 @@ RUN yarn config set registry $REGISTRY && yarn && yarn build
 ADD . /app
 
 EXPOSE 3000
+
+CMD yarn start
