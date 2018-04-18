@@ -370,10 +370,6 @@
   version "15.5.2"
   resolved "https://registry.yarnpkg.com/@types/prop-types/-/prop-types-15.5.2.tgz#3c6b8dceb2906cc87fe4358e809f9d20c8d59be1"
 
-"@types/ramda@^0.25.22":
-  version "0.25.23"
-  resolved "https://registry.yarnpkg.com/@types/ramda/-/ramda-0.25.23.tgz#c8dded270401b31683820661feecbcff40412a90"
-
 "@types/react-redux@*":
   version "5.0.16"
   resolved "https://registry.yarnpkg.com/@types/react-redux/-/react-redux-5.0.16.tgz#46f1b2043abd2b4364a857100abf5e5a6ef94bf0"
