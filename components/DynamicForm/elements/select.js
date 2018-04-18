@@ -2,6 +2,7 @@
 import React     from 'react';
 import PropTypes from 'prop-types';
 import * as R    from 'ramda';
+import * as _    from 'lodash';
 
 import { Select } from 'antd';
 
@@ -57,17 +58,23 @@ export const generateSelect = (form, {
       this.setState({ selectedItems });
     };
 
-    extractName = item => (
-      enumSelector.name
-        ? R.compose(enumSelector.name, getValue)(item)
-        : getName(item)
-    );
+    extractName = (item) => {
+      if (enumSelector.name) {
+        return R.compose(enumSelector.name, getValue)(item);
+      } else if (_.isArray(getValue(item))) {
+        return R.compose(R.prop(1), getValue)(item);
+      }
+      return getName(item);
+    };
 
-    extractValue = item => (
-      enumSelector.value
-        ? R.compose(enumSelector.value, getValue)(item)
-        : getValue(item)
-    );
+    extractValue = (item) => {
+      if (enumSelector.value) {
+        return R.compose(enumSelector.value, getValue)(item);
+      } else if (_.isArray(getValue(item))) {
+        return R.compose(R.prop(0), getValue)(item);
+      }
+      return getValue(item);
+    };
 
     renderSortTree = () => {
       const { selectedItems } = this.state;
