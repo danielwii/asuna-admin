@@ -119,7 +119,7 @@ export interface IModelService {
 // Main
 // --------------------------------------------------------------
 
-const logger = createLogger('adapters:models', lv.info);
+const logger = createLogger('adapters:models', lv.warn);
 
 export const modelProxy = {
   getModelConfigs      : name => appContext.ctx.models.getModelConfig(name),

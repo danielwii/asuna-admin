@@ -240,13 +240,13 @@ export const generateAuthorities = (form, options, formItemLayout = defaultFormI
 };
 
 export const generateRichTextEditor = (form, options, formItemLayout = defaultFormItemLayout) => {
-  const { key, name, label, auth } = options;
+  const { key, name, label, auth, imageApi } = options;
 
   const fieldName = key || name;
   const labelName = label || name || key;
   return generateComponent(
     form, { fieldName, labelName, ...options }, (
-      <BraftRichEditor auth={auth} />
+      <BraftRichEditor auth={auth} imageApi={imageApi} />
     ), formItemLayout,
   );
 };

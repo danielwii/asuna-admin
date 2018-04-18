@@ -11,6 +11,7 @@ let BraftEditor;
 // eslint-disable-next-line import/prefer-default-export
 export class BraftRichEditor extends React.Component {
   static propTypes = {
+    imageApi: PropTypes.string,
     value   : PropTypes.string,
     onChange: PropTypes.func,
   };
@@ -67,7 +68,7 @@ export class BraftRichEditor extends React.Component {
   };
 
   uploadFn = async (param) => {
-    const { auth } = this.props;
+    const { auth, imageApi } = this.props;
     logger.info('[uploadFn]', 'param is', param);
 
     const response = await apiProxy.upload(auth, param.file, {
@@ -79,12 +80,12 @@ export class BraftRichEditor extends React.Component {
 
     logger.info('[uploadFn]', 'response is', response);
 
-    if (response.status === 200) {
+    if (/^20\d$/.test(response.status)) {
       // TODO 返回值的结构应该在未来包含于 adapter 中由异构系统自定义
       const image = response.data[0];
       param.success({
         image,
-        url: `${image.prefix}/${image.filename}`,
+        url: `${imageApi}/${image.filename}?prefix=${image.prefix}`,
       });
     } else {
       param.error({
