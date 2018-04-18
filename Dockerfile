@@ -8,9 +8,11 @@ COPY bin /app/bin
 
 WORKDIR /app
 
-RUN yarn config set registry $REGISTRY && yarn && yarn build
+RUN yarn config set registry $REGISTRY && yarn
 
 ADD . /app
+
+RUN yarn build
 
 EXPOSE 3000
 
