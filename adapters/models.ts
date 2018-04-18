@@ -2,8 +2,7 @@ import * as R from 'ramda';
 import * as _ from 'lodash';
 
 import { DynamicFormTypes } from '../components/DynamicForm';
-
-import { appContext }                       from '../app/context';
+import { appContext }       from '../app/context';
 
 import { createLogger, defaultColumns, lv } from '../helpers';
 
@@ -105,7 +104,7 @@ export interface IModelService {
 
   insert(authToken: { token: string, schemas?: {} },
          name: string,
-         data: { endpoint?: string, body: any });
+         data: { endpoint?: string, body: any, [member: string]: any });
 
   update(authToken: { token: string },
          name: any,
@@ -120,7 +119,7 @@ export interface IModelService {
 // Main
 // --------------------------------------------------------------
 
-const logger = createLogger('adapters:models', lv.log);
+const logger = createLogger('adapters:models', lv.info);
 
 export const modelProxy = {
   getModelConfigs      : name => appContext.ctx.models.getModelConfig(name),
@@ -248,8 +247,8 @@ export class ModelAdapter {
 
     const type = R.path(['config', 'type'])(field) as string;
 
-    if (/^(VARCHAR.+|String)$/i.test(type)) return DynamicFormTypes.Input;
-    if (/^INTEGER|FLOAT|Number$/i.test(type)) return DynamicFormTypes.InputNumber;
+    if (/^(VARCHAR.*|String)$/i.test(type)) return DynamicFormTypes.Input;
+    if (/^(INTEGER|FLOAT|Number)$/i.test(type)) return DynamicFormTypes.InputNumber;
     if (/^TEXT$/i.test(type)) return DynamicFormTypes.TextArea;
     if (/^DATETIME$/i.test(type)) return DynamicFormTypes.DateTime;
     if (/^DATE$/i.test(type)) return DynamicFormTypes.Date;
@@ -269,16 +268,16 @@ export class ModelAdapter {
     ...this.getModelConfig(name),
   });
 
-  upsert = ({ token, schemas }, name, data) => {
-    logger.info('[upsert]', 'upsert', name, data);
+  upsert = ({ token, schemas }, name: string, data: { body: { [member: string]: any } }): Promise<any> => {
+    logger.info('[upsert]', 'upsert', { name, data });
 
     const fields = this.getFormSchema(schemas, name);
     logger.info('[upsert]', 'fields is', fields);
 
-    const fixKeys     = _.mapKeys(data.body, (_, key) => _.get(fields, `${key}.ref`, key));
+    const fixKeys     = _.mapKeys(data.body, (value, key) => _.get(fields, `${key}.ref`, key));
     const transformed = _.mapValues(fixKeys, (value, key) => {
       // json 用于描述该字段需要通过字符串转换处理，目前用于服务器端不支持 JSON 数据格式的情况
-      return _.get(fields, `${key}.options.json`) as any as string === 'str' ? JSON.stringify(value) : value;
+      return _.get(fields, `${key}.options.json`) === 'str' ? JSON.stringify(value) : value;
     });
     logger.info('[upsert]', 'transformed is', transformed);
 
@@ -373,10 +372,10 @@ export class ModelAdapter {
   });
 
   loadModels = ({ token }, name, configs?) => {
-    logger.info('[loadModels]', {name, configs});
+    logger.info('[loadModels]', { name, configs });
     const page = R.pathOr(1, ['pagination', 'current'], configs);
     const size = R.pathOr(1, ['pagination', 'pageSize'], configs);
-    return this.service.loadModels({token}, name, {
+    return this.service.loadModels({ token }, name, {
       pagination: { page, size },
       ...this.getModelConfig(name) as any,
     });
