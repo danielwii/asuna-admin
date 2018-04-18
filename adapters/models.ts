@@ -374,7 +374,7 @@ export class ModelAdapter {
   loadModels = ({ token }, name, configs?) => {
     logger.info('[loadModels]', { name, configs });
     const page = R.pathOr(1, ['pagination', 'current'], configs);
-    const size = R.pathOr(1, ['pagination', 'pageSize'], configs);
+    const size = R.pathOr(10, ['pagination', 'pageSize'], configs);
     return this.service.loadModels({ token }, name, {
       pagination: { page, size },
       ...this.getModelConfig(name) as any,
