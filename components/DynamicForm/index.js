@@ -168,7 +168,9 @@ export class DynamicForm2 extends React.Component {
       case DynamicFormTypes.Switch:
         return generateSwitch(form, options);
       case DynamicFormTypes.RichText:
-        return generateRichTextEditor(form, options);
+        return generateRichTextEditor(form, {
+          ...options, imageApi: config.get(ConfigKeys.IMAGE_API),
+        });
       case DynamicFormTypes.ManyToMany: {
         // --------------------------------------------------------------
         // ManyToMany RelationShip
