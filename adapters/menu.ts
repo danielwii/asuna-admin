@@ -7,18 +7,6 @@ import { appContext }       from '../app/context';
 // Types
 // --------------------------------------------------------------
 
-interface SubMenu {
-  key: string;
-  title: string;
-  linkTo: string;
-}
-
-interface Menu {
-  key: string;
-  title: string;
-  subMenus: SubMenu[];
-}
-
 export interface IMenuService {
 }
 

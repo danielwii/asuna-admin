@@ -6,89 +6,10 @@ import { appContext }       from '../app/context';
 
 import { createLogger, defaultColumns, lv } from '../helpers';
 
-// --------------------------------------------------------------
-// Types
-// --------------------------------------------------------------
-
-interface FRecordRender {
-  (actions: () => any): any;
-}
-
-interface ModelConfig {
-  table?: FRecordRender;
-  model?: {};
-}
-
-type ModelConfigs = { [member: string]: ModelConfig };
-
-interface FormSchema {
-  name: string;
-  ref?: string;
-  type: string;
-  value: any;
-  options: {
-    label?: string;
-    selectable?: string;
-    required?: boolean;
-    json?: string;
-  };
-}
-
-type FormSchemas = { [member: string]: FormSchema };
-
-interface ModelSchema {
-  name: string;
-  config: {};
-}
-
-interface ModelSchemas {
-  [memeber: string]: ModelSchema[];
-}
-
-interface Association {
-  name?: string;
-  value?: string;
-  ref?: string;
-  fields?: string[];
-}
-
-type Associations = {
-  [member: string]: Association;
-}
-
-interface ModelOpts {
-  models?: {
-    [member: string]: {
-      endpoint?: string,
-    }
-  },
-  tableColumns?: {
-    [member: string]: FRecordRender,
-  },
-  modelColumns?: {
-    [member: string]: {
-      associations?: Associations,
-      settings?: {
-        [member: string]: {
-          help?: string,
-          accessible?: 'readonly' | 'hidden',
-          type?: { enumSelector: { name: string, value: string } },
-          target?: { enumSelector: { name: string, value: string } },
-        },
-      },
-    },
-  },
-}
-
-interface Pageable {
-  current: number;
-  pageSize: number;
-}
-
 export interface IModelService {
   loadModels(authToken: { token: string },
              name: string,
-             configs?: { endpoint?: string, pagination?: Pageable, filters?, sorter? });
+             configs?: { endpoint?: string, pagination?: Asuna.Pageable, filters?, sorter? });
 
   loadSchema(authToken: { token: string },
              payload: { name: string },
@@ -139,7 +60,7 @@ export const modelProxy = {
    */
   loadModels: (authToken: { token: string },
                name: string,
-               configs?: { endpoint?: string, pagination?: Pageable, filters?, sorter? }) => {
+               configs?: { endpoint?: string, pagination?: Asuna.Pageable, filters?, sorter? }) => {
     logger.log('[modelProxy.loadModels]', { authToken, name, configs });
     return appContext.ctx.models.loadModels(authToken, name, configs);
   },
@@ -180,7 +101,7 @@ export const modelProxy = {
 export class ModelAdapter {
   private service: IModelService;
   private allModels: string[];
-  private modelConfigs: ModelConfigs;
+  private modelConfigs: Asuna.Schema.ModelConfigs;
   private associations: {};
 
   /**
@@ -189,7 +110,7 @@ export class ModelAdapter {
    *                       模型定义中出现的的元素才会作为最终元素
    * @param associations
    */
-  constructor(service: IModelService, configs: ModelOpts = {}, associations: Associations = {}) {
+  constructor(service: IModelService, configs: Asuna.Schema.ModelOpts = {}, associations: Asuna.Schema.Associations = {}) {
     logger.log('[ModelAdapter][constructor]', { service, configs, associations });
     if (!service) {
       throw new Error('service must defined');
@@ -199,7 +120,7 @@ export class ModelAdapter {
       ...config,
       table: R.path(['tableColumns', name])(configs),
       model: R.path(['modelColumns', name])(configs),
-    }))(R.prop('models', configs)) as ModelConfigs;
+    }))(R.prop('models', configs));
 
     this.service      = service;
     this.allModels    = Object.keys(modelConfigs);
@@ -231,7 +152,7 @@ export class ModelAdapter {
         : DynamicFormTypes.ManyToMany;
     }
 
-    const advancedType = R.path(['config', 'info', 'type'])(field) as string;
+    const advancedType = R.path(['config', 'info', 'type'])(field);
 
     if (/^RichText$/i.test(advancedType)) return DynamicFormTypes.RichText;
     if (/^Image$/i.test(advancedType)) return DynamicFormTypes.Image;
@@ -245,7 +166,7 @@ export class ModelAdapter {
     // identify basic types
     // --------------------------------------------------------------
 
-    const type = R.path(['config', 'type'])(field) as string;
+    const type = R.path(['config', 'type'])(field);
 
     if (/^(VARCHAR.*|String)$/i.test(type)) return DynamicFormTypes.Input;
     if (/^(INTEGER|FLOAT|Number)$/i.test(type)) return DynamicFormTypes.InputNumber;
@@ -299,7 +220,7 @@ export class ModelAdapter {
 
   getAssociationConfigs = name => R.prop(name)(this.associations);
 
-  getModelConfig = (name): ModelConfig => {
+  getModelConfig = (name): Asuna.Schema.ModelConfig => {
     const config = R.prop(name)(this.modelConfigs);
     if (config) {
       logger.info('[getModelConfig]', name, 'config is', config);
@@ -318,7 +239,7 @@ export class ModelAdapter {
     return { model: {}, table: defaultColumns };
   };
 
-  getFormSchema = (schemas: ModelSchemas, name: string, values?: { [member: string]: any }): FormSchemas => {
+  getFormSchema = (schemas: Asuna.Schema.ModelSchemas, name: string, values?: { [member: string]: any }): Asuna.Schema.FormSchemas => {
     if (!schemas || !name) {
       logger.error('[getFormSchema]', 'schemas or name is required. schemas is', schemas, 'name is', name);
       return {};
@@ -333,8 +254,8 @@ export class ModelAdapter {
     logger.log('[getFormSchema]', 'schema is', schema, 'name is', name);
     return R.compose(
       R.mergeAll,
-      R.map<FormSchema, any>(formatted => ({ [formatted.name]: formatted })),
-      R.map<ModelSchema, FormSchema>((field) => {
+      R.map<Asuna.Schema.FormSchema, any>(formatted => ({ [formatted.name]: formatted })),
+      R.map<Asuna.Schema.ModelSchema, Asuna.Schema.FormSchema>((field) => {
         const ref      = R.pathOr(field.name, ['config', 'info', 'ref'])(field);
         const required = R.not(R.pathOr(true, ['config', 'nullable'])(field));
         return ({
@@ -354,7 +275,7 @@ export class ModelAdapter {
           value  : values ? R.prop(field.name)(values) : undefined,
         });
       }),
-    )(schema) as { [member: string]: FormSchema };
+    )(schema) as { [member: string]: Asuna.Schema.FormSchema };
   };
 
   getFieldsOfAssociations = R.memoize(() => {
@@ -373,8 +294,8 @@ export class ModelAdapter {
 
   loadModels = ({ token }, name, configs?) => {
     logger.info('[loadModels]', { name, configs });
-    const page = R.pathOr(1, ['pagination', 'current'], configs);
-    const size = R.pathOr(10, ['pagination', 'pageSize'], configs);
+    const page = R.pathOr(1, ['pagination', 'page'], configs);
+    const size = R.pathOr(10, ['pagination', 'size'], configs);
     return this.service.loadModels({ token }, name, {
       pagination: { page, size },
       ...this.getModelConfig(name) as any,

@@ -10,13 +10,15 @@
     "pretty": true,
 //    "noUnusedLocals": true,
 //    "noUnusedParameters": true,
+    "strictNullChecks": true, // 可选参数会被自动地加上 | undefined
     "removeComments": false,
     "preserveConstEnums": true,
     "sourceMap": true,
     "skipLibCheck": true,
     "baseUrl": ".",
     "typeRoots": [
-      "./node_modules/@types"
+      "./node_modules/@types",
+      "@types"
     ],
     "lib": [
       "dom",

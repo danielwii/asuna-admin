@@ -25,9 +25,9 @@ export interface IIndexRegister extends ILoginRegister {
   createSecurityService(): ISecurityService;
 
   createDefinitions(): {
-    associations: any;
-    modelConfigs: any;
-    registeredModels: any;
+    associations: Asuna.Schema.Associations;
+    modelConfigs: Asuna.Schema.ModelOpts;
+    registeredModels: Asuna.Schema.Menus;
 
   };
 }

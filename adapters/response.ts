@@ -12,18 +12,12 @@ export interface TablePagination {
   pageSizeOptions: string[];
 }
 
-export interface Pageable {
-  page: number;
-  size: number;
-  total: number;
-}
-
 export const responseProxy = {
   extract: apiResponse => appContext.ctx.response.extract(apiResponse),
 };
 
 export class ResponseAdapter {
-  extractPageable = (apiResponse): Pageable => {
+  extractPageable = (apiResponse): Asuna.Pageable & { total: number; } => {
     switch (config.get(ConfigKeys.API_RESPONSE_PAGE_MODE)) {
       case (ApiResponsePageMode.SpringJPA): {
         const names = [
