@@ -12,6 +12,17 @@
     "bin"
   ],
   "jest": {
+    "globals": {
+      "ts-jest": {
+        "useBabelrc": true
+      }
+    },
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts",
+      "tsx"
+    ],
     "coveragePathIgnorePatterns": [
       "/node_modules/",
       "/test/",
@@ -20,6 +31,10 @@
     "modulePathIgnorePatterns": [
       "/.asuna"
     ],
+    "testRegex": ".spec.ts$",
+    "transform": {
+      "^.+\\.(t|j)s(x)?$": "ts-jest"
+    },
     "coverageThreshold": {
       "global": {}
     },
@@ -52,7 +67,7 @@
     "cross-spawn": "^6.0.5",
     "css-modules-require-hook": "^4.2.3",
     "debug": "^3.1.0",
-    "deep-diff": "^0.3.8",
+    "deep-diff": "^1.0.0",
     "draft-js": "^0.10.5",
     "http-proxy": "^1.16.2",
     "immutable": "^3.8.2",
@@ -75,7 +90,7 @@
     "react-redux": "^5.0.7",
     "react-sortable-hoc": "^0.6.8",
     "react-truncate": "^2.3.0",
-    "redux": "^3.7.2",
+    "redux": "^4.0.0",
     "redux-devtools-extension": "^2.13.2",
     "redux-logger": "^3.0.6",
     "redux-observable": "^0.18.0",
@@ -85,13 +100,13 @@
     "rxjs": "^5.5.10",
     "shelljs": "^0.8.1",
     "styled-components": "^3.2.6",
-    "typescript": "^2.8.1",
+    "typescript": "^2.8.3",
     "video.js": "^6.7.3"
   },
   "devDependencies": {
-    "@storybook/addon-actions": "^3.4.1",
-    "@storybook/addon-links": "^3.4.1",
-    "@storybook/react": "^3.4.1",
+    "@storybook/addon-actions": "^3.4.2",
+    "@storybook/addon-links": "^3.4.2",
+    "@storybook/react": "^3.4.2",
     "@types/braft-editor": "^1.1.2",
     "@types/debug": "^0.0.30",
     "@types/jest": "^22.2.3",
@@ -107,13 +122,14 @@
     "eslint": "^4.19.1",
     "eslint-config-airbnb": "^16.1.0",
     "eslint-plugin-import": "^2.11.0",
-    "eslint-plugin-jest": "^21.15.0",
+    "eslint-plugin-jest": "^21.15.1",
     "eslint-plugin-jsx-a11y": "^6.0.3",
     "eslint-plugin-react": "^7.7.0",
     "husky": "^0.15.0-rc.8",
     "jest": "^22.4.3",
+    "ts-jest": "^22.4.4",
     "tsconfig-paths": "^3.3.1",
-    "tsconfig-paths-webpack-plugin": "^3.0.3",
+    "tsconfig-paths-webpack-plugin": "^3.0.4",
     "webpack-bundle-analyzer": "^2.11.1",
     "webpack-jarvis": "0.3.2"
   },

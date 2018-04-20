@@ -1,4 +1,4 @@
-import { diff } from '.';
+import { diff } from './';
 
 describe('diff', () => {
   it('should detect deep difference', () => {
