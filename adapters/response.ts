@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 
-import { ApiResponsePageMode, config, ConfigKeys } from '../app/configure';
-import { appContext }                              from '../app/context';
+import { ApiResponsePageMode, config, ConfigKey } from '../app/configure';
+import { appContext }                             from '../app/context';
 
 export interface TablePagination {
   showSizeChanger: boolean;
@@ -18,7 +18,7 @@ export const responseProxy = {
 
 export class ResponseAdapter {
   extractPageable = (apiResponse): Asuna.Pageable & { total: number; } => {
-    switch (config.get(ConfigKeys.API_RESPONSE_PAGE_MODE)) {
+    switch (config.get(ConfigKey.API_RESPONSE_PAGE_MODE)) {
       case (ApiResponsePageMode.SpringJPA): {
         const names = [
           'first',

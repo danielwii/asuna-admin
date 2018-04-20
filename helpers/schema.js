@@ -1,12 +1,13 @@
-import * as R from 'ramda';
 import _      from 'lodash';
+import * as R from 'ramda';
 
-import { DynamicFormTypes }       from '../components/DynamicForm';
-import { modelProxy }             from '../adapters/models';
-import { storeConnector }         from '../store';
-import { cast, createLogger, lv } from '.';
+import { castModelKey, castModelName, createLogger, lv } from '.';
+import { modelProxy }                                    from '../adapters/models';
 
-const logger = createLogger('helpers:schema', lv.warn);
+import { DynamicFormTypes } from '../components/DynamicForm';
+import { storeConnector }   from '../store';
+
+const logger = createLogger('helpers:schema', lv.info);
 
 export const peek = (message, callback) => (fields) => {
   if (callback) callback();
@@ -18,7 +19,7 @@ export const hiddenComponentDecorator = (fields) => {
   const TAG = '[hiddenComponentDecorator]';
   logger.log(TAG, { fields });
 
-  let wrappedFields = R.omit([cast('createdAt'), cast('updatedAt')])(fields);
+  let wrappedFields = R.omit([castModelKey('createdAt'), castModelKey('updatedAt')])(fields);
   if (R.has('id', wrappedFields)) {
     const hidden  = R.isNil(wrappedFields.id.value);
     wrappedFields = R.mergeDeepRight(wrappedFields, { id: { options: { hidden } } });
@@ -138,7 +139,7 @@ export const associationDecorator = (fields) => {
     const withAssociations = R.mapObjIndexed(field => ({
       ...field, foreignOpts: wrapForeignOpt(field.foreignOpts),
     }))(associationFields);
-    logger.info(TAG, { withAssociations });
+    logger.info(TAG, { withAssociations, wrapForeignOpt });
 
     const wrappedFields = R.mergeDeepRight(fields, withAssociations);
     logger.info(TAG, { wrappedFields });
@@ -197,10 +198,11 @@ export const enumDecorator = (fields) => {
     logger.info(TAG, { enumFilterField });
 
     const enums   = R.compose(
+      R.map(castModelName), // 默认情况下需要调整枚举名称用于找到相应的关联
       R.map(R.prop('key')),
       R.path(['options', 'enumData']),
     )(enumFilterField);
-    const current = R.pathOr('', ['value'])(enumFilterField);
+    const current = castModelName(R.pathOr('', ['value'])(enumFilterField));
     logger.info(TAG, { enums, current });
 
     // check if positions has value already

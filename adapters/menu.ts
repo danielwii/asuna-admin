@@ -24,10 +24,10 @@ export const menuProxy = {
 export class MenuAdapter {
 
   constructor(private service: IMenuService,
-              private registeredModels: Menu[]) {
+              private registeredModels: Asuna.Schema.Menu[]) {
   }
 
-  getRegisteredModels = (): Menu[] => this.registeredModels;
+  getRegisteredModels = (): Asuna.Schema.Menu[] => this.registeredModels;
 
   init = (isSysAdmin, authorities) => {
     logger.log('[MenuAdapter][init]', 'isSysAdmin', isSysAdmin, 'authorities', authorities);
@@ -37,13 +37,13 @@ export class MenuAdapter {
       return this.getRegisteredModels();
     }
 
-    const includedSubMenus = (menu: Menu): SubMenu[] =>
-      R.filter((subMenu: SubMenu) => R.propOr(false, `${menu.key}::${subMenu.key}`)(authorities))(menu.subMenus);
+    const includedSubMenus = (menu: Asuna.Schema.Menu): Asuna.Schema.SubMenu[] =>
+      R.filter((subMenu: Asuna.Schema.SubMenu) => R.propOr(false, `${menu.key}::${subMenu.key}`)(authorities))(menu.subMenus);
 
     const menus = R.compose(
-      R.filter<Menu>(menu => R.not(R.isEmpty(R.prop('subMenus', menu)))),
-      R.map<Menu, Menu>(menu => ({ ...menu, subMenus: includedSubMenus(menu) })) as any,
-    )(this.getRegisteredModels()) as any as Menu[];
+      R.filter(menu => R.not(R.isEmpty(R.prop('subMenus', menu)))),
+      R.map(menu => ({ ...menu, subMenus: includedSubMenus(menu) })),
+    )(this.getRegisteredModels()) as Asuna.Schema.Menu[];
     logger.log('[MenuAdapter][init]', 'filtered menus is', menus);
 
     return [...menus];

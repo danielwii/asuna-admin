@@ -24,7 +24,7 @@ import {
 
 import { generateSelect }         from './elements/select';
 import { diff, createLogger, lv } from '../../helpers/index';
-import { config, ConfigKeys }     from '../../app/configure';
+import { config, ConfigKey }      from '../../app/configure';
 
 const logger = createLogger('components:dynamic-form', lv.warn);
 
@@ -158,18 +158,18 @@ export class DynamicForm2 extends React.Component {
       case DynamicFormTypes.Date:
         return generateDateTime(form, { ...options, mode: 'date' });
       case DynamicFormTypes.Video:
-        return generateVideo(form, { ...options, api: config.get(ConfigKeys.VIDEO_API) });
+        return generateVideo(form, { ...options, api: config.get(ConfigKey.VIDEO_API) });
       case DynamicFormTypes.Authorities:
         return generateAuthorities(form, options);
       case DynamicFormTypes.Image:
-        return generateImage(form, { ...options, api: config.get(ConfigKeys.IMAGE_API) });
+        return generateImage(form, { ...options, api: config.get(ConfigKey.IMAGE_API) });
       case DynamicFormTypes.Images:
-        return generateImages(form, { ...options, api: config.get(ConfigKeys.IMAGE_API) });
+        return generateImages(form, { ...options, api: config.get(ConfigKey.IMAGE_API) });
       case DynamicFormTypes.Switch:
         return generateSwitch(form, options);
       case DynamicFormTypes.RichText:
         return generateRichTextEditor(form, {
-          ...options, imageApi: config.get(ConfigKeys.IMAGE_API),
+          ...options, imageApi: config.get(ConfigKey.IMAGE_API),
         });
       case DynamicFormTypes.ManyToMany: {
         // --------------------------------------------------------------

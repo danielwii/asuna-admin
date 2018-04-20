@@ -6,9 +6,9 @@ import Truncate    from 'react-truncate';
 
 import { Tooltip } from 'antd';
 
-import { AuthHeader, config, ConfigKeys } from '../app/configure';
+import { AuthHeader, config, ConfigKey } from '../app/configure';
 
-import { cast } from './cast';
+import { castModelKey } from './cast';
 
 import { createLogger, lv } from './logger';
 
@@ -18,7 +18,7 @@ export * from './logger';
 export * from './cast';
 
 export const authHeader = (token) => {
-  if (config.is(ConfigKeys.AUTH_HEADER, AuthHeader.AuthHeaderAsBearerToken)) {
+  if (config.is(ConfigKey.AUTH_HEADER, AuthHeader.AuthHeaderAsBearerToken)) {
     return { headers: { Authorization: `Bearer ${token}` } };
   }
   return { headers: { Authorization: token } };
@@ -80,11 +80,11 @@ export const commonColumns = {
   id       : columnHelper.generate('id', 'ID'),
   name     : columnHelper.generate('name', '名称'),
   title    : columnHelper.generate('title', '标题'),
-  nameEn   : columnHelper.generate(cast('nameEn'), '英文名称'),
+  nameEn   : columnHelper.generate(castModelKey('nameEn'), '英文名称'),
   email    : columnHelper.generate('email', 'Email'),
   type     : columnHelper.generate('type', '类型'),
-  createdAt: columnHelper.generateCalendar(cast('createdAt'), '创建时间'),
-  updatedAt: columnHelper.generateCalendar(cast('updatedAt'), '更新时间'),
+  createdAt: columnHelper.generateCalendar(castModelKey('createdAt'), '创建时间'),
+  updatedAt: columnHelper.generateCalendar(castModelKey('updatedAt'), '更新时间'),
   actions  : columnHelper.generateActions,
 };
 

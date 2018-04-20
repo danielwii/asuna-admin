@@ -1,6 +1,6 @@
 export const enum StringCase {
   None  = 'None',
-  Snake = 'snake',
+  Snake = 'Snake',
   Camel = 'Camel',
 }
 
@@ -27,8 +27,9 @@ export const enum AuthHeader {
   AuthHeaderAsBearerToken = 'AuthHeaderAsBearerToken',
 }
 
-export const enum ConfigKeys {
+export const enum ConfigKey {
   MODEL_KEYS_CASE               = 'MODEL_KEYS_CASE',
+  MODEL_NAME_CASE               = 'MODEL_NAME_CASE',
   AUTH_HEADER                   = 'AUTH_HEADER',
 
   API_RESPONSE_PAGE_MODE        = 'API_RESPONSE_PAGE_MODE',
@@ -40,6 +41,7 @@ export const enum ConfigKeys {
 
 interface ConfigOpts {
   MODEL_KEYS_CASE?: StringCase;
+  MODEL_NAME_CASE?: StringCase;
   AUTH_HEADER?: AuthHeader;
   API_RESPONSE_PAGE_MODE?: ApiResponsePageMode;
   API_RESPONSE_ASSOCIATION_MODE?: ApiResponseAssociationMode;
@@ -49,6 +51,7 @@ interface ConfigOpts {
 
 const defaultConfiguration: ConfigOpts = {
   MODEL_KEYS_CASE              : StringCase.None,
+  MODEL_NAME_CASE              : StringCase.None,
   AUTH_HEADER                  : AuthHeader.AuthHeaderAsBearerToken,
   API_RESPONSE_PAGE_MODE       : ApiResponsePageMode.Default,
   /**
@@ -64,11 +67,11 @@ class Config {
     this.opts = Object.assign(this.opts, opts);
   }
 
-  get(key: string, defaultValue?) {
+  get(key: ConfigKey, defaultValue?) {
     return this.opts[key] || defaultValue;
   }
 
-  is(key: string, value) {
+  is(key: ConfigKey, value) {
     // console.log({ opts: this.opts, key, value, result: this.opts[key] === value });
     return this.opts[key] === value;
   }
