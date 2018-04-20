@@ -5,12 +5,13 @@ import * as R      from 'ramda';
 
 import { Button, Divider, Modal, Table } from 'antd';
 
-import { panesActions }     from '../../store/panes.redux';
-import { contentActions }   from '../../store/content.redux';
-import { modelsActions }    from '../../store/models.redux';
-import { modelProxy }       from '../../adapters/models';
-import { responseProxy }    from '../../adapters/response';
-import { createLogger, lv } from '../../helpers/index';
+import { panesActions }   from '../../store/panes.redux';
+import { contentActions } from '../../store/content.redux';
+import { modelsActions }  from '../../store/models.redux';
+import { modelProxy }     from '../../adapters/models';
+import { responseProxy }  from '../../adapters/response';
+
+import { castModelKey, createLogger, lv } from '../../helpers';
 
 const logger = createLogger('modules:content:index', lv.warn);
 
@@ -36,7 +37,7 @@ class ContentIndex extends React.Component {
       <span>
         {extras && extras(auth)}
         <Button size="small" type="dashed" onClick={() => this.edit(text, record)}>Edit</Button>
-        {R.not(R.prop('is_system', record)) && (
+        {R.not(R.prop(castModelKey('isSystem'), record)) && (
           <React.Fragment>
             <Divider type="vertical" />
             <Button

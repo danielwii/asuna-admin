@@ -1,5 +1,5 @@
 declare namespace Asuna {
-  declare namespace Schema {
+  namespace Schema {
     enum MetaInfoColumnType {
       IMAGE         = 'Image',
       IMAGES        = 'Images',
@@ -124,7 +124,7 @@ declare namespace Asuna {
     type Associations = { [key: string]: Association };
 
     interface ModelColumn {
-      associations?: Associations,
+      associations?: Associations;
       settings?: {
         [key: string]: {
           help?: string,
@@ -136,7 +136,7 @@ declare namespace Asuna {
           enumSelector?: { name: string, value: string },
           target?: { enumSelector: { name: string, value: string } },
         },
-      },
+      };
     }
 
     type ModelColumns = { [key: string]: ModelColumn };
@@ -147,10 +147,10 @@ declare namespace Asuna {
       models?: {
         [key: string]: {
           endpoint?: string,
-        }
-      },
-      tableColumns?: TableColumns,
-      modelColumns?: ModelColumns,
+        },
+      };
+      tableColumns?: TableColumns;
+      modelColumns?: ModelColumns;
     }
 
     interface SubMenu {
