@@ -1,4 +1,4 @@
-import React  from 'react';
+import React       from 'react';
 import * as moment from 'moment';
 import * as R      from 'ramda';
 import deepDiff    from 'deep-diff';
@@ -76,16 +76,17 @@ export const columnHelper = {
  * 通用配置
  */
 export const commonColumns = {
-  any      : any => columnHelper.generate(any, any.toUpperCase()),
-  id       : columnHelper.generate('id', 'ID'),
-  name     : columnHelper.generate('name', '名称'),
-  title    : columnHelper.generate('title', '标题'),
-  nameEn   : columnHelper.generate(castModelKey('nameEn'), '英文名称'),
-  email    : columnHelper.generate('email', 'Email'),
-  type     : columnHelper.generate('type', '类型'),
-  createdAt: columnHelper.generateCalendar(castModelKey('createdAt'), '创建时间'),
-  updatedAt: columnHelper.generateCalendar(castModelKey('updatedAt'), '更新时间'),
-  actions  : columnHelper.generateActions,
+  any        : any => columnHelper.generate(any, any.toUpperCase()),
+  id         : columnHelper.generate('id', 'ID'),
+  name       : columnHelper.generate('name', '名称'),
+  description: columnHelper.generate('description', '描述'),
+  title      : columnHelper.generate('title', '标题'),
+  nameEn     : columnHelper.generate(castModelKey('nameEn'), '英文名称'),
+  email      : columnHelper.generate('email', 'Email'),
+  type       : columnHelper.generate('type', '类型'),
+  createdAt  : columnHelper.generateCalendar(castModelKey('createdAt'), '创建时间'),
+  updatedAt  : columnHelper.generateCalendar(castModelKey('updatedAt'), '更新时间'),
+  actions    : columnHelper.generateActions,
 };
 
 export const defaultColumns = actions => [
