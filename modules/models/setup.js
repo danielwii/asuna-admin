@@ -4,15 +4,14 @@ import { connect } from 'react-redux';
 
 import { Form, Divider } from 'antd';
 
-import { DynamicForm2, DynamicFormTypes, generatePlain } from '../../components/DynamicForm';
+import { DynamicForm2, DynamicFormTypes } from '../../components/DynamicForm';
+import { generatePlain }                  from '../../components/DynamicForm/elements';
 
+// eslint-disable-next-line react/prefer-stateless-function
 class ModelsSetup extends React.Component {
   static propTypes = {
     pane: PropTypes.shape({}),
   };
-
-  componentWillMount() {
-  }
 
   render() {
     const { pane } = this.props;

@@ -25,3 +25,4 @@ static/libs
 .asuna
 
 # services/*.js # set in .git/info/exclude
+examples/
