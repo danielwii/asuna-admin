@@ -1,5 +1,7 @@
 # Asuna-Admin
 
+[![travis-ci](https://travis-ci.org/danielwii/asuna-admin.svg?branch=master)](https://travis-ci.org/danielwii/asuna-admin)
+
 [changelog](https://github.com/danielwii/asuna-admin/blob/master/CHANGELOG.md)
 
 ## Develop
