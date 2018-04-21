@@ -52,7 +52,7 @@ type IndexModuleRegister = {
 // Setup context
 // --------------------------------------------------------------
 
-const { serverRuntimeConfig = {} } = getConfig();
+const { serverRuntimeConfig = {} } = getConfig() || {};
 
 class AppContext {
   private _context: {

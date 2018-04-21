@@ -7,7 +7,7 @@ import { createLogger, lv } from '../helpers';
 
 const logger = createLogger('adapters:ws', lv.warn);
 
-const { serverRuntimeConfig = {} } = getConfig();
+const { serverRuntimeConfig = {} } = getConfig() || {};
 
 export class WsAdapter {
 

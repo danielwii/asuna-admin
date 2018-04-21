@@ -49,6 +49,7 @@
     "build-storybook": "NODE_ENV=dev build-storybook",
     "collect": "sh ./bin/collect.sh",
     "pre-commit": "jest",
+    "test": "jest",
     "changelog": "conventional-changelog -p asuna-admin -i CHANGELOG.md",
     "init-changelog": "conventional-changelog -p asuna-admin -i CHANGELOG.md -r 0",
     "postinstall": "yarn collect"
