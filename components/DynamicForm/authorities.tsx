@@ -79,6 +79,7 @@ export class Authorities extends React.Component<IProps, IState> {
 
     const key         = `${parent.key}::${menu.key}`;
     const authorities = R.merge(Authorities.transformToJson(value), { [key]: active });
+
     logger.log('[updatePermission]', authorities, key, active);
     onChange(authorities);
   };

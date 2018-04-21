@@ -7,6 +7,7 @@ export const storeConnector = {
     this.state = state;
   },
   getState: name => this.state[name],
+  select  : cb => cb(this.state),
 };
 
 export const createStoreConnectorMiddleware = cb =>

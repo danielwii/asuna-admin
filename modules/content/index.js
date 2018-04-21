@@ -55,7 +55,11 @@ class ContentIndex extends React.Component {
     const configs   = modelProxy.getModelConfigs(modelName);
     logger.info('[constructor]', 'load table from configs', configs, 'by', modelName);
 
-    const columns = R.prop('table')(configs)(actions);
+    const columns = R.prop('table', configs)(actions, {
+      auth,
+      modelName,
+      callRefresh: this.refresh,
+    });
 
     this.state = { modelName, columns };
 

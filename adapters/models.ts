@@ -5,6 +5,13 @@ import { DynamicFormTypes } from '../components/DynamicForm';
 import { appContext }       from '../app/context';
 
 import { createLogger, defaultColumns, lv } from '../helpers';
+import { storeConnector }                   from '../store';
+
+export interface IModelBody {
+  id?: number | string;
+
+  [key: string]: any;
+}
 
 export interface IModelService {
   loadModels(authToken: { token: string },
@@ -25,11 +32,11 @@ export interface IModelService {
 
   insert(authToken: { token: string, schemas?: {} },
          name: string,
-         data: { endpoint?: string, body: any, [member: string]: any });
+         data: { endpoint?: string, body: IModelBody } & Asuna.Schema.ModelConfig);
 
   update(authToken: { token: string },
          name: any,
-         param3);
+         data: { endpoint?: string, id: number | string, body: IModelBody } & Asuna.Schema.ModelConfig);
 
   loadAssociation(authToken: { token: string },
                   associationName: string,
@@ -94,7 +101,7 @@ export const modelProxy = {
    * @param data       - model body
    * @returns {*}
    */
-  upsert: ({ token, schemas }, name, data) =>
+  upsert: ({ token, schemas }: { token: string, schemas? }, name: string, data: { body: IModelBody }) =>
     appContext.ctx.models.upsert({ token, schemas }, name, data),
 };
 
@@ -189,10 +196,13 @@ export class ModelAdapter {
     ...this.getModelConfig(name),
   });
 
-  upsert = ({ token, schemas }, name: string, data: { body: { [member: string]: any } }): Promise<any> => {
+  // FIXME schemas can be found by storeConnector now.
+  upsert = ({ token, schemas }, name: string, data: { body: IModelBody }): Promise<any> => {
     logger.info('[upsert]', 'upsert', { name, data });
 
-    const fields = this.getFormSchema(schemas, name);
+    const allSchemas = schemas || storeConnector.select(R.path(['models', 'schemas']));
+
+    const fields = this.getFormSchema(allSchemas, name);
     logger.info('[upsert]', 'fields is', fields);
 
     const fixKeys     = _.mapKeys(data.body, (value, key) => _.get(fields, `${key}.ref`, key));
@@ -241,13 +251,13 @@ export class ModelAdapter {
 
   getFormSchema = (schemas: Asuna.Schema.ModelSchemas, name: string, values?: { [member: string]: any }): Asuna.Schema.FormSchemas => {
     if (!schemas || !name) {
-      logger.error('[getFormSchema]', 'schemas or name is required. schemas is', schemas, 'name is', name);
+      logger.error('[getFormSchema]', 'schemas or name is required.', { schemas, name });
       return {};
     }
     const schema = R.prop(name)(schemas);
 
     if (!schema) {
-      logger.error('[getFormSchema]', 'schema is required.', schemas);
+      logger.error('[getFormSchema]', 'schema is required.', { schemas, name });
       return {};
     }
 

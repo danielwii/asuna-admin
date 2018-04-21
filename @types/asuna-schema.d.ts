@@ -64,6 +64,10 @@ declare namespace Asuna {
     }
 
     type MetaInfoOptions = {
+      /**
+       * 在 schema 中隐藏
+       */
+      ignore?: boolean,
       name?: string,
       type?: MetaInfoColumnType,
       json?: MetaInfoJsonType,
@@ -78,11 +82,26 @@ declare namespace Asuna {
       filterType?: MetaInfoFilterType,
     };
 
-    type EntityMetaInfoOptions = { name: string };
+    type EntityMetaInfoOptions = {
+      name: string,
+    };
 
 
     interface FRecordRender {
-      (actions: () => any): any;
+      (
+        /**
+         * 用于渲染额外的功能按钮
+         */
+        actions: () => any,
+        opts: {
+          auth: { token: string },
+          modelName: string,
+          /**
+           * 用于处理完毕后的的页面刷新
+           */
+          callRefresh: () => void,
+        }
+      ): any;
     }
 
     interface ModelConfig {
