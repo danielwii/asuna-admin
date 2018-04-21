@@ -7,7 +7,7 @@ import { modelProxy }                                    from '../adapters/model
 import { DynamicFormTypes } from '../components/DynamicForm';
 import { storeConnector }   from '../store';
 
-const logger = createLogger('helpers:schema', lv.info);
+const logger = createLogger('helpers:schema', lv.warn);
 
 export const peek = (message, callback) => (fields) => {
   if (callback) callback();

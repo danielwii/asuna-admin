@@ -31,7 +31,8 @@ import { panesCleaner, panesReducer, panesSagas }    from './panes.redux';
 
 import { createStoreConnectorMiddleware, storeConnector } from './middlewares/store-connector';
 
-import { createLogger } from '../helpers/index';
+import { appContext }   from '../app/context';
+import { createLogger } from '../helpers';
 
 export { storeConnector };
 
@@ -136,7 +137,9 @@ export const rootEpics = combineEpics(
 // Setup store with redux-saga
 // --------------------------------------------------------------
 
-const storeConnectorMiddleware = createStoreConnectorMiddleware();
+const storeConnectorMiddleware = createStoreConnectorMiddleware(
+  action => appContext.actionHandler(action),
+);
 const epicMiddleware           = createEpicMiddleware(rootEpics);
 const sagaMiddleware           = createSagaMiddleware();
 const loggerMiddleware         = createReduxLogger({ collapsed: true });

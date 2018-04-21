@@ -373,6 +373,10 @@
   dependencies:
     csstype "^2.2.0"
 
+"@types/socket.io-client@^1.4.32":
+  version "1.4.32"
+  resolved "https://registry.yarnpkg.com/@types/socket.io-client/-/socket.io-client-1.4.32.tgz#988a65a0386c274b1c22a55377fab6a30789ac14"
+
 "@types/video.js@^6.2.4":
   version "6.2.4"
   resolved "https://registry.yarnpkg.com/@types/video.js/-/video.js-6.2.4.tgz#d1ded3930b737cb2ffb48ed50edae806c00f917d"
@@ -8891,7 +8895,7 @@ socket.io-adapter@~1.1.0:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/socket.io-adapter/-/socket.io-adapter-1.1.1.tgz#2a805e8a14d6372124dd9159ad4502f8cb07f06b"
 
-socket.io-client@2.1.0:
+socket.io-client@2.1.0, socket.io-client@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/socket.io-client/-/socket.io-client-2.1.0.tgz#0d0b21d460dc4ed36e57085136f2be0137ff20ff"
   dependencies:

@@ -67,6 +67,8 @@ class LoginPage extends React.Component {
    */
   componentWillMount() {
     logger.log('componentWillMount...');
+    const { dispatch } = this.props;
+    appContext.regDispatch(dispatch);
   }
 
   /**

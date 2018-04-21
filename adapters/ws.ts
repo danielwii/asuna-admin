@@ -1,0 +1,48 @@
+import { connect, Socket } from 'socket.io-client';
+import getConfig           from 'next/config';
+
+import { appContext } from '../app/context';
+
+import { createLogger, lv } from '../helpers';
+
+const logger = createLogger('adapters:ws', lv.warn);
+
+const { serverRuntimeConfig = {} } = getConfig();
+
+export class WsAdapter {
+
+  private port?: number;
+  private namespace: string;
+
+  private static io: typeof Socket;
+
+  constructor(opts: { port?: number, namespace?: string } = {}) {
+    this.port      = opts.port;
+    this.namespace = opts.namespace || 'admin';
+
+    if (!serverRuntimeConfig.isServer && !WsAdapter.io) {
+      (async () => {
+        const { appActions } = await import('../store/app.redux');
+
+        WsAdapter.io = connect('/admin');
+
+        WsAdapter.io.on('connect', () => {
+          logger.log('[connect]', { id: WsAdapter.io.id, appContext });
+        });
+        WsAdapter.io.on('reconnect', () => {
+          logger.log('[reconnect]', { id: WsAdapter.io.id, appContext });
+          appContext.dispatch(appActions.getVersion());
+        });
+        WsAdapter.io.on('disconnect', () => {
+          logger.error('[disconnect]', { id: WsAdapter.io.id, appContext });
+          appContext.dispatch(appActions.heartbeatStop());
+        });
+        WsAdapter.io.on('error', (error) => {
+          logger.error('[error]', { id: WsAdapter.io.id, appContext, error });
+          appContext.dispatch(appActions.heartbeatStop());
+        });
+      })();
+    }
+  }
+
+}

@@ -57,6 +57,7 @@ class Index extends React.Component {
   componentWillMount() {
     logger.info('[componentWillMount]', this.props);
     const { dispatch } = this.props;
+    appContext.regDispatch(dispatch);
     dispatch(appActions.init());
   }
 

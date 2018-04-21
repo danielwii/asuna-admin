@@ -5,13 +5,13 @@ import { REHYDRATE }   from 'redux-persist/constants';
 import _               from 'lodash';
 import * as R          from 'ramda';
 
-import { Observable } from 'rxjs/Observable';
+// import { Observable } from 'rxjs/Observable';
 
-import 'rxjs/scheduler/async';
-import 'rxjs/add/observable/interval';
-import 'rxjs/add/operator/delay';
-import 'rxjs/add/operator/switchMap';
-import 'rxjs/add/operator/mapTo';
+// import 'rxjs/scheduler/async';
+// import 'rxjs/add/observable/interval';
+// import 'rxjs/add/operator/delay';
+// import 'rxjs/add/operator/switchMap';
+// import 'rxjs/add/operator/mapTo';
 
 import { securitySagaFunctions } from './security.redux';
 import { menuSagaFunctions }     from './menu.redux';
@@ -31,15 +31,17 @@ const logger = createLogger('store:app');
 
 const appActionTypes = {
   // ACTION: 'module::action'
-  INIT           : 'app::init',
-  SYNC           : 'app::sync',
-  INIT_SUCCESS   : 'app::init-success',
-  SYNC_SUCCESS   : 'app::sync-success',
-  RESTORED       : 'app::RESTORED',
-  PING           : 'app::ping',
-  PONG           : 'app::pong',
-  HEARTBEAT_ALIVE: 'app::heartbeat-alive',
-  HEARTBEAT_STOP : 'app::heartbeat-stop',
+  INIT               : 'app::init',
+  SYNC               : 'app::sync',
+  INIT_SUCCESS       : 'app::init-success',
+  SYNC_SUCCESS       : 'app::sync-success',
+  RESTORED           : 'app::RESTORED',
+  // PING           : 'app::ping',
+  // PONG           : 'app::pong',
+  GET_VERSION        : 'app::get-version',
+  GET_VERSION_SUCCESS: 'app::get-version-success',
+  HEARTBEAT_ALIVE    : 'app::heartbeat-alive',
+  HEARTBEAT_STOP     : 'app::heartbeat-stop',
 };
 
 const isCurrent = type => type.startsWith('app::');
@@ -50,15 +52,17 @@ const isCurrent = type => type.startsWith('app::');
 
 const appActions = {
   // action: (args) => ({ type, payload })
-  sync          : () => reduxAction(appActionTypes.SYNC, { loading: true }),
-  init          : () => reduxAction(appActionTypes.INIT, { loading: true }),
-  syncSuccess   : () => reduxAction(appActionTypes.SYNC_SUCCESS, { loading: false }),
-  initSuccess   : () => reduxAction(appActionTypes.INIT_SUCCESS, { loading: false }),
-  restored      : () => reduxAction(appActionTypes.RESTORED, { restored: true }),
-  ping          : () => reduxAction(appActionTypes.PING),
-  pong          : version => reduxAction(appActionTypes.PONG, { version }),
-  heartbeatAlive: () => reduxAction(appActionTypes.HEARTBEAT_ALIVE, { heartbeat: true }),
-  heartbeatStop : () => reduxAction(appActionTypes.HEARTBEAT_STOP, { heartbeat: false }),
+  sync             : () => reduxAction(appActionTypes.SYNC, { loading: true }),
+  syncSuccess      : () => reduxAction(appActionTypes.SYNC_SUCCESS, { loading: false }),
+  init             : () => reduxAction(appActionTypes.INIT, { loading: true }),
+  initSuccess      : () => reduxAction(appActionTypes.INIT_SUCCESS, { loading: false }),
+  restored         : () => reduxAction(appActionTypes.RESTORED, { restored: true }),
+  // ping          : () => reduxAction(appActionTypes.PING),
+  // pong          : version => reduxAction(appActionTypes.PONG, { version }),
+  getVersion       : () => reduxAction(appActionTypes.GET_VERSION),
+  getVersionSuccess: version => reduxAction(appActionTypes.GET_VERSION_SUCCESS, { version }),
+  heartbeatAlive   : () => reduxAction(appActionTypes.HEARTBEAT_ALIVE, { heartbeat: true }),
+  heartbeatStop    : () => reduxAction(appActionTypes.HEARTBEAT_STOP, { heartbeat: false }),
 };
 
 // --------------------------------------------------------------
@@ -76,6 +80,9 @@ function* init() {
       yield take(REHYDRATE);
     }
 
+    logger.log('[init]', 'get version...');
+    // eslint-disable-next-line no-use-before-define
+    yield getVersion();
     logger.log('[init]', 'load all roles...');
     yield securitySagaFunctions.loadAllRoles();
     logger.log('[init]', 'get current user...');
@@ -132,6 +139,7 @@ function* rehydrateWatcher(action) {
 /**
  * 查询运行中的服务端版本，版本不一致时更新当前的版本，同时进行同步操作
  */
+// eslint-disable-next-line no-unused-vars
 function* ping() {
   const { token }     = yield select(state => state.auth);
   const { heartbeat } = yield select(state => state.app);
@@ -157,11 +165,39 @@ function* ping() {
   }
 }
 
+/**
+ * 查询运行中的服务端版本，版本不一致时更新当前的版本，同时进行同步操作
+ */
+function* getVersion() {
+  const { token }              = yield select(state => state.auth);
+  const { version, heartbeat } = yield select(state => state.app);
+
+  try {
+    const response = yield call(apiProxy.getVersion, { token });
+    logger.info('[version]', { response });
+
+    if (!!version && R.not(R.equals(version, response.data))) {
+      yield put(appActions.sync());
+    }
+
+    yield put(appActions.getVersionSuccess(response.data));
+    if (!heartbeat) {
+      yield put(appActions.heartbeatAlive());
+    }
+  } catch (e) {
+    logger.error('[ping]', e);
+    if (heartbeat) {
+      yield put(appActions.heartbeatStop());
+    }
+  }
+}
+
 const appSagas = [
   // takeLatest / takeEvery (actionType, actionSage)
   takeLatest(appActionTypes.INIT, init),
   takeLatest(appActionTypes.SYNC, sync),
-  takeLatest(appActionTypes.PING, ping),
+  // takeLatest(appActionTypes.PING, ping),
+  takeLatest(appActionTypes.GET_VERSION, getVersion),
   takeEvery(REHYDRATE, rehydrateWatcher),
 ];
 
@@ -171,9 +207,9 @@ const appSagas = [
 
 const appEpics = [
   // action$ => action$.ofType(ACTION)
-  action$ => action$.ofType(appActionTypes.INIT_SUCCESS)
-    .delay(3000)
-    .switchMap(() => Observable.interval(60 * 1000).mapTo(appActions.ping())),
+  // action$ => action$.ofType(appActionTypes.INIT_SUCCESS)
+  //   .delay(3000)
+  //   .switchMap(() => Observable.interval(60 * 1000).mapTo(appActions.ping())),
 ];
 
 
@@ -183,7 +219,7 @@ const appEpics = [
 // --------------------------------------------------------------
 
 const initialState = {
-  heartbeat: true,
+  heartbeat: false,
   loading  : true,  // 初始化状态，用于加载 loading 图
   restored : false, // 标记恢复状态，恢复后不再等待恢复信息
 };

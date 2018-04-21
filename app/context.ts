@@ -1,12 +1,18 @@
+import { AnyAction, Dispatch } from 'redux';
+
+import getConfig from 'next/config';
+import Rx        from 'rxjs';
+
 import { AuthAdapter, IAuthService }         from '../adapters/auth';
 import { ISecurityService, SecurityAdapter } from '../adapters/security';
 import { IModelService, ModelAdapter }       from '../adapters/models';
 import { IMenuService, MenuAdapter }         from '../adapters/menu';
 import { ResponseAdapter }                   from '../adapters/response';
 import { ApiAdapter, IApiService }           from '../adapters/api';
+import { WsAdapter }                         from '../adapters/ws';
 
 // --------------------------------------------------------------
-// Setup context
+// Types
 // --------------------------------------------------------------
 
 export interface ILoginRegister {
@@ -42,25 +48,54 @@ type IndexModuleRegister = {
   register: IIndexRegister,
 }
 
+// --------------------------------------------------------------
+// Setup context
+// --------------------------------------------------------------
+
+const { serverRuntimeConfig = {} } = getConfig();
+
 class AppContext {
-  private context: {
+  private _context: {
     auth: AuthAdapter;
     response: ResponseAdapter;
     menu: MenuAdapter;
     api: ApiAdapter;
     security: SecurityAdapter;
     models: ModelAdapter;
+    ws: WsAdapter;
   };
+  private _dispatch: Dispatch;
+  private _subject;
 
-  public setup(moduleRegister: LoginModuleRegister | IndexModuleRegister): void {
-    // console.log('[AppContext]', { moduleRegister });
+  constructor() {
+    this._context = { ...this._context, ws: new WsAdapter() };
+    this._subject = new Rx.Subject();
+    this._subject.subscribe({
+      // next: (action) => console.log('observer: ', action)
+    });
+  }
+
+  regDispatch(dispatch: Dispatch): void {
+    this._dispatch = this._dispatch || dispatch;
+  }
+
+  dispatch(action: AnyAction) {
+    !serverRuntimeConfig.isServer && this._dispatch && this._dispatch(action);
+  }
+
+  actionHandler(action: AnyAction) {
+    !serverRuntimeConfig.isServer && this._subject && this._subject.next(action);
+  }
+
+  setup(moduleRegister: LoginModuleRegister | IndexModuleRegister): void {
     if (moduleRegister.module === 'login') {
-      this.context = {
-        ...this.context,
+      this._context = {
+        ...this._context,
         auth: new AuthAdapter(moduleRegister.register.createAuthService()),
       }
     } else {
-      this.context = {
+      this._context = {
+        ...this._context,
         auth    : new AuthAdapter(moduleRegister.register.createAuthService()),
         response: new ResponseAdapter(),
         menu    : new MenuAdapter(
@@ -79,7 +114,7 @@ class AppContext {
   }
 
   get ctx() {
-    return this.context;
+    return this._context;
   }
 }
 
