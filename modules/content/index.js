@@ -2,6 +2,7 @@ import React       from 'react';
 import PropTypes   from 'prop-types';
 import { connect } from 'react-redux';
 import * as R      from 'ramda';
+import _           from 'lodash';
 
 import { Button, Divider, Modal, Table } from 'antd';
 
@@ -12,25 +13,27 @@ import { modelsActions }  from '../../store/model.redux';
 import { modelProxy }     from '../../adapters/model';
 import { responseProxy }  from '../../adapters/response';
 
-import { castModelKey, createLogger, lv } from '../../helpers';
+import { createLogger, lv }   from '../../helpers/logger';
+import { castModelKey, diff } from '../../helpers';
 
 const logger = createLogger('modules:content:index', lv.warn);
 
 class ContentIndex extends React.Component {
   static propTypes = {
-    basis : PropTypes.shape({
+    basis    : PropTypes.shape({
       pane: PropTypes.shape({
         key: PropTypes.string,
       }),
     }),
-    models: PropTypes.shape({}),
-    auth  : PropTypes.shape({}),
+    activeKey: PropTypes.string,
+    models   : PropTypes.shape({}),
+    auth     : PropTypes.shape({}),
   };
 
   constructor(props) {
     super(props);
 
-    const { dispatch, basis, auth } = this.props;
+    const { dispatch, basis, auth, activeKey } = this.props;
 
     logger.info('[constructor]', 'basis is', basis);
 
@@ -62,18 +65,21 @@ class ContentIndex extends React.Component {
       callRefresh: this.refresh,
     });
 
-    this.state = { modelName, columns };
+    this.state = { modelName, columns, key: activeKey };
 
     logger.log('[constructor]', 'current modelName is', modelName);
     dispatch(contentActions.loadModels(modelName));
   }
 
   shouldComponentUpdate(nextProps, nextState, nextContext) {
-    logger.info('[shouldComponentUpdate]', nextProps, nextState, nextContext);
+    logger.info('[shouldComponentUpdate]', { nextProps, nextState, nextContext });
     const { key }       = this.state;
     const { activeKey } = nextProps;
-    logger.info('[shouldComponentUpdate]', key, activeKey);
-    return !key || key === activeKey;
+    const samePane      = key === activeKey;
+    const propsDiff     = diff(this.props, nextProps);
+    const shouldUpdate  = samePane && propsDiff.isDifferent;
+    logger.info('[shouldComponentUpdate]', { key, activeKey, samePane, shouldUpdate, propsDiff });
+    return shouldUpdate;
   }
 
   create = () => {
@@ -114,10 +120,13 @@ class ContentIndex extends React.Component {
   };
 
   handleTableChange = (pagination, filters, sorter) => {
-    logger.info('[handleTableChange]', pagination, filters, sorter);
-    const { modelName } = this.state;
-    const { dispatch }  = this.props;
-    dispatch(contentActions.loadModels(modelName, { pagination, filters, sorter }));
+    logger.info('[handleTableChange]', { pagination, filters, sorter });
+    const { modelName }     = this.state;
+    const { dispatch }      = this.props;
+    const transformedSorter = !_.isEmpty(sorter)
+      ? { [sorter.field]: sorter.order.slice(0, -3) }
+      : null;
+    dispatch(contentActions.loadModels(modelName, { pagination, sorter: transformedSorter }));
     this.setState({ pagination, filters, sorter });
   };
 

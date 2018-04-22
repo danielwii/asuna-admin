@@ -4,8 +4,9 @@ import * as _ from 'lodash';
 import { DynamicFormTypes } from '../components/DynamicForm/index';
 import { appContext }       from '../app/context';
 
-import { createLogger, defaultColumns, lv } from '../helpers';
-import { TablePagination }                  from 'adapters/response';
+import { defaultColumns }   from '../helpers';
+import { TablePagination }  from './response';
+import { createLogger, lv } from '../helpers/logger';
 
 export interface IModelBody {
   id?: number | string;
@@ -16,7 +17,7 @@ export interface IModelBody {
 export interface IModelService {
   loadModels(authToken: { token: string },
              name: string,
-             configs?: { endpoint?: string, pagination?: Asuna.Pageable, filters?, sorter? });
+             configs?: { pagination?: Asuna.Pageable, filters?, sorter? } & Asuna.Schema.ModelOpt);
 
   loadSchema(authToken: { token: string },
              payload: { name: string },
@@ -53,7 +54,9 @@ export interface ModelListConfig {
   endpoint?: string,
   pagination?: TablePagination,
   filters?,
-  sorter?,
+  sorter?: {
+    [key: string]: 'asc' | 'desc';
+  },
 }
 
 interface IModelProxy {
@@ -67,7 +70,7 @@ interface IModelProxy {
 
   loadModels(auth: { token: string },
              name: string,
-             configs: ModelListConfig): any;
+             configs?: ModelListConfig): any;
 
   loadSchema(auth: { token }, { name }): any;
 
@@ -219,12 +222,12 @@ export class ModelAdapter implements IModelProxy {
 
   fetch = (config, name, data) => this.service.fetch(config, name, {
     ...data,
-    ...this.getModelConfig(name),
+    ...this.getModelConfig(name) as Asuna.Schema.ModelOpt,
   });
 
   remove = (config, name, data) => this.service.remove(config, name, {
     ...data,
-    ...this.getModelConfig(name),
+    ...this.getModelConfig(name) as Asuna.Schema.ModelOpt,
   });
 
   // FIXME schemas can be found by storeConnector now.
@@ -249,13 +252,13 @@ export class ModelAdapter implements IModelProxy {
         ...data,
         body: transformed,
         id,
-        ...this.getModelConfig(name),
+        ...this.getModelConfig(name) as Asuna.Schema.ModelOpt,
       });
     }
     return this.service.insert({ token }, name, {
       ...data,
       body: transformed,
-      ...this.getModelConfig(name),
+      ...this.getModelConfig(name) as Asuna.Schema.ModelOpt,
     });
   };
 
@@ -333,13 +336,14 @@ export class ModelAdapter implements IModelProxy {
     return associationsFields;
   });
 
-  public loadModels(auth: { token: string }, name: string, configs: ModelListConfig): any {
-    logger.info('[loadModels]', { name, configs });
+  public loadModels(auth: { token: string }, name: string, configs?: ModelListConfig): any {
+    logger.info('[loadModels]', { name, configs, modelConfig: this.getModelConfig(name) });
     const page = R.pathOr(1, ['pagination', 'current'], configs);
     const size = R.pathOr(10, ['pagination', 'pageSize'], configs);
     return this.service.loadModels(auth, name, {
       pagination: { page, size },
-      ...this.getModelConfig(name) as any,
+      sorter: configs && configs.sorter,
+      ...this.getModelConfig(name) as Asuna.Schema.ModelOpt,
     });
   };
 
@@ -355,12 +359,12 @@ export class ModelAdapter implements IModelProxy {
       defaultFields, fields, associationName, associations: this.associations,
     });
     return this.service.loadAssociation({ token }, associationName, {
-      fields, ...this.getModelConfig(associationName) as any,
+      fields, ...this.getModelConfig(associationName) as Asuna.Schema.ModelOpt,
     });
   };
 
   loadSchema = ({ token }, name) =>
-    this.service.loadSchema({ token }, name, this.getModelConfig(name));
+    this.service.loadSchema({ token }, name, this.getModelConfig(name) as Asuna.Schema.ModelOpt);
 
   listAssociationsCallable = ({ token }, associationNames) => Object.assign({},
     ...associationNames.map(name => ({ [name]: this.loadAssociation({ token }, name) })),
