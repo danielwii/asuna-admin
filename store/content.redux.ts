@@ -4,8 +4,8 @@ import * as R          from 'ramda';
 import { reduxAction } from 'node-buffs';
 import { message }     from 'antd';
 
-import { modelProxy }       from '../adapters/model';
-import { createLogger, lv } from '../helpers/index';
+import { ModelListConfig, modelProxy } from 'adapters/model';
+import { createLogger, lv }            from 'helpers/logger';
 
 const logger = createLogger('store:content', lv.warn);
 
@@ -26,15 +26,24 @@ const isCurrent = type => type.startsWith('content::');
 // Module actions
 // --------------------------------------------------------------
 
+interface LoadModelsParams extends SagaParams {
+  payload: {
+    name: string,
+    models: {
+      [key: string]: { extras: ModelListConfig, loading: true }
+    }
+  }
+}
+
 const contentActions = {
   // action: (args) => ({ type, payload })
-  loadModels       : (name, extras) => reduxAction(contentActionTypes.CONTENT_LOAD_MODELS, {
-    name,
-    models: { [name]: { extras, loading: true } },
-  }),
-  loadModelsSuccess: data => reduxAction(contentActionTypes.CONTENT_LOAD_MODELS_SUCCESS, {
-    models: data,
-  }),
+  loadModels       : (name: string, extras: ModelListConfig) =>
+    reduxAction(contentActionTypes.CONTENT_LOAD_MODELS, {
+      name,
+      models: { [name]: { extras, loading: true } },
+    }),
+  loadModelsSuccess: data =>
+    reduxAction(contentActionTypes.CONTENT_LOAD_MODELS_SUCCESS, { models: data }),
   // loadModelsFailed : error => reduxAction(contentActionTypes.CONTENT_LOAD_MODELS_FAILED, {},
   // error),
 };
@@ -46,8 +55,8 @@ const contentActions = {
 // }
 // --------------------------------------------------------------
 
-function* loadModels({ payload: { name, models } }) {
-  const { token } = yield select(state => state.auth);
+function* loadModels({ payload: { name, models } }: LoadModelsParams) {
+  const { token } = yield select<any>(state => state.auth);
   if (token) {
     try {
       const { [name]: { extras } } = models;
@@ -70,7 +79,7 @@ function* loadModels({ payload: { name, models } }) {
 
 const contentSagas = [
   // takeLatest / takeEvery (actionType, actionSage)
-  takeLatest(contentActionTypes.CONTENT_LOAD_MODELS, loadModels),
+  takeLatest(contentActionTypes.CONTENT_LOAD_MODELS as any, loadModels),
 ];
 
 // --------------------------------------------------------------

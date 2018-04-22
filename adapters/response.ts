@@ -12,11 +12,15 @@ export interface TablePagination {
   pageSizeOptions: string[];
 }
 
-export const responseProxy = {
+interface IResponseProxy {
+  extract: (apiResponse: object) => { items: object[], pagination: TablePagination };
+}
+
+export const responseProxy: IResponseProxy = {
   extract: apiResponse => appContext.ctx.response.extract(apiResponse),
 };
 
-export class ResponseAdapter {
+export class ResponseAdapter implements IResponseProxy {
   extractPageable = (apiResponse): Asuna.Pageable & { total: number; } => {
     switch (config.get(ConfigKey.API_RESPONSE_PAGE_MODE)) {
       case (ApiResponsePageMode.SpringJPA): {
@@ -69,7 +73,7 @@ export class ResponseAdapter {
     };
   };
 
-  extract = (apiResponse): { items: any[], pagination: TablePagination } => {
+  extract = (apiResponse) => {
     const { items } = apiResponse;
     return { items, pagination: this.extractPagination(apiResponse) };
   };
