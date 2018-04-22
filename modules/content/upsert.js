@@ -2,15 +2,18 @@ import React       from 'react';
 import PropTypes   from 'prop-types';
 import { connect } from 'react-redux';
 import * as R      from 'ramda';
+import _           from 'lodash';
 import moment      from 'moment';
 
 import { Form, Icon, message } from 'antd';
 
-import { DynamicForm2, DynamicFormTypes } from '../../components/DynamicForm';
-import { modelProxy }                     from '../../adapters/model';
-import { modelsActions }                  from '../../store/model.redux';
-import * as schemaHelper                  from '../../helpers/schema';
-import { createLogger, diff, lv }         from '../../helpers/index';
+import { toFormErrors, isErrorResponse, diff } from '../../helpers';
+import { DynamicForm2, DynamicFormTypes }      from '../../components/DynamicForm';
+
+import { modelProxy }       from '../../adapters/model';
+import { modelsActions }    from '../../store/model.redux';
+import * as schemaHelper    from '../../helpers/schema';
+import { createLogger, lv } from '../../helpers/logger';
 
 const logger = createLogger('modules:content:upsert', lv.warn);
 
@@ -289,22 +292,15 @@ class ContentUpsert extends React.Component {
     const { modelName, isInsertMode } = this.state;
 
     dispatch(modelsActions.upsert(modelName, { body: { ...fieldPairs, id } }, (response) => {
-      // ASUNA Exception
-      if (response.data.errors) {
-        logger.log('[upsert callback] --->', { response, errors: response.data.errors });
-        const errorFields = R.map(error => ({
-          [error.property]: {
-            errors: [{
-              field  : error.property,
-              message: R.values(error.constraints).join('; '),
-            }],
-          },
-        }))(response.data.errors);
-        logger.log('[upsert callback] --->', { response, errorFields });
-        this.handleFormChange(R.mergeAll(errorFields));
-        this.setState({ hasErrors: true });
-      } else if (response.data.name === 'Error') { // handle default error
-        message.error(response.data.message);
+      if (isErrorResponse(response)) {
+        const errors = toFormErrors(response);
+        logger.warn('[upsert callback]', { response, errors });
+        if (_.isString(errors)) {
+          message.error(errors);
+        } else {
+          this.handleFormChange(errors);
+          this.setState({ hasErrors: true });
+        }
       } else {
         this.setState({ hasErrors: false });
         // FIXME 当前页面暂未切换为 update 模式，临时关闭当前页面

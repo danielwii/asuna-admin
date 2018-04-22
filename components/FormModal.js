@@ -1,13 +1,15 @@
 import React     from 'react';
 import PropTypes from 'prop-types';
 import _         from 'lodash';
+import * as R    from 'ramda';
 
-import { Form, Modal } from 'antd';
+import { Form, Modal, message } from 'antd';
 
-import { DynamicForm2 } from './DynamicForm';
-import { createLogger } from '../helpers/index';
+import { DynamicForm2 }     from './DynamicForm';
+import { createLogger, lv } from '../helpers/logger';
+import { toFormErrors }     from '../helpers/error';
 
-const logger = createLogger('components:form-modal');
+const logger = createLogger('components:form-modal', lv.warn);
 
 const LightForm = Form.create({
   mapPropsToFields({ fields }) {
@@ -46,23 +48,38 @@ export class FormModal extends React.Component {
     const { onSubmit } = this.props;
     this.form.validateFields(async (err, values) => {
       if (err) {
-        logger.error('[FormModal][handleOk]', 'error occurred in form', values, err);
+        logger.error('[FormModal][handleOk]', 'error occurred in form', { values, err });
       } else {
         this.setState({
           confirmLoading: true,
         });
-        const response = await onSubmit(values);
-        logger.log('response is', response);
-        this.setState({
-          visible       : false,
-          confirmLoading: false,
-        });
+        try {
+          const response = await onSubmit(values);
+          logger.log('response is', response);
+          this.setState({
+            visible       : false,
+            confirmLoading: false,
+            fields        : R.map(field => ({ ...field, value: undefined }))(this.state.fields),
+          });
+        } catch (e) {
+          const errors = toFormErrors(e.response);
+          logger.error('[FormModal][handleOk]', { e, errors });
+          if (_.isString(errors)) {
+            message.error(errors);
+          } else {
+            this.handleFormChange(errors);
+          }
+          this.setState({
+            confirmLoading: false,
+          });
+        }
       }
     });
   };
 
   handleFormChange = (changedFields) => {
-    this.setState({ fields: { ...this.state.fields, ...changedFields } });
+    logger.log('[handleFormChange]', { fields: this.state.fields, changedFields });
+    this.setState({ fields: R.mergeDeepRight(this.state.fields, changedFields) });
   };
 
   handleCancel = () => {

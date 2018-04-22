@@ -16,6 +16,7 @@ const logger = createLogger('helpers', lv.warn);
 
 export * from './logger';
 export * from './cast';
+export * from './error';
 
 export const authHeader = (token) => {
   if (config.is(ConfigKey.AUTH_HEADER, AuthHeader.AuthHeaderAsBearerToken)) {
