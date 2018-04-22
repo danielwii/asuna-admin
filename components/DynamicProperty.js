@@ -7,7 +7,7 @@ import { Button, Divider, Form, Icon, List } from 'antd';
 
 import { createLogger } from '../helpers/index';
 
-import { DynamicForm2, DynamicFormTypes } from '../components/DynamicForm';
+import { DynamicForm2, DynamicFormTypes } from './DynamicForm';
 
 const logger = createLogger('components:dynamic-property');
 

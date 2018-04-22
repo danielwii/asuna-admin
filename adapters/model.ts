@@ -1,10 +1,11 @@
 import * as R from 'ramda';
 import * as _ from 'lodash';
 
-import { DynamicFormTypes } from '../components/DynamicForm';
+import { DynamicFormTypes } from '../components/DynamicForm/index';
 import { appContext }       from '../app/context';
 
 import { createLogger, defaultColumns, lv } from '../helpers';
+import { TablePagination }                  from 'adapters/response';
 
 export interface IModelBody {
   id?: number | string;
@@ -48,8 +49,41 @@ export interface IModelService {
 
 const logger = createLogger('adapters:models', lv.warn);
 
-export const modelProxy = {
-  getModelConfigs      : name => appContext.ctx.models.getModelConfig(name),
+export interface ModelListConfig {
+  endpoint?: string,
+  pagination?: TablePagination,
+  filters?,
+  sorter?,
+}
+
+interface IModelProxy {
+  getModelConfig(name: string): any;
+
+  getAssociationConfigs(name: string): any;
+
+  getFormSchema(schemas, name: string, values): any;
+
+  getFieldsOfAssociations(): any;
+
+  loadModels(auth: { token: string },
+             name: string,
+             configs: ModelListConfig): any;
+
+  loadSchema(auth: { token }, { name }): any;
+
+  listSchemasCallable(auth: { token }): any;
+
+  listAssociationsCallable(auth: { token }, associationNames: string[]): any;
+
+  fetch(auth: { token }, name, data): any;
+
+  remove(auth: { token }, name, data): any;
+
+  upsert(auth: { token: string, schemas? }, name: string, data: { body: IModelBody }): any;
+}
+
+export const modelProxy: IModelProxy = {
+  getModelConfig       : name => appContext.ctx.models.getModelConfig(name),
   getAssociationConfigs: name => appContext.ctx.models.getAssociationConfigs(name),
 
   getFormSchema: (schemas, name, values) =>
@@ -59,16 +93,14 @@ export const modelProxy = {
 
   /**
    * load schema list
-   * @param authToken
+   * @param auth
    * @param name
    * @param configs
    * @returns {*}
    */
-  loadModels: (authToken: { token: string },
-               name: string,
-               configs?: { endpoint?: string, pagination?: Asuna.Pageable, filters?, sorter? }) => {
-    logger.log('[modelProxy.loadModels]', { authToken, name, configs });
-    return appContext.ctx.models.loadModels(authToken, name, configs);
+  loadModels: (auth, name, configs) => {
+    logger.log('[modelProxy.loadModels]', { auth, name, configs });
+    return appContext.ctx.models.loadModels(auth, name, configs);
   },
 
   /**
@@ -104,7 +136,7 @@ export const modelProxy = {
     appContext.ctx.models.upsert({ token, schemas }, name, data),
 };
 
-export class ModelAdapter {
+export class ModelAdapter implements IModelProxy {
   private service: IModelService;
   private allModels: string[];
   private modelConfigs: Asuna.Schema.ModelConfigs;
@@ -301,11 +333,11 @@ export class ModelAdapter {
     return associationsFields;
   });
 
-  loadModels = ({ token }, name, configs?) => {
+  public loadModels(auth: { token: string }, name: string, configs: ModelListConfig): any {
     logger.info('[loadModels]', { name, configs });
-    const page = R.pathOr(1, ['pagination', 'page'], configs);
-    const size = R.pathOr(10, ['pagination', 'size'], configs);
-    return this.service.loadModels({ token }, name, {
+    const page = R.pathOr(1, ['pagination', 'current'], configs);
+    const size = R.pathOr(10, ['pagination', 'pageSize'], configs);
+    return this.service.loadModels(auth, name, {
       pagination: { page, size },
       ...this.getModelConfig(name) as any,
     });

@@ -6,6 +6,7 @@ import * as R      from 'ramda';
 import { Button, Divider, Modal, Table } from 'antd';
 
 import { panesActions }   from '../../store/panes.redux';
+// eslint-disable-next-line import/extensions
 import { contentActions } from '../../store/content.redux';
 import { modelsActions }  from '../../store/model.redux';
 import { modelProxy }     from '../../adapters/model';
@@ -52,7 +53,7 @@ class ContentIndex extends React.Component {
 
     // content::name => name
     const modelName = R.compose(R.nth(1), R.split(/::/), R.path(['pane', 'key']))(basis);
-    const configs   = modelProxy.getModelConfigs(modelName);
+    const configs   = modelProxy.getModelConfig(modelName);
     logger.info('[constructor]', 'load table from configs', configs, 'by', modelName);
 
     const columns = R.prop('table', configs)(actions, {
