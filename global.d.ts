@@ -1,4 +1,48 @@
 declare namespace Asuna {
+
+  interface Pageable {
+    page: number;
+    size: number;
+  }
+
+  namespace Error {
+    enum Code {
+      /**
+       * 对象格式验证异常
+       */
+      VALIDATE    = 'VALIDATE',
+      UPLOAD      = 'UPLOAD',
+      SIGN        = 'SIGN',
+      BAD_REQUEST = 'BAD_REQUEST',
+    }
+
+    interface Validate {
+      children: object[];
+      constraints: { [key: string]: string };
+      property: string;
+      target: { [key: string]: any };
+      value: any;
+    }
+
+    interface Exception {
+      status: 400 | 500;
+      code: Code;
+      errors: any[];
+      message: string;
+      name: string;
+    }
+
+    interface ValidationException extends Exception {
+      status: 400;
+      code: Code.VALIDATE;
+      errors: Validate[];
+    }
+
+    interface AsunaException extends Exception {
+      status: 500;
+    }
+  }
+
   namespace Schema {
     enum MetaInfoColumnType {
       IMAGE         = 'Image',
@@ -23,18 +67,18 @@ declare namespace Asuna {
        * 目前有两个用途，根据 `enumData` 获的要筛选数据
        * 1 - 用于筛选不同类型的数据关联时使用
        *   e.g @MetaInfo({
-       *         name: '类型',
-       *         type: MetaInfoColumnType.ENUM_FILTER,
-       *         filterType: MetaInfoFilterType.SORT,
-       *         enumData: _.map(SortType, (value, key) => ({ key, value })),
-       *       })
+             *         name: '类型',
+             *         type: MetaInfoColumnType.ENUM_FILTER,
+             *         filterType: MetaInfoFilterType.SORT,
+             *         enumData: _.map(SortType, (value, key) => ({ key, value })),
+             *       })
        *       @IsIn(_.keys(SortType))
        * 2 - 用于下拉菜单
        *   e.g @MetaInfo({
-       *         name    : '位置',
-       *         type    : MetaInfoColumnType.ENUM_FILTER,
-       *         enumData: _.map(LocationType, (value, key) => ({ key, value })),
-       *       })
+             *         name    : '位置',
+             *         type    : MetaInfoColumnType.ENUM_FILTER,
+             *         enumData: _.map(LocationType, (value, key) => ({ key, value })),
+             *       })
        *       @IsOptional() // 可接受 null
        *       @IsIn(_.keys(LocationType))
        *       @Column('varchar', { nullable: true, name: 'location_type' })
@@ -186,4 +230,5 @@ declare namespace Asuna {
 
     type Menus = Menu[];
   }
+
 }

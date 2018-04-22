@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 
 import { Button, Divider, Input, Modal, Table } from 'antd';
 
-import { modelsColumns }         from '../../services/models';
+import { modelsColumns }         from '../../services/model';
 import { SpringResponseAdapter } from '../../adapters/response';
 import { modModelsActions }      from '../../store/modules/models.redux';
 import { panesActions }          from '../../store/panes.redux';

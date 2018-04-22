@@ -7,8 +7,8 @@ import { Button, Divider, Modal, Table } from 'antd';
 
 import { panesActions }   from '../../store/panes.redux';
 import { contentActions } from '../../store/content.redux';
-import { modelsActions }  from '../../store/models.redux';
-import { modelProxy }     from '../../adapters/models';
+import { modelsActions }  from '../../store/model.redux';
+import { modelProxy }     from '../../adapters/model';
 import { responseProxy }  from '../../adapters/response';
 
 import { castModelKey, createLogger, lv } from '../../helpers';
