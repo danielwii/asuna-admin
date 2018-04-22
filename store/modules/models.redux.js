@@ -1,6 +1,6 @@
 import { call, put, select, takeLatest } from 'redux-saga/effects';
 
-import { modelsApi }    from '../../services/models';
+import { modelsApi }    from '../../services/model';
 import { createLogger } from '../../helpers/index';
 
 import { notificationsActions, notificationTypes } from '../notifications.redux';

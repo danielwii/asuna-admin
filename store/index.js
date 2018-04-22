@@ -24,7 +24,7 @@ import { appEpics, appReducer, appSagas }            from './app.redux';
 import { authReducer, authSagas }                    from './auth.redux';
 import { routerReducer, routerSagas }                from './router.redux';
 import { menuReducer, menuSagas }                    from './menu.redux';
-import { modelsCleaner, modelsReducer, modelsSagas } from './models.redux';
+import { modelsCleaner, modelsReducer, modelsSagas } from './model.redux';
 import { contentReducer, contentSagas }              from './content.redux';
 import { securityReducer, securitySagas }            from './security.redux';
 import { panesCleaner, panesReducer, panesSagas }    from './panes.redux';

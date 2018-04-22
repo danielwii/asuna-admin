@@ -6,7 +6,7 @@ import * as R          from 'ramda';
 import _               from 'lodash';
 
 import { contentActions }   from './content.redux';
-import { modelProxy }       from '../adapters/models';
+import { modelProxy }       from '../adapters/model';
 import { createLogger, lv } from '../helpers';
 
 const logger = createLogger('store:models', lv.warn);
@@ -46,7 +46,12 @@ const modelsActions = {
       loading: { [modelName]: false },
     }),
 
-  upsert: (modelName, data) => reduxAction(modelsActionTypes.UPSERT, { modelName, data }),
+  upsert: (modelName, data, callback) => ({
+    type   : modelsActionTypes.UPSERT,
+    payload: { modelName, data },
+    callback,
+  }),
+  // upsert: (modelName, data) => reduxAction(modelsActionTypes.UPSERT, { modelName, data }),
   remove: (modelName, data) => reduxAction(modelsActionTypes.REMOVE, { modelName, data }),
 
   loadAllSchemas       : () => reduxAction(modelsActionTypes.LOAD_ALL_SCHEMAS),
@@ -77,7 +82,7 @@ const modelsSagaFunctions = {
       }
     }
   },
-  * upsert({ payload: { modelName, data } }) {
+  * upsert({ payload: { modelName, data }, callback }) {
     const { token }   = yield select(state => state.auth);
     const { schemas } = yield select(state => state.models);
     if (token) {
@@ -90,8 +95,10 @@ const modelsSagaFunctions = {
         yield put(modelsActions.fetchSuccess(modelName, response.data));
         // refresh models in content index
         yield put(contentActions.loadModels(modelName));
+        if (callback != null) callback(response);
       } catch (e) {
-        logger.warn('[upsert]', e);
+        logger.warn('[upsert]', { e, response: e.response });
+        if (callback != null) callback(e.response);
         message.error(e.message);
       }
     }

@@ -5,7 +5,7 @@ import Rx        from 'rxjs';
 
 import { AuthAdapter, IAuthService }         from '../adapters/auth';
 import { ISecurityService, SecurityAdapter } from '../adapters/security';
-import { IModelService, ModelAdapter }       from '../adapters/models';
+import { IModelService, ModelAdapter }       from '../adapters/model';
 import { IMenuService, MenuAdapter }         from '../adapters/menu';
 import { ResponseAdapter }                   from '../adapters/response';
 import { ApiAdapter, IApiService }           from '../adapters/api';

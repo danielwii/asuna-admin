@@ -2,8 +2,8 @@ import _      from 'lodash';
 import * as R from 'ramda';
 
 import { castModelKey, castModelName, createLogger, lv } from '.';
-import { modelProxy }                                    from '../adapters/models';
 
+import { modelProxy }       from '../adapters/model';
 import { DynamicFormTypes } from '../components/DynamicForm';
 import { storeConnector }   from '../store';
 

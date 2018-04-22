@@ -4,7 +4,7 @@ import * as R          from 'ramda';
 import { reduxAction } from 'node-buffs';
 import { message }     from 'antd';
 
-import { modelProxy }       from '../adapters/models';
+import { modelProxy }       from '../adapters/model';
 import { createLogger, lv } from '../helpers/index';
 
 const logger = createLogger('store:content', lv.warn);

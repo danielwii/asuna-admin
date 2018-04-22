@@ -15,7 +15,7 @@ import * as R          from 'ramda';
 
 import { securitySagaFunctions } from './security.redux';
 import { menuSagaFunctions }     from './menu.redux';
-import { modelsSagaFunctions }   from './models.redux';
+import { modelsSagaFunctions }   from './model.redux';
 import { routerActions }         from './router.redux';
 import { authActions }           from './auth.redux';
 

@@ -1,4 +1,4 @@
-import { IModelService, ModelAdapter } from './models';
+import { IModelService, ModelAdapter } from './model';
 import { DynamicFormTypes }            from '../components/DynamicForm';
 
 describe('identify types', () => {
@@ -85,7 +85,7 @@ describe('getFormSchema', () => {
       },
     });
     const fields  = adapter.getFormSchema(
-      { users: [{ name: 'password' }] },
+      { users: [{ name: 'password' }] } as any,
       'users',
       {},
     );
@@ -112,7 +112,7 @@ describe('getFormSchema', () => {
       test_schema: [{
         name: 'test_name',
       }],
-    }, 'test_schema', { test_related_id: 1 });
+    } as any, 'test_schema', { test_related_id: 1 });
     expect(fields).toEqual({
       test_name: {
         name   : 'test_name',
