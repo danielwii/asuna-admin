@@ -4,11 +4,11 @@ import { connect } from 'react-redux';
 import * as R      from 'ramda';
 import moment      from 'moment';
 
-import { Form, Icon } from 'antd';
+import { Form, Icon, message } from 'antd';
 
 import { DynamicForm2, DynamicFormTypes } from '../../components/DynamicForm';
-import { modelProxy }                     from '../../adapters/models';
-import { modelsActions }                  from '../../store/models.redux';
+import { modelProxy }                     from '../../adapters/model';
+import { modelsActions }                  from '../../store/model.redux';
 import * as schemaHelper                  from '../../helpers/schema';
 import { createLogger, diff, lv }         from '../../helpers/index';
 
@@ -38,8 +38,8 @@ const ContentForm = Form.create({
       R.pickBy((field, key) => {
         const oldVar = R.path(['fields', key, 'value'])(props);
         const newVar = field.value;
-        logger.info('[ContentForm][onFieldsChange]', 'oldVar is', oldVar, 'newVar is', newVar);
-        return oldVar !== newVar;
+        logger.info('[ContentForm][onFieldsChange]', { oldVar, newVar, field, key, changedFields });
+        return oldVar !== newVar || field.errors != null;
       }),
       R.map((field) => {
         let { value } = field;
@@ -117,6 +117,7 @@ class ContentUpsert extends React.Component {
       loadings       : { INIT: true, LOAD: !isInsertMode, ASSOCIATIONS: true },
       fields         : {},
       key            : basis.pane.key,
+      hasErrors      : false,
     };
   }
 
@@ -198,10 +199,12 @@ class ContentUpsert extends React.Component {
     // const propsDiff     = diff(this.props, nextProps);
     const stateDiff     = diff(this.state, nextState, { include: ['fields', 'loadings'] });
     const samePane      = key === activeKey;
-    const shouldUpdate  = samePane && (propsDiff.isDifferent || stateDiff.isDifferent);
+    const shouldUpdate  = samePane && (
+      propsDiff.isDifferent || stateDiff.isDifferent || this.state.hasErrors
+    );
     logger.log('[shouldComponentUpdate]',
       { nextProps, nextState, nextContext }, shouldUpdate,
-      { samePane, propsDiff, stateDiff });
+      { samePane, propsDiff, stateDiff, hasErrors: this.state.hasErrors });
     return shouldUpdate;
   }
 
@@ -223,11 +226,12 @@ class ContentUpsert extends React.Component {
    */
   handleFormChange = async (changedFields) => {
     const { isInsertMode, init } = this.state;
+    logger.log('[handleFormChange]', { changedFields, state: this.state });
     if (!R.isEmpty(changedFields)) {
       logger.log('[handleFormChange]', { changedFields, state: this.state });
       const { wrappedFormSchema, fields, preDecorators, asyncDecorators } = this.state;
 
-      const currentChangedFields = R.map(R.pick(['value']))(changedFields);
+      const currentChangedFields = R.map(R.pick(['value', 'errors']))(changedFields);
       const changedFieldsBefore  = R.mergeDeepRight(wrappedFormSchema, fields);
       const allChangedFields     = R.mergeDeepRight(changedFieldsBefore, currentChangedFields);
       // 这里只装饰变化的 fields
@@ -284,12 +288,31 @@ class ContentUpsert extends React.Component {
     const { dispatch, onClose }       = this.props;
     const { modelName, isInsertMode } = this.state;
 
-    dispatch(modelsActions.upsert(modelName, { body: { ...fieldPairs, id } }));
-
-    // FIXME 在 post 提交后暂时无法获取返回的 id，即当前页面暂时无法切换为 update 模式，暂时关闭当前页面
-    if (isInsertMode) {
-      onClose();
-    }
+    dispatch(modelsActions.upsert(modelName, { body: { ...fieldPairs, id } }, (response) => {
+      // ASUNA Exception
+      if (response.data.errors) {
+        logger.log('[upsert callback] --->', { response, errors: response.data.errors });
+        const errorFields = R.map(error => ({
+          [error.property]: {
+            errors: [{
+              field  : error.property,
+              message: R.values(error.constraints).join('; '),
+            }],
+          },
+        }))(response.data.errors);
+        logger.log('[upsert callback] --->', { response, errorFields });
+        this.handleFormChange(R.mergeAll(errorFields));
+        this.setState({ hasErrors: true });
+      } else if (response.data.name === 'Error') { // handle default error
+        message.error(response.data.message);
+      } else {
+        this.setState({ hasErrors: false });
+        // FIXME 当前页面暂未切换为 update 模式，临时关闭当前页面
+        if (isInsertMode) {
+          onClose();
+        }
+      }
+    }));
   };
 
   render() {
