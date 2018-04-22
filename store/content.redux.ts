@@ -4,8 +4,8 @@ import * as R          from 'ramda';
 import { reduxAction } from 'node-buffs';
 import { message }     from 'antd';
 
-import { ModelListConfig, modelProxy } from 'adapters/model';
-import { createLogger, lv }            from 'helpers/logger';
+import { ModelListConfig, modelProxy } from '../adapters/model';
+import { createLogger, lv }            from '../helpers';
 
 const logger = createLogger('store:content', lv.warn);
 
