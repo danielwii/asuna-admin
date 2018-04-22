@@ -10,7 +10,7 @@ export interface IAuthService {
 
   logout(): Promise<any>;
 
-  extractToken(payload): string | undefined;
+  extractToken(payload: object): string | undefined;
 }
 
 // --------------------------------------------------------------
@@ -22,7 +22,7 @@ const logger = createLogger('adapters:auth', lv.warn);
 export const authProxy = {
   login       : args => appContext.ctx.auth.login(args),
   logout      : () => appContext.ctx.auth.logout(),
-  extractToken: args => appContext.ctx.auth.extractToken(args),
+  extractToken: (payload: object) => appContext.ctx.auth.extractToken(payload),
 };
 
 export class AuthAdapter {
@@ -31,7 +31,7 @@ export class AuthAdapter {
 
   login        = args => this.service.login(args);
   logout       = () => this.service.logout();
-  extractToken = (payload) => {
+  extractToken = (payload: object) => {
     const token = this.service.extractToken(payload);
     if (!token) {
       logger.warn('[extractToken]', 'extract token error from', payload);

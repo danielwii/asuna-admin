@@ -36,7 +36,7 @@ import { createLogger } from '../helpers';
 
 export { storeConnector };
 
-const { serverRuntimeConfig, publicRuntimeConfig } = getConfig() || {};
+const { serverRuntimeConfig } = getConfig() || {};
 
 // --------------------------------------------------------------
 // Init
@@ -153,8 +153,9 @@ export const configureStore = (state = initialState) => {
       applyMiddleware(sagaMiddleware, epicMiddleware, storeConnectorMiddleware),
     );
   } else {
-    // TODO set in debug mode only
-    localForage.setItem('debug', '*');
+    if (process.env.NODE_ENV === 'debug') {
+      localForage.setItem('debug', '*,-engine.io*');
+    }
     store = createStore(
       rootReducers,
       state,

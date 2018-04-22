@@ -66,6 +66,7 @@ class AppContext {
   };
   private _dispatch: Dispatch;
   private _subject;
+  private _storeConnector;
 
   constructor() {
     this._context = { ...this._context, ws: new WsAdapter() };
@@ -73,6 +74,14 @@ class AppContext {
     this._subject.subscribe({
       // next: (action) => console.log('observer: ', action)
     });
+    (async () => {
+      const { storeConnector } = await import('../store/middlewares/store-connector');
+      this._storeConnector = storeConnector;
+    })();
+  }
+
+  regStore(storeConnector: any) {
+    this._storeConnector = storeConnector;
   }
 
   regDispatch(dispatch: Dispatch): void {
@@ -115,6 +124,10 @@ class AppContext {
 
   get ctx() {
     return this._context;
+  }
+
+  get store() {
+    return this._storeConnector;
   }
 }
 
