@@ -30,6 +30,7 @@ export const columnHelper = {
     key,
     title,
     dataIndex: key,
+    sorter   : true,
     render   : (text) => {
       const value = render ? render(text) : text;
       return (
@@ -45,6 +46,7 @@ export const columnHelper = {
     key,
     title,
     dataIndex: key,
+    sorter   : true,
     render   : (text) => {
       if (text) {
         const value = render ? render(text) : moment(text).calendar();
@@ -92,7 +94,6 @@ export const commonColumns = {
 
 export const defaultColumns = actions => [
   commonColumns.id,
-  // TODO 需要一个基本字段名称转换的参数来选择使用的渲染配置
   commonColumns.updatedAt,
   commonColumns.actions(actions),
 ];

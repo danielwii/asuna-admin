@@ -148,7 +148,7 @@ declare namespace Asuna {
       ): any;
     }
 
-    interface ModelConfig {
+    interface ModelConfig extends ModelOpt {
       table?: FRecordRender;
       model?: {};
     }
@@ -206,11 +206,13 @@ declare namespace Asuna {
 
     type TableColumns = { [key: string]: FRecordRender };
 
+    interface ModelOpt {
+      endpoint?: string
+    }
+
     interface ModelOpts {
       models?: {
-        [key: string]: {
-          endpoint?: string,
-        },
+        [key: string]: ModelOpt,
       };
       tableColumns?: TableColumns;
       modelColumns?: ModelColumns;

@@ -71,7 +71,7 @@ function* loadModels({ payload: { name, models } }: LoadModelsParams) {
         [name]: { data: response.data, loading: false },
       }));
     } catch (e) {
-      logger.warn('[loadModels]', 'CATCH ->', e);
+      logger.warn('[loadModels]', { e });
       message.error(e.message);
     }
   }
