@@ -5,7 +5,6 @@ import { DynamicFormTypes } from '../components/DynamicForm';
 import { appContext }       from '../app/context';
 
 import { createLogger, defaultColumns, lv } from '../helpers';
-import { storeConnector }                   from '../store';
 
 export interface IModelBody {
   id?: number | string;
@@ -200,7 +199,7 @@ export class ModelAdapter {
   upsert = ({ token, schemas }, name: string, data: { body: IModelBody }): Promise<any> => {
     logger.info('[upsert]', 'upsert', { name, data });
 
-    const allSchemas = schemas || storeConnector.select(R.path(['models', 'schemas']));
+    const allSchemas = schemas || appContext.store.select(R.path(['models', 'schemas']));
 
     const fields = this.getFormSchema(allSchemas, name);
     logger.info('[upsert]', 'fields is', fields);

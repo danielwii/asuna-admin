@@ -7,7 +7,7 @@ import _               from 'lodash';
 
 import { contentActions }   from './content.redux';
 import { modelProxy }       from '../adapters/models';
-import { createLogger, lv } from '../helpers/index';
+import { createLogger, lv } from '../helpers';
 
 const logger = createLogger('store:models', lv.warn);
 
@@ -72,7 +72,7 @@ const modelsSagaFunctions = {
         logger.log('[fetch]', 'response of load model is', response);
         yield put(modelsActions.fetchSuccess(modelName, response.data));
       } catch (e) {
-        logger.warn('[fetch]', 'CATCH -> load model error', e);
+        logger.warn('[fetch]', e);
         message.error(e.message);
       }
     }
@@ -91,7 +91,7 @@ const modelsSagaFunctions = {
         // refresh models in content index
         yield put(contentActions.loadModels(modelName));
       } catch (e) {
-        logger.warn('[upsert]', 'CATCH -> upsert model error', e);
+        logger.warn('[upsert]', e);
         message.error(e.message);
       }
     }
@@ -109,7 +109,7 @@ const modelsSagaFunctions = {
         // refresh models in content index
         yield put(contentActions.loadModels(modelName));
       } catch (e) {
-        logger.warn('[remove]', 'CATCH -> remove model error', e);
+        logger.warn('[remove]', e);
         message.error(e.message);
       }
     }
@@ -133,7 +133,7 @@ const modelsSagaFunctions = {
         yield put(modelsActions.loadAllSchemasSuccess(schemas));
         logger.log('[loadAllSchemas]', 'load all model schemas', effects, schemas);
       } catch (e) {
-        logger.warn('[loadAllSchemas]', 'CATCH -> load all schemas error occurred', e);
+        logger.warn('[loadAllSchemas]', e);
         message.error(e.message);
       }
     }

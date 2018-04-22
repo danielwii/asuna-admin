@@ -7,7 +7,7 @@ import { REHYDRATE } from 'redux-persist/constants';
 
 import { authProxy }        from '../adapters/auth';
 import { routerActions }    from './router.redux';
-import { createLogger, lv } from '../helpers/index';
+import { createLogger, lv } from '../helpers';
 
 const logger = createLogger('store:auth', lv.warn);
 

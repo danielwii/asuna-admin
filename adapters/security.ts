@@ -9,12 +9,6 @@ interface IRequestConfig {
   endpoint?: string,
 }
 
-interface UpdatePasswordParams {
-  opts: { token: string },
-  data: { body: { email: string, password: string } },
-  config: IRequestConfig,
-}
-
 export interface ISecurityService {
   currentUser(opts: { token: string },
               configs?: IRequestConfig): Promise<any>,
