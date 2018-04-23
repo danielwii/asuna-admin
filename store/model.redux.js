@@ -5,6 +5,7 @@ import { reduxAction } from 'node-buffs';
 import * as R          from 'ramda';
 import _               from 'lodash';
 
+// eslint-disable-next-line import/extensions
 import { contentActions }   from './content.redux';
 import { modelProxy }       from '../adapters/model';
 import { createLogger, lv } from '../helpers';

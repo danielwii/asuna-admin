@@ -20,7 +20,7 @@ const logger = createLogger('pages:login');
 // Setup context
 // --------------------------------------------------------------
 
-appContext.setup({ module  : 'login', register });
+appContext.setup({ module: 'login', register });
 
 // --------------------------------------------------------------
 // Main

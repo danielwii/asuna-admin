@@ -4,7 +4,7 @@ import * as R from 'ramda';
 import _ from 'lodash';
 
 import { menuProxy }        from '../adapters/menu';
-import { createLogger, lv } from '../helpers/index';
+import { createLogger, lv } from '../helpers/logger';
 
 const logger = createLogger('store:menu', lv.warn);
 

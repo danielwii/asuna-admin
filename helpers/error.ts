@@ -2,7 +2,7 @@ import { AxiosResponse } from 'axios';
 
 import * as R from 'ramda';
 
-import { createLogger, lv } from '.';
+import { createLogger, lv } from './logger';
 
 interface FormError {
   [key: string]: {
@@ -34,14 +34,14 @@ export function toFormErrors(response: AxiosResponse): FormError | string | null
         }],
       },
     }))(exception.errors);
-    logger.log('[toFormErrors] --->', { response, errorFields });
+    logger.log('[toFormErrors]', { response, errorFields });
     return R.mergeAll(errorFields);
   } else if (response.status === 500) {
     // FIXME may be a normal exception
     const exception = response.data as Asuna.Error.AsunaException;
     return exception.message;
   } else {
-    console.warn('[toFormErrors]', { response });
+    logger.warn('[toFormErrors]', { response });
     return response.data;
   }
 }
