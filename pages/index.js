@@ -6,6 +6,7 @@ import PropTypes   from 'prop-types';
 import 'moment/locale/zh-cn';
 
 import { withReduxSaga } from '../store';
+// eslint-disable-next-line import/extensions
 import { appActions }    from '../store/app.redux';
 
 import AntdLayout from '../layout/antd';

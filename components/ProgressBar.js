@@ -5,6 +5,10 @@ import { Progress } from 'antd';
 import styled, { keyframes } from 'styled-components';
 import { fadeIn, fadeOut }   from 'react-animations';
 
+import { createLogger, lv } from '../helpers/logger';
+
+const logger = createLogger('components:progress-bar', lv.warn);
+
 /**
  * transition 提前一点结束用来移除时间一样时最后出现的抖动
  */
@@ -19,23 +23,24 @@ const FadeDiv = styled.div`
 
 export default class extends React.Component {
   state = {
-    counter: 0,
+    counter : 0,
+    complete: 100,
   };
 
   componentDidMount() {
     const { XMLHttpRequest } = window;
     window.XMLHttpRequest    = () => {
-      this.setState({ counter: this.state.counter += 1, percentComplete: 0 });
+      this.setState({ counter: this.state.counter + 1, complete: 0 });
       const xhr = new XMLHttpRequest();
       xhr.addEventListener('progress', (evt) => {
         if (evt.lengthComputable) {
-          const percentComplete = (evt.loaded / evt.total) * 100;
-          this.setState({ percentComplete });
+          const complete = (evt.loaded / evt.total) * 100;
+          this.setState({ complete });
         }
       }, false);
       xhr.addEventListener('readystatechange', () => {
         if (xhr.readyState === 4) {
-          this.setState({ counter: this.state.counter -= 1 });
+          this.setState({ counter: this.state.counter - 1 });
         }
       }, false);
       return xhr;
@@ -43,17 +48,19 @@ export default class extends React.Component {
   }
 
   render() {
-    const { counter, percentComplete } = this.state;
+    const { counter, complete } = this.state;
 
     const percent = counter ? (1 / counter) * 100 : 100;
-    const hidden  = percent === 100 && percentComplete === 100;
+    const hidden  = percent === 100 && complete === 100;
+
+    logger.log('[render]', { counter, percent, complete, hidden });
 
     return (
       <FadeDiv out={hidden}>
         <Progress
           strokeWidth={2}
           percent={percent}
-          successPercent={percentComplete}
+          successPercent={complete}
           status="active"
           showInfo={false}
         />

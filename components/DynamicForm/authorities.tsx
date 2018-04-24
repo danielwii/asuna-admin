@@ -6,7 +6,7 @@ import { Checkbox, Table } from 'antd';
 import { menuProxy }        from '../../adapters/menu';
 import { createLogger, lv } from '../../helpers';
 
-const logger = createLogger('components:authorities', lv.info);
+const logger = createLogger('components:authorities', lv.warn);
 
 interface IProps {
   value: string | {};

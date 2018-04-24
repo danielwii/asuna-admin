@@ -2,6 +2,7 @@ import { connect } from 'react-redux';
 import * as R      from 'ramda';
 
 import Header         from '../components/Header';
+// eslint-disable-next-line import/extensions
 import { appActions } from '../store/app.redux';
 
 const mapStateToProps    = R.pick(['auth', 'app']);

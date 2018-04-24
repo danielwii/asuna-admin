@@ -6,7 +6,7 @@ import { storiesOf } from "@storybook/react";
 import styled        from 'styled-components';
 import { Button }    from 'antd';
 
-import { configureStore } from '../store';
+import { configureStore } from '../store/index';
 import Panes              from '../components/Panes';
 import PanesContainer     from '../containers/Panes';
 

@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 import { storiesOf } from "@storybook/react";
 
 import MainLayout         from '../layout/main';
-import { configureStore } from '../store';
+import { configureStore } from '../store/index';
 
 const initialState = {
   activeKey: 'test-1',

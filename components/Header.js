@@ -4,6 +4,7 @@ import styled    from 'styled-components';
 
 import { Button, Dropdown, Icon, Layout, Menu } from 'antd';
 
+// eslint-disable-next-line import/extensions
 import { authActions } from '../store/auth.redux';
 // eslint-disable-next-line import/extensions
 import pkg             from '../package.json';

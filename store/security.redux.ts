@@ -3,11 +3,12 @@ import { call, put, select, takeLatest } from 'redux-saga/effects';
 import { reduxAction } from 'node-buffs';
 import { message }     from 'antd';
 
-import { securityProxy } from '../adapters/security';
-import { createLogger }  from '../helpers/index';
-import { authActions }   from './auth.redux';
+import { RootState }        from './';
+import { securityProxy }    from '../adapters/security';
+import { authActions }      from './auth.redux';
+import { createLogger, lv } from '../helpers/logger';
 
-const logger = createLogger('store:security');
+const logger = createLogger('store:security', lv.warn);
 
 // --------------------------------------------------------------
 // Module actionTypes
@@ -53,7 +54,7 @@ const securityActions = {
 
 const securitySagaFunctions = {
   * loadAllRoles() {
-    const { token } = yield select(state => state.auth);
+    const { token } = yield select<RootState>(state => state.auth);
     if (token) {
       message.loading('loading all roles...');
       try {
@@ -69,7 +70,7 @@ const securitySagaFunctions = {
   },
 
   * getCurrentUser() {
-    const { token } = yield select(state => state.auth);
+    const { token } = yield select<RootState>(state => state.auth);
     if (token) {
       message.loading('loading current user...');
       try {

@@ -41,10 +41,10 @@ async function goto({ payload: { path } }) {
 
 const sagas = [
   // takeLatest / takeEvery (actionType, actionSage)
-  takeLatest(actionTypes.TO_INDEX, goto),
-  takeLatest(actionTypes.TO_HOME, goto),
-  takeLatest(actionTypes.TO_LOGIN, goto),
-  takeLatest(actionTypes.GOTO, goto),
+  takeLatest(actionTypes.TO_INDEX as any, goto),
+  takeLatest(actionTypes.TO_HOME as any, goto),
+  takeLatest(actionTypes.TO_LOGIN as any, goto),
+  takeLatest(actionTypes.GOTO as any, goto),
 ];
 
 // --------------------------------------------------------------

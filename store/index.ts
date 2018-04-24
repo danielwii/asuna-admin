@@ -1,10 +1,8 @@
-/* eslint-disable spaced-comment,no-unused-vars */
 import withRedux       from 'next-redux-wrapper';
 import nextReduxSaga   from 'next-redux-saga';
 import getConfig       from 'next/config';
 import * as R          from 'ramda';
 import { reduxAction } from 'node-buffs';
-
 
 import { applyMiddleware, combineReducers, createStore } from 'redux';
 
@@ -17,8 +15,6 @@ import { autoRehydrate, persistStore }        from 'redux-persist';
 import { combineEpics, createEpicMiddleware } from 'redux-observable';
 
 import localForage from 'localforage';
-
-import { notificationsReducer, notificationsSagas } from './notifications.redux';
 
 import { appEpics, appReducer, appSagas }            from './app.redux';
 import { authReducer, authSagas }                    from './auth.redux';
@@ -36,7 +32,7 @@ import { createLogger } from '../helpers';
 
 export { storeConnector };
 
-const { serverRuntimeConfig } = getConfig() || {};
+const { serverRuntimeConfig = {} } = getConfig();
 
 // --------------------------------------------------------------
 // Init
@@ -70,22 +66,25 @@ export const actions = {
 // Root reducers
 // --------------------------------------------------------------
 
-const combinedReducers = combineReducers({
-  auth         : authReducer,
-  notifications: notificationsReducer,
-  router       : routerReducer,
-  panes        : panesReducer,
-  menu         : menuReducer,
-  models       : modelsReducer,
-  content      : contentReducer,
+const reducers = {
+  auth    : authReducer,
+  router  : routerReducer,
+  panes   : panesReducer,
+  menu    : menuReducer,
+  models  : modelsReducer,
+  content : contentReducer,
   // mod_models   : modModelsReducer,
-  security     : securityReducer,
-  app          : appReducer,
+  security: securityReducer,
+  app     : appReducer,
   // form         : formReducer,
-  global       : (previousState = initialState, action) => (
+  global  : (previousState = initialState, action) => (
     { ...previousState, ...action }
   ),
-});
+};
+
+const combinedReducers = combineReducers(reducers);
+
+export type RootState = Partial<typeof reducers>;
 
 const crossSliceReducer = (state, action) => {
   if (action.type === actionTypes.CLEAN) {
@@ -113,7 +112,6 @@ const rootReducers = (state, action) => {
 function* rootSaga() {
   yield all([
     ...authSagas,
-    ...notificationsSagas,
     ...routerSagas,
     ...panesSagas,
     ...menuSagas,

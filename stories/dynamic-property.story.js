@@ -3,7 +3,7 @@ import { Provider } from 'react-redux';
 
 import { storiesOf } from "@storybook/react";
 
-import { configureStore }  from '../store';
+import { configureStore }  from '../store/index';
 import { DynamicProperty } from '../components/DynamicProperty';
 
 const initialState = {};

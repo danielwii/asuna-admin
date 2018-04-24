@@ -8,7 +8,7 @@ import Login             from '../components/Login';
 import Loading           from '../components/LivingLoading';
 import Snow              from '../components/Snow';
 import LogoCanvas        from '../components/LogoCanvas';
-import { withReduxSaga } from '../store';
+import { withReduxSaga } from '../store/index';
 
 import { register }     from '../services/register';
 import { createLogger } from '../helpers';

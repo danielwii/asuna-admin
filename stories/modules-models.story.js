@@ -5,7 +5,7 @@ import { storiesOf } from "@storybook/react";
 
 import ModelsIndex        from '../modules/models'
 import ModelsSetup        from '../modules/models/setup'
-import { configureStore } from '../store';
+import { configureStore } from '../store/index';
 
 const initialState = {};
 

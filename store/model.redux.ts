@@ -5,10 +5,10 @@ import { reduxAction } from 'node-buffs';
 import * as R          from 'ramda';
 import _               from 'lodash';
 
-// eslint-disable-next-line import/extensions
 import { contentActions }   from './content.redux';
 import { modelProxy }       from '../adapters/model';
 import { createLogger, lv } from '../helpers';
+import { RootState }        from 'store/index';
 
 const logger = createLogger('store:models', lv.warn);
 
@@ -69,7 +69,7 @@ const modelsActions = {
 
 const modelsSagaFunctions = {
   * fetch({ payload: { modelName, data } }) {
-    const { token } = yield select(state => state.auth);
+    const { token } = yield select<RootState>(state => state.auth);
     if (token) {
       message.loading(`loading model '${modelName}'...`);
       try {
@@ -84,8 +84,8 @@ const modelsSagaFunctions = {
     }
   },
   * upsert({ payload: { modelName, data }, callback }) {
-    const { token }   = yield select(state => state.auth);
-    const { schemas } = yield select(state => state.models);
+    const { token }   = yield select<RootState>(state => state.auth);
+    const { schemas } = yield select<RootState>(state => state.models);
     if (token) {
       message.info(`upsert model '${modelName}'...`);
       try {
@@ -105,7 +105,7 @@ const modelsSagaFunctions = {
     }
   },
   * remove({ payload: { modelName, data } }) {
-    const { token } = yield select(state => state.auth);
+    const { token } = yield select<RootState>(state => state.auth);
     if (token) {
       message.info(`remove model '${modelName}'...`);
       try {
@@ -124,7 +124,7 @@ const modelsSagaFunctions = {
   },
   * loadAllSchemas() {
     logger.log('[loadAllSchemas]', 'load all schemas in saga');
-    const { token } = yield select(state => state.auth);
+    const { token } = yield select<RootState>(state => state.auth);
     if (token) {
       message.loading('loading all schemas...');
       try {
@@ -133,7 +133,7 @@ const modelsSagaFunctions = {
 
         logger.log('[loadAllSchemas]', 'allResponse is', allResponse);
 
-        const schemas = Object.assign(..._.map(
+        const schemas = Object.assign({}, ..._.map(
           allResponse,
           (response, name) => ({ [name]: response.data }),
         ));
@@ -152,9 +152,9 @@ const modelsSagaFunctions = {
 const modelsSagas = [
   // takeLatest / takeEvery (actionType, actionSage)
   takeLatest(modelsActionTypes.LOAD_ALL_SCHEMAS, modelsSagaFunctions.loadAllSchemas),
-  takeLatest(modelsActionTypes.REMOVE, modelsSagaFunctions.remove),
-  takeLatest(modelsActionTypes.UPSERT, modelsSagaFunctions.upsert),
-  takeLatest(modelsActionTypes.FETCH, modelsSagaFunctions.fetch),
+  takeLatest(modelsActionTypes.REMOVE as any, modelsSagaFunctions.remove),
+  takeLatest(modelsActionTypes.UPSERT as any, modelsSagaFunctions.upsert),
+  takeLatest(modelsActionTypes.FETCH as any, modelsSagaFunctions.fetch),
 ];
 
 // --------------------------------------------------------------

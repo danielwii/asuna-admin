@@ -564,9 +564,9 @@ ansi-to-html@^0.6.3:
   dependencies:
     entities "^1.1.1"
 
-antd@^3.4.2:
-  version "3.4.2"
-  resolved "https://registry.yarnpkg.com/antd/-/antd-3.4.2.tgz#97f426eb89bdcde4fe5c6c081c783437751e6f66"
+antd@^3.4.3:
+  version "3.4.3"
+  resolved "https://registry.yarnpkg.com/antd/-/antd-3.4.3.tgz#17c6f6d91da8c15c27704a3e38833d67592a3959"
   dependencies:
     array-tree-filter "^2.0.0"
     babel-runtime "6.x"
@@ -2075,9 +2075,9 @@ braces@^2.3.0, braces@^2.3.1:
     split-string "^3.0.2"
     to-regex "^3.0.1"
 
-braft-editor@^1.8.9:
-  version "1.8.9"
-  resolved "https://registry.yarnpkg.com/braft-editor/-/braft-editor-1.8.9.tgz#c9289d5a1f0b82eeb2e29595905397bb09ba3ce6"
+braft-editor@^1.8.10:
+  version "1.8.10"
+  resolved "https://registry.yarnpkg.com/braft-editor/-/braft-editor-1.8.10.tgz#1eaa502382340c2a75b2494ab8c87cb7f5410424"
   dependencies:
     draft-convert "^2.0.0"
     draft-js "^0.10.3"
@@ -6338,13 +6338,12 @@ no-case@^2.2.0:
   dependencies:
     lower-case "^1.1.1"
 
-node-buffs@^0.4.3:
-  version "0.4.3"
-  resolved "https://registry.yarnpkg.com/node-buffs/-/node-buffs-0.4.3.tgz#b1fa083aa3898c9331fca363e487ad01f713dccd"
+node-buffs@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/node-buffs/-/node-buffs-0.5.0.tgz#492908114fab991eb56e0e76808f38decce24ed7"
   dependencies:
     dotenv "^5.0.1"
     lodash "^4.17.5"
-    ramda "^0.25.0"
 
 node-dir@^0.1.10:
   version "0.1.17"

@@ -28,11 +28,11 @@ export class WsAdapter {
 
         WsAdapter.io.on('connect', () => {
           logger.log('[connect]', { id: WsAdapter.io.id, appContext });
-          appContext.dispatch(appActions.heartbeatAlive());
+          appContext.dispatch(appActions.heartbeat());
         });
         WsAdapter.io.on('reconnect', () => {
           logger.log('[reconnect]', { id: WsAdapter.io.id, appContext });
-          appContext.dispatch(appActions.heartbeatAlive());
+          appContext.dispatch(appActions.heartbeat());
         });
         WsAdapter.io.on('disconnect', () => {
           logger.error('[disconnect]', { id: WsAdapter.io.id, appContext });

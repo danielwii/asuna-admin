@@ -6,6 +6,7 @@ import { message }     from 'antd';
 
 import { ModelListConfig, modelProxy } from '../adapters/model';
 import { createLogger, lv }            from '../helpers';
+import { RootState }                   from 'store/index';
 
 const logger = createLogger('store:content', lv.warn);
 
@@ -37,7 +38,7 @@ interface LoadModelsParams extends SagaParams {
 
 const contentActions = {
   // action: (args) => ({ type, payload })
-  loadModels       : (name: string, extras: ModelListConfig) =>
+  loadModels       : (name: string, extras?: ModelListConfig) =>
     reduxAction(contentActionTypes.CONTENT_LOAD_MODELS, {
       name,
       models: { [name]: { extras, loading: true } },
@@ -56,7 +57,7 @@ const contentActions = {
 // --------------------------------------------------------------
 
 function* loadModels({ payload: { name, models } }: LoadModelsParams) {
-  const { token } = yield select<any>(state => state.auth);
+  const { token } = yield select<RootState>(state => state.auth);
   if (token) {
     try {
       const { [name]: { extras } } = models;

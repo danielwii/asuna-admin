@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 import { storiesOf } from "@storybook/react";
 
 import SideMenuContainer  from '../containers/SideMenu';
-import { configureStore } from '../store';
+import { configureStore } from '../store/index';
 
 const initialState = {
   menus: [

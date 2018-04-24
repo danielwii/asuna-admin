@@ -5,6 +5,7 @@ import _ from 'lodash';
 
 import { menuProxy }        from '../adapters/menu';
 import { createLogger, lv } from '../helpers/logger';
+import { RootState }        from 'store/index';
 
 const logger = createLogger('store:menu', lv.warn);
 
@@ -38,7 +39,7 @@ const menuActions = {
 const menuSagaFunctions = {
   * init() {
     try {
-      const { roles, user } = yield select(state => state.security);
+      const { roles, user } = yield select<RootState>(state => state.security);
 
       if (user) {
         if (roles && roles.items) {

@@ -8,6 +8,7 @@ import { REHYDRATE } from 'redux-persist/constants';
 import { authProxy }        from '../adapters/auth';
 import { routerActions }    from './router.redux';
 import { createLogger, lv } from '../helpers';
+import { reduxAction }      from 'node-buffs';
 
 const logger = createLogger('store:auth', lv.warn);
 
@@ -29,19 +30,10 @@ const isCurrent = type => type.startsWith('auth::');
 // --------------------------------------------------------------
 
 const authActions = {
-  login       : (username, password) => ({
-    // TODO using reduxAction instead
-    type: authActionTypes.LOGIN, payload: { username, password }, error: null,
-  }),
-  logout      : () => ({
-    type: authActionTypes.LOGOUT, payload: { token: null, loginTime: null }, error: null,
-  }),
-  loginSuccess: token => ({
-    type: authActionTypes.LOGIN_SUCCESS, payload: { token, loginTime: new Date() }, error: null,
-  }),
-  loginFailed : error => ({
-    type: authActionTypes.LOGIN_FAILED, payload: {}, error,
-  }),
+  login       : (username, password) => reduxAction(authActionTypes.LOGIN, { username, password }),
+  logout      : () => reduxAction(authActionTypes.LOGOUT, { token: null, loginTime: null }),
+  loginSuccess: token => reduxAction(authActionTypes.LOGIN_SUCCESS, { token, loginTime: new Date() }),
+  loginFailed : error => reduxAction(authActionTypes.LOGIN_FAILED, {}, error),
 };
 
 // --------------------------------------------------------------
@@ -57,11 +49,11 @@ function* loginSaga({ payload: { username, password } }) {
     yield put(authActions.loginSuccess(token));
     message.info(`'${username}' login success`);
     yield put(routerActions.toIndex());
-  } catch (error) {
-    logger.error('[loginSaga]', error);
-    if (error.response) {
-      yield put(authActions.loginFailed(error.response));
-      message.error(JSON.stringify(error.response.data));
+  } catch (e) {
+    logger.error('[loginSaga]', { e });
+    if (e.response) {
+      yield put(authActions.loginFailed(e.response));
+      message.error(JSON.stringify(e.response.data));
     }
   }
 }
@@ -71,8 +63,8 @@ function* logoutSaga() {
     logger.log('[logoutSaga]');
     const response = yield call(authProxy.logout);
     logger.log('[logoutSaga]', 'response is', response);
-  } catch (error) {
-    logger.error('[logoutSaga]', error);
+  } catch (e) {
+    logger.error('[logoutSaga]', { e });
   }
 }
 
@@ -93,7 +85,7 @@ function* tokenWatcher(action) {
 }
 
 const authSagas = [
-  takeLatest(authActionTypes.LOGIN, loginSaga),
+  takeLatest(authActionTypes.LOGIN as any, loginSaga),
   takeLatest(authActionTypes.LOGOUT, logoutSaga),
   takeEvery('*', tokenWatcher),
 ];
