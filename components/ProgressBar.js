@@ -43,6 +43,14 @@ export default class extends React.Component {
           this.setState({ counter: this.state.counter - 1 });
         }
       }, false);
+      xhr.addEventListener('error', () => {
+        // logger.warn('error', { e });
+        this.setState({ counter: this.state.counter - 1 });
+      });
+      xhr.addEventListener('abort', () => {
+        // logger.warn('abort', { e });
+        this.setState({ counter: this.state.counter - 1 });
+      });
       return xhr;
     };
   }
