@@ -1,3 +1,4 @@
+/* eslint-disable import/extensions */
 import React       from 'react';
 import PropTypes   from 'prop-types';
 import { connect } from 'react-redux';
@@ -7,7 +8,6 @@ import _           from 'lodash';
 import { Button, Divider, Modal, Table } from 'antd';
 
 import { panesActions }   from '../../store/panes.redux';
-// eslint-disable-next-line import/extensions
 import { contentActions } from '../../store/content.redux';
 import { modelsActions }  from '../../store/model.redux';
 import { modelProxy }     from '../../adapters/model';
@@ -148,8 +148,6 @@ class ContentIndex extends React.Component {
 
     return (
       <div>
-        <hr />
-
         <Button onClick={this.create}>Create</Button>
         <Divider type="vertical" />
         <Button onClick={this.refresh}>Refresh</Button>

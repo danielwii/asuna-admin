@@ -1,3 +1,4 @@
+/* eslint-disable import/extensions */
 import React       from 'react';
 import PropTypes   from 'prop-types';
 import { connect } from 'react-redux';
@@ -337,7 +338,6 @@ class ContentUpsert extends React.Component {
 
     return (
       <div>
-        <hr />
         <ContentForm
           anchor
           auth={auth}

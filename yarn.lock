@@ -343,9 +343,9 @@
   version "22.2.3"
   resolved "https://registry.yarnpkg.com/@types/jest/-/jest-22.2.3.tgz#0157c0316dc3722c43a7b71de3fdf3acbccef10d"
 
-"@types/next-redux-wrapper@^1.3.7":
-  version "1.3.7"
-  resolved "https://registry.yarnpkg.com/@types/next-redux-wrapper/-/next-redux-wrapper-1.3.7.tgz#019033f9f4d0c1796145d3e930481b7cac987547"
+"@types/next-redux-wrapper@^1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@types/next-redux-wrapper/-/next-redux-wrapper-1.4.0.tgz#6c847c6080d6831661f722590af086aae2a23be4"
   dependencies:
     "@types/node" "*"
     "@types/react" "*"
@@ -1112,12 +1112,12 @@ babel-jest@^22.4.3:
     babel-plugin-istanbul "^4.1.5"
     babel-preset-jest "^22.4.3"
 
-babel-jest@^23.0.0-alpha.0:
-  version "23.0.0-alpha.6r"
-  resolved "https://registry.yarnpkg.com/babel-jest/-/babel-jest-23.0.0-alpha.6r.tgz#5661be319a1a0bbca5947a1c7b7fdc8f7e79603a"
+babel-jest@^23.0.0-beta.2:
+  version "23.0.0-beta.2"
+  resolved "https://registry.yarnpkg.com/babel-jest/-/babel-jest-23.0.0-beta.2.tgz#28cf51795170bd8022b3d8e2819774a20ad6e3ac"
   dependencies:
     babel-plugin-istanbul "^4.1.6"
-    babel-preset-jest "^23.0.0-alpha.6r"
+    babel-preset-jest "^23.0.0-beta.2"
 
 babel-loader@7.1.2:
   version "7.1.2"
@@ -1166,9 +1166,9 @@ babel-plugin-jest-hoist@^22.4.3:
   version "22.4.3"
   resolved "https://registry.yarnpkg.com/babel-plugin-jest-hoist/-/babel-plugin-jest-hoist-22.4.3.tgz#7d8bcccadc2667f96a0dcc6afe1891875ee6c14a"
 
-babel-plugin-jest-hoist@^23.0.0-alpha.6r:
-  version "23.0.0-alpha.6r"
-  resolved "https://registry.yarnpkg.com/babel-plugin-jest-hoist/-/babel-plugin-jest-hoist-23.0.0-alpha.6r.tgz#db75c456722f4ae4e454858810d4bff2ab7916f2"
+babel-plugin-jest-hoist@^23.0.0-beta.2:
+  version "23.0.0-beta.2"
+  resolved "https://registry.yarnpkg.com/babel-plugin-jest-hoist/-/babel-plugin-jest-hoist-23.0.0-beta.2.tgz#4a9373dab43d53de42c5da0b1aff95cf24a71b93"
 
 babel-plugin-macros@^2.2.0:
   version "2.2.0"
@@ -1765,11 +1765,11 @@ babel-preset-jest@^22.4.0, babel-preset-jest@^22.4.3:
     babel-plugin-jest-hoist "^22.4.3"
     babel-plugin-syntax-object-rest-spread "^6.13.0"
 
-babel-preset-jest@^23.0.0-alpha.6r:
-  version "23.0.0-alpha.6r"
-  resolved "https://registry.yarnpkg.com/babel-preset-jest/-/babel-preset-jest-23.0.0-alpha.6r.tgz#9de930083502690845885973edeb0a0ac9661f40"
+babel-preset-jest@^23.0.0-beta.2:
+  version "23.0.0-beta.2"
+  resolved "https://registry.yarnpkg.com/babel-preset-jest/-/babel-preset-jest-23.0.0-beta.2.tgz#d76091615e21ecb733b6400cb63c71cd12ed47ac"
   dependencies:
-    babel-plugin-jest-hoist "^23.0.0-alpha.6r"
+    babel-plugin-jest-hoist "^23.0.0-beta.2"
     babel-plugin-syntax-object-rest-spread "^6.13.0"
 
 babel-preset-minify@^0.3.0:
@@ -5909,6 +5909,10 @@ lodash@^4.12.0, lodash@^4.13.1, lodash@^4.14.0, lodash@^4.16.5, lodash@^4.17.0, 
   version "4.17.5"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.5.tgz#99a92d65c0272debe8c96b6057bc8fbfa3bed511"
 
+lodash@^4.17.10:
+  version "4.17.10"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.10.tgz#1b7793cf7259ea38fb3661d4d38b3260af8ae4e7"
+
 longest@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/longest/-/longest-1.0.1.tgz#30a0b2da38f73770e8294a0d22e6625ed77d0097"
@@ -9740,9 +9744,9 @@ verror@1.10.0:
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
 
-video.js@^6.8.0:
-  version "6.8.0"
-  resolved "https://registry.yarnpkg.com/video.js/-/video.js-6.8.0.tgz#c3cff35d483595e22efc294ba2e720198151f9c9"
+video.js@^6.9.0:
+  version "6.9.0"
+  resolved "https://registry.yarnpkg.com/video.js/-/video.js-6.9.0.tgz#8ad4fbc8d7380b60c703f0a780bc21796a5666cf"
   dependencies:
     babel-runtime "^6.9.2"
     global "4.3.2"

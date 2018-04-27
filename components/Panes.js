@@ -85,7 +85,7 @@ class Panes extends React.Component {
       >
         {_.map(panes, pane => (
           <TabPane tab={pane.title} key={pane.key}>
-            {activeKey} - {pane.key} - {title}
+            {/* {activeKey} - {pane.key} - {title} */}
             <ModulesLoader
               module={pane.linkTo || pane.key}
               activeKey={activeKey}

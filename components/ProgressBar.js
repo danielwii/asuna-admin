@@ -67,7 +67,7 @@ export default class extends React.Component {
       <FadeDiv out={hidden}>
         <Progress
           strokeWidth={2}
-          percent={percent}
+          // percent={percent}
           successPercent={complete}
           status="active"
           showInfo={false}
