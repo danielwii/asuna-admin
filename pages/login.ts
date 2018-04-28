@@ -1,3 +1,3 @@
-import { DefaultLoginPage } from '../common';
+import { DefaultLoginPage } from '../common/login.page';
 
 export default DefaultLoginPage;

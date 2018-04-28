@@ -16,8 +16,8 @@ import { combineEpics, createEpicMiddleware } from 'redux-observable';
 
 import localForage from 'localforage';
 
-import { appEpics, appReducer, appSagas }            from './app.redux';
-import { authReducer, authSagas }                    from './auth.redux';
+import { appEpics, appReducer, appSagas, AppState }  from './app.redux';
+import { authReducer, authSagas, AuthState }         from './auth.redux';
 import { routerReducer, routerSagas }                from './router.redux';
 import { menuReducer, menuSagas }                    from './menu.redux';
 import { modelsCleaner, modelsReducer, modelsSagas } from './model.redux';
@@ -66,7 +66,19 @@ export const actions = {
 // Root reducers
 // --------------------------------------------------------------
 
-const reducers = {
+export interface RootState {
+  auth: AuthState;
+  router: object;
+  panes: object;
+  menu: object;
+  models: object;
+  content: object;
+  security: object;
+  app: AppState;
+  global: object;
+}
+
+const reducers: {[key in keyof RootState]: any} = {
   auth    : authReducer,
   router  : routerReducer,
   panes   : panesReducer,
@@ -83,8 +95,6 @@ const reducers = {
 };
 
 const combinedReducers = combineReducers(reducers);
-
-export type RootState = Partial<typeof reducers>;
 
 const crossSliceReducer = (state, action) => {
   if (action.type === actionTypes.CLEAN) {

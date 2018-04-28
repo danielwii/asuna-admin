@@ -5,7 +5,7 @@ import { message }     from 'antd';
 
 import { RootState }        from './';
 import { securityProxy }    from '../adapters/security';
-import { authActions }      from './auth.redux';
+import { authActions }      from './auth.actions';
 import { createLogger, lv } from '../helpers/logger';
 
 const logger = createLogger('store:security', lv.warn);

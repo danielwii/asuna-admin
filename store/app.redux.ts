@@ -1,9 +1,18 @@
 import { call, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 
-import { reduxAction } from 'node-buffs';
-import { REHYDRATE }   from 'redux-persist/constants';
-import _               from 'lodash';
-import * as R          from 'ramda';
+import { REHYDRATE } from 'redux-persist/constants';
+import _             from 'lodash';
+
+import { appActions, appActionTypes, isCurrent } from './app.actions';
+
+import { actions, RootState }    from './';
+import { securitySagaFunctions } from './security.redux';
+import { menuSagaFunctions }     from './menu.redux';
+import { modelsSagaFunctions }   from './model.redux';
+import { routerActions }         from './router.redux';
+import { authActions }           from './auth.actions';
+import { apiProxy }              from '../adapters/api';
+import { createLogger, lv }      from '../helpers/logger';
 
 // import { Observable } from 'rxjs/Observable';
 
@@ -13,54 +22,7 @@ import * as R          from 'ramda';
 // import 'rxjs/add/operator/switchMap';
 // import 'rxjs/add/operator/mapTo';
 
-import { actions, RootState }    from './';
-import { securitySagaFunctions } from './security.redux';
-import { menuSagaFunctions }     from './menu.redux';
-import { modelsSagaFunctions }   from './model.redux';
-import { routerActions }         from './router.redux';
-import { authActions }           from './auth.redux';
-import { apiProxy }              from '../adapters/api';
-import { createLogger, lv }      from '../helpers/logger';
-
 const logger = createLogger('store:app', lv.warn);
-
-// --------------------------------------------------------------
-// Module actionTypes
-// --------------------------------------------------------------
-
-const appActionTypes = {
-  // ACTION: 'module::action'
-  INIT               : 'app::init',
-  SYNC               : 'app::sync',
-  INIT_SUCCESS       : 'app::init-success',
-  SYNC_SUCCESS       : 'app::sync-success',
-  RESTORED           : 'app::RESTORED',
-  GET_VERSION        : 'app::get-version',
-  GET_VERSION_SUCCESS: 'app::get-version-success',
-  HEARTBEAT          : 'app::heartbeat',
-  HEARTBEAT_ALIVE    : 'app::heartbeat-alive',
-  HEARTBEAT_STOP     : 'app::heartbeat-stop',
-};
-
-const isCurrent = type => type.startsWith('app::');
-
-// --------------------------------------------------------------
-// Module actions
-// --------------------------------------------------------------
-
-const appActions = {
-  // action: (args) => ({ type, payload })
-  sync             : () => reduxAction(appActionTypes.SYNC, { loading: true }),
-  syncSuccess      : () => reduxAction(appActionTypes.SYNC_SUCCESS, { loading: false }),
-  init             : () => reduxAction(appActionTypes.INIT, { loading: true }),
-  initSuccess      : () => reduxAction(appActionTypes.INIT_SUCCESS, { loading: false }),
-  restored         : () => reduxAction(appActionTypes.RESTORED, { restored: true }),
-  getVersion       : () => reduxAction(appActionTypes.GET_VERSION),
-  getVersionSuccess: version => reduxAction(appActionTypes.GET_VERSION_SUCCESS, { version }),
-  heartbeat        : () => reduxAction(appActionTypes.HEARTBEAT),
-  heartbeatAlive   : () => reduxAction(appActionTypes.HEARTBEAT_ALIVE, { heartbeat: true }),
-  heartbeatStop    : () => reduxAction(appActionTypes.HEARTBEAT_STOP, { heartbeat: false }),
-};
 
 // --------------------------------------------------------------
 // Module sagas
@@ -76,10 +38,9 @@ function* init() {
     if (!restored) {
       yield take(REHYDRATE);
     }
-
     logger.log('[init]', 'get version...');
     // eslint-disable-next-line no-use-before-define
-    yield getVersion();
+    // yield heartbeat();
     logger.log('[init]', 'load all roles...');
     yield securitySagaFunctions.loadAllRoles();
     logger.log('[init]', 'get current user...');
@@ -138,51 +99,26 @@ function* rehydrateWatcher(action) {
  */
 function* heartbeat() {
   const { token }     = yield select<RootState>(state => state.auth);
-  const { heartbeat } = yield select<RootState>(state => state.app);
+  const app: AppState = yield select<RootState>(state => state.app);
 
   try {
-    const response    = yield call(apiProxy.getVersion, { token });
-    const { version } = yield select(R.prop('app'));
-    logger.info('[connect]', { response, version });
+    logger.info('[heartbeat]', { apiProxy, version: apiProxy.getVersion });
 
-    if (!!version && R.not(R.equals(version, response.data))) {
-      yield put(appActions.sync());
-    }
-
-    yield put(appActions.getVersionSuccess(response.data));
-    if (!heartbeat) {
-      yield put(appActions.heartbeatAlive());
-    }
-  } catch (e) {
-    logger.error('[connect]', { e });
-    if (heartbeat) {
-      yield put(appActions.heartbeatStop());
-    }
-  }
-}
-
-/**
- * 查询运行中的服务端版本，版本不一致时更新当前的版本，同时进行同步操作
- */
-function* getVersion() {
-  const { token }              = yield select<RootState>(state => state.auth);
-  const { version, heartbeat } = yield select<RootState>(state => state.app);
-
-  try {
     const response = yield call(apiProxy.getVersion, { token });
-    logger.info('[version]', { response });
+    logger.info('[heartbeat]', { response, version: app.version });
 
-    if (!!version && R.not(R.equals(version, response.data))) {
+    // 版本不一致时执行同步操作
+    if (!!app.version && app.version !== response.data) {
       yield put(appActions.sync());
     }
 
-    yield put(appActions.getVersionSuccess(response.data));
-    if (!heartbeat) {
+    yield put(appActions.loadVersionSuccess(response.data));
+    if (!app.heartbeat) {
       yield put(appActions.heartbeatAlive());
     }
   } catch (e) {
-    logger.error('[getVersion]', { e });
-    if (heartbeat) {
+    logger.error('[heartbeat]', e, { e });
+    if (app.heartbeat) {
       yield put(appActions.heartbeatStop());
     }
   }
@@ -193,7 +129,6 @@ const appSagas = [
   takeLatest(appActionTypes.INIT, init),
   takeLatest(appActionTypes.SYNC, sync),
   takeLatest(appActionTypes.HEARTBEAT, heartbeat),
-  takeLatest(appActionTypes.GET_VERSION, getVersion),
   takeEvery(REHYDRATE, rehydrateWatcher),
 ];
 
@@ -214,13 +149,20 @@ const appEpics = [
 // action = { payload: any? }
 // --------------------------------------------------------------
 
-const initialState = {
+interface AppState {
+  heartbeat: boolean;
+  loading: boolean;
+  restored: boolean;
+  version?: string;
+}
+
+const initialState: AppState = {
   heartbeat: false,
   loading  : true,  // 初始化状态，用于加载 loading 图
   restored : false, // 标记恢复状态，恢复后不再等待恢复信息
 };
 
-const appReducer = (previousState = initialState, action) => {
+const appReducer = (previousState: AppState = initialState, action) => {
   if (isCurrent(action.type)) {
     switch (action.type) {
       default:
@@ -232,9 +174,8 @@ const appReducer = (previousState = initialState, action) => {
 };
 
 export {
-  appActionTypes,
-  appActions,
   appSagas,
   appEpics,
   appReducer,
+  AppState,
 };

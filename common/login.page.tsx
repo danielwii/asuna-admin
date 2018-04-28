@@ -1,18 +1,18 @@
 import React       from 'react';
 import { connect } from 'react-redux';
-import PropTypes   from 'prop-types';
 import styled      from 'styled-components';
 
-import AntdLayout        from '../layout/antd';
-import Login             from '../components/Login';
-import Loading           from '../components/LivingLoading';
-import Snow              from '../components/Snow';
-import LogoCanvas        from '../components/LogoCanvas';
-import { withReduxSaga } from '../store/index';
+import AntdLayout                   from '../layout/antd';
+import Login                        from '../containers/Login';
+import Loading                      from '../components/LivingLoading';
+import Snow                         from '../components/Snow';
+import LogoCanvas                   from '../components/LogoCanvas';
+import { RootState, withReduxSaga } from '../store';
 
 import { register }     from '../services/register';
 import { createLogger } from '../helpers';
 import { appContext }   from '../app/context';
+import { ReduxProps }   from 'index';
 
 const logger = createLogger('pages:login');
 
@@ -47,15 +47,11 @@ const StyledLogoWrapper = styled.div`
   left: 1rem;
 `;
 
-class LoginPage extends React.Component {
-  props: any;
+interface IProps extends ReduxProps {
+  app: RootState['app'];
+}
 
-  static propTypes = {
-    global: PropTypes.shape({}),
-    app   : PropTypes.shape({
-      heartbeat: PropTypes.bool,
-    }),
-  };
+class LoginPage extends React.Component<IProps> {
 
   // --------------------------------------------------------------
   // 1. Mounting：已插入真實的 DOM
@@ -167,7 +163,7 @@ class LoginPage extends React.Component {
   }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state: RootState) => ({
   global: state.global,
   app   : state.app,
 });

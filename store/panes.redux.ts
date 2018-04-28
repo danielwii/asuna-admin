@@ -1,32 +1,7 @@
 import _      from 'lodash';
 import * as R from 'ramda';
-// import { call, put, takeLatest } from 'redux-saga/effects';
 
-// --------------------------------------------------------------
-// Module actionTypes
-// --------------------------------------------------------------
-
-const panesActionTypes = {
-  // ACTION: 'module::action'
-  OPEN         : 'panes::open',
-  ACTIVE       : 'panes::active',
-  CLOSE        : 'panes::close',
-  CLOSE_WITHOUT: 'panes::close-without',
-};
-
-const isCurrent = type => type.startsWith('panes::');
-
-// --------------------------------------------------------------
-// Module actions
-// --------------------------------------------------------------
-
-const panesActions = {
-  // action: (args) => ({ type, payload })
-  open          : pane => ({ type: panesActionTypes.OPEN, payload: { pane } }),
-  active        : key => ({ type: panesActionTypes.ACTIVE, payload: { key } }),
-  close         : key => ({ type: panesActionTypes.CLOSE, payload: { key } }),
-  onCloseWithout: activeKey => ({ type: panesActionTypes.CLOSE_WITHOUT, payload: { activeKey } }),
-};
+import { isCurrent, panesActionTypes } from './panes.actions';
 
 // --------------------------------------------------------------
 // Module sagas
@@ -44,7 +19,12 @@ const panesSagas = [
 // action = { payload: any? }
 // --------------------------------------------------------------
 
-const initialState = {
+interface PanesState {
+  activeKey: string | null;
+  panes: object;
+}
+
+const initialState: PanesState = {
   activeKey: null,
   panes    : {},
 };
@@ -76,6 +56,9 @@ const panesReducer = (previousState = initialState, action) => {
           : nextKeys[_.min([index, nextKeys.length - 1])];
         return { activeKey: nextKey, panes: nextPanes };
       }
+      case panesActionTypes.CLOSE_ALL: {
+        return {};
+      }
       case panesActionTypes.CLOSE_WITHOUT: {
         const { payload: { activeKey } } = action;
         if (activeKey) {
@@ -93,8 +76,6 @@ const panesReducer = (previousState = initialState, action) => {
 };
 
 export {
-  panesActionTypes,
-  panesActions,
   panesSagas,
   panesCleaner,
   panesReducer,

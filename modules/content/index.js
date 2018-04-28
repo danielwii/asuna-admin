@@ -7,7 +7,7 @@ import _           from 'lodash';
 
 import { Button, Divider, Modal, Table } from 'antd';
 
-import { panesActions }   from '../../store/panes.redux';
+import { panesActions }   from '../../store/panes.actions';
 import { contentActions } from '../../store/content.redux';
 import { modelsActions }  from '../../store/model.redux';
 import { modelProxy }     from '../../adapters/model';

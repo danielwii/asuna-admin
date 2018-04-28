@@ -76,7 +76,7 @@ class AppContext {
     });
     (async () => {
       const { storeConnector } = await import('../store/middlewares/store-connector');
-      this._storeConnector = storeConnector;
+      this._storeConnector     = storeConnector;
     })();
   }
 
@@ -96,30 +96,62 @@ class AppContext {
     !serverRuntimeConfig.isServer && this._subject && this._subject.next(action);
   }
 
-  setup(moduleRegister: LoginModuleRegister | IndexModuleRegister): void {
-    if (moduleRegister.module === 'login') {
-      this._context = {
-        ...this._context,
-        auth: new AuthAdapter(moduleRegister.register.createAuthService()),
+  /**
+   * 提供全局的注册方法
+   * @param {ILoginRegister & IIndexRegister} moduleRegister
+   */
+  setup(moduleRegister: ILoginRegister & IIndexRegister): void;
+  /**
+   * 提供基于模块的注册方法
+   * @param {LoginModuleRegister | IndexModuleRegister} moduleRegister
+   */
+  setup(moduleRegister: LoginModuleRegister | IndexModuleRegister): void;
+  setup(moduleRegister): void {
+    if (moduleRegister.module) {
+      const register = moduleRegister.register;
+      if (moduleRegister.module === 'login') {
+        this._context = {
+          ...this._context,
+          auth: new AuthAdapter(register.createAuthService()),
+        };
+      } else {
+        this._context = {
+          ...this._context,
+          auth    : new AuthAdapter(register.createAuthService()),
+          response: new ResponseAdapter(),
+          menu    : new MenuAdapter(
+            register.createMenuService(),
+            register.createDefinitions().registeredModels,
+          ),
+          api     : new ApiAdapter(register.createApiService()),
+          security: new SecurityAdapter(register.createSecurityService()),
+          models  : new ModelAdapter(
+            register.createModelService(),
+            register.createDefinitions().modelConfigs,
+            register.createDefinitions().associations,
+          ),
+        };
       }
     } else {
-      this._context = {
+      const register = moduleRegister;
+      this._context  = {
         ...this._context,
-        auth    : new AuthAdapter(moduleRegister.register.createAuthService()),
+        auth    : new AuthAdapter(register.createAuthService()),
         response: new ResponseAdapter(),
         menu    : new MenuAdapter(
-          moduleRegister.register.createMenuService(),
-          moduleRegister.register.createDefinitions().registeredModels,
+          register.createMenuService(),
+          register.createDefinitions().registeredModels,
         ),
-        api     : new ApiAdapter(moduleRegister.register.createApiService()),
-        security: new SecurityAdapter(moduleRegister.register.createSecurityService()),
+        api     : new ApiAdapter(register.createApiService()),
+        security: new SecurityAdapter(register.createSecurityService()),
         models  : new ModelAdapter(
-          moduleRegister.register.createModelService(),
-          moduleRegister.register.createDefinitions().modelConfigs,
-          moduleRegister.register.createDefinitions().associations,
+          register.createModelService(),
+          register.createDefinitions().modelConfigs,
+          register.createDefinitions().associations,
         ),
-      }
+      };
     }
+
   }
 
   get ctx() {

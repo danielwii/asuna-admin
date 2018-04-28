@@ -7,7 +7,7 @@ import 'moment/locale/zh-cn';
 
 import { withReduxSaga } from '../store';
 // eslint-disable-next-line import/extensions
-import { appActions }    from '../store/app.redux';
+import { appActions }    from '../store/app.actions';
 
 import AntdLayout from '../layout/antd';
 import Loading    from '../components/LivingLoading';

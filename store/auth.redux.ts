@@ -5,44 +5,28 @@ import * as R        from 'ramda';
 import { message }   from 'antd';
 import { REHYDRATE } from 'redux-persist/constants';
 
+import { authActions, authActionTypes, isCurrent } from './auth.actions';
+
+import { RootState }        from './';
 import { authProxy }        from '../adapters/auth';
+import { panesActions }     from './panes.actions';
 import { routerActions }    from './router.redux';
 import { createLogger, lv } from '../helpers';
-import { reduxAction }      from 'node-buffs';
 
 const logger = createLogger('store:auth', lv.warn);
-
-// --------------------------------------------------------------
-// Login actionTypes
-// --------------------------------------------------------------
-
-const authActionTypes = {
-  LOGIN        : 'auth::login',
-  LOGOUT       : 'auth::logout',
-  LOGIN_FAILED : 'auth::login-failed',
-  LOGIN_SUCCESS: 'auth::login-success',
-};
-
-const isCurrent = type => type.startsWith('auth::');
-
-// --------------------------------------------------------------
-// Login actions
-// --------------------------------------------------------------
-
-const authActions = {
-  login       : (username, password) => reduxAction(authActionTypes.LOGIN, { username, password }),
-  logout      : () => reduxAction(authActionTypes.LOGOUT, { token: null, loginTime: null }),
-  loginSuccess: token => reduxAction(authActionTypes.LOGIN_SUCCESS, { token, loginTime: new Date() }),
-  loginFailed : error => reduxAction(authActionTypes.LOGIN_FAILED, {}, error),
-};
 
 // --------------------------------------------------------------
 // Login sagas
 // --------------------------------------------------------------
 
 function* loginSaga({ payload: { username, password } }) {
+  const auth: AuthState = yield select<RootState>(state => state.auth);
   try {
-    logger.log('[loginSaga]');
+    // 切换用户时更新操作区域，如果未来需要保存当前页面配置的话，应该将切换操作提出为单独的 Saga
+    if (auth.username !== username) {
+      yield put(panesActions.closeAll());
+    }
+
     const response = yield call(authProxy.login, { body: { username, password } });
     logger.log('[loginSaga]', 'response is', response);
     const token = yield call(authProxy.extractToken, response.data);
@@ -94,13 +78,19 @@ const authSagas = [
 // Login reducers
 // --------------------------------------------------------------
 
-const initialState = {
+interface AuthState {
+  loginTime: Date | null;
+  username: string | null;
+  token: string | null;
+}
+
+const initialState: AuthState = {
   loginTime: null,
   username : null,
   token    : null,
 };
 
-const authReducer = (previousState = initialState, action) => {
+const authReducer = (previousState: AuthState = initialState, action) => {
   if (isCurrent(action.type)) {
     switch (action.type) {
       default:
@@ -112,8 +102,7 @@ const authReducer = (previousState = initialState, action) => {
 };
 
 export {
-  authActionTypes,
-  authActions,
   authSagas,
   authReducer,
+  AuthState,
 };

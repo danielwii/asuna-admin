@@ -1,11 +1,11 @@
 import React from 'react';
 
 import { Button, Form, Icon, Input } from 'antd';
+import { WrappedFormUtils }          from 'antd/lib/form/Form';
 
-import { authActions }  from '../store/auth.redux';
-import { createLogger } from '../helpers/index';
+import { createLogger, lv } from '../helpers';
 
-const logger = createLogger('components:login');
+const logger = createLogger('components:login', lv.warn);
 
 // TODO using DynamicForm's component instead
 function generateInput(form, name, type, required, message, placeholder, iconType) {
@@ -22,15 +22,19 @@ function generateInput(form, name, type, required, message, placeholder, iconTyp
   return decorator(<Input placeholder={placeholder} />);
 }
 
-class NormalLoginForm extends React.Component {
+interface IProps {
+  form: WrappedFormUtils;
+  login: (username: string, password: string) => void;
+}
+
+class NormalLoginForm extends React.Component<IProps> {
   handleSubmit = (e) => {
     e.preventDefault();
-    logger.info('Dispatch is', this.props.dispatch);
     this.props.form.validateFields((err, values) => {
       if (!err) {
         logger.info('Received values of form: ', values);
         const { username, password } = values;
-        this.props.dispatch(authActions.login(username, password));
+        this.props.login(username, password);
       }
     });
   };

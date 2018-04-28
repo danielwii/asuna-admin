@@ -1,6 +1,6 @@
 {
   "name": "asuna-admin",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "repository": "git@github.com:danielwii/asuna-admin.git",
   "author": "Daniel Wei <danielwii0326@gmail.com>",
   "license": "MIT",
@@ -42,7 +42,8 @@
   },
   "scripts": {
     "autod": "autod",
-    "dev": "yarn && NODE_ENV=dev node $NODE_DEBUG_OPTION server.js",
+    "build:ignore-engines": "yarn --ignore-engines",
+    "dev": "NODE_ENV=dev node $NODE_DEBUG_OPTION server.js",
     "build": "next build",
     "start": "NODE_ENV=production node server.js",
     "storybook": "NODE_ENV=dev start-storybook -p 6006",
@@ -59,7 +60,7 @@
     "@fortawesome/fontawesome-free-solid": "^5.0.10",
     "@fortawesome/react-fontawesome": "^0.0.18",
     "@zeit/next-typescript": "^0.1.1",
-    "antd": "^3.4.3",
+    "antd": "^3.4.4",
     "async": "^2.6.0",
     "axios": "^0.18.0",
     "braft-editor": "^1.8.10",
@@ -106,9 +107,9 @@
     "video.js": "^6.9.0"
   },
   "devDependencies": {
-    "@storybook/addon-actions": "^3.4.2",
-    "@storybook/addon-links": "^3.4.2",
-    "@storybook/react": "^3.4.2",
+    "@storybook/addon-actions": "^3.4.3",
+    "@storybook/addon-links": "^3.4.3",
+    "@storybook/react": "^3.4.3",
     "@types/braft-editor": "^1.1.2",
     "@types/debug": "^0.0.30",
     "@types/jest": "^22.2.3",

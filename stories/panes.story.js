@@ -10,7 +10,8 @@ import { configureStore } from '../store/index';
 import Panes              from '../components/Panes';
 import PanesContainer     from '../containers/Panes';
 
-import { panesActions, panesActionTypes, panesReducer } from '../store/panes.redux';
+import { panesReducer }                   from '../store/panes.redux';
+import { panesActions, panesActionTypes } from '../store/panes.actions';
 
 const StyledButtonsDiv = styled.div`
   margin-bottom: 16px;

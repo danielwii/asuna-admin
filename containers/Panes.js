@@ -1,8 +1,9 @@
+/* eslint-disable import/extensions */
 import { connect } from 'react-redux';
 
 import Panes from '../components/Panes';
 
-import { panesActions } from '../store/panes.redux';
+import { panesActions } from '../store/panes.actions';
 
 const mapStateToProps    = state => ({ ...state.panes });
 const mapDispatchToProps = dispatch => ({
