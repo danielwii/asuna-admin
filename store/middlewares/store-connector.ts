@@ -1,8 +1,16 @@
 import { createLogger, lv } from '../../helpers';
 
-const logger = createLogger('store:app', lv.warn);
+const logger = createLogger('store:connector', lv.warn);
 
-export const storeConnector = {
+export interface IStoreConnector<T> {
+  connect(state: T): void;
+
+  getState<K extends keyof T>(name: K): T[K];
+
+  select<S>(cb: (state: T) => S): S;
+}
+
+export const storeConnector: IStoreConnector<any> = {
   connect : (state) => {
     this.state = state;
   },

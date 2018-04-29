@@ -23,21 +23,43 @@ export class WsAdapter {
     if (!serverRuntimeConfig.isServer && !WsAdapter.io) {
       WsAdapter.io = connect('/admin');
 
+      WsAdapter.io.on('connection', socket => {
+        socket.conn.on('heartbeat', () => {
+          console.log('heartbeat');
+        });
+      });
+
+      WsAdapter.io.on('heartbeat', () => {
+        console.log('heartbeat2');
+      });
+
       WsAdapter.io.on('connect', () => {
         logger.log('[connect]', { id: WsAdapter.io.id, appContext });
-        appContext.dispatch(appActions.heartbeat());
+        const { heartbeat } = appContext.store.select(state => state.app);
+        if (!heartbeat) {
+          appContext.dispatch(appActions.heartbeat());
+        }
       });
       WsAdapter.io.on('reconnect', () => {
         logger.log('[reconnect]', { id: WsAdapter.io.id, appContext });
-        appContext.dispatch(appActions.heartbeat());
+        const { heartbeat } = appContext.store.select(state => state.app);
+        if (!heartbeat) {
+          appContext.dispatch(appActions.heartbeat());
+        }
       });
       WsAdapter.io.on('disconnect', () => {
         logger.error('[disconnect]', { id: WsAdapter.io.id, appContext });
-        appContext.dispatch(appActions.heartbeatStop());
+        const { heartbeat } = appContext.store.select(state => state.app);
+        if (heartbeat) {
+          appContext.dispatch(appActions.heartbeatStop());
+        }
       });
       WsAdapter.io.on('error', (error) => {
         logger.error('[error]', { id: WsAdapter.io.id, appContext, error });
-        appContext.dispatch(appActions.heartbeatStop());
+        const { heartbeat } = appContext.store.select(state => state.app);
+        if (heartbeat) {
+          appContext.dispatch(appActions.heartbeatStop());
+        }
       });
     }
   }

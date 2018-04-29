@@ -10,6 +10,8 @@ import { IMenuService, MenuAdapter }         from '../adapters/menu';
 import { ResponseAdapter }                   from '../adapters/response';
 import { ApiAdapter, IApiService }           from '../adapters/api';
 import { WsAdapter }                         from '../adapters/ws';
+import { IStoreConnector }                   from 'store/middlewares/store-connector';
+import { RootState }                         from 'store';
 
 // --------------------------------------------------------------
 // Types
@@ -66,7 +68,7 @@ class AppContext {
   };
   private _dispatch: Dispatch;
   private _subject;
-  private _storeConnector;
+  private _storeConnector: IStoreConnector<RootState>;
 
   constructor() {
     this._context = { ...this._context, ws: new WsAdapter() };
@@ -80,7 +82,7 @@ class AppContext {
     })();
   }
 
-  regStore(storeConnector: any) {
+  regStore(storeConnector: IStoreConnector<RootState>) {
     this._storeConnector = storeConnector;
   }
 
