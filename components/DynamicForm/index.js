@@ -422,9 +422,6 @@ class FormAnchor extends React.Component {
   }
 }
 
-/**
- * Using PureComponent to improve elements' performance
- */
 class EnhancedPureElement extends React.Component {
   static propTypes = {
     field  : PropTypes.shape({}),

@@ -255,8 +255,9 @@ class ContentUpsert extends React.Component {
 
       const updateModeAtTheFirstTime = !isInsertMode && init;
       const hasEnumFilterFields      = !R.isEmpty(R.filter(R.propEq('type', 'EnumFilter'), changedFields));
+      const hasSelectable            = !R.isEmpty(R.filter(R.propEq('options', 'selectable'), changedFields));
 
-      if (updateModeAtTheFirstTime || hasEnumFilterFields) {
+      if (updateModeAtTheFirstTime && (hasEnumFilterFields && hasSelectable)) {
         this.setState({
           loadings: { ...this.state.loadings, ASSOCIATIONS: true },
         });
