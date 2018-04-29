@@ -5,7 +5,7 @@ import * as R        from 'ramda';
 import { message }   from 'antd';
 import { REHYDRATE } from 'redux-persist/constants';
 
-import { authActions, authActionTypes, isCurrent } from './auth.actions';
+import { authActions, authActionTypes, isAvailable } from './auth.actions';
 
 import { RootState }        from './';
 import { authProxy }        from '../adapters/auth';
@@ -23,14 +23,15 @@ function* loginSaga({ payload: { username, password } }) {
   const auth: AuthState = yield select<RootState>(state => state.auth);
   try {
     // 切换用户时更新操作区域，如果未来需要保存当前页面配置的话，应该将切换操作提出为单独的 Saga
+
     if (auth.username !== username) {
       yield put(panesActions.closeAll());
     }
 
-    const response = yield call(authProxy.login, { body: { username, password } });
+    const response = yield call(authProxy.login, username, password);
     logger.log('[loginSaga]', 'response is', response);
     const token = yield call(authProxy.extractToken, response.data);
-    yield put(authActions.loginSuccess(token));
+    yield put(authActions.loginSuccess(username, token));
     message.info(`'${username}' login success`);
     yield put(routerActions.toIndex());
   } catch (e) {
@@ -91,7 +92,7 @@ const initialState: AuthState = {
 };
 
 const authReducer = (previousState: AuthState = initialState, action) => {
-  if (isCurrent(action.type)) {
+  if (isAvailable(action)) {
     switch (action.type) {
       default:
         return R.mergeDeepRight(previousState, _.omit(action.payload, 'password'));

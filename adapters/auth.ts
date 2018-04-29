@@ -6,11 +6,19 @@ import { appContext }       from '../app/context';
 // --------------------------------------------------------------
 
 export interface IAuthService {
-  login(params: { body: { username: string, password: string } }): Promise<any>;
+  login(username: string, password: string): Promise<any>;
 
   logout(): Promise<any>;
 
-  extractToken(payload: object): string | undefined;
+  extractToken(payload: string | object): string | undefined;
+}
+
+interface IAuthProxy {
+  login(username: string, password: string): Promise<any>;
+
+  logout(): Promise<any>;
+
+  extractToken(payload: string | object): string;
 }
 
 // --------------------------------------------------------------
@@ -19,19 +27,19 @@ export interface IAuthService {
 
 const logger = createLogger('adapters:auth', lv.warn);
 
-export const authProxy = {
-  login       : args => appContext.ctx.auth.login(args),
+export const authProxy: IAuthProxy = {
+  login       : (username, password) => appContext.ctx.auth.login(username, password),
   logout      : () => appContext.ctx.auth.logout(),
-  extractToken: (payload: object) => appContext.ctx.auth.extractToken(payload),
+  extractToken: (payload) => appContext.ctx.auth.extractToken(payload),
 };
 
-export class AuthAdapter {
+export class AuthAdapter implements IAuthProxy {
   constructor(private service: IAuthService) {
   }
 
-  login        = args => this.service.login(args);
+  login        = (username, password) => this.service.login(username, password);
   logout       = () => this.service.logout();
-  extractToken = (payload: object) => {
+  extractToken = (payload) => {
     const token = this.service.extractToken(payload);
     if (!token) {
       logger.warn('[extractToken]', 'extract token error from', payload);

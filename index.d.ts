@@ -1,11 +1,13 @@
 import { Dispatch } from 'redux';
 
-interface SagaParams {
-  payload: object;
+declare global {
+  interface SagaParams {
+    payload: object;
 
-  cb?(...any): any;
-}
+    cb?(...any): any;
+  }
 
-interface ReduxProps {
-  dispatch: Dispatch;
+  interface ReduxProps {
+    dispatch: Dispatch;
+  }
 }

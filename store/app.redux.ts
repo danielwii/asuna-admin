@@ -3,7 +3,7 @@ import { call, put, select, take, takeEvery, takeLatest } from 'redux-saga/effec
 import { REHYDRATE } from 'redux-persist/constants';
 import _             from 'lodash';
 
-import { appActions, appActionTypes, isCurrent } from './app.actions';
+import { appActions, appActionTypes, isAvailable } from './app.actions';
 
 import { actions, RootState }    from './';
 import { securitySagaFunctions } from './security.redux';
@@ -58,7 +58,7 @@ function* init() {
     yield put(appActions.initSuccess());
   } catch (e) {
     yield put(authActions.logout());
-    logger.error('[init]', { e });
+    logger.error('[init]', e, { e });
   }
 }
 
@@ -75,7 +75,7 @@ function* sync() {
     yield modelsSagaFunctions.loadAllSchemas();
     yield put(appActions.syncSuccess());
   } catch (e) {
-    logger.error('[sync]', { e });
+    logger.error('[sync]', e, { e });
   }
 }
 
@@ -163,7 +163,7 @@ const initialState: AppState = {
 };
 
 const appReducer = (previousState: AppState = initialState, action) => {
-  if (isCurrent(action.type)) {
+  if (isAvailable(action)) {
     switch (action.type) {
       default:
         return { ...previousState, ...action.payload };

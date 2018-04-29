@@ -8,7 +8,8 @@ const actionTypes = {
   // ACTION: 'module::action'
 };
 
-const isCurrent = type => type.startsWith(/* module:: */);
+const isAvailable = action => action.type.startsWith(/* module:: */) && !action.transient;
+
 
 // --------------------------------------------------------------
 // Module actions
@@ -45,7 +46,7 @@ const epics = [
 const initialState = {};
 
 const reducer = (previousState = initialState, action) => {
-  if (isCurrent(action.type)) {
+  if (isAvailable(action)) {
     switch (action.type) {
       default:
         return { ...previousState, ...action.payload };

@@ -19,7 +19,8 @@ const menuActionTypes = {
   INIT_SUCCESS: 'menu::init-success',
 };
 
-const isCurrent = type => type.startsWith('menu::');
+export const isAvailable = action => action.type.startsWith('menu::') && !action.transient;
+
 
 // --------------------------------------------------------------
 // Module menuActions
@@ -105,7 +106,7 @@ const initialState = {
 };
 
 const menuReducer = (previousState = initialState, action) => {
-  if (isCurrent(action.type)) {
+  if (isAvailable(action)) {
     switch (action.type) {
       default:
         return { ...previousState, ...action.payload };

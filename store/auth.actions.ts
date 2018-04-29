@@ -11,16 +11,22 @@ export const authActionTypes = {
   LOGIN_SUCCESS: 'auth::login-success',
 };
 
-export const isCurrent = type => type.startsWith('auth::');
+export const isAvailable = action => action.type.startsWith('auth::') && !action.transient;
 
 // --------------------------------------------------------------
 // Login actions
 // --------------------------------------------------------------
 
 export const authActions = {
-  login       : (username, password) => reduxAction(authActionTypes.LOGIN, { username, password }),
+  login       : (username, password) => ({
+    transient: true,
+    ...reduxAction(authActionTypes.LOGIN, {
+      username,
+      password,
+    }),
+  }),
   logout      : () => reduxAction(authActionTypes.LOGOUT, { token: null, loginTime: null }),
-  loginSuccess: token => reduxAction(authActionTypes.LOGIN_SUCCESS, {
+  loginSuccess: (username, token) => reduxAction(authActionTypes.LOGIN_SUCCESS, {
     token,
     loginTime: new Date()
   }),

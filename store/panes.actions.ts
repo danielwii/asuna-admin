@@ -13,7 +13,8 @@ export const panesActionTypes = {
   CLOSE_WITHOUT: 'panes::close-without',
 };
 
-export const isCurrent = type => type.startsWith('panes::');
+export const isAvailable = action => action.type.startsWith('panes::') && !action.transient;
+
 
 // --------------------------------------------------------------
 // Module actions

@@ -21,7 +21,8 @@ const contentActionTypes = {
   CONTENT_LOAD_MODELS_SUCCESS: 'content::load-models-success',
 };
 
-const isCurrent = type => type.startsWith('content::');
+export const isAvailable = action => action.type.startsWith('content::') && !action.transient;
+
 
 // --------------------------------------------------------------
 // Module actions
@@ -91,7 +92,7 @@ const contentSagas = [
 const initialState = {};
 
 const contentReducer = (previousState = initialState, action) => {
-  if (isCurrent(action.type)) {
+  if (isAvailable(action)) {
     switch (action.type) {
       default:
         // TODO update others to use mergeDeepRight

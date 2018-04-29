@@ -25,7 +25,8 @@ const securityActionTypes = {
   UPDATE_PASSWORD: 'security::update-password',
 };
 
-const isCurrent = type => type.startsWith('security::');
+export const isAvailable = action => action.type.startsWith('security::') && !action.transient;
+
 
 // --------------------------------------------------------------
 // Module actions
@@ -102,7 +103,7 @@ const securitySagas = [
 const initialState = {};
 
 const securityReducer = (previousState = initialState, action) => {
-  if (isCurrent(action.type)) {
+  if (isAvailable(action)) {
     switch (action.type) {
       default:
         return { ...previousState, ...action.payload };

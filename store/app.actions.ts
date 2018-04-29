@@ -21,7 +21,7 @@ export const appActionTypes = {
   HEARTBEAT_STOP      : 'app::heartbeat-stop',
 };
 
-export const isCurrent = type => type.startsWith('app::');
+export const isAvailable = action => action.type.startsWith('app::') && !action.transient;
 
 // --------------------------------------------------------------
 // Module actions

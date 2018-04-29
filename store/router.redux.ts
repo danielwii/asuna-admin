@@ -14,7 +14,8 @@ const actionTypes = {
   GOTO    : 'router::goto',
 };
 
-const isCurrent = type => type.startsWith('router::');
+export const isAvailable = action => action.type.startsWith('router::') && !action.transient;
+
 
 // --------------------------------------------------------------
 // Module actions
@@ -57,7 +58,7 @@ const initialState = {
 };
 
 const reducer = (previousState = initialState, action) => {
-  if (isCurrent(action.type)) {
+  if (isAvailable(action)) {
     switch (action.type) {
       default:
         return { ...action.payload };
