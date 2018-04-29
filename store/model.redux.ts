@@ -79,7 +79,7 @@ const modelsSagaFunctions = {
         logger.log('[fetch]', 'response of load model is', response);
         yield put(modelsActions.fetchSuccess(modelName, response.data));
       } catch (e) {
-        logger.warn('[fetch]', e);
+        logger.warn('[fetch]', e, { e });
         message.error(e.message);
       }
     }
@@ -99,8 +99,8 @@ const modelsSagaFunctions = {
         yield put(contentActions.loadModels(modelName));
         if (callback != null) callback(response);
       } catch (e) {
-        logger.warn('[upsert]', { e, response: e.response });
-        if (callback != null) callback(e.response);
+        logger.warn('[upsert]', e, { e });
+        if (callback != null) callback(null, e);
         message.error(e.message);
       }
     }
@@ -118,7 +118,7 @@ const modelsSagaFunctions = {
         // refresh models in content index
         yield put(contentActions.loadModels(modelName));
       } catch (e) {
-        logger.warn('[remove]', e);
+        logger.warn('[remove]', e, { e });
         message.error(e.message);
       }
     }
@@ -142,7 +142,7 @@ const modelsSagaFunctions = {
         yield put(modelsActions.loadAllSchemasSuccess(schemas));
         logger.log('[loadAllSchemas]', 'load all model schemas', effects, schemas);
       } catch (e) {
-        logger.warn('[loadAllSchemas]', e);
+        logger.warn('[loadAllSchemas]', e, { e });
         message.error(e.message);
       }
     }

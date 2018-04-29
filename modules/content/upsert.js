@@ -251,13 +251,9 @@ class ContentUpsert extends React.Component {
         allChangedFields,
       });
 
-      // UPDATE-MODE: 初次加载时获得的 changedFields 只有 value 属性，需要增加判断才能正常加载关联
-
       const updateModeAtTheFirstTime = !isInsertMode && init;
-      const hasEnumFilterFields      = !R.isEmpty(R.filter(R.propEq('type', 'EnumFilter'), changedFields));
-      const hasSelectable            = !R.isEmpty(R.filter(R.propEq('options', 'selectable'), changedFields));
 
-      if (updateModeAtTheFirstTime && (hasEnumFilterFields && hasSelectable)) {
+      if (updateModeAtTheFirstTime) {
         this.setState({
           loadings: { ...this.state.loadings, ASSOCIATIONS: true },
         });

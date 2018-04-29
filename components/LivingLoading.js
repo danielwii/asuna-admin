@@ -12,7 +12,7 @@ const StyledLoading = styled.div`
   top: 0;
   background: whitesmoke;
   bottom: 0;
-  z-index: 10;
+  z-index: 100;
 `;
 
 const StyledHeartbeat = styled.div`

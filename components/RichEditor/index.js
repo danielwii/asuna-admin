@@ -1,6 +1,8 @@
 import React     from 'react';
 import PropTypes from 'prop-types';
 
+import { message } from 'antd';
+
 import { apiProxy }         from '../../adapters/api';
 import { createLogger, lv } from '../../helpers/index';
 
@@ -58,13 +60,17 @@ export class BraftRichEditor extends React.Component {
   };
 */
 
-  validateFn = (file) => {
-    logger.info('[validateFn]', 'validate file', file);
-    if (file.size > 1000 * 1000 * 2) {
-      logger.warn('[validateFn]', 'file size must less than 2_000_000', file);
-      return false;
+  beforeUpload = (file) => {
+    const isImage = ['image/jpeg', 'image/png'].indexOf(file.type) > -1;
+    logger.log('[beforeUpload]', file);
+    if (!isImage) {
+      message.error('You can only upload JPG/PNG file!');
     }
-    return true;
+    const isLt2M = file.size / 1024 / 1024 < 2;
+    if (!isLt2M) {
+      message.error('Image must smaller than 2MB!');
+    }
+    return isImage && isLt2M;
   };
 
   uploadFn = async (param) => {
@@ -148,8 +154,14 @@ export class BraftRichEditor extends React.Component {
       onChange      : this.handleChange,
       onHTMLChange  : this.handleHTMLChange,
       media         : {
-        validateFn: this.validateFn, // 指定本地校验函数，说明见下文
-        uploadFn  : this.uploadFn, // 指定上传函数，说明见下文
+        validateFn    : this.beforeUpload, // 指定本地校验函数
+        uploadFn      : this.uploadFn,     // 指定上传函数
+        externalMedias: {
+          image: true,
+          audio: false,
+          video: false,
+          embed: true,
+        },
       },
       // extendControls,
     };
