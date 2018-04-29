@@ -8,6 +8,7 @@ import HeaderContainer   from '../containers/Header';
 import PanesContainer    from '../containers/Panes';
 import SideMenuContainer from '../containers/SideMenu';
 
+import Loading     from '../components/LivingLoading';
 import ProgressBar from '../components/ProgressBar';
 
 const StyledContentDiv = styled.div`
@@ -17,9 +18,10 @@ const StyledContentDiv = styled.div`
   min-height: 280px;
 `;
 
-export default () => (
+export default ({ loading, heartbeat, auth, appInfo }) => (
   <AntdLayout>
     <Layout>
+      {loading && <Loading heartbeat={heartbeat} />}
       <ProgressBar />
       <HeaderContainer />
       <Layout>

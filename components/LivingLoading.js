@@ -5,6 +5,16 @@ import _         from 'lodash';
 
 import styled from 'styled-components';
 
+const StyledLoading = styled.div`
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  background: whitesmoke;
+  bottom: 0;
+  z-index: 10;
+`;
+
 const StyledHeartbeat = styled.div`
   position: absolute;
   left: 0;
@@ -70,14 +80,17 @@ export default class extends React.Component {
   render() {
     const { heartbeat } = this.props;
     return (
-      <React.Fragment>
+      <StyledLoading>
         <StyledHeartbeat heartbeat={heartbeat}>
           {heartbeat ? 'Loading from backend...' : 'Backend server unavailable.'}
         </StyledHeartbeat>
-        <canvas ref={(canvas) => { this.canvas = canvas; }}>Canvas Not Support?!</canvas>
+        <canvas ref={(canvas) => { this.canvas = canvas; }}>
+          Canvas Not Support?!
+        </canvas>
         {/* language=CSS */}
         <style jsx>{`
           canvas {
+            /*background: white;*/
             position: absolute;
             top: 0;
             right: 0;
@@ -86,7 +99,7 @@ export default class extends React.Component {
             margin: auto;
           }
         `}</style>
-      </React.Fragment>
+      </StyledLoading>
     );
   }
 }
