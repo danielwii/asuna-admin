@@ -100,7 +100,11 @@ const modelsSagaFunctions = {
         if (callback != null) callback(response);
       } catch (e) {
         logger.warn('[upsert]', e, { e });
-        if (callback != null) callback(null, e);
+        try {
+          if (callback != null) callback(null, e);
+        } catch (e) {
+          logger.warn('[upsert] callback error', e, { e });
+        }
         message.error(e.message);
       }
     }
