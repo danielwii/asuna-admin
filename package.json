@@ -1,6 +1,6 @@
 {
   "name": "asuna-admin",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "repository": "git@github.com:danielwii/asuna-admin.git",
   "author": "Daniel Wei <danielwii0326@gmail.com>",
   "license": "MIT",
@@ -31,7 +31,7 @@
     "modulePathIgnorePatterns": [
       "/.asuna"
     ],
-    "testRegex": ".spec.ts$",
+    "testRegex": ".spec.(ts|tsx)$",
     "transform": {
       "^.+\\.(t|j)s(x)?$": "ts-jest"
     },
@@ -112,6 +112,7 @@
     "@storybook/react": "^3.4.3",
     "@types/braft-editor": "^1.1.2",
     "@types/debug": "^0.0.30",
+    "@types/enzyme": "^3.1.10",
     "@types/jest": "^22.2.3",
     "@types/next-redux-wrapper": "^1.4.0",
     "@types/prop-types": "^15.5.2",
@@ -124,6 +125,8 @@
     "babel-plugin-module-resolver": "^3.1.1",
     "babel-plugin-styled-components": "^1.5.1",
     "cz-conventional-changelog": "^2.1.0",
+    "enzyme": "^3.3.0",
+    "enzyme-adapter-react-16": "^1.1.1",
     "eslint": "^4.19.1",
     "eslint-config-airbnb": "^16.1.0",
     "eslint-plugin-import": "^2.11.0",

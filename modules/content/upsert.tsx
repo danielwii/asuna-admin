@@ -238,7 +238,6 @@ class ContentUpsert extends React.Component<IProps, IState> {
     const { isInsertMode, init } = this.state;
     logger.log('[handleFormChange]', { changedFields, state: this.state });
     if (!R.isEmpty(changedFields)) {
-      logger.log('[handleFormChange]', { changedFields, state: this.state });
       const { wrappedFormSchema, fields, preDecorators, asyncDecorators } = this.state;
 
       const currentChangedFields = R.map(R.pick(['value', 'errors']))(changedFields);
@@ -259,7 +258,18 @@ class ContentUpsert extends React.Component<IProps, IState> {
 
       const updateModeAtTheFirstTime = !isInsertMode && init;
 
-      if (updateModeAtTheFirstTime) {
+      const hasEnumFilter = !R.isEmpty(R.filter(R.propEq('type', DynamicFormTypes.EnumFilter), changedFields));
+      const hasSelectable = !R.isEmpty(R.filter(R.path(['options', 'selectable']), changedFields));
+
+      logger.info('[handleFormChange]', {
+        changedFields,
+        updateModeAtTheFirstTime,
+        hasEnumFilter,
+        hasSelectable,
+        options: R.map(R.path(['options']), changedFields),
+      });
+
+      if (updateModeAtTheFirstTime || hasEnumFilter || hasSelectable) {
         this.setState({
           loadings: { ...this.state.loadings, ASSOCIATIONS: true },
         });
@@ -325,7 +335,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
     const noFields = R.anyPass([R.isEmpty, R.isNil])(fields);
     if (noFields || R.any(R.equals(true), R.values(loadings))) {
       return (
-        <div>
+        <React.Fragment>
           <Icon type="loading" style={{ fontSize: 24 }} spin />
           {/* language=CSS */}
           <style jsx>{`
@@ -335,20 +345,18 @@ class ContentUpsert extends React.Component<IProps, IState> {
               text-align: center;
             }
           `}</style>
-        </div>
+        </React.Fragment>
       );
     }
 
     return (
-      <div>
-        <ContentForm
-          anchor
-          auth={auth}
-          fields={fields}
-          onChange={this.handleFormChange}
-          onSubmit={this.handleFormSubmit}
-        />
-      </div>
+      <ContentForm
+        anchor
+        auth={auth}
+        fields={fields}
+        onChange={this.handleFormChange}
+        onSubmit={this.handleFormSubmit}
+      />
     );
   }
 }
@@ -358,4 +366,4 @@ const mapStateToProps = state => ({
   auth: state.auth,
 });
 
-export default connect(mapStateToProps)(ContentUpsert);
+export default connect(mapStateToProps)(ContentUpsert);// as any as typeof ContentUpsert;

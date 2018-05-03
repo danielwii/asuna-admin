@@ -148,7 +148,7 @@ export class DynamicForm2 extends React.Component<IProps & IFormFix & FormCompon
         // --------------------------------------------------------------
         // ManyToMany RelationShip
         // --------------------------------------------------------------
-        logger.info('[DynamicForm2]', '[buildField][ManyToMany]', field);
+        logger.info('[DynamicForm2]', '[buildField][ManyToMany]', { field });
         if (R.has('foreignOpts')(field)) {
           const { modelName, association = defaultAssociation } = R.path(['foreignOpts', 0])(field);
 
@@ -163,14 +163,14 @@ export class DynamicForm2 extends React.Component<IProps & IFormFix & FormCompon
             getValue    : R.prop(association.value || defaultAssociation.value),
           });
         }
-        logger.warn('[buildField]', 'foreignOpts is required in association.');
+        logger.warn('[buildField]', 'foreignOpts is required in association.', { field });
         return <div>association need foreignOpts.</div>;
       }
       case DynamicFormTypes.EnumFilter: {
         // --------------------------------------------------------------
         // EnumFilter / RelationShip
         // --------------------------------------------------------------
-        logger.log('[DynamicForm2]', '[buildField][EnumFilter]', field);
+        logger.log('[DynamicForm2]', '[buildField][EnumFilter]', { field });
         const items = R.path(['options', 'enumData'])(field);
         const type  = R.path(['options', 'filterType'])(field);
         logger.log('[DynamicForm2]', '[buildField][EnumFilter]', { type, items });
@@ -208,7 +208,7 @@ export class DynamicForm2 extends React.Component<IProps & IFormFix & FormCompon
             getValue: R.prop(association.value || defaultAssociation.value),
           });
         }
-        logger.warn('[DynamicForm2]', '[buildField]', 'foreignOpts is required in association.');
+        logger.warn('[DynamicForm2]', '[buildField]', 'foreignOpts is required in association.', { field });
         return <div>association need foreignOpts.</div>;
       }
       default:
