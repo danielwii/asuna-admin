@@ -1,7 +1,7 @@
 import * as R from 'ramda';
 import * as _ from 'lodash';
 
-import { DynamicFormTypes } from '../components/DynamicForm/index';
+import { DynamicFormTypes } from '../components/DynamicForm';
 import { appContext }       from '../app/context';
 
 import { defaultColumns }   from '../helpers';
@@ -54,9 +54,7 @@ export interface ModelListConfig {
   endpoint?: string,
   pagination?: TablePagination,
   filters?,
-  sorter?: {
-    [key: string]: 'asc' | 'desc';
-  },
+  sorter?: Sorter | null,
 }
 
 interface IModelProxy {
@@ -64,7 +62,7 @@ interface IModelProxy {
 
   getAssociationConfigs(name: string): any;
 
-  getFormSchema(schemas, name: string, values): any;
+  getFormSchema(schemas, name: string, values?): any;
 
   getFieldsOfAssociations(): any;
 

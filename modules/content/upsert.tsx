@@ -1,6 +1,4 @@
-/* eslint-disable import/extensions */
 import React       from 'react';
-import PropTypes   from 'prop-types';
 import { connect } from 'react-redux';
 import * as R      from 'ramda';
 import _           from 'lodash';
@@ -8,12 +6,14 @@ import moment      from 'moment';
 
 import { Form, Icon, message } from 'antd';
 
-import { toFormErrors, isErrorResponse, diff } from '../../helpers';
+import { diff, isErrorResponse, toFormErrors } from '../../helpers';
 import { DynamicForm2, DynamicFormTypes }      from '../../components/DynamicForm';
 
 import { modelProxy }       from '../../adapters/model';
+import { AuthState }        from '../../store/auth.redux';
 import { modelsActions }    from '../../store/model.redux';
 import * as schemaHelper    from '../../helpers/schema';
+import { Pane }             from '../../components/Panes';
 import { createLogger, lv } from '../../helpers/logger';
 
 const logger = createLogger('modules:content:upsert', lv.warn);
@@ -36,7 +36,7 @@ const ContentForm = Form.create({
     logger.info('[ContentForm][mapPropsToFields]', ' mapped fields is', mappedFields);
     return mappedFields;
   },
-  onFieldsChange(props, changedFields) {
+  onFieldsChange(props: any, changedFields) {
     logger.info('[ContentForm][onFieldsChange]', 'onFieldsChange', props, changedFields);
     const filteredChangedFields = R.compose(
       R.pickBy((field, key) => {
@@ -67,23 +67,29 @@ const ContentForm = Form.create({
 // Main
 // --------------------------------------------------------------
 
-class ContentUpsert extends React.Component {
-  static propTypes = {
-    basis  : PropTypes.shape({
-      pane: PropTypes.shape({
-        key : PropTypes.string,
-        data: PropTypes.shape({
-          model : PropTypes.string,
-          record: PropTypes.any,
-        }),
-      }),
-    }),
-    schemas: PropTypes.shape({}),
-    models : PropTypes.shape({}),
-    auth   : PropTypes.shape({}),
-    onClose: PropTypes.func,
-  };
+interface IProps extends ReduxProps {
+  basis: { pane: Pane };
+  schemas: object;
+  models: object;
+  auth: AuthState;
+  onClose: () => void;
+}
 
+interface IState {
+  preDecorators: (tag: string) => any[];
+  asyncDecorators: (tag: string) => any[];
+  isInsertMode: boolean;
+  modelName: string;
+  init: boolean;
+  loadings: { INIT: boolean, LOAD: boolean, ASSOCIATIONS: boolean },
+  fields: FormField[];
+  key: string;
+  hasErrors: boolean;
+  originalFieldValues?: object;
+  wrappedFormSchema?: object;
+}
+
+class ContentUpsert extends React.Component<IProps, IState> {
   constructor(props) {
     super(props);
 
@@ -119,7 +125,7 @@ class ContentUpsert extends React.Component {
        * Update: Init Schema -> Load Data -> Load associations
        */
       loadings       : { INIT: true, LOAD: !isInsertMode, ASSOCIATIONS: true },
-      fields         : {},
+      fields         : [],
       key            : basis.pane.key,
       hasErrors      : false,
     };
@@ -199,7 +205,7 @@ class ContentUpsert extends React.Component {
   shouldComponentUpdate(nextProps, nextState, nextContext) {
     const { key }       = this.state;
     const { activeKey } = nextProps;
-    const propsDiff     = false;
+    const propsDiff     = { isDifferent: false };
     // const propsDiff     = diff(this.props, nextProps);
     const stateDiff     = diff(this.state, nextState, { include: ['fields', 'loadings'] });
     const samePane      = key === activeKey;

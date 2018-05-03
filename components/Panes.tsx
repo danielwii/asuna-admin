@@ -1,7 +1,6 @@
-import React     from 'react';
-import PropTypes from 'prop-types';
-import _         from 'lodash';
-import * as R    from 'ramda';
+import React  from 'react';
+import _      from 'lodash';
+import * as R from 'ramda';
 
 import { Button, Divider, Tabs } from 'antd';
 
@@ -12,23 +11,31 @@ const logger = createLogger('components:panes');
 
 const { TabPane } = Tabs;
 
-class Panes extends React.Component {
-  static propTypes = {
-    activeKey     : PropTypes.string,
-    onActive      : PropTypes.func.isRequired,
-    onClose       : PropTypes.func.isRequired,
-    onCloseWithout: PropTypes.func.isRequired,
-    panes         : PropTypes.shape({
-      key: PropTypes.shape({
-        title   : PropTypes.string,
-        composed: PropTypes.shape({
-          component: PropTypes.any,
-          state    : PropTypes.object,
-        }),
-      }),
-    }),
-  };
+export type Pane = {
+  key: string;
+  linkTo: string;
+  title: string;
+  // composed: {
+  //   component: object;
+  //   state: object;
+  // }
+}
 
+interface IProps {
+  panes: {
+    [key: string]: Pane;
+  }
+  activeKey: string;
+  onActive: (key: string) => void;
+  onClose: (key: string) => void;
+  onCloseWithout: (key?: string) => void;
+}
+
+interface IState {
+  titles: object;
+}
+
+class Panes extends React.Component<IProps, IState> {
   constructor(props) {
     super(props);
     this.state = {
@@ -83,7 +90,7 @@ class Panes extends React.Component {
         type="editable-card"
         onEdit={this.onEdit}
       >
-        {_.map(panes, pane => (
+        {_.map(panes, (pane: Pane) => (
           <TabPane tab={pane.title} key={pane.key}>
             {/* {activeKey} - {pane.key} - {title} */}
             <ModulesLoader

@@ -1,10 +1,11 @@
-/* eslint-disable react/no-multi-comp */
 import React     from 'react';
 import PropTypes from 'prop-types';
 import _         from 'lodash';
 import * as R    from 'ramda';
 
-import { Anchor, Button, Card, Col, Form, Row, Tag } from 'antd';
+import { Anchor, Button, Col, Form, Row, Tag } from 'antd';
+
+import { FormComponentProps } from 'antd/lib/form';
 
 import {
   generateAuthorities,
@@ -22,44 +23,13 @@ import {
   generateVideo,
 } from './elements';
 
-import { generateSelect }         from './elements/select';
-import { diff, createLogger, lv } from '../../helpers/index';
-import { config, ConfigKey }      from '../../app/configure';
+import { generateSelect }    from './elements/select';
+import { diff }              from '../../helpers';
+import { config, ConfigKey } from '../../app/configure';
+import { AuthState }         from '../../store/auth.redux';
+import { createLogger, lv }  from '../../helpers/logger';
 
 const logger = createLogger('components:dynamic-form', lv.warn);
-
-// FIXME remove it
-export const buildForm = (form, definitions) => definitions.map((definition) => {
-  switch (definition.type) {
-    case 'Input': {
-      return generateInput(form, definition.config, definition.layout);
-    }
-    default:
-      logger.warn('[buildForm]', `build form for type ${definition.type} not implemented.`);
-  }
-  return definition;
-});
-
-// FIXME remove it
-// eslint-disable-next-line react/prefer-stateless-function
-class DynamicForm extends React.Component {
-  static propTypes = {
-    definitions: PropTypes.arrayOf(PropTypes.shape({})),
-  };
-
-  render() {
-    const { form, definitions } = this.props;
-    return (
-      <div>
-        <h1>Dynamic form</h1>
-        <hr />
-        {buildForm(form, definitions)}
-      </div>
-    );
-  }
-}
-
-export default Form.create()(DynamicForm);
 
 export const DynamicFormTypes = {
   // --------------------------------------------------------------
@@ -89,6 +59,17 @@ export const DynamicFormTypes = {
   ManyToMany : 'ManyToMany',
 };
 
+interface IProps {
+  anchor: boolean;
+  /**
+   * 隐藏提交按钮
+   */
+  delegate?: boolean;
+  fields: FormField[];
+  auth: AuthState;
+  onSubmit: (fn: (e: Error) => void) => void;
+}
+
 /**
  * delegate: hide submit button, using ref: form.
  * fields: {
@@ -99,15 +80,7 @@ export const DynamicFormTypes = {
  *   },
  * }
  */
-  // eslint-disable-next-line react/no-multi-comp
-export class DynamicForm2 extends React.Component {
-  static propTypes = {
-    fields  : PropTypes.shape({}),
-    auth    : PropTypes.shape({}),
-    onSubmit: PropTypes.func,
-    anchor  : PropTypes.bool,
-    delegate: PropTypes.bool,
-  };
+export class DynamicForm2 extends React.Component<IProps & IFormFix & FormComponentProps> {
 
   buildField = (field, index) => {
     const { form, auth } = this.props;
@@ -248,49 +221,6 @@ export class DynamicForm2 extends React.Component {
     }
   };
 
-  buildFieldGroup = (fieldGroup, index) => {
-    logger.info('[DynamicForm2]', '[buildFieldGroup]', { fieldGroup, index });
-    return (
-      <div>
-        <Card key={index}>
-          {_.map(fieldGroup, this.buildField)}
-        </Card>
-        {/* language=CSS */}
-        <style jsx>{`
-          div {
-            margin-bottom: .5rem;
-          }
-        `}
-        </style>
-      </div>
-    );
-  };
-
-  buildAnchor = fields => (
-    <Anchor>
-      {
-        R.compose(
-          R.values(),
-          R.omit(['id']),
-          R.map((field) => {
-            const fieldName = field.options.label || field.options.name || field.name;
-            const color     = field.options.required ? 'red' : '';
-            const title     = (
-              <div>
-                {field.options.required && <span style={{ color: 'red' }}>*{' '}</span>}
-                <Tag color={field.value ? 'green' : color}>{fieldName}</Tag>
-              </div>
-            );
-            return (
-              <Anchor.Link key={field.name} title={title} href={`#dynamic-form-${field.name}`} />
-            );
-          }),
-          R.filter(field => field.type),
-        )(fields)
-      }
-    </Anchor>
-  );
-
   handleOnSubmit = (e) => {
     logger.info('[DynamicForm2]', '[handleOnSubmit]', 'onSubmit', e);
     e.preventDefault();
@@ -309,33 +239,11 @@ export class DynamicForm2 extends React.Component {
     const { fields, delegate, anchor } = this.props;
     logger.log('[DynamicForm2]', '[render]', { props: this.props });
 
-    /*
-        const fieldGroups = R.compose(
-          R.groupBy(R.pipe(R.prop('key'), R.split(/-/), arr => arr[0])),
-          R.values,
-        )(fields);
-        const fieldGroup s= _.groupBy(fields, (field, key) => _.split(_.get(field, 'key'), '-'));
-        logger.log('DynamicForm2 fields group is', fieldGroups);
-    */
-
     // remove fields which type is not included
     // pure component will not trigger error handler
 
     const renderFields = _.map(_.filter(fields, field => !!field.type), (field, index) =>
       <EnhancedPureElement key={index} field={field} index={index} builder={this.buildField} />);
-
-    // const renderFields = _.map(_.filter(fields, field => !!field.type), (field, index) => {
-    //   const isRequired = R.path(['options', 'required'])(field);
-    //   if (isRequired) {
-    //     return this.buildField(field, index);
-    //   }
-    //   return (<EnhancedPureElement
-    //     key={index}
-    //     field={field}
-    //     index={index}
-    //     builder={this.buildField}
-    //   />);
-    // });
 
     return (
       <div className="dynamic-form">
@@ -374,7 +282,11 @@ export class DynamicForm2 extends React.Component {
   }
 }
 
-class FormAnchor extends React.Component {
+interface IFormAnchorProps {
+  fields: FormField[];
+}
+
+class FormAnchor extends React.Component<IFormAnchorProps> {
   static propTypes = {
     fields: PropTypes.shape({}),
   };
@@ -386,7 +298,33 @@ class FormAnchor extends React.Component {
   }
 
   render() {
-    const { fields } = this.props;
+    const { fields }   = this.props;
+    const renderFields = R.compose(
+      R.values(),
+      R.omit(['id']),
+      R.map((field) => {
+        logger.log('[anchor]', { field });
+        const noValue       = R.isNil(field.value) || R.isEmpty(field.value) || (
+          false
+          // 目前使用的 RichText 在点击时会自动设置 value 为 '<p></p>'
+          // (field.type === DynamicFormTypes.RichText) && field.value === '<p></p>'
+        );
+        const fieldName     = field.options.label || field.options.name || field.name;
+        const requiredColor = field.options.required ? 'red' : '';
+        const color         = noValue ? requiredColor : 'green';
+        const title         = (
+          <div>
+            {field.options.required && <span style={{ color: 'red' }}>*{' '}</span>}
+            <Tag color={color}>{fieldName}</Tag>
+          </div>
+        );
+        return (
+          <Anchor.Link key={field.name} title={title} href={`#dynamic-form-${field.name}`} />
+        );
+      }),
+      R.filter(field => field.type),
+      R.filter(R.compose(R.not, R.pathOr(false, ['options', 'hidden']))),
+    )(fields);
 
     if (R.anyPass([R.isNil, R.isEmpty])(fields)) {
       return '';
@@ -394,40 +332,24 @@ class FormAnchor extends React.Component {
 
     return (
       <Anchor>
-        {
-          R.compose(
-            R.values(),
-            R.omit(['id']),
-            R.map((field) => {
-              const fieldName     = field.options.label || field.options.name || field.name;
-              const requiredColor = field.options.required ? 'red' : '';
-              // const color         = R.isNil(field.value) || R.isEmpty(field.value)
-              const color         = !field.value || R.isEmpty(field.value) ? requiredColor : 'green';
-              const title         = (
-                <div>
-                  {field.options.required && <span style={{ color: 'red' }}>*{' '}</span>}
-                  <Tag color={color}>{fieldName}</Tag>
-                </div>
-              );
-              return (
-                <Anchor.Link key={field.name} title={title} href={`#dynamic-form-${field.name}`} />
-              );
-            }),
-            R.filter(field => field.type),
-            R.filter(R.compose(R.not, R.pathOr(false, ['options', 'hidden']))),
-          )(fields)
-        }
+        {renderFields}
       </Anchor>
     );
   }
 }
 
-class EnhancedPureElement extends React.Component {
-  static propTypes = {
-    field  : PropTypes.shape({}),
-    index  : PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    builder: PropTypes.func.isRequired,
-  };
+interface IPureElementProps {
+  field: FormField;
+  index: number;
+  builder: (field: FormField, index: number) => any;
+}
+
+class EnhancedPureElement extends React.Component<IPureElementProps> {
+  // static propTypes = {
+  //   field  : PropTypes.shape({}),
+  //   index  : PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  //   builder: PropTypes.func.isRequired,
+  // };
 
   shouldComponentUpdate(nextProps, nextState) {
     const isRequired   = R.path(['options', 'required'])(nextProps.field);

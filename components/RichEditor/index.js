@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { message } from 'antd';
 
 import { apiProxy }         from '../../adapters/api';
-import { createLogger, lv } from '../../helpers/index';
+import { createLogger, lv } from '../../helpers/logger';
 
 const logger = createLogger('components:rich-editor', lv.warn);
 

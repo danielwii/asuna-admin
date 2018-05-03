@@ -1,4 +1,3 @@
-/* eslint-disable import/extensions */
 import { connect } from 'react-redux';
 
 import Panes from '../components/Panes';

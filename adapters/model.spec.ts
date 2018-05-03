@@ -1,5 +1,5 @@
 import { IModelService, ModelAdapter } from './model';
-import { DynamicFormTypes }            from '../components/DynamicForm';
+import { DynamicFormTypes }            from '../components/DynamicForm/index';
 
 describe('identify types', () => {
   const adapter = new ModelAdapter({} as IModelService);

@@ -4,7 +4,7 @@ import { storiesOf } from "@storybook/react";
 
 import { Form } from 'antd';
 
-import DynamicForm, { buildForm, generateInput } from '../components/DynamicForm';
+import DynamicForm, { buildForm, generateInput } from '../components/DynamicForm/index';
 
 storiesOf('DynamicForm', module)
   .add('Component Input', () => {

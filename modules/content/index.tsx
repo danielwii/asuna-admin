@@ -1,6 +1,5 @@
 /* eslint-disable import/extensions */
 import React       from 'react';
-import PropTypes   from 'prop-types';
 import { connect } from 'react-redux';
 import * as R      from 'ramda';
 import _           from 'lodash';
@@ -11,25 +10,37 @@ import { panesActions }   from '../../store/panes.actions';
 import { contentActions } from '../../store/content.redux';
 import { modelsActions }  from '../../store/model.redux';
 import { modelProxy }     from '../../adapters/model';
-import { responseProxy }  from '../../adapters/response';
 
-import { createLogger, lv }   from '../../helpers/logger';
+import { responseProxy, TablePagination } from '../../adapters/response';
+
 import { castModelKey, diff } from '../../helpers';
+import { createLogger, lv }   from '../../helpers/logger';
 
 const logger = createLogger('modules:content:index', lv.warn);
 
-class ContentIndex extends React.Component {
-  static propTypes = {
-    basis    : PropTypes.shape({
-      pane: PropTypes.shape({
-        key: PropTypes.string,
-      }),
-    }),
-    activeKey: PropTypes.string,
-    models   : PropTypes.shape({}),
-    auth     : PropTypes.shape({}),
+interface IProps extends ReduxProps {
+  basis: {
+    pane: {
+      key: string,
+    }
   };
+  activeKey: string;
+  models: object;
+  auth: object;
+}
 
+interface IState {
+  key: string;
+  modelName: string;
+  columns: any;
+  pagination?: TablePagination;
+  filters?: object;
+  sorter?: {
+    [key: string]: 'asc' | 'desc';
+  };
+}
+
+class ContentIndex extends React.Component<IProps, IState> {
   constructor(props) {
     super(props);
 
@@ -124,7 +135,7 @@ class ContentIndex extends React.Component {
     const { modelName }     = this.state;
     const { dispatch }      = this.props;
     const transformedSorter = !_.isEmpty(sorter)
-      ? { [sorter.field]: sorter.order.slice(0, -3) }
+      ? { [sorter.field]: sorter.order.slice(0, -3) } as Sorter
       : null;
     dispatch(contentActions.loadModels(modelName, { pagination, sorter: transformedSorter }));
     this.setState({ pagination, filters, sorter });
@@ -160,7 +171,7 @@ class ContentIndex extends React.Component {
           rowKey="id"
           loading={loading}
           columns={columns}
-          pagination={pagination}
+          pagination={pagination as any}
           onChange={this.handleTableChange}
         />
         {/* language=CSS */}
