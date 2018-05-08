@@ -16,9 +16,9 @@ interface FormError {
 const logger = createLogger('helpers:errors', lv.warn);
 
 export function isErrorResponse(error) {
-  const response = error.response as AxiosResponse;
-  return response.data.name === 'Error' ||
-    /^ASUNA__.+/.test(response.data.code)
+  const isError = R.pathEq(['response', 'data', 'name'], 'Error')(error);
+  const isAsuna = /^ASUNA__.+/.test(R.path(['response', 'data', 'code'])(error));
+  return isError || isAsuna;
 }
 
 export function toFormErrors(response: AxiosResponse): FormError | string | null {
