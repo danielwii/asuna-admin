@@ -35,26 +35,26 @@ export const isAvailable = action => action.type.startsWith('models::') && !acti
 
 const modelsActions = {
   // action: (args) => ({ type, payload })
-  fetch       : (modelName, data) =>
+  fetch       : (modelName: string, data) =>
     reduxAction(modelsActionTypes.FETCH, {
       modelName,
       data,
       loading: { [modelName]: true }, // not using this moment
     }),
-  fetchSuccess: (modelName, response) =>
+  fetchSuccess: (modelName: string, response) =>
     reduxAction(modelsActionTypes.FETCH_SUCCESS, {
       modelName,
       models : { [modelName]: { [response.id]: response } },
       loading: { [modelName]: false },
     }),
 
-  upsert: (modelName, data, callback) => ({
+  upsert: (modelName: string, data, callback: (response) => void) => ({
     type   : modelsActionTypes.UPSERT,
     payload: { modelName, data },
     callback,
   }),
   // upsert: (modelName, data) => reduxAction(modelsActionTypes.UPSERT, { modelName, data }),
-  remove: (modelName, data) => reduxAction(modelsActionTypes.REMOVE, { modelName, data }),
+  remove: (modelName: string, data) => reduxAction(modelsActionTypes.REMOVE, { modelName, data }),
 
   loadAllSchemas       : () => reduxAction(modelsActionTypes.LOAD_ALL_SCHEMAS),
   loadAllSchemasSuccess: schemas =>

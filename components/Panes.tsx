@@ -36,12 +36,10 @@ interface IState {
 }
 
 class Panes extends React.Component<IProps, IState> {
-  constructor(props) {
-    super(props);
-    this.state = {
-      titles: {},
-    };
-  }
+
+  state: IState = {
+    titles: {},
+  };
 
   onEdit = (targetKey, action) => {
     const { onClose } = this.props;

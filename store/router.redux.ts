@@ -1,12 +1,13 @@
 import { takeLatest } from 'redux-saga/effects';
 
 import Router from 'next/router';
+import * as R from 'ramda';
 
 // --------------------------------------------------------------
-// Module actionTypes
+// Module routerActionTypes
 // --------------------------------------------------------------
 
-const actionTypes = {
+const routerActionTypes = {
   // ACTION: 'module::action'
   TO_INDEX: 'router::to-index',
   TO_HOME : 'router::to-home',
@@ -18,38 +19,38 @@ export const isAvailable = action => action.type.startsWith('router::') && !acti
 
 
 // --------------------------------------------------------------
-// Module actions
+// Module routerActions
 // --------------------------------------------------------------
 
-const actions = {
+const routerActions = {
   // action: (args) => ({ type, payload })
-  toIndex: () => ({ type: actionTypes.TO_INDEX, payload: { path: '/' } }),
-  toHome : () => ({ type: actionTypes.TO_HOME, payload: { path: '/home' } }),
-  toLogin: () => ({ type: actionTypes.TO_LOGIN, payload: { path: '/login' } }),
-  goto   : path => ({ type: actionTypes.GOTO, payload: { path } }),
+  toIndex: () => ({ type: routerActionTypes.TO_INDEX, payload: { path: '/' } }),
+  toHome : () => ({ type: routerActionTypes.TO_HOME, payload: { path: '/home' } }),
+  toLogin: () => ({ type: routerActionTypes.TO_LOGIN, payload: { path: '/login' } }),
+  goto   : path => ({ type: routerActionTypes.GOTO, payload: { path } }),
 };
 
 // --------------------------------------------------------------
-// Module sagas
+// Module routerSagas
 // function* actionSage(args) {
 //   yield call; yield puy({ type: actionType, payload: {} })
 // }
 // --------------------------------------------------------------
 
-async function goto({ payload: { path } }) {
-  await Router.replace(path);
+function goto({ payload: { path } }) {
+  Router.replace(path);
 }
 
-const sagas = [
+const routerSagas = [
   // takeLatest / takeEvery (actionType, actionSage)
-  takeLatest(actionTypes.TO_INDEX as any, goto),
-  takeLatest(actionTypes.TO_HOME as any, goto),
-  takeLatest(actionTypes.TO_LOGIN as any, goto),
-  takeLatest(actionTypes.GOTO as any, goto),
+  takeLatest(routerActionTypes.TO_INDEX as any, goto),
+  takeLatest(routerActionTypes.TO_HOME as any, goto),
+  takeLatest(routerActionTypes.TO_LOGIN as any, goto),
+  takeLatest(routerActionTypes.GOTO as any, goto),
 ];
 
 // --------------------------------------------------------------
-// Module reducers
+// Module routerReducers
 // action = { payload: any? }
 // --------------------------------------------------------------
 
@@ -57,20 +58,17 @@ const initialState = {
   path: null,
 };
 
-const reducer = (previousState = initialState, action) => {
+const routerReducer = (previousState = initialState, action) => {
   if (isAvailable(action)) {
-    switch (action.type) {
-      default:
-        return { ...action.payload };
-    }
+    return R.mergeDeepRight(previousState, action.payload);
   } else {
     return previousState;
   }
 };
 
 export {
-  actionTypes as routerActionTypes,
-  actions as routerActions,
-  sagas as routerSagas,
-  reducer as routerReducer,
+  routerActionTypes,
+  routerActions,
+  routerSagas,
+  routerReducer,
 };

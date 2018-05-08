@@ -24,26 +24,50 @@ function generateInput(form, name, type, required, message, placeholder, iconTyp
 
 interface IProps {
   form: WrappedFormUtils;
-  login: (username: string, password: string) => void;
+  login: (username: string, password: string, callback: (response) => void) => void;
 }
 
-class NormalLoginForm extends React.Component<IProps> {
+interface IState {
+  loading: true | false;
+}
+
+class NormalLoginForm extends React.Component<IProps, IState> {
+  state: IState = { loading: false };
+
   handleSubmit = (e) => {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
         logger.info('Received values of form: ', values);
         const { username, password } = values;
-        this.props.login(username, password);
+        this.setState({ loading: true });
+
+        this.props.login(username, password, ({ response, error }) => {
+          logger.log('callback', { response, error });
+          if (error) {
+            this.setState({ loading: false });
+          }
+        });
       }
     });
   };
 
+  public componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
+    logger.error({ error, errorInfo });
+  }
+
   render() {
-    const { form } = this.props;
+    const { form }    = this.props;
+    const { loading } = this.state;
+
+    if (loading) {
+      return <div>login... &gt;__________,.&lt;</div>;
+    }
 
     const usernameInput = generateInput(form, 'username', 'input', true, 'Please input your username!', 'Username', 'user');
     const passwordInput = generateInput(form, 'password', 'password', true, 'Please input your Password!', 'Password', 'lock');
+
+    logger.info('[render]', { usernameInput, passwordInput });
 
     return (
       <Form onSubmit={this.handleSubmit} className="login-form">

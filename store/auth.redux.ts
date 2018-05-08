@@ -19,23 +19,27 @@ const logger = createLogger('store:auth', lv.warn);
 // Login sagas
 // --------------------------------------------------------------
 
-function* loginSaga({ payload: { username, password } }) {
+function* loginSaga({ payload: { username, password }, callback }) {
   const auth: AuthState = yield select<RootState>(state => state.auth);
   try {
-    // 切换用户时更新操作区域，如果未来需要保存当前页面配置的话，应该将切换操作提出为单独的 Saga
-
-    if (auth.username !== username) {
-      yield put(panesActions.closeAll());
-    }
 
     const response = yield call(authProxy.login, username, password);
     logger.log('[loginSaga]', 'response is', response);
+
+    // 切换用户时更新操作区域，如果未来需要保存当前页面配置的话，应该将切换操作提出为单独的 Saga
+    if (auth.username !== username) {
+      yield put(panesActions.closeAll());
+    }
+    if (callback) callback({ response });
+
     const token = yield call(authProxy.extractToken, response.data);
     yield put(authActions.loginSuccess(username, token));
     message.info(`'${username}' login success`);
+
     yield put(routerActions.toIndex());
   } catch (e) {
     logger.error('[loginSaga]', { e });
+    if (callback) callback({ error: e });
     if (e.response) {
       yield put(authActions.loginFailed(e.response));
       message.error(JSON.stringify(e.response.data));
@@ -93,10 +97,7 @@ const initialState: AuthState = {
 
 const authReducer = (previousState: AuthState = initialState, action) => {
   if (isAvailable(action)) {
-    switch (action.type) {
-      default:
-        return R.mergeDeepRight(previousState, _.omit(action.payload, 'password'));
-    }
+    return R.mergeDeepRight(previousState, action.payload)
   } else {
     return previousState;
   }

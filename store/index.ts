@@ -161,8 +161,11 @@ export const configureStore = (state = initialState) => {
       applyMiddleware(sagaMiddleware, epicMiddleware, storeConnectorMiddleware),
     );
   } else {
-    if (process.env.NODE_ENV === 'debug') {
-      localForage.setItem('debug', '*,-engine.io*');
+    // 在开发模式时开启日志
+    if (process.env.NODE_ENV === 'development') {
+      localStorage.setItem('debug', '*,-engine.io*');
+    } else {
+      localStorage.removeItem('debug');
     }
     store = createStore(
       rootReducers,

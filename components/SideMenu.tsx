@@ -1,42 +1,39 @@
-import React     from 'react';
-import PropTypes from 'prop-types';
-import _         from 'lodash';
+import React from 'react';
+import _     from 'lodash';
 
 import { Layout, Menu } from 'antd';
 
 const { SubMenu } = Menu;
 const { Sider }   = Layout;
 
-export default class extends React.Component {
-  static propTypes = {
-    onOpen: PropTypes.func.isRequired,
-    menus : PropTypes.arrayOf(PropTypes.shape({
-      key     : PropTypes.string.isRequired,
-      title   : PropTypes.string.isRequired,
-      subMenus: PropTypes.arrayOf(PropTypes.shape({
-        key   : PropTypes.string.isRequired,
-        title : PropTypes.string.isRequired,
-        linkTo: PropTypes.string.isRequired,
-      })),
-    })),
-  };
+interface IProps {
+  onOpen: (params: { key: string, title: string, linkTo: string }) => void;
+  menus: {
+    key: string,
+    title: string,
+    subMenus: {
+      key: string,
+      title: string,
+      linkTo: string,
+    }
+  }[]
+}
 
-  constructor(props) {
-    super(props);
+interface IState {
+}
 
-    this.open = this.open.bind(this);
-  }
+export default class extends React.Component<IProps, IState> {
 
   /**
    * item's props contains all properties set in menu item
    * @param key
    * @param title
-   * @param linkTo
+   * @param link
    */
-  open({ key, item: { props: { title, linkTo } } }) {
+  open = ({ key, item: { props: { title, link } } }) => {
     const { onOpen } = this.props;
-    onOpen({ key, title, linkTo });
-  }
+    onOpen({ key, title, linkTo: link });
+  };
 
   buildSubMenu(menu) {
     return (
@@ -45,7 +42,7 @@ export default class extends React.Component {
           <Menu.Item
             key={`${menu.key}::${subMenu.key}`}
             title={subMenu.title}
-            linkTo={subMenu.linkTo}
+            link={subMenu.linkTo}
           >{subMenu.title}
           </Menu.Item>
         ))}

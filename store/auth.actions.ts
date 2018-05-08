@@ -18,17 +18,18 @@ export const isAvailable = action => action.type.startsWith('auth::') && !action
 // --------------------------------------------------------------
 
 export const authActions = {
-  login       : (username, password) => ({
+  login       : (username, password, callback) => ({
     transient: true,
-    ...reduxAction(authActionTypes.LOGIN, {
-      username,
-      password,
-    }),
+    type     : authActionTypes.LOGIN,
+    payload  : { username, password },
+    callback,
   }),
   logout      : () => reduxAction(authActionTypes.LOGOUT, { token: null, loginTime: null }),
-  loginSuccess: (username, token) => reduxAction(authActionTypes.LOGIN_SUCCESS, {
-    token,
-    loginTime: new Date()
-  }),
+  loginSuccess: (username, token) =>
+    reduxAction(authActionTypes.LOGIN_SUCCESS, {
+      username,
+      token,
+      loginTime: new Date()
+    }),
   loginFailed : error => reduxAction(authActionTypes.LOGIN_FAILED, {}, error),
 };
