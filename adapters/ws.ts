@@ -23,16 +23,6 @@ export class WsAdapter {
     if (!serverRuntimeConfig.isServer && !WsAdapter.io) {
       WsAdapter.io = connect('/admin');
 
-      WsAdapter.io.on('connection', socket => {
-        socket.conn.on('heartbeat', () => {
-          console.log('heartbeat');
-        });
-      });
-
-      WsAdapter.io.on('heartbeat', () => {
-        console.log('heartbeat2');
-      });
-
       WsAdapter.io.on('connect', () => {
         logger.log('[connect]', { id: WsAdapter.io.id, appContext });
         appContext.dispatch(appActions.heartbeat());

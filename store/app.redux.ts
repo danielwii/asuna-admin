@@ -97,7 +97,7 @@ function* rehydrateWatcher(action) {
 /**
  * 查询运行中的服务端版本，版本不一致时更新当前的版本，同时进行同步操作
  */
-function* heartbeat() {
+function* heartbeat({ force }) {
   const { token }     = yield select<RootState>(state => state.auth);
   const app: AppState = yield select<RootState>(state => state.app);
 
@@ -108,7 +108,7 @@ function* heartbeat() {
     logger.info('[heartbeat]', { response, version: app.version });
 
     // 版本不一致时执行同步操作
-    if (!!app.version && app.version !== response.data) {
+    if (force || (!!app.version && app.version !== response.data)) {
       yield put(appActions.sync());
     }
 
@@ -128,7 +128,7 @@ const appSagas = [
   // takeLatest / takeEvery (actionType, actionSage)
   takeLatest(appActionTypes.INIT, init),
   takeLatest(appActionTypes.SYNC, sync),
-  takeLatest(appActionTypes.HEARTBEAT, heartbeat),
+  takeLatest(appActionTypes.HEARTBEAT as any, heartbeat),
   takeEvery(REHYDRATE, rehydrateWatcher),
 ];
 

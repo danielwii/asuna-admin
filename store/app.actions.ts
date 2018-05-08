@@ -44,7 +44,11 @@ export const appActions = {
    * 执行心跳检测，同时读取服务端当前的版本，在发现版本不一致时执行同步操作
    * @returns {{type: string; payload: {}; error: string | object | undefined}}
    */
-  heartbeat         : () => reduxAction(appActionTypes.HEARTBEAT),
+  heartbeat         : (force: boolean = false) => ({
+    transient: true,
+    type     : appActionTypes.HEARTBEAT,
+    force,
+  }),
   heartbeatAlive    : () => reduxAction(appActionTypes.HEARTBEAT_ALIVE, { heartbeat: true }),
   heartbeatStop     : () => reduxAction(appActionTypes.HEARTBEAT_STOP, { heartbeat: false }),
 };
