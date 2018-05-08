@@ -37,12 +37,16 @@ function* loginSaga({ payload: { username, password }, callback }) {
     message.info(`'${username}' login success`);
 
     yield put(routerActions.toIndex());
-  } catch (e) {
-    logger.error('[loginSaga]', { e });
-    if (callback) callback({ error: e });
-    if (e.response) {
-      yield put(authActions.loginFailed(e.response));
-      message.error(JSON.stringify(e.response.data));
+  } catch (error) {
+    logger.error('[loginSaga]', { error });
+    try {
+      if (callback != null) callback({ error });
+    } catch (e) {
+      logger.warn('[upsert] callback error', e, { e });
+    }
+    if (error.response) {
+      yield put(authActions.loginFailed(error.response));
+      message.error(JSON.stringify(error.response.data));
     }
   }
 }

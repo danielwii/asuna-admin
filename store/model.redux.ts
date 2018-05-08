@@ -93,19 +93,20 @@ const modelsSagaFunctions = {
         const response = yield call(modelProxy.upsert, { token, schemas }, modelName, data);
         message.success(`upsert model '${modelName}' success!`);
         logger.log('[upsert]', 'response of upsert model is', response);
+        if (callback != null) callback({ response });
+
         // save model data when upsert is success
         yield put(modelsActions.fetchSuccess(modelName, response.data));
         // refresh models in content index
         yield put(contentActions.loadModels(modelName));
-        if (callback != null) callback(response);
-      } catch (e) {
-        logger.warn('[upsert]', e, { e });
+      } catch (error) {
+        logger.warn('[upsert]', error, { error });
         try {
-          if (callback != null) callback(null, e);
+          if (callback != null) callback({ error });
         } catch (e) {
           logger.warn('[upsert] callback error', e, { e });
         }
-        message.error(e.message);
+        message.error(error.message);
       }
     }
   },

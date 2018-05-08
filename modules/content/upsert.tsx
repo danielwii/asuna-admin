@@ -305,10 +305,10 @@ class ContentUpsert extends React.Component<IProps, IState> {
     const { dispatch, onClose }       = this.props;
     const { modelName, isInsertMode } = this.state;
 
-    dispatch(modelsActions.upsert(modelName, { body: { ...fieldPairs, id } }, (response) => {
-      if (isErrorResponse(response)) {
-        const errors = toFormErrors(response);
-        logger.warn('[upsert callback]', { response, errors });
+    dispatch(modelsActions.upsert(modelName, { body: { ...fieldPairs, id } }, ({ response, error }) => {
+      if (isErrorResponse(error)) {
+        const errors = toFormErrors(error.response);
+        logger.warn('[upsert callback]', { response, error, errors });
         if (_.isString(errors)) {
           message.error(errors);
         } else {
