@@ -1,24 +1,8 @@
 {
-  // for using jest in test mode
-  "env": {
-    "dev": {
-      "presets": ["next/babel"]
-    },
-    "production": {
-      "presets": ["next/babel"]
-    },
-    "test": {
-      "presets": [
-        ["env", { "modules": "commonjs" }],
-        "next/babel"
-      ]
-    }
-  },
+  "presets": ["next/babel"],
   "plugins": [
-  	["import", [
-      { "libraryName": "antd", "style": false },
-      { "libraryName": "lodash", "libraryDirectory": "", "camel2DashComponentName": false }
-    ]],
+    ["import", { "libraryName": "antd", "style": false }, "import-antd"],
+  	["import", { "libraryName": "lodash", "libraryDirectory": "", "camel2DashComponentName": false }, "import-lodash"],
     ["styled-components", { "ssr": true, "displayName": true, "preprocess": false }],
     ["module-resolver", { "alias": { "asuna-admin": "." } }]
   ]
