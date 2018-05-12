@@ -3,13 +3,14 @@ const Jarvis               = require('webpack-jarvis');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const withTypescript       = require('@zeit/next-typescript');
 const TsconfigPathsPlugin  = require('tsconfig-paths-webpack-plugin');
+const withProgressBar      = require('next-progressbar');
 
 const jarvis                   = new Jarvis({ port: 1337 });
 const bundleAnalyzerPlugin     = new BundleAnalyzerPlugin({ openAnalyzer: false });
 const contextReplacementPlugin = new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /zh/);
 const tsconfigPathsPlugin      = new TsconfigPathsPlugin();
 
-module.exports = withTypescript({
+module.exports = withProgressBar(withTypescript({
   webpack: (config, options) => {
     const { dev, isServer, buildId } = options;
     console.log(`> [webpack] [${isServer ? 'Server' : 'Client'}] ...`);
@@ -71,4 +72,4 @@ module.exports = withTypescript({
   },
 
   publicRuntimeConfig: {},
-});
+}));
