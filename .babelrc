@@ -5,5 +5,7 @@
   	["import", { "libraryName": "lodash", "libraryDirectory": "", "camel2DashComponentName": false }, "import-lodash"],
     ["styled-components", { "ssr": true, "displayName": true, "preprocess": false }],
     ["module-resolver", { "alias": { "asuna-admin": "." } }]
-  ]
+  ],
+  "comments": false,
+  "compact": "auto"
 }
