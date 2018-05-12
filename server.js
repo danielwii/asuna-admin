@@ -1,16 +1,4 @@
 /* eslint-disable no-console */
-// --------------------------------------------------------------
-// Fix css-import in ssr mode
-// --------------------------------------------------------------
-
-// New. Needs to be on top of babel-register
-require('css-modules-require-hook')({
-  generateScopedName: '[name]__[local]___[hash:base64:5]',
-});
-// eslint-disable-next-line import/no-extraneous-dependencies
-require('babel-core/register')({
-  presets: ['next/babel'],
-});
 
 // --------------------------------------------------------------
 // Main
