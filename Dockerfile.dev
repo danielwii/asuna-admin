@@ -1,4 +1,4 @@
-FROM node
+FROM node:10
 
 # set `--build-arg` in docker build
 ARG REGISTRY=https://registry.yarnpkg.com

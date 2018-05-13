@@ -8,7 +8,7 @@ const { Sider }   = Layout;
 
 interface IProps {
   onOpen: (params: { key: string, title: string, linkTo: string }) => void;
-  menus: {
+  menus?: {
     key: string,
     title: string,
     subMenus: {

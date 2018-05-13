@@ -62,19 +62,56 @@ sonar-scanner -Dsonar.projectKey=asuna-admin -Dsonar.sources=. -Dsonar.exclusion
     ```
 ## Config
 
-### ModelColumns
+## Test
 
-```javascript
-modelColumns = {
-  [modelName]   : {
-    associations: {
-      [associationName]: {
-        name  : 'name',
-        value : 'id',
-        // ref   : 'refName',   // using to update data, when it's not same as `associationName`.
-        fields: ['id', 'name'],
-      },
+### typescript & babel 7 support
+
+* plugins: 
+
+    * https://github.com/bernardmcmanus/babel-plugin-async-import
+    
+* issues
+    
+    * https://github.com/kulshekhar/ts-jest/pull/512
+    * https://github.com/kulshekhar/ts-jest/pull/512
+
+
+```bash
+yarn add -D babel-core@^7.0.0-bridge.0
+yarn add -D babel-jest@^22.4.3
+yarn add -D ts-jest@^22.4.6
+```
+
+```json
+// add jest config to package.json
+{
+  "jest": {
+    "globals": {
+      "ts-jest": {
+        "babelConfig": {
+          "plugins": [
+            ["babel-plugin-async-import"]
+          ]
+        },
+        "tsConfigFile": "tsconfig.jest.json"
+      }
     },
-  },
+    "testRegex": ".spec.tsx?$",
+    "transform": {
+      "^.+\\.(t|j)sx?$": "ts-jest"
+    }
+  }
+}
+```
+
+[You can't use "jsx": "preserve" int tsconfig for now.](https://github.com/bernardmcmanus/babel-plugin-async-import)
+
+```json
+// tsconfig.jest.json
+{
+  "extends": "./tsconfig",
+  "compilerOptions": {
+    "jsx": "react"
+  }
 }
 ```

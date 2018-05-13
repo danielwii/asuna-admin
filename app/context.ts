@@ -10,8 +10,8 @@ import { IMenuService, MenuAdapter }         from '../adapters/menu';
 import { ResponseAdapter }                   from '../adapters/response';
 import { ApiAdapter, IApiService }           from '../adapters/api';
 import { WsAdapter }                         from '../adapters/ws';
-import { IStoreConnector }                   from 'store/middlewares/store-connector';
-import { RootState }                         from 'store';
+import { IStoreConnector }                   from '../store/middlewares/store-connector';
+import { RootState }                         from '../store';
 
 // --------------------------------------------------------------
 // Types
