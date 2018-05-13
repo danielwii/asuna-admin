@@ -73,13 +73,11 @@ sonar-scanner -Dsonar.projectKey=asuna-admin -Dsonar.sources=. -Dsonar.exclusion
 * issues
     
     * https://github.com/kulshekhar/ts-jest/pull/512
-    * https://github.com/kulshekhar/ts-jest/pull/512
-
 
 ```bash
 yarn add -D babel-core@^7.0.0-bridge.0
-yarn add -D babel-jest@^22.4.3
-yarn add -D ts-jest@^22.4.6
+# temporary solve ts-jest not support babel 7 issue till v22.4.6
+yarn add -D joaovieira/ts-jest#babel-peerDependency-release
 ```
 
 ```json
