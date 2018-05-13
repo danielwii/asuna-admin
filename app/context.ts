@@ -153,7 +153,6 @@ class AppContext {
         ),
       };
     }
-
   }
 
   get ctx() {

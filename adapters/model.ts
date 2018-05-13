@@ -70,7 +70,7 @@ interface IModelProxy {
              name: string,
              configs?: ModelListConfig): any;
 
-  loadSchema(auth: { token }, { name }): any;
+  loadSchema(auth: { token }, data: { name }): any;
 
   listSchemasCallable(auth: { token }): any;
 
