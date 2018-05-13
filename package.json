@@ -1,6 +1,6 @@
 {
   "name": "asuna-admin",
-  "version": "0.4.8",
+  "version": "0.5.0",
   "repository": "git@github.com:danielwii/asuna-admin.git",
   "author": "Daniel Wei <danielwii0326@gmail.com>",
   "license": "MIT",
@@ -69,7 +69,7 @@
     "@fortawesome/fontawesome": "^1.1.8",
     "@fortawesome/fontawesome-free-solid": "^5.0.13",
     "@fortawesome/react-fontawesome": "~0.0.19",
-    "@zeit/next-typescript": "^0.1.1",
+    "@zeit/next-typescript": "^1.0.0",
     "antd": "^3.5.0",
     "async": "^2.6.0",
     "axios": "^0.18.0",
