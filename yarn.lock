@@ -356,6 +356,12 @@
   dependencies:
     "@babel/helper-plugin-utils" "7.0.0-beta.42"
 
+"@babel/plugin-syntax-typescript@7.0.0-beta.46":
+  version "7.0.0-beta.46"
+  resolved "https://registry.yarnpkg.com/@babel/plugin-syntax-typescript/-/plugin-syntax-typescript-7.0.0-beta.46.tgz#2a9e0e1f3bb3bd918571c5ee4db97bb2b00e8642"
+  dependencies:
+    "@babel/helper-plugin-utils" "7.0.0-beta.46"
+
 "@babel/plugin-transform-arrow-functions@7.0.0-beta.42":
   version "7.0.0-beta.42"
   resolved "https://registry.yarnpkg.com/@babel/plugin-transform-arrow-functions/-/plugin-transform-arrow-functions-7.0.0-beta.42.tgz#b918eb8760c38d6503a1a9858fa073786b60ab2b"
@@ -571,6 +577,13 @@
   dependencies:
     "@babel/helper-plugin-utils" "7.0.0-beta.42"
 
+"@babel/plugin-transform-typescript@7.0.0-beta.46":
+  version "7.0.0-beta.46"
+  resolved "https://registry.yarnpkg.com/@babel/plugin-transform-typescript/-/plugin-transform-typescript-7.0.0-beta.46.tgz#bcb57558c87de7ae2f4f3a36322934c799bf3774"
+  dependencies:
+    "@babel/helper-plugin-utils" "7.0.0-beta.46"
+    "@babel/plugin-syntax-typescript" "7.0.0-beta.46"
+
 "@babel/plugin-transform-unicode-regex@7.0.0-beta.42":
   version "7.0.0-beta.42"
   resolved "https://registry.yarnpkg.com/@babel/plugin-transform-unicode-regex/-/plugin-transform-unicode-regex-7.0.0-beta.42.tgz#1e7bdcf678d9a9066d06e6d334ab41ca11ca00ad"
@@ -633,6 +646,13 @@
     "@babel/plugin-transform-react-jsx" "7.0.0-beta.42"
     "@babel/plugin-transform-react-jsx-self" "7.0.0-beta.42"
     "@babel/plugin-transform-react-jsx-source" "7.0.0-beta.42"
+
+"@babel/preset-typescript@^7.0.0-beta.46":
+  version "7.0.0-beta.46"
+  resolved "https://registry.yarnpkg.com/@babel/preset-typescript/-/preset-typescript-7.0.0-beta.46.tgz#ab14898e504c7f172cd0fbc03491f6a5685d8638"
+  dependencies:
+    "@babel/helper-plugin-utils" "7.0.0-beta.46"
+    "@babel/plugin-transform-typescript" "7.0.0-beta.46"
 
 "@babel/runtime@7.0.0-beta.42":
   version "7.0.0-beta.42"
@@ -1022,11 +1042,11 @@
   version "6.2.4"
   resolved "https://registry.yarnpkg.com/@types/video.js/-/video.js-6.2.4.tgz#d1ded3930b737cb2ffb48ed50edae806c00f917d"
 
-"@zeit/next-typescript@^0.1.1":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@zeit/next-typescript/-/next-typescript-0.1.1.tgz#7526fedcba94af170af4eb2dec80fb133f76ff75"
+"@zeit/next-typescript@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@zeit/next-typescript/-/next-typescript-1.0.0.tgz#cccb6338c9e956cdadeba5160cd67973ce685aeb"
   dependencies:
-    ts-loader "3.3.1"
+    "@babel/preset-typescript" "^7.0.0-beta.46"
 
 abab@^1.0.4:
   version "1.0.4"
@@ -3904,7 +3924,7 @@ engine.io@~3.2.0:
     engine.io-parser "~2.1.0"
     ws "~3.3.1"
 
-enhanced-resolve@^3.0.0, enhanced-resolve@^3.4.0:
+enhanced-resolve@^3.4.0:
   version "3.4.1"
   resolved "https://registry.yarnpkg.com/enhanced-resolve/-/enhanced-resolve-3.4.1.tgz#0421e339fd71419b3da13d129b3979040230476e"
   dependencies:
@@ -9021,7 +9041,7 @@ seekout@^1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/seekout/-/seekout-1.0.2.tgz#09ba9f1bd5b46fbb134718eb19a68382cbb1b9c9"
 
-"semver@2 || 3 || 4 || 5", semver@^5.0.1, semver@^5.3.0, semver@^5.4.1, semver@^5.5.0:
+"semver@2 || 3 || 4 || 5", semver@^5.3.0, semver@^5.4.1, semver@^5.5.0:
   version "5.5.0"
   resolved "https://registry.yarnpkg.com/semver/-/semver-5.5.0.tgz#dc4bbc7a6ca9d916dee5d43516f0092b58f7b8ab"
 
@@ -9826,16 +9846,6 @@ ts-jest@joaovieira/ts-jest#babel-peerDependency-release:
     lodash "^4.17.10"
     pkg-dir "^2.0.0"
     yargs "^11.0.0"
-
-ts-loader@3.3.1:
-  version "3.3.1"
-  resolved "https://registry.yarnpkg.com/ts-loader/-/ts-loader-3.3.1.tgz#5d24b425876cfed094f8da95375c9fd1e598faec"
-  dependencies:
-    chalk "^2.3.0"
-    enhanced-resolve "^3.0.0"
-    loader-utils "^1.0.2"
-    micromatch "^3.1.4"
-    semver "^5.0.1"
 
 tsconfig-paths-webpack-plugin@^3.0.4:
   version "3.0.4"

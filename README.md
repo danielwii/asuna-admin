@@ -102,7 +102,7 @@ yarn add -D joaovieira/ts-jest#babel-peerDependency-release
 }
 ```
 
-[You can't use "jsx": "preserve" int tsconfig for now.](https://github.com/bernardmcmanus/babel-plugin-async-import)
+[You can't use "jsx": "preserve" in tsconfig for now.](https://github.com/bernardmcmanus/babel-plugin-async-import)
 
 ```json
 // tsconfig.jest.json
