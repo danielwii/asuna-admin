@@ -71,4 +71,4 @@ typings/
 stories
 examples
 dist
-**/*.spec.ts
+#**/*.spec.ts
