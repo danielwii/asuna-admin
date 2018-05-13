@@ -22,10 +22,10 @@ export type Pane = {
 }
 
 interface IProps {
-  panes: {
+  panes?: {
     [key: string]: Pane;
   }
-  activeKey: string;
+  activeKey?: string;
   onActive: (key: string) => void;
   onClose: (key: string) => void;
   onCloseWithout: (key?: string) => void;

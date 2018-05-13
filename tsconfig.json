@@ -15,11 +15,17 @@
     "preserveConstEnums": true,
     "sourceMap": true,
     "skipLibCheck": true,
+    "outDir": "dist",
     "baseUrl": ".",
     "lib": [
       "dom",
-      "es2015",
-      "es2016"
+      "es6"
     ]
-  }
+  },
+  "exclude": [
+    "examples",
+    "dist",
+    ".next",
+    "stories"
+  ]
 }

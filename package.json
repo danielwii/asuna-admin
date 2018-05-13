@@ -14,7 +14,12 @@
   "jest": {
     "globals": {
       "ts-jest": {
-        "useBabelrc": true
+        "babelConfig": {
+          "plugins": [
+            ["babel-plugin-async-import"]
+          ]
+        },
+        "tsConfigFile": "tsconfig.jest.json"
       }
     },
     "moduleFileExtensions": [
@@ -28,12 +33,16 @@
       "/test/",
       "/.asuna"
     ],
+    "moduleDirectories": [
+      "node_modules",
+      "."
+    ],
     "modulePathIgnorePatterns": [
       "/.asuna"
     ],
-    "testRegex": ".spec.(ts|tsx)$",
+    "testRegex": ".spec.tsx?$",
     "transform": {
-      "^.+\\.(t|j)s(x)?$": "ts-jest"
+      "^.+\\.(t|j)sx?$": "ts-jest"
     },
     "coverageThreshold": {
       "global": {}
@@ -49,7 +58,7 @@
     "build-storybook": "NODE_ENV=dev build-storybook",
     "collect": "sh ./bin/collect.sh",
     "pre-commit": "jest",
-    "test": "ENV=test jest",
+    "test": "ENV=test jest --no-cache",
     "changelog": "conventional-changelog -p asuna-admin -i CHANGELOG.md",
     "init-changelog": "conventional-changelog -p asuna-admin -i CHANGELOG.md -r 0",
     "postinstall": "yarn collect"
@@ -119,7 +128,10 @@
     "@types/socket.io-client": "^1.4.32",
     "@types/styled-jsx": "^2.2.3",
     "@types/video.js": "^6.2.4",
+    "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^8.2.3",
+    "babel-jest": "^22.4.3",
+    "babel-plugin-async-import": "^2.0.1",
     "babel-plugin-import": "^1.7.0",
     "babel-plugin-module-resolver": "^3.1.1",
     "babel-plugin-styled-components": "^1.5.1",
@@ -132,7 +144,7 @@
     "eslint-plugin-react": "^7.7.0",
     "husky": "^0.15.0-rc.8",
     "jest": "^22.4.3",
-    "ts-jest": "^22.4.5",
+    "ts-jest": "^22.4.6",
     "tsconfig-paths": "^3.3.2",
     "tsconfig-paths-webpack-plugin": "^3.0.4",
     "webpack-bundle-analyzer": "^2.11.1",
