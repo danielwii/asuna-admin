@@ -1,9 +1,10 @@
-const webpack              = require('webpack');
-const Jarvis               = require('webpack-jarvis');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-const withTypescript       = require('@zeit/next-typescript');
-const TsconfigPathsPlugin  = require('tsconfig-paths-webpack-plugin');
-const withProgressBar      = require('next-progressbar');
+const webpack                    = require('webpack');
+const Jarvis                     = require('webpack-jarvis');
+const BundleAnalyzerPlugin       = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const withTypescript             = require('@zeit/next-typescript');
+const TsconfigPathsPlugin        = require('tsconfig-paths-webpack-plugin');
+const withProgressBar            = require('next-progressbar');
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 const jarvis                   = new Jarvis({ port: 1337 });
 const bundleAnalyzerPlugin     = new BundleAnalyzerPlugin({ openAnalyzer: false });
@@ -13,16 +14,17 @@ const tsconfigPathsPlugin      = new TsconfigPathsPlugin();
 module.exports = withProgressBar(withTypescript({
   webpack: (config, options) => {
     const { dev, isServer, buildId } = options;
-    console.log(`> [webpack] [${isServer ? 'Server' : 'Client'}] ...`);
-
-    if (buildId) {
+    if (!isServer && buildId) {
       console.log('> [webpack] building...', buildId);
     }
+
+    console.log(`> [webpack] [${isServer ? 'Server' : 'Client'}] ...`);
 
     config.plugins         = config.plugins || [];
     config.resolve.plugins = config.resolve.plugins || [];
 
     if (isServer) {
+      config.plugins.push(new ForkTsCheckerWebpackPlugin());
       if (dev) {
         config.plugins.push(jarvis);
         config.plugins.push(bundleAnalyzerPlugin);

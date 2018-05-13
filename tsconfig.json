@@ -16,11 +16,7 @@
     "sourceMap": true,
     "skipLibCheck": true,
     "outDir": "dist",
-    "baseUrl": ".",
-    "lib": [
-      "dom",
-      "es6"
-    ]
+    "baseUrl": "."
   },
   "exclude": [
     "examples",
