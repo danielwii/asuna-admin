@@ -3,6 +3,10 @@ import * as _ from 'lodash';
 import { ApiResponsePageMode, config, ConfigKey } from '../app/configure';
 import { appContext }                             from '../app/context';
 
+import { createLogger, lv } from '../helpers/logger';
+
+const logger = createLogger('adapters::response', lv.warn);
+
 export interface TablePagination {
   showSizeChanger: boolean;
   showTotal: number | Function;

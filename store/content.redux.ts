@@ -23,7 +23,6 @@ const contentActionTypes = {
 
 export const isAvailable = action => action.type.startsWith('content::') && !action.transient;
 
-
 // --------------------------------------------------------------
 // Module actions
 // --------------------------------------------------------------
@@ -93,11 +92,7 @@ const initialState = {};
 
 const contentReducer = (previousState = initialState, action) => {
   if (isAvailable(action)) {
-    switch (action.type) {
-      default:
-        // TODO update others to use mergeDeepRight
-        return R.mergeDeepRight(previousState, action.payload);
-    }
+    return R.mergeDeepRight(previousState, action.payload)
   } else {
     return previousState;
   }

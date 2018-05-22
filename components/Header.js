@@ -28,6 +28,7 @@ export default class extends React.Component {
     auth  : PropTypes.shape({}),
     app   : PropTypes.shape({}),
     onSync: PropTypes.func,
+    env   : PropTypes.string,
   };
 
   logout = () => {
@@ -48,13 +49,13 @@ export default class extends React.Component {
   );
 
   render() {
-    const { auth, app, onSync } = this.props;
+    const { auth, app, onSync, env } = this.props;
     return (
       <Header className="header">
         <div className="logo">
           <StyledLogoImg src="/static/logo.png" alt="mast" />
         </div>
-        <StyledVersion>v{pkg.version}::{app.version}</StyledVersion>
+        <StyledVersion>{env}-v{pkg.version}::{app.version}</StyledVersion>
         {/*
         <Menu
           theme="dark"

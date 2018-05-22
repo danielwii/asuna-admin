@@ -15,6 +15,21 @@ export const peek = (message, callback?) => (fields) => {
   return fields;
 };
 
+export const tables = {
+  treeDecorator({ schema, items }) {
+    const TAG = '[treeDecorator]';
+    logger.log(TAG, { schema, items });
+    const field = R.compose(
+      R.find((field: Asuna.Schema.FormSchema) => field.options.type === 'Tree'),
+      R.values,
+    )(schema);
+    if (field) {
+      logger.log(TAG, { field });
+      // TODO need implemented.
+    }
+    return { schema, items };
+  },
+};
 export const hiddenComponentDecorator = (fields) => {
   const TAG = '[hiddenComponentDecorator]';
   logger.log(TAG, { fields });
