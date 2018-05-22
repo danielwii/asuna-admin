@@ -73,5 +73,7 @@ module.exports = withProgressBar(withTypescript({
     isServer: true,
   },
 
-  publicRuntimeConfig: {},
+  publicRuntimeConfig: {
+    env: process.env.ENV || 'dev',
+  },
 }));
