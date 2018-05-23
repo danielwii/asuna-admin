@@ -1,15 +1,15 @@
-import React       from 'react';
+import React from 'react';
 import * as moment from 'moment';
-import * as R      from 'ramda';
-import deepDiff    from 'deep-diff';
-import Truncate    from 'react-truncate';
+import * as R from 'ramda';
+import _ from 'lodash';
+import deepDiff from 'deep-diff';
+import Truncate from 'react-truncate';
 
-import { Tooltip } from 'antd';
+import { Checkbox, Popconfirm, Tooltip, Icon, Button } from 'antd';
 
 import { AuthHeader, config, ConfigKey } from '../app/configure';
 
 import { castModelKey } from './cast';
-
 import { createLogger, lv } from './logger';
 
 const logger = createLogger('helpers', lv.warn);
@@ -18,7 +18,7 @@ export * from './logger';
 export * from './cast';
 export * from './error';
 
-export const authHeader = (token) => {
+export const authHeader = token => {
   if (config.is(ConfigKey.AUTH_HEADER, AuthHeader.AuthHeaderAsBearerToken)) {
     return { headers: { Authorization: `Bearer ${token}` } };
   }
@@ -26,19 +26,39 @@ export const authHeader = (token) => {
 };
 
 export const columnHelper = {
-  generate        : (key, title, render?) => ({
+  generateOriginal: (key, title, render?) => ({
     key,
     title,
     dataIndex: key,
-    sorter   : true,
-    render   : (text) => {
+    sorter: true,
+    render: text => (render ? render(text) : text),
+  }),
+  generate: (key, title, render?) => ({
+    key,
+    title,
+    dataIndex: key,
+    sorter: true,
+    render: text => {
       const value = render ? render(text) : text;
       return (
-        <Truncate
-          trimWhitespace
-          lines={1}
-          ellipsis={<Tooltip title={value}>...</Tooltip>}
-        >{value}</Truncate>
+        <Truncate trimWhitespace lines={1} ellipsis={<Tooltip title={value}>...</Tooltip>}>
+          {value}
+        </Truncate>
+      );
+    },
+  }),
+  generateLink: (key, title, render?) => ({
+    key,
+    title,
+    dataIndex: key,
+    sorter: true,
+    render: text => {
+      const value = render ? render(text) : text;
+      return (
+        <Button href={value} size="small" type="dashed" target="_blank">
+          {value}
+          <Icon type="link" />
+        </Button>
       );
     },
   }),
@@ -46,16 +66,14 @@ export const columnHelper = {
     key,
     title,
     dataIndex: key,
-    sorter   : true,
-    render   : (text) => {
+    sorter: true,
+    render: text => {
       if (text) {
         const value = render ? render(text) : moment(text).calendar();
         return (
-          <Truncate
-            trimWhitespace
-            lines={1}
-            ellipsis={<Tooltip title={value}>...</Tooltip>}
-          >{value}</Truncate>
+          <Truncate trimWhitespace lines={1} ellipsis={<Tooltip title={value}>...</Tooltip>}>
+            {value}
+          </Truncate>
         );
       }
       return 'n/a';
@@ -67,11 +85,68 @@ export const columnHelper = {
    * @param extras 需要接受 auth 参数传入
    * @returns {{key: string, title: string, render: function(*=, *=): *}}
    */
-  generateActions : (actions, extras?) => ({
-    key   : 'action',
-    title : 'Action',
+  generateActions: (actions, extras?) => ({
+    key: 'action',
+    title: 'Action',
     render: (text, record) =>
       actions(text, record, extras ? auth => extras(text, record, auth) : null),
+  }),
+  /**
+   * 生成预览小图
+   * TODO 增加预览大图功能
+   * @param key
+   * @param title
+   * @param render
+   */
+  generateImage: (key, title, render?) => ({
+    key,
+    title,
+    dataIndex: key,
+    sorter: true,
+    render: text => {
+      if (text) {
+        try {
+          const value = render ? render(text) : JSON.parse(text);
+          const api = config.get(ConfigKey.IMAGE_API);
+          const images = _.map(value, image => `${api}/${image.filename}?prefix=${image.prefix}`);
+          return images.map((image, index) => <img key={index} src={image} width="200" />);
+        } catch (e) {
+          logger.warn(e);
+        }
+      }
+      return 'n/a';
+    },
+  }),
+  /**
+   * 生成切换按钮
+   * @param key
+   * @param title
+   * @param {any} auth
+   * @param {any} modelName
+   * @param {any} callRefresh
+   * @returns {{title: any; dataIndex: string | any; key: string | any; render: (isActive, record) => any}}
+   */
+  generateBoolean: (key, title, { auth, modelName, callRefresh }) => ({
+    title: title,
+    dataIndex: castModelKey(key),
+    key: castModelKey(key),
+    render: (isActive, record) => (
+      <Popconfirm
+        title={isActive ? `是否注销: ${record.id}` : `是否激活: ${record.id}`}
+        onConfirm={async () => {
+          const { modelProxy } = require('../adapters/model');
+          await modelProxy.upsert(auth, modelName, {
+            body: {
+              id: record.id,
+              [key]: !isActive,
+            },
+          });
+          callRefresh();
+        }}
+      >
+        <Checkbox checked={isActive} />
+      </Popconfirm>
+    ),
   }),
 };
 
@@ -79,17 +154,17 @@ export const columnHelper = {
  * 通用配置
  */
 export const commonColumns = {
-  any        : any => columnHelper.generate(any, any.toUpperCase()),
-  id         : columnHelper.generate('id', 'ID'),
-  name       : columnHelper.generate('name', '名称'),
+  any: any => columnHelper.generate(any, any.toUpperCase()),
+  id: columnHelper.generate('id', 'ID'),
+  name: columnHelper.generate('name', '名称'),
   description: columnHelper.generate('description', '描述'),
-  title      : columnHelper.generate('title', '标题'),
-  nameEn     : columnHelper.generate(castModelKey('nameEn'), '英文名称'),
-  email      : columnHelper.generate('email', 'Email'),
-  type       : columnHelper.generate('type', '类型'),
-  createdAt  : columnHelper.generateCalendar(castModelKey('createdAt'), '创建时间'),
-  updatedAt  : columnHelper.generateCalendar(castModelKey('updatedAt'), '更新时间'),
-  actions    : columnHelper.generateActions,
+  title: columnHelper.generate('title', '标题'),
+  nameEn: columnHelper.generate(castModelKey('nameEn'), '英文名称'),
+  email: columnHelper.generate('email', 'Email'),
+  type: columnHelper.generate('type', '类型'),
+  createdAt: columnHelper.generateCalendar(castModelKey('createdAt'), '创建时间'),
+  updatedAt: columnHelper.generateCalendar(castModelKey('updatedAt'), '更新时间'),
+  actions: columnHelper.generateActions,
 };
 
 export const defaultColumns = actions => [
@@ -112,7 +187,7 @@ export const defaultTitleColumns = actions => [
   commonColumns.actions(actions),
 ];
 
-export const diff = (first, second, opts: { include?, exclude? } = {}) => {
+export const diff = (first, second, opts: { include?; exclude? } = {}) => {
   let verbose;
   if (R.not(R.anyPass([R.isEmpty, R.isNil])(opts.include))) {
     verbose = deepDiff(R.pickAll(opts.include)(first), R.pickAll(opts.include)(second));

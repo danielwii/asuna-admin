@@ -1,5 +1,5 @@
-import { createLogger, lv } from '../helpers';
-import { appContext }       from '../app/context';
+import { appContext } from '../app/context';
+import { createLogger, lv } from '../helpers/logger';
 
 // --------------------------------------------------------------
 // Types
@@ -28,18 +28,17 @@ interface IAuthProxy {
 const logger = createLogger('adapters:auth', lv.warn);
 
 export const authProxy: IAuthProxy = {
-  login       : (username, password) => appContext.ctx.auth.login(username, password),
-  logout      : () => appContext.ctx.auth.logout(),
-  extractToken: (payload) => appContext.ctx.auth.extractToken(payload),
+  login: (username, password) => appContext.ctx.auth.login(username, password),
+  logout: () => appContext.ctx.auth.logout(),
+  extractToken: payload => appContext.ctx.auth.extractToken(payload),
 };
 
 export class AuthAdapter implements IAuthProxy {
-  constructor(private service: IAuthService) {
-  }
+  constructor(private service: IAuthService) {}
 
-  login        = (username, password) => this.service.login(username, password);
-  logout       = () => this.service.logout();
-  extractToken = (payload) => {
+  login = (username, password) => this.service.login(username, password);
+  logout = () => this.service.logout();
+  extractToken = payload => {
     const token = this.service.extractToken(payload);
     if (!token) {
       logger.warn('[extractToken]', 'extract token error from', payload);
