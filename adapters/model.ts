@@ -2,10 +2,10 @@ import * as R from 'ramda';
 import * as _ from 'lodash';
 
 import { DynamicFormTypes } from '../components/DynamicForm';
-import { appContext }       from '../app/context';
+import { appContext } from '../app/context';
 
-import { defaultColumns }   from '../helpers';
-import { TablePagination }  from './response';
+import { defaultColumns } from '../helpers';
+import { TablePagination } from './response';
 import { createLogger, lv } from '../helpers/logger';
 
 export interface IModelBody {
@@ -15,33 +15,39 @@ export interface IModelBody {
 }
 
 export interface IModelService {
-  loadModels(authToken: { token: string },
-             name: string,
-             configs?: { pagination?: Asuna.Pageable, filters?, sorter? } & Asuna.Schema.ModelOpt);
+  loadModels(
+    authToken: { token: string },
+    name: string,
+    configs?: { pagination?: Asuna.Pageable; filters?; sorter? } & Asuna.Schema.ModelOpt,
+  );
 
-  loadSchema(authToken: { token: string },
-             payload: { name: string },
-             data);
+  loadSchema(authToken: { token: string }, payload: { name: string }, data);
 
-  fetch(authToken: { token: string },
-        name: string,
-        data: { endpoint?: string, id: number, profile?: string });
+  fetch(
+    authToken: { token: string },
+    name: string,
+    data: { endpoint?: string; id: number; profile?: string },
+  );
 
-  remove(authToken: { token: string },
-         name: string,
-         data: { endpoint?: string, id: number });
+  remove(authToken: { token: string }, name: string, data: { endpoint?: string; id: number });
 
-  insert(authToken: { token: string, schemas?: {} },
-         name: string,
-         data: { endpoint?: string, body: IModelBody } & Asuna.Schema.ModelConfig);
+  insert(
+    authToken: { token: string; schemas?: {} },
+    name: string,
+    data: { endpoint?: string; body: IModelBody } & Asuna.Schema.ModelConfig,
+  );
 
-  update(authToken: { token: string },
-         name: any,
-         data: { endpoint?: string, id: number | string, body: IModelBody } & Asuna.Schema.ModelConfig);
+  update(
+    authToken: { token: string },
+    name: any,
+    data: { endpoint?: string; id: number | string; body: IModelBody } & Asuna.Schema.ModelConfig,
+  );
 
-  loadAssociation(authToken: { token: string },
-                  associationName: string,
-                  data: { endpoint?: string, fields: string[] });
+  loadAssociation(
+    authToken: { token: string },
+    associationName: string,
+    data: { endpoint?: string; fields: string[] },
+  );
 }
 
 // --------------------------------------------------------------
@@ -51,10 +57,10 @@ export interface IModelService {
 const logger = createLogger('adapters:models', lv.warn);
 
 export interface ModelListConfig {
-  endpoint?: string,
-  pagination?: TablePagination,
-  filters?,
-  sorter?: Sorter | null,
+  endpoint?: string;
+  pagination?: TablePagination;
+  filters?;
+  sorter?: Sorter | null;
 }
 
 interface IModelProxy {
@@ -66,9 +72,7 @@ interface IModelProxy {
 
   getFieldsOfAssociations(): any;
 
-  loadModels(auth: { token: string },
-             name: string,
-             configs?: ModelListConfig): any;
+  loadModels(auth: { token: string }, name: string, configs?: ModelListConfig): any;
 
   loadSchema(auth: { token }, data: { name }): any;
 
@@ -80,11 +84,11 @@ interface IModelProxy {
 
   remove(auth: { token }, name, data): any;
 
-  upsert(auth: { token: string, schemas? }, name: string, data: { body: IModelBody }): any;
+  upsert(auth: { token: string; schemas? }, name: string, data: { body: IModelBody }): any;
 }
 
 export const modelProxy: IModelProxy = {
-  getModelConfig       : name => appContext.ctx.models.getModelConfig(name),
+  getModelConfig: name => appContext.ctx.models.getModelConfig(name),
   getAssociationConfigs: name => appContext.ctx.models.getAssociationConfigs(name),
 
   getFormSchema: (schemas, name, values) =>
@@ -133,8 +137,11 @@ export const modelProxy: IModelProxy = {
    * @param data       - model body
    * @returns {*}
    */
-  upsert: ({ token, schemas }: { token: string, schemas? }, name: string, data: { body: IModelBody }) =>
-    appContext.ctx.models.upsert({ token, schemas }, name, data),
+  upsert: (
+    { token, schemas }: { token: string; schemas? },
+    name: string,
+    data: { body: IModelBody },
+  ) => appContext.ctx.models.upsert({ token, schemas }, name, data),
 };
 
 export class ModelAdapter implements IModelProxy {
@@ -149,7 +156,11 @@ export class ModelAdapter implements IModelProxy {
    *                       模型定义中出现的的元素才会作为最终元素
    * @param associations
    */
-  constructor(service: IModelService, configs: Asuna.Schema.ModelOpts = {}, associations: Asuna.Schema.Associations = {}) {
+  constructor(
+    service: IModelService,
+    configs: Asuna.Schema.ModelOpts = {},
+    associations: Asuna.Schema.Associations = {},
+  ) {
     logger.log('[ModelAdapter][constructor]', { service, configs, associations });
     if (!service) {
       throw new Error('service must defined');
@@ -161,8 +172,8 @@ export class ModelAdapter implements IModelProxy {
       model: R.path(['modelColumns', name])(configs),
     }))(R.prop('models', configs));
 
-    this.service      = service;
-    this.allModels    = Object.keys(modelConfigs);
+    this.service = service;
+    this.allModels = Object.keys(modelConfigs);
     this.modelConfigs = modelConfigs;
     this.associations = associations;
 
@@ -174,7 +185,7 @@ export class ModelAdapter implements IModelProxy {
     })(modelConfigs);
   }
 
-  identifyType = (field) => {
+  identifyType = field => {
     if (['id', 'created_at', 'updated_at'].indexOf(field.name) > -1) {
       return DynamicFormTypes.Plain;
     }
@@ -218,15 +229,17 @@ export class ModelAdapter implements IModelProxy {
     return type;
   };
 
-  fetch = (config, name, data) => this.service.fetch(config, name, {
-    ...data,
-    ...this.getModelConfig(name) as Asuna.Schema.ModelOpt,
-  });
+  fetch = (config, name, data) =>
+    this.service.fetch(config, name, {
+      ...data,
+      ...(this.getModelConfig(name) as Asuna.Schema.ModelOpt),
+    });
 
-  remove = (config, name, data) => this.service.remove(config, name, {
-    ...data,
-    ...this.getModelConfig(name) as Asuna.Schema.ModelOpt,
-  });
+  remove = (config, name, data) =>
+    this.service.remove(config, name, {
+      ...data,
+      ...(this.getModelConfig(name) as Asuna.Schema.ModelOpt),
+    });
 
   // FIXME schemas can be found by storeConnector now.
   upsert = ({ token, schemas }, name: string, data: { body: IModelBody }): Promise<any> => {
@@ -237,7 +250,7 @@ export class ModelAdapter implements IModelProxy {
     const fields = this.getFormSchema(allSchemas, name);
     logger.info('[upsert]', 'fields is', fields);
 
-    const fixKeys     = _.mapKeys(data.body, (value, key) => _.get(fields, `${key}.ref`, key));
+    const fixKeys = _.mapKeys(data.body, (value, key) => _.get(fields, `${key}.ref`, key));
     const transformed = _.mapValues(fixKeys, (value, key) => {
       // json 用于描述该字段需要通过字符串转换处理，目前用于服务器端不支持 JSON 数据格式的情况
       return _.get(fields, `${key}.options.json`) === 'str' ? JSON.stringify(value) : value;
@@ -250,13 +263,13 @@ export class ModelAdapter implements IModelProxy {
         ...data,
         body: transformed,
         id,
-        ...this.getModelConfig(name) as Asuna.Schema.ModelOpt,
+        ...(this.getModelConfig(name) as Asuna.Schema.ModelOpt),
       });
     }
     return this.service.insert({ token }, name, {
       ...data,
       body: transformed,
-      ...this.getModelConfig(name) as Asuna.Schema.ModelOpt,
+      ...(this.getModelConfig(name) as Asuna.Schema.ModelOpt),
     });
   };
 
@@ -277,11 +290,20 @@ export class ModelAdapter implements IModelProxy {
 
       return config;
     }
-    logger.warn('[getModelConfig]', `'${name}' not found in`, this.modelConfigs, 'generate a default one.');
+    logger.warn(
+      '[getModelConfig]',
+      `'${name}' not found in`,
+      this.modelConfigs,
+      'generate a default one.',
+    );
     return { model: {}, table: defaultColumns };
   };
 
-  getFormSchema = (schemas: Asuna.Schema.ModelSchemas, name: string, values?: { [member: string]: any }): Asuna.Schema.FormSchemas => {
+  getFormSchema = (
+    schemas: Asuna.Schema.ModelSchemas,
+    name: string,
+    values?: { [member: string]: any },
+  ): Asuna.Schema.FormSchemas => {
     if (!schemas || !name) {
       logger.error('[getFormSchema]', 'schemas or name is required.', { schemas, name });
       return {};
@@ -296,34 +318,36 @@ export class ModelAdapter implements IModelProxy {
     logger.log('[getFormSchema]', 'schema is', schema, 'name is', name);
     return R.compose(
       R.mergeAll,
-      R.map<Asuna.Schema.FormSchema, any>(formatted => ({ [formatted.name]: formatted })),
-      R.map<Asuna.Schema.ModelSchema, Asuna.Schema.FormSchema>((field) => {
-        const ref      = R.pathOr(field.name, ['config', 'info', 'ref'])(field);
+      R.map((formatted: Asuna.Schema.FormSchema) => ({ [formatted.name]: formatted })),
+      R.map((field: Asuna.Schema.ModelSchema): Asuna.Schema.FormSchema => {
+        const ref = R.pathOr(field.name, ['config', 'info', 'ref'])(field);
+        const length = R.path(['config', 'length'])(field);
         const required = R.not(R.pathOr(true, ['config', 'nullable'])(field));
-        return ({
-          name   : ref || field.name,
+        return {
+          name: ref || field.name,
           ref,
-          type   : this.identifyType(field),
+          type: this.identifyType(field),
           options: {
             ...R.path(['config', 'info'])(field),
-            label     : R.pathOr(null, ['config', 'info', 'name'])(field),
+            length: length ? +length : null,
+            label: R.pathOr(null, ['config', 'info', 'name'])(field),
             // foreignKeys: R.path(['config', 'foreignKeys'])(field), // @deprecated
             selectable: R.path<string>(['config', 'selectable'])(field),
-            required  : required || R.pathOr(false, ['config', 'info', 'required'])(field),
+            required: required || R.pathOr(false, ['config', 'info', 'required'])(field),
             ...R.path(['model', 'settings', field.name], this.getModelConfig(name)),
           },
           // 不存在时返回 undefined，而不能返回 null
           // null 会被当作值在更新时被传递
-          value  : values ? R.prop(field.name)(values) : undefined,
-        });
+          value: values ? R.prop(field.name)(values) : undefined,
+        };
       }),
     )(schema) as { [member: string]: Asuna.Schema.FormSchema };
   };
 
   getFieldsOfAssociations = R.memoize(() => {
     logger.info('[getFieldsOfAssociations]', 'modelConfigs is', this.modelConfigs);
-    const concatValues       = (l, r) => (R.is(String, l) ? l : R.uniq(R.concat(l, r)));
-    const isNotEmpty         = R.compose(R.not, R.anyPass([R.isEmpty, R.isNil]));
+    const concatValues = (l, r) => (R.is(String, l) ? l : R.uniq(R.concat(l, r)));
+    const isNotEmpty = R.compose(R.not, R.anyPass([R.isEmpty, R.isNil]));
     const associationsFields = R.compose(
       R.reduce(R.mergeDeepWith(concatValues), {}),
       R.filter(isNotEmpty),
@@ -341,9 +365,9 @@ export class ModelAdapter implements IModelProxy {
     return this.service.loadModels(auth, name, {
       pagination: { page, size },
       sorter: configs && configs.sorter,
-      ...this.getModelConfig(name) as Asuna.Schema.ModelOpt,
+      ...(this.getModelConfig(name) as Asuna.Schema.ModelOpt),
     });
-  };
+  }
 
   loadAssociation = ({ token }, associationName) => {
     if (!associationName) {
@@ -352,23 +376,33 @@ export class ModelAdapter implements IModelProxy {
     }
 
     const defaultFields = R.pathOr(['id', 'name'], [associationName, 'fields'])(this.associations);
-    const fields        = R.pathOr(defaultFields, [associationName, 'fields'])(this.getFieldsOfAssociations());
+    const fields = R.pathOr(defaultFields, [associationName, 'fields'])(
+      this.getFieldsOfAssociations(),
+    );
     logger.info('[loadAssociation]', {
-      defaultFields, fields, associationName, associations: this.associations,
+      defaultFields,
+      fields,
+      associationName,
+      associations: this.associations,
     });
     return this.service.loadAssociation({ token }, associationName, {
-      fields, ...this.getModelConfig(associationName) as Asuna.Schema.ModelOpt,
+      fields,
+      ...(this.getModelConfig(associationName) as Asuna.Schema.ModelOpt),
     });
   };
 
   loadSchema = ({ token }, name) =>
     this.service.loadSchema({ token }, name, this.getModelConfig(name) as Asuna.Schema.ModelOpt);
 
-  listAssociationsCallable = ({ token }, associationNames) => Object.assign({},
-    ...associationNames.map(name => ({ [name]: this.loadAssociation({ token }, name) })),
-  );
+  listAssociationsCallable = ({ token }, associationNames) =>
+    Object.assign(
+      {},
+      ...associationNames.map(name => ({ [name]: this.loadAssociation({ token }, name) })),
+    );
 
-  listSchemasCallable = ({ token }) => Object.assign({},
-    ...this.allModels.map(name => ({ [name]: this.loadSchema({ token }, name) })),
-  );
+  listSchemasCallable = ({ token }) =>
+    Object.assign(
+      {},
+      ...this.allModels.map(name => ({ [name]: this.loadSchema({ token }, name) })),
+    );
 }

@@ -6,16 +6,16 @@ import { Checkbox, DatePicker, Form, Icon, Input, InputNumber, Switch, TimePicke
 import { BraftRichEditor } from '../../../components/RichEditor';
 
 import { ImagesUploader, ImageUploader } from '../images';
-import { VideoUploader }                 from '../videos';
-import { Authorities }                   from '../authorities';
-import { createLogger, lv }              from '../../../helpers/index';
+import { VideoUploader } from '../videos';
+import { Authorities } from '../authorities';
+import { createLogger, lv } from '../../../helpers/index';
 
 const logger = createLogger('components:dynamic-form:elements', lv.warn);
 
 const defaultFormItemLayout = {};
 
 const horizontalFormItemLayout = {
-  labelCol  : { offset: 0, span: 5 },
+  labelCol: { offset: 0, span: 5 },
   wrapperCol: { offset: 0, span: 19 },
 };
 
@@ -42,15 +42,20 @@ const horizontalFormItemLayout = {
 // };
 // --------------------------------------------------------------
 
-// eslint-disable-next-line react/prop-types
-export const generatePlain = ({ key, label, text, help }, formItemLayout = horizontalFormItemLayout) => {
+export const generatePlain = (
+  // eslint-disable-next-line react/prop-types
+  { key, label, text, help },
+  formItemLayout = horizontalFormItemLayout,
+) => {
   logger.log('[generatePlain]', { key, label, text, help });
-  return (<Form.Item
-    key={key || label}
-    {...formItemLayout}
-    label={label}
-    help={help}
-  >{`${text}`}</Form.Item>);
+  return (
+    <Form.Item
+      key={key || label}
+      {...formItemLayout}
+      label={label}
+      help={help}
+    >{`${text}`}</Form.Item>
+  );
 };
 
 export const generateComponent = (form, options, Component, formItemLayout = {}) => {
@@ -107,29 +112,36 @@ export const generateInputNumber = (form, options, formItemLayout = defaultFormI
   );
 };
 
-export const generateInput = (form, {
-  key, name, label,
-  required = false, requiredMessage,
-  placeholder = '',
-  iconType,
-  help,
-}, formItemLayout) => {
+export const generateInput = (
+  form,
+  { key, name, label, required = false, requiredMessage, placeholder = '', iconType, help, length },
+  formItemLayout,
+) => {
   const fieldName = key || name;
   const labelName = label || name || key;
 
   let component;
   if (iconType) {
-    component = (<Input
-      prefix={<Icon type={iconType} style={{ color: 'rgba(0,0,0,.25)' }} />}
-      placeholder={placeholder}
-    />);
+    component = (
+      <Input
+        prefix={<Icon type={iconType} style={{ color: 'rgba(0,0,0,.25)' }} />}
+        placeholder={placeholder}
+      />
+    );
   } else {
-    component = (<Input placeholder={placeholder} />);
+    component = <Input placeholder={placeholder} />;
   }
 
   return generateComponent(
     form,
-    { fieldName, labelName, opts: { rules: [{ required, message: requiredMessage }] }, help },
+    {
+      fieldName,
+      labelName,
+      opts: {
+        rules: [{ required, message: requiredMessage }, { max: length }],
+      },
+      help,
+    },
     component,
     formItemLayout,
   );
@@ -141,9 +153,10 @@ export const generateTextArea = (form, options, formItemLayout) => {
   const fieldName = key || name;
   const labelName = label || name || key;
   return generateComponent(
-    form, { fieldName, labelName, ...options }, (
-      <Input.TextArea />
-    ), formItemLayout,
+    form,
+    { fieldName, labelName, ...options },
+    <Input.TextArea />,
+    formItemLayout,
   );
 };
 
@@ -161,21 +174,24 @@ export const generateDateTime = (form, options, formItemLayout = defaultFormItem
 
   if (mode === 'time') {
     return generateComponent(
-      form, { fieldName, labelName, ...options }, (
-        <TimePicker />
-      ), formItemLayout,
+      form,
+      { fieldName, labelName, ...options },
+      <TimePicker />,
+      formItemLayout,
     );
   } else if (mode === 'date') {
     return generateComponent(
-      form, { fieldName, labelName, ...options }, (
-        <DatePicker />
-      ), formItemLayout,
+      form,
+      { fieldName, labelName, ...options },
+      <DatePicker />,
+      formItemLayout,
     );
   }
   return generateComponent(
-    form, { fieldName, labelName, ...options }, (
-      <DatePicker showTime format="YYYY-MM-DD HH:mm:ss" />
-    ), formItemLayout,
+    form,
+    { fieldName, labelName, ...options },
+    <DatePicker showTime format="YYYY-MM-DD HH:mm:ss" />,
+    formItemLayout,
   );
 };
 
@@ -185,9 +201,10 @@ export const generateSwitch = (form, options, formItemLayout = defaultFormItemLa
   const fieldName = key || name;
   const labelName = label || name || key;
   return generateComponent(
-    form, { fieldName, labelName, opts: { valuePropName: 'checked' }, ...options }, (
-      <Switch />
-    ), formItemLayout,
+    form,
+    { fieldName, labelName, opts: { valuePropName: 'checked' }, ...options },
+    <Switch />,
+    formItemLayout,
   );
 };
 
@@ -197,9 +214,10 @@ export const generateImages = (form, options, formItemLayout = defaultFormItemLa
   const fieldName = key || name;
   const labelName = label || name || key;
   return generateComponent(
-    form, { fieldName, labelName, ...options }, (
-      <ImagesUploader auth={auth} api={api} />
-    ), formItemLayout,
+    form,
+    { fieldName, labelName, ...options },
+    <ImagesUploader auth={auth} api={api} />,
+    formItemLayout,
   );
 };
 
@@ -209,9 +227,10 @@ export const generateImage = (form, options, formItemLayout = defaultFormItemLay
   const fieldName = key || name;
   const labelName = label || name || key;
   return generateComponent(
-    form, { fieldName, labelName, ...options }, (
-      <ImageUploader auth={auth} api={api} />
-    ), formItemLayout,
+    form,
+    { fieldName, labelName, ...options },
+    <ImageUploader auth={auth} api={api} />,
+    formItemLayout,
   );
 };
 
@@ -221,9 +240,10 @@ export const generateVideo = (form, options, formItemLayout = defaultFormItemLay
   const fieldName = key || name;
   const labelName = label || name || key;
   return generateComponent(
-    form, { fieldName, labelName, ...options }, (
-      <VideoUploader auth={auth} api={api} />
-    ), formItemLayout,
+    form,
+    { fieldName, labelName, ...options },
+    <VideoUploader auth={auth} api={api} />,
+    formItemLayout,
   );
 };
 
@@ -233,9 +253,10 @@ export const generateAuthorities = (form, options, formItemLayout = defaultFormI
   const fieldName = key || name;
   const labelName = label || name || key;
   return generateComponent(
-    form, { fieldName, labelName, ...options }, (
-      <Authorities />
-    ), formItemLayout,
+    form,
+    { fieldName, labelName, ...options },
+    <Authorities />,
+    formItemLayout,
   );
 };
 
@@ -245,8 +266,9 @@ export const generateRichTextEditor = (form, options, formItemLayout = defaultFo
   const fieldName = key || name;
   const labelName = label || name || key;
   return generateComponent(
-    form, { fieldName, labelName, ...options }, (
-      <BraftRichEditor auth={auth} imageApi={imageApi} />
-    ), formItemLayout,
+    form,
+    { fieldName, labelName, ...options },
+    <BraftRichEditor auth={auth} imageApi={imageApi} />,
+    formItemLayout,
   );
 };

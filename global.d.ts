@@ -1,5 +1,4 @@
 declare namespace Asuna {
-
   interface Pageable {
     page: number;
     size: number;
@@ -10,9 +9,9 @@ declare namespace Asuna {
       /**
        * 对象格式验证异常
        */
-      VALIDATE    = 'VALIDATE',
-      UPLOAD      = 'UPLOAD',
-      SIGN        = 'SIGN',
+      VALIDATE = 'VALIDATE',
+      UPLOAD = 'UPLOAD',
+      SIGN = 'SIGN',
       BAD_REQUEST = 'BAD_REQUEST',
     }
 
@@ -48,15 +47,15 @@ declare namespace Asuna {
      * @deprecated
      */
     enum MetaInfoColumnType {
-      IMAGE         = 'Image',
-      IMAGES        = 'Images',
-      VIDEO         = 'Video',
-      VIDEOS        = 'Videos',
-      AUTHORITIES   = 'Authorities',
-      RICH_TEXT     = 'RichText',
-      DELETABLE     = 'Deletable',
+      IMAGE = 'Image',
+      IMAGES = 'Images',
+      VIDEO = 'Video',
+      VIDEOS = 'Videos',
+      AUTHORITIES = 'Authorities',
+      RICH_TEXT = 'RichText',
+      DELETABLE = 'Deletable',
       SORT_POSITION = 'SortPosition',
-      ENUM_FILTER   = 'EnumFilter',
+      ENUM_FILTER = 'EnumFilter',
     }
 
     /**
@@ -85,15 +84,15 @@ declare namespace Asuna {
        * Column: 标记该列隐藏
        * @type {string}
        */
-      HIDDEN   = 'hidden',
+      HIDDEN = 'hidden',
     }
 
     type MetaInfoOptions = {
       /**
        * 在 schema 中隐藏
        */
-      ignore?: boolean,
-      name?: string,
+      ignore?: boolean;
+      name?: string;
       /**
        * RichText - 富文本
        * Record - 标记记录是否可删除
@@ -118,38 +117,38 @@ declare namespace Asuna {
        *         @Column('varchar', { nullable: true, name: 'location_type' })
        *         locationType: typeof LocationType;
        */
-      type?: MetaInfoColumnType |
-        'Image' |
-        'Images' |
-        'Video' |
-        'Videos' |
-        'Authorities' |
-        'RichText' |
-        'Deletable' |
-        'SortPosition' |
-        'EnumFilter' |
-        'Tree',
-      json?: MetaInfoJsonType | 'str',
+      type?:
+        | MetaInfoColumnType
+        | 'Image'
+        | 'Images'
+        | 'Video'
+        | 'Videos'
+        | 'Authorities'
+        | 'RichText'
+        | 'Deletable'
+        | 'SortPosition'
+        | 'EnumFilter'
+        | 'Tree';
+      json?: MetaInfoJsonType | 'str';
       /**
        * 修正前端更新数据的引用，`model_id` -> `model`
        * @deprecated 当更新字段和 schema 字段一致时无需设置，在当前框架中应该无需使用
        */
-      ref?: string,
-      help?: string,
-      accessible?: MetaInfoAccessible | 'readonly' | 'hidden',
-      enumData?: { key: string, value: string[] }[],
-      filterType?: MetaInfoFilterType | 'Sort',
+      ref?: string;
+      help?: string;
+      accessible?: MetaInfoAccessible | 'readonly' | 'hidden';
+      enumData?: { key: string; value: string[] }[];
+      filterType?: MetaInfoFilterType | 'Sort';
       /**
        * slash - 根据 / 设定层级结构
        * parent - 根据父类设定层级结构
        */
-      treeType?: 'slash' | 'parent'
+      treeType?: 'slash' | 'parent';
     };
 
     type EntityMetaInfoOptions = {
-      name: string,
+      name: string;
     };
-
 
     interface FRecordRender {
       (
@@ -158,13 +157,13 @@ declare namespace Asuna {
          */
         actions: () => any,
         opts: {
-          auth: { token: string },
-          modelName: string,
+          auth: { token: string };
+          modelName: string;
           /**
            * 用于处理完毕后的的页面刷新
            */
-          callRefresh: () => void,
-        }
+          callRefresh: () => void;
+        },
       ): any;
     }
 
@@ -181,6 +180,7 @@ declare namespace Asuna {
       type: string;
       value: any;
       options: MetaInfoOptions & {
+        length: number | null;
         label?: string;
         selectable?: string;
         required?: boolean;
@@ -192,7 +192,20 @@ declare namespace Asuna {
 
     interface ModelSchema {
       name: string;
-      config: {};
+      config: {
+        selectable?: string;
+        type: string;
+        primaryKey?: boolean;
+        nullable: boolean;
+        length: string | number;
+        info: MetaInfoOptions & {
+          label?: string;
+          selectable?: string;
+          required?: boolean;
+          json?: string;
+        };
+        many?: boolean;
+      };
     }
 
     type ModelSchemas = { [key: string]: ModelSchema[] };
@@ -210,15 +223,15 @@ declare namespace Asuna {
       associations?: Associations;
       settings?: {
         [key: string]: {
-          help?: string,
-          accessible?: 'readonly' | 'hidden',
+          help?: string;
+          accessible?: 'readonly' | 'hidden';
           /**
            * value is array =>  name: R.prop(1), value: R.prop(0)
            * value is string => value
            */
-          enumSelector?: { name: string, value: string },
-          target?: { enumSelector: { name: string, value: string } },
-        },
+          enumSelector?: { name: string; value: string };
+          target?: { enumSelector: { name: string; value: string } };
+        };
       };
     }
 
@@ -227,12 +240,12 @@ declare namespace Asuna {
     type TableColumns = { [key: string]: FRecordRender };
 
     interface ModelOpt {
-      endpoint?: string
+      endpoint?: string;
     }
 
     interface ModelOpts {
       models?: {
-        [key: string]: ModelOpt,
+        [key: string]: ModelOpt;
       };
       tableColumns?: TableColumns;
       modelColumns?: ModelColumns;
@@ -252,5 +265,4 @@ declare namespace Asuna {
 
     type Menus = Menu[];
   }
-
 }
