@@ -1,12 +1,12 @@
 /* eslint-disable camelcase,react/sort-comp */
-import React     from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import _         from 'lodash';
+import _ from 'lodash';
 
 import { Icon, message, Modal, Upload } from 'antd';
 
-import { apiProxy }         from '../../adapters/api';
-import { diff }             from '../../helpers';
+import { apiProxy } from '../../adapters/api';
+import { diff } from '../../helpers';
 import { createLogger, lv } from '../../helpers/logger';
 
 const logger = createLogger('components:dynamic-form:images', lv.warn);
@@ -59,35 +59,41 @@ async function upload(auth, onChange, files, args) {
 
 export class ImageUploader extends React.Component {
   static propTypes = {
-    auth    : PropTypes.shape({}), // auth token object
-    api     : PropTypes.string.isRequired,
-    value   : PropTypes.arrayOf(PropTypes.shape({
-      bucket  : PropTypes.string,
-      filename: PropTypes.string,
-      mode    : PropTypes.string,
-      prefix  : PropTypes.string,
-    })),
+    auth: PropTypes.shape({}), // auth token object
+    api: PropTypes.string.isRequired,
+    value: PropTypes.arrayOf(
+      PropTypes.shape({
+        bucket: PropTypes.string,
+        filename: PropTypes.string,
+        mode: PropTypes.string,
+        prefix: PropTypes.string,
+      }),
+    ),
     onChange: PropTypes.func,
   };
 
   state = { loading: false };
 
   shouldComponentUpdate(nextProps, nextState) {
-    const propsDiff    = diff(this.props, nextProps);
-    const stateDiff    = diff(this.state, nextState);
+    const propsDiff = diff(this.props, nextProps);
+    const stateDiff = diff(this.state, nextState);
     const shouldUpdate = propsDiff.isDifferent || stateDiff.isDifferent;
     if (shouldUpdate) {
-      logger.info('[ImageUploader][shouldComponentUpdate]', {
-        nextProps,
-        nextState,
-        propsDiff,
-        stateDiff,
-      }, shouldUpdate);
+      logger.info(
+        '[ImageUploader][shouldComponentUpdate]',
+        {
+          nextProps,
+          nextState,
+          propsDiff,
+          stateDiff,
+        },
+        shouldUpdate,
+      );
     }
     return shouldUpdate;
   }
 
-  handleChange = (info) => {
+  handleChange = info => {
     logger.log('[ImageUploader][handleChange]', info);
     if (info.file.status === 'uploading') {
       this.setState({ loading: true });
@@ -125,13 +131,15 @@ export class ImageUploader extends React.Component {
           beforeUpload={beforeUpload}
           onChange={this.handleChange}
         >
-          {image
-            ? <img
+          {image ? (
+            <img
               style={{ width: '100%' }}
               src={`${api}/${image.filename}?prefix=${image.prefix}`}
               alt=""
             />
-            : uploadButton}
+          ) : (
+            uploadButton
+          )}
         </Upload>
       </div>
     );
@@ -141,14 +149,16 @@ export class ImageUploader extends React.Component {
 // eslint-disable-next-line react/no-multi-comp
 export class ImagesUploader extends React.Component {
   static propTypes = {
-    auth    : PropTypes.shape({}), // auth token object
-    api     : PropTypes.string.isRequired,
-    value   : PropTypes.arrayOf(PropTypes.shape({
-      bucket  : PropTypes.string,
-      filename: PropTypes.string,
-      mode    : PropTypes.string,
-      prefix  : PropTypes.string,
-    })),
+    auth: PropTypes.shape({}), // auth token object
+    api: PropTypes.string.isRequired,
+    value: PropTypes.arrayOf(
+      PropTypes.shape({
+        bucket: PropTypes.string,
+        filename: PropTypes.string,
+        mode: PropTypes.string,
+        prefix: PropTypes.string,
+      }),
+    ),
     onChange: PropTypes.func,
   };
 
@@ -156,8 +166,9 @@ export class ImagesUploader extends React.Component {
     super(props);
     this.state = {
       previewVisible: false,
-      previewImage  : '',
-      fileList      : [],
+      previewImage: '',
+      fileList: [],
+      images: props.value,
     };
   }
 
@@ -182,27 +193,31 @@ export class ImagesUploader extends React.Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    const propsDiff    = diff(this.props, nextProps);
-    const stateDiff    = diff(this.state, nextState);
+    const propsDiff = diff(this.props, nextProps);
+    const stateDiff = diff(this.state, nextState);
     const shouldUpdate = propsDiff.isDifferent || stateDiff.isDifferent;
     if (shouldUpdate) {
-      logger.info('[shouldComponentUpdate]', {
-        nextProps,
-        nextState,
-        propsDiff,
-        stateDiff,
-      }, shouldUpdate);
+      logger.info(
+        '[shouldComponentUpdate]',
+        {
+          nextProps,
+          nextState,
+          propsDiff,
+          stateDiff,
+        },
+        shouldUpdate,
+      );
     }
     return shouldUpdate;
   }
 
-  wrapImagesToFileList = (images) => {
+  wrapImagesToFileList = images => {
     const { api } = this.props;
     logger.info('[wrapImagesToFileList]', 'images is', images);
     const fileList = _.map(images, (image, index) => ({
-      uid   : index,
+      uid: index,
       status: 'done',
-      url   : `${api}/${image.filename}?prefix=${image.prefix}`,
+      url: `${api}/${image.filename}?prefix=${image.prefix}`,
     }));
     logger.info('[wrapImagesToFileList]', 'fileList is', fileList);
     this.setState({ fileList });
@@ -210,9 +225,9 @@ export class ImagesUploader extends React.Component {
 
   handleCancel = () => this.setState({ previewVisible: false });
 
-  handlePreview = (file) => {
+  handlePreview = file => {
     this.setState({
-      previewImage  : file.url || file.thumbUrl,
+      previewImage: file.url || file.thumbUrl,
       previewVisible: true,
     });
   };
@@ -220,8 +235,9 @@ export class ImagesUploader extends React.Component {
   handleChange = ({ fileList }) => this.setState({ fileList });
 
   render() {
-    const { auth, onChange, value: images }          = this.props;
-    const { previewVisible, previewImage, fileList } = this.state;
+    const { auth, onChange } = this.props;
+
+    const { previewVisible, previewImage, fileList, images } = this.state;
 
     logger.info('[render]', { fileList });
 

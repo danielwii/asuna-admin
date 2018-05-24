@@ -53,13 +53,16 @@ export const columnHelper = {
     dataIndex: key,
     sorter: true,
     render: text => {
-      const value = render ? render(text) : text;
-      return (
-        <Button href={value} size="small" type="dashed" target="_blank">
-          {value}
-          <Icon type="link" />
-        </Button>
-      );
+      if (text) {
+        const value = render ? render(text) : text;
+        return (
+          <Button href={value} size="small" type="dashed" target="_blank">
+            {value}
+            <Icon type="link" />
+          </Button>
+        );
+      }
+      return 'n/a';
     },
   }),
   generateCalendar: (key, title, render?) => ({
