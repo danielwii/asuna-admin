@@ -47,7 +47,7 @@ export interface IModelService {
   loadAssociation(
     authToken: { token: string },
     associationName: string,
-    data: { endpoint?: string; fields: string[] },
+    data: Asuna.Schema.ModelOpt & { fields: string[] },
   );
 }
 
@@ -65,7 +65,7 @@ export interface ModelListConfig {
 }
 
 interface IModelProxy {
-  getModelConfig(name: string): any;
+  getModelConfig(name: string): Asuna.Schema.ModelConfig;
 
   getAssociationConfigs(name: string): any;
 
@@ -89,7 +89,9 @@ interface IModelProxy {
 }
 
 export const modelProxy: IModelProxy = {
-  getModelConfig: name => appContext.ctx.models.getModelConfig(name),
+  getModelConfig: (name: string): Asuna.Schema.ModelConfig =>
+    appContext.ctx.models.getModelConfig(name),
+
   getAssociationConfigs: name => appContext.ctx.models.getAssociationConfigs(name),
 
   getFormSchema: (schemas, name, values) =>

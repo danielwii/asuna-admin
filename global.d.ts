@@ -240,6 +240,7 @@ declare namespace Asuna {
     type TableColumns = { [key: string]: FRecordRender };
 
     interface ModelOpt {
+      creatable?: boolean;
       endpoint?: string;
     }
 

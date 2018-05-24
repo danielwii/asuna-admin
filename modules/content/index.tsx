@@ -1,27 +1,27 @@
-import React       from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
-import * as R      from 'ramda';
-import _           from 'lodash';
+import * as R from 'ramda';
+import _ from 'lodash';
 
 import { Button, Divider, Modal, Table } from 'antd';
 
-import { panesActions }   from '../../store/panes.actions';
+import { panesActions } from '../../store/panes.actions';
 import { contentActions } from '../../store/content.redux';
-import { modelsActions }  from '../../store/model.redux';
-import { modelProxy }     from '../../adapters/model';
+import { modelsActions } from '../../store/model.redux';
+import { modelProxy } from '../../adapters/model';
 
 import { responseProxy, TablePagination } from '../../adapters/response';
 
 import { castModelKey, diff } from '../../helpers';
-import { createLogger, lv }   from '../../helpers/logger';
+import { createLogger, lv } from '../../helpers/logger';
 
 const logger = createLogger('modules:content:index', lv.warn);
 
 interface IProps extends ReduxProps {
   basis: {
     pane: {
-      key: string,
-    }
+      key: string;
+    };
   };
   activeKey: string;
   models: object;
@@ -31,6 +31,10 @@ interface IProps extends ReduxProps {
 interface IState {
   key: string;
   modelName: string;
+  /**
+   * 不为 true 时页面不显示新建按钮
+   */
+  creatable: boolean;
   columns: any;
   pagination?: TablePagination;
   filters?: object;
@@ -50,15 +54,15 @@ class ContentIndex extends React.Component<IProps, IState> {
     const actions = (text, record, extras) => (
       <span>
         {extras && extras(auth)}
-        <Button size="small" type="dashed" onClick={() => this.edit(text, record)}>Edit</Button>
+        <Button size="small" type="dashed" onClick={() => this.edit(text, record)}>
+          Edit
+        </Button>
         {R.not(R.prop(castModelKey('isSystem'), record)) && (
           <React.Fragment>
             <Divider type="vertical" />
-            <Button
-              size="small"
-              type="danger"
-              onClick={() => this.remove(text, record)}
-            >Delete</Button>
+            <Button size="small" type="danger" onClick={() => this.remove(text, record)}>
+              Delete
+            </Button>
           </React.Fragment>
         )}
       </span>
@@ -66,8 +70,8 @@ class ContentIndex extends React.Component<IProps, IState> {
 
     // content::name => name
     const modelName = R.compose(R.nth(1), R.split(/::/), R.path(['pane', 'key']))(basis);
-    const configs   = modelProxy.getModelConfig(modelName);
-    logger.info('[constructor]', 'load table from configs', configs, 'by', modelName);
+    const configs = modelProxy.getModelConfig(modelName);
+    logger.info('[constructor]', { configs, modelName });
 
     const columns = R.prop('table', configs)(actions, {
       auth,
@@ -75,7 +79,12 @@ class ContentIndex extends React.Component<IProps, IState> {
       callRefresh: this.refresh,
     });
 
-    this.state = { modelName, columns, key: activeKey };
+    this.state = {
+      modelName,
+      columns,
+      creatable: configs.creatable !== false,
+      key: activeKey,
+    };
 
     logger.log('[constructor]', 'current modelName is', modelName);
     dispatch(contentActions.loadModels(modelName));
@@ -83,47 +92,51 @@ class ContentIndex extends React.Component<IProps, IState> {
 
   shouldComponentUpdate(nextProps, nextState, nextContext) {
     logger.info('[shouldComponentUpdate]', { nextProps, nextState, nextContext });
-    const { key }       = this.state;
+    const { key } = this.state;
     const { activeKey } = nextProps;
-    const samePane      = key === activeKey;
-    const propsDiff     = diff(this.props, nextProps);
-    const shouldUpdate  = samePane && propsDiff.isDifferent;
+    const samePane = key === activeKey;
+    const propsDiff = diff(this.props, nextProps);
+    const shouldUpdate = samePane && propsDiff.isDifferent;
     logger.info('[shouldComponentUpdate]', { key, activeKey, samePane, shouldUpdate, propsDiff });
     return shouldUpdate;
   }
 
   create = () => {
     const { modelName } = this.state;
-    const { dispatch }  = this.props;
-    dispatch(panesActions.open({
-      key   : `content::upsert::${modelName}::${Date.now()}`,
-      title : `新增 - ${modelName}`,
-      linkTo: 'content::upsert',
-    }));
+    const { dispatch } = this.props;
+    dispatch(
+      panesActions.open({
+        key: `content::upsert::${modelName}::${Date.now()}`,
+        title: `新增 - ${modelName}`,
+        linkTo: 'content::upsert',
+      }),
+    );
   };
 
   edit = (text, record) => {
     logger.log('[edit]', record);
     const { modelName } = this.state;
-    const { dispatch }  = this.props;
-    dispatch(panesActions.open({
-      key   : `content::upsert::${modelName}::${record.id}`,
-      title : `更新 - ${modelName} - ${record.name || ''}`,
-      linkTo: 'content::upsert',
-      data  : { modelName, record },
-    }));
+    const { dispatch } = this.props;
+    dispatch(
+      panesActions.open({
+        key: `content::upsert::${modelName}::${record.id}`,
+        title: `更新 - ${modelName} - ${record.name || ''}`,
+        linkTo: 'content::upsert',
+        data: { modelName, record },
+      }),
+    );
   };
 
   remove = (text, record) => {
     logger.log('[remove]', record);
     const { modelName } = this.state;
-    const { dispatch }  = this.props;
+    const { dispatch } = this.props;
     Modal.confirm({
-      title     : '是否确认',
-      content   : `删除 ${modelName}？`,
-      okText    : '确认',
+      title: '是否确认',
+      content: `删除 ${modelName}？`,
+      okText: '确认',
       cancelText: '取消',
-      onOk      : () => {
+      onOk: () => {
         dispatch(modelsActions.remove(modelName, record));
       },
     });
@@ -131,10 +144,10 @@ class ContentIndex extends React.Component<IProps, IState> {
 
   handleTableChange = (pagination, filters, sorter) => {
     logger.info('[handleTableChange]', { pagination, filters, sorter });
-    const { modelName }     = this.state;
-    const { dispatch }      = this.props;
+    const { modelName } = this.state;
+    const { dispatch } = this.props;
     const transformedSorter = !_.isEmpty(sorter)
-      ? { [sorter.field]: sorter.order.slice(0, -3) } as Sorter
+      ? ({ [sorter.field]: sorter.order.slice(0, -3) } as Sorter)
       : null;
     dispatch(contentActions.loadModels(modelName, { pagination, sorter: transformedSorter }));
     this.setState({ pagination, filters, sorter });
@@ -146,20 +159,25 @@ class ContentIndex extends React.Component<IProps, IState> {
   };
 
   render() {
-    const { modelName, columns } = this.state;
-    const { models }             = this.props;
+    const { modelName, columns, creatable } = this.state;
+
+    const { models } = this.props;
 
     const response = R.pathOr([], [modelName, 'data'])(models);
-    const loading  = R.pathOr(false, [modelName, 'loading'])(models);
+    const loading = R.pathOr(false, [modelName, 'loading'])(models);
 
     const { items: dataSource, pagination } = responseProxy.extract(response);
 
-    logger.info('[render]', { models, dataSource, columns, pagination });
+    logger.info('[render]', { creatable, models, dataSource, columns, pagination });
 
     return (
       <div>
-        <Button onClick={this.create}>Create</Button>
-        <Divider type="vertical" />
+        {creatable && (
+          <>
+            <Button onClick={this.create}>Create</Button>
+            <Divider type="vertical" />
+          </>
+        )}
         <Button onClick={this.refresh}>Refresh</Button>
 
         <hr />
@@ -175,7 +193,8 @@ class ContentIndex extends React.Component<IProps, IState> {
         />
         {/* language=CSS */}
         <style jsx global>{`
-          .asuna-content-table td, th {
+          .asuna-content-table td,
+          th {
             padding: 0.3rem !important;
           }
         `}</style>
