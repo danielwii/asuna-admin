@@ -1,11 +1,14 @@
 {
   "name": "asuna-admin",
-  "version": "0.5.5",
+  "version": "0.5.6",
   "repository": "git@github.com:danielwii/asuna-admin.git",
   "author": "Daniel Wei <danielwii0326@gmail.com>",
   "license": "MIT",
   "bin": {
     "asuna": "bin/asuna.js"
+  },
+  "engines": {
+    "node": ">=9 <10.2"
   },
   "files": ["dist", "bin"],
   "jest": {
