@@ -91,8 +91,7 @@ export const columnHelper = {
   generateActions: (actions, extras?) => ({
     key: 'action',
     title: 'Action',
-    render: (text, record) =>
-      actions(text, record, extras ? auth => extras(text, record, auth) : null),
+    render: (text, record) => actions(text, record, extras ? auth => extras(text, record, auth) : null),
   }),
   /**
    * 生成预览小图
@@ -110,11 +109,10 @@ export const columnHelper = {
       if (text) {
         try {
           const value = render ? render(text) : JSON.parse(text);
-          const api = config.get(ConfigKey.IMAGE_API);
-          const images = _.map(value, image => `${api}/${image.filename}?prefix=${image.prefix}`);
+          const images = _.map(value, config.get(ConfigKey.IMAGE_RES_HANDLER));
           return images.map((image, index) => <img key={index} src={image} width="200" />);
         } catch (e) {
-          logger.warn(e);
+          logger.error('[generateImage]', e, { key, title, text });
         }
       }
       return 'n/a';
@@ -170,11 +168,7 @@ export const commonColumns = {
   actions: columnHelper.generateActions,
 };
 
-export const defaultColumns = actions => [
-  commonColumns.id,
-  commonColumns.updatedAt,
-  commonColumns.actions(actions),
-];
+export const defaultColumns = actions => [commonColumns.id, commonColumns.updatedAt, commonColumns.actions(actions)];
 
 export const defaultNameColumns = actions => [
   commonColumns.id,

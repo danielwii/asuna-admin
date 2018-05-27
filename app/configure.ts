@@ -1,3 +1,5 @@
+import { imageResToUrl, videoResToUrl } from '../helpers/upload';
+
 export const enum StringCase {
   None = 'None',
   Snake = 'Snake',
@@ -43,6 +45,13 @@ export const enum ConfigKey {
    * @type {string}
    */
   DEFAULT_PAGE_SIZE = 'DEFAULT_PAGE_SIZE',
+
+  // --------------------------------------------------------------
+  // 定义特定的资源 url 处理函数
+  // --------------------------------------------------------------
+
+  IMAGE_RES_HANDLER = 'IMAGE_RES_HANDLER',
+  VIDEO_RES_HANDLER = 'VIDEO_RES_HANDLER',
 }
 
 interface ConfigOpts {
@@ -54,6 +63,8 @@ interface ConfigOpts {
   IMAGE_API?: string;
   VIDEO_API?: string;
   DEFAULT_PAGE_SIZE?: number;
+  IMAGE_RES_HANDLER?: (res: Asuna.Schema.UploadResponse) => string;
+  VIDEO_RES_HANDLER?: (res: Asuna.Schema.UploadResponse) => string;
 }
 
 const defaultConfiguration: ConfigOpts = {
@@ -61,11 +72,14 @@ const defaultConfiguration: ConfigOpts = {
   MODEL_NAME_CASE: StringCase.None,
   AUTH_HEADER: AuthHeader.AuthHeaderAsBearerToken,
   API_RESPONSE_PAGE_MODE: ApiResponsePageMode.Default,
+
   /**
    * 配置关联数据返回的是 id 还是 entity，默认是 ID 模式
    */
   API_RESPONSE_ASSOCIATION_MODE: ApiResponseAssociationMode.ID,
   DEFAULT_PAGE_SIZE: 25,
+  IMAGE_RES_HANDLER: imageResToUrl,
+  VIDEO_RES_HANDLER: videoResToUrl,
 };
 
 class Config {

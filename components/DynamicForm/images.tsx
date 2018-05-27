@@ -1,13 +1,13 @@
-/* eslint-disable camelcase,react/sort-comp */
 import React from 'react';
-import PropTypes from 'prop-types';
 import _ from 'lodash';
 
 import { Icon, message, Modal, Upload } from 'antd';
+import { RcFile, UploadChangeParam, UploadFile } from 'antd/es/upload/interface';
 
 import { apiProxy } from '../../adapters/api';
 import { diff } from '../../helpers';
 import { createLogger, lv } from '../../helpers/logger';
+import { AuthState } from '../../store/auth.redux';
 
 const logger = createLogger('components:dynamic-form:images', lv.warn);
 
@@ -21,7 +21,7 @@ function getBase64(img, callback) {
   reader.readAsDataURL(img);
 }
 
-function beforeUpload(file) {
+function beforeUpload(file: RcFile, FileList: RcFile[]) {
   const isImage = ['image/jpeg', 'image/png'].indexOf(file.type) > -1;
   logger.log('[beforeUpload]', file);
   if (!isImage) {
@@ -34,7 +34,7 @@ function beforeUpload(file) {
   return isImage && isLt2M;
 }
 
-async function upload(auth, onChange, files, args) {
+async function upload(auth, onChange, files, args?) {
   logger.log('[upload]', { files, args });
   const response = await apiProxy.upload(auth, args.file);
   logger.log('[upload]', { response });
@@ -57,22 +57,17 @@ async function upload(auth, onChange, files, args) {
 // Uploader
 // --------------------------------------------------------------
 
-export class ImageUploader extends React.Component {
-  static propTypes = {
-    auth: PropTypes.shape({}), // auth token object
-    api: PropTypes.string.isRequired,
-    value: PropTypes.arrayOf(
-      PropTypes.shape({
-        bucket: PropTypes.string,
-        filename: PropTypes.string,
-        mode: PropTypes.string,
-        prefix: PropTypes.string,
-      }),
-    ),
-    onChange: PropTypes.func,
-  };
+interface IProps {
+  auth: AuthState;
+  api: string;
+  value: Asuna.Schema.UploadResponse[];
+  onChange: () => void;
+}
 
-  state = { loading: false };
+export class ImageUploader extends React.Component<IProps> {
+  state: {
+    loading: boolean;
+  } = { loading: false };
 
   shouldComponentUpdate(nextProps, nextState) {
     const propsDiff = diff(this.props, nextProps);
@@ -132,11 +127,7 @@ export class ImageUploader extends React.Component {
           onChange={this.handleChange}
         >
           {image ? (
-            <img
-              style={{ width: '100%' }}
-              src={`${api}/${image.filename}?prefix=${image.prefix}`}
-              alt=""
-            />
+            <img style={{ width: '100%' }} src={`${api}/${image.filename}?prefix=${image.prefix}`} alt="" />
           ) : (
             uploadButton
           )}
@@ -146,20 +137,12 @@ export class ImageUploader extends React.Component {
   }
 }
 
-// eslint-disable-next-line react/no-multi-comp
-export class ImagesUploader extends React.Component {
-  static propTypes = {
-    auth: PropTypes.shape({}), // auth token object
-    api: PropTypes.string.isRequired,
-    value: PropTypes.arrayOf(
-      PropTypes.shape({
-        bucket: PropTypes.string,
-        filename: PropTypes.string,
-        mode: PropTypes.string,
-        prefix: PropTypes.string,
-      }),
-    ),
-    onChange: PropTypes.func,
+export class ImagesUploader extends React.Component<IProps> {
+  state: {
+    previewVisible: boolean;
+    previewImage: string;
+    fileList: UploadFile[];
+    images: Asuna.Schema.UploadResponse[];
   };
 
   constructor(props) {
@@ -223,16 +206,18 @@ export class ImagesUploader extends React.Component {
     this.setState({ fileList });
   };
 
-  handleCancel = () => this.setState({ previewVisible: false });
+  handleCancel = () => {
+    this.setState({ previewVisible: false });
+  };
 
-  handlePreview = file => {
+  handlePreview = (file: UploadFile) => {
     this.setState({
       previewImage: file.url || file.thumbUrl,
       previewVisible: true,
     });
   };
 
-  handleChange = ({ fileList }) => this.setState({ fileList });
+  handleChange = ({ fileList }: UploadChangeParam) => this.setState({ fileList });
 
   render() {
     const { auth, onChange } = this.props;

@@ -87,6 +87,13 @@ declare namespace Asuna {
       HIDDEN = 'hidden',
     }
 
+    interface UploadResponse {
+      bucket: string;
+      filename: string;
+      mode: 'local' | 'qiniu';
+      prefix: string;
+    }
+
     type MetaInfoOptions = {
       /**
        * 在 schema 中隐藏
