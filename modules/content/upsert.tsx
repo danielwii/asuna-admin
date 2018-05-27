@@ -1,22 +1,22 @@
-import React       from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
-import * as R      from 'ramda';
-import _           from 'lodash';
-import moment      from 'moment';
+import * as R from 'ramda';
+import _ from 'lodash';
+import moment from 'moment';
 
 import { Form, Icon, message } from 'antd';
 
 import { diff, isErrorResponse, toFormErrors } from '../../helpers';
-import { DynamicForm2, DynamicFormTypes }      from '../../components/DynamicForm';
+import { DynamicForm2, DynamicFormTypes } from '../../components/DynamicForm';
 
-import { modelProxy }       from '../../adapters/model';
-import { AuthState }        from '../../store/auth.redux';
-import { modelsActions }    from '../../store/model.redux';
-import * as schemaHelper    from '../../helpers/schema';
-import { Pane }             from '../../components/Panes';
+import { modelProxy } from '../../adapters/model';
+import { AuthState } from '../../store/auth.redux';
+import { modelsActions } from '../../store/model.redux';
+import * as schemaHelper from '../../helpers/schema';
+import { Pane } from '../../components/Panes';
 import { createLogger, lv } from '../../helpers/logger';
 
-const logger = createLogger('modules:content:upsert', lv.warn);
+const logger = createLogger('modules:content:upsert', lv.info);
 
 // --------------------------------------------------------------
 // Build Form
@@ -24,7 +24,7 @@ const logger = createLogger('modules:content:upsert', lv.warn);
 
 const ContentForm = Form.create({
   mapPropsToFields({ fields }) {
-    const mappedFields = R.map((field) => {
+    const mappedFields = R.map(field => {
       // DatePicker for antd using moment instance
       const isDate = R.contains(field.type)([DynamicFormTypes.Date, DynamicFormTypes.DateTime]);
       if (field.value && isDate) {
@@ -45,7 +45,7 @@ const ContentForm = Form.create({
         logger.info('[ContentForm][onFieldsChange]', { oldVar, newVar, field, key, changedFields });
         return oldVar !== newVar || field.errors != null;
       }),
-      R.map((field) => {
+      R.map(field => {
         let { value } = field;
         // eslint-disable-next-line no-underscore-dangle
         if (value && value._isAMomentObject) {
@@ -81,7 +81,7 @@ interface IState {
   isInsertMode: boolean;
   modelName: string;
   init: boolean;
-  loadings: { INIT: boolean, LOAD: boolean, ASSOCIATIONS: boolean },
+  loadings: { INIT: boolean; LOAD: boolean; ASSOCIATIONS: boolean };
   fields: FormField[];
   key: string;
   hasErrors: boolean;
@@ -102,7 +102,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
     const isInsertMode = this.detectUpsertMode(modelName);
 
     this.state = {
-      preDecorators  : tag => [
+      preDecorators: tag => [
         schemaHelper.peek(`before-${tag}`),
         schemaHelper.hiddenComponentDecorator,
         schemaHelper.jsonDecorator,
@@ -119,22 +119,22 @@ class ContentUpsert extends React.Component<IProps, IState> {
       ],
       isInsertMode,
       modelName,
-      init           : true,
+      init: true,
       /**
        * Insert: Init Schema
        * Update: Init Schema -> Load Data -> Load associations
        */
-      loadings       : { INIT: true, LOAD: !isInsertMode, ASSOCIATIONS: true },
-      fields         : [],
-      key            : basis.pane.key,
-      hasErrors      : false,
+      loadings: { INIT: true, LOAD: !isInsertMode, ASSOCIATIONS: true },
+      fields: [],
+      key: basis.pane.key,
+      hasErrors: false,
     };
   }
 
   async componentWillMount() {
     logger.log('[componentWillMount]', { props: this.props, state: this.state });
     const { basis, schemas } = this.props;
-    const { isInsertMode }   = this.state;
+    const { isInsertMode } = this.state;
 
     // content::create::name::timestamp => name
     const modelName = R.compose(R.nth(2), R.split(/::/), R.path(['pane', 'key']))(basis);
@@ -167,9 +167,9 @@ class ContentUpsert extends React.Component<IProps, IState> {
     }
 
     this.setState({
-      fields           : decoratedFields,
+      fields: decoratedFields,
       wrappedFormSchema: formFields,
-      loadings         : { ...this.state.loadings, INIT: false, ASSOCIATIONS: false },
+      loadings: { ...this.state.loadings, INIT: false, ASSOCIATIONS: false },
     });
   }
 
@@ -180,12 +180,21 @@ class ContentUpsert extends React.Component<IProps, IState> {
    */
   componentWillReceiveProps(nextProps) {
     logger.log('[componentWillReceiveProps]', {
-      props: this.props, state: this.state, nextProps,
+      props: this.props,
+      state: this.state,
+      nextProps,
     });
     const { isInsertMode, modelName, init } = this.state;
     // 初次更新时加载数据
     if (!isInsertMode && init) {
-      const { models, basis: { pane: { data: { record } } } } = nextProps;
+      const {
+        models,
+        basis: {
+          pane: {
+            data: { record },
+          },
+        },
+      } = nextProps;
 
       logger.info('[componentWillReceiveProps]', { modelName, record });
       const fieldValues = R.pathOr({}, [modelName, record.id])(models);
@@ -202,23 +211,25 @@ class ContentUpsert extends React.Component<IProps, IState> {
    * @param nextContext
    * @returns {boolean|*}
    */
-  shouldComponentUpdate(nextProps, nextState, nextContext) {
-    const { key }       = this.state;
+  shouldComponentUpdate(nextProps, nextState, nextContext): boolean | any {
+    const { key } = this.state;
     const { activeKey } = nextProps;
-    const propsDiff     = { isDifferent: false };
+    const propsDiff = { isDifferent: false };
     // const propsDiff     = diff(this.props, nextProps);
-    const stateDiff     = diff(this.state, nextState, { include: ['fields', 'loadings'] });
-    const samePane      = key === activeKey;
-    const shouldUpdate  = samePane && (
-      propsDiff.isDifferent || stateDiff.isDifferent || this.state.hasErrors
-    );
-    logger.log('[shouldComponentUpdate]',
-      { nextProps, nextState, nextContext }, shouldUpdate,
-      { samePane, propsDiff, stateDiff, hasErrors: this.state.hasErrors });
+    const stateDiff = diff(this.state, nextState, { include: ['fields', 'loadings'] });
+    const samePane = key === activeKey;
+    const shouldUpdate =
+      samePane && (propsDiff.isDifferent || stateDiff.isDifferent || this.state.hasErrors);
+    logger.log('[shouldComponentUpdate]', { nextProps, nextState, nextContext }, shouldUpdate, {
+      samePane,
+      propsDiff,
+      stateDiff,
+      hasErrors: this.state.hasErrors,
+    });
     return shouldUpdate;
   }
 
-  detectUpsertMode = (modelName) => {
+  detectUpsertMode = modelName => {
     const { dispatch, basis } = this.props;
 
     const record = R.path(['pane', 'data', 'record'])(basis);
@@ -234,17 +245,17 @@ class ContentUpsert extends React.Component<IProps, IState> {
    * Saving changed field values in props
    * @param changedFields
    */
-  handleFormChange = async (changedFields) => {
+  handleFormChange = async changedFields => {
     const { isInsertMode, init } = this.state;
     logger.log('[handleFormChange]', { changedFields, state: this.state });
     if (!R.isEmpty(changedFields)) {
       const { wrappedFormSchema, fields, preDecorators, asyncDecorators } = this.state;
 
       const currentChangedFields = R.map(R.pick(['value', 'errors']))(changedFields);
-      const changedFieldsBefore  = R.mergeDeepRight(wrappedFormSchema, fields);
-      const allChangedFields     = R.mergeDeepRight(changedFieldsBefore, currentChangedFields);
+      const changedFieldsBefore = R.mergeDeepRight(wrappedFormSchema, fields);
+      const allChangedFields = R.mergeDeepRight(changedFieldsBefore, currentChangedFields);
       // 这里只装饰变化的 fields
-      const decoratedFields      = R.pipe(...preDecorators('LOAD'))(allChangedFields);
+      const decoratedFields = R.pipe(...preDecorators('LOAD'))(allChangedFields);
 
       const stateDiff = diff(this.state, { fields: decoratedFields }, { include: ['fields'] });
       logger.info('[handleFormChange]', {
@@ -258,7 +269,9 @@ class ContentUpsert extends React.Component<IProps, IState> {
 
       const updateModeAtTheFirstTime = !isInsertMode && init;
 
-      const hasEnumFilter = !R.isEmpty(R.filter(R.propEq('type', DynamicFormTypes.EnumFilter), changedFields));
+      const hasEnumFilter = !R.isEmpty(
+        R.filter(R.propEq('type', DynamicFormTypes.EnumFilter), changedFields),
+      );
       const hasSelectable = !R.isEmpty(R.filter(R.path(['options', 'selectable']), changedFields));
 
       logger.info('[handleFormChange]', {
@@ -274,60 +287,64 @@ class ContentUpsert extends React.Component<IProps, IState> {
           loadings: { ...this.state.loadings, ASSOCIATIONS: true },
         });
         logger.info('[handleFormChange]', 'load async decorated fields');
-        const asyncDecoratedFields = await R.pipeP(...asyncDecorators('ASSOCIATIONS'))(decoratedFields);
+        const asyncDecoratedFields = await R.pipeP(...asyncDecorators('ASSOCIATIONS'))(
+          decoratedFields,
+        );
         this.setState({
-          init    : false,
+          init: false,
           loadings: { ...this.state.loadings, LOAD: false, ASSOCIATIONS: false },
-          fields  : asyncDecoratedFields,
+          fields: asyncDecoratedFields,
         });
       } else {
         this.setState({
-          fields  : decoratedFields,
+          fields: decoratedFields,
           loadings: { ...this.state.loadings, LOAD: false, ASSOCIATIONS: false },
         });
       }
     }
   };
 
-  handleFormSubmit = (e) => {
-    logger.info('[handleFormSubmit]', 'handleFormSubmit', e);
-    e.preventDefault();
+  handleFormSubmit = event => {
+    logger.info('[handleFormSubmit]', event);
+    event.preventDefault();
     const { originalFieldValues } = this.state;
 
     const fieldPairs = R.compose(
       R.pickBy((value, key) => (originalFieldValues ? value !== originalFieldValues[key] : true)),
       R.map(R.prop('value')),
     )(this.state.fields);
-    logger.info('[handleFormSubmit]', 'all fieldPairs waiting for submit is', fieldPairs);
+    logger.info('[handleFormSubmit]', { fieldPairs });
 
     const id = R.prop('id')(originalFieldValues);
 
-    const { dispatch, onClose }       = this.props;
+    const { dispatch, onClose } = this.props;
     const { modelName, isInsertMode } = this.state;
 
-    dispatch(modelsActions.upsert(modelName, { body: { ...fieldPairs, id } }, ({ response, error }) => {
-      if (isErrorResponse(error)) {
-        const errors = toFormErrors(error.response);
-        logger.warn('[upsert callback]', { response, error, errors });
-        if (_.isString(errors)) {
-          message.error(errors);
+    dispatch(
+      modelsActions.upsert(modelName, { body: { ...fieldPairs, id } }, ({ response, error }) => {
+        if (isErrorResponse(error)) {
+          const errors = toFormErrors(error.response);
+          logger.warn('[upsert callback]', { response, error, errors });
+          if (_.isString(errors)) {
+            message.error(errors);
+          } else {
+            this.handleFormChange(errors);
+            this.setState({ hasErrors: true });
+          }
         } else {
-          this.handleFormChange(errors);
-          this.setState({ hasErrors: true });
+          this.setState({ hasErrors: false });
+          // FIXME 当前页面暂未切换为 update 模式，临时关闭当前页面
+          if (isInsertMode) {
+            onClose();
+          }
         }
-      } else {
-        this.setState({ hasErrors: false });
-        // FIXME 当前页面暂未切换为 update 模式，临时关闭当前页面
-        if (isInsertMode) {
-          onClose();
-        }
-      }
-    }));
+      }),
+    );
   };
 
   render() {
     const { fields, loadings } = this.state;
-    const { auth }             = this.props;
+    const { auth } = this.props;
 
     logger.log('[render]', { props: this.props, state: this.state });
 
@@ -366,4 +383,4 @@ const mapStateToProps = state => ({
   auth: state.auth,
 });
 
-export default connect(mapStateToProps)(ContentUpsert);// as any as typeof ContentUpsert;
+export default connect(mapStateToProps)(ContentUpsert); // as any as typeof ContentUpsert;

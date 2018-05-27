@@ -1,5 +1,6 @@
 import { createLogger } from '../helpers';
 import { appContext } from '../app/context';
+import { AxiosResponse } from 'axios';
 
 // --------------------------------------------------------------
 // Types
@@ -18,7 +19,7 @@ export interface IApiService {
 const logger = createLogger('adapters:api');
 
 export const apiProxy = {
-  upload: ({ token }, file, options?): Asuna.Schema.UploadResponse =>
+  upload: ({ token }, file, options?): AxiosResponse<Asuna.Schema.UploadResponse[]> =>
     appContext.ctx.api.upload({ token }, file, options),
   getVersion: ({ token }): string => appContext.ctx.api.getVersion({ token }),
 };
@@ -26,7 +27,7 @@ export const apiProxy = {
 export class ApiAdapter {
   constructor(private service: IApiService) {}
 
-  upload = ({ token }, file, options): Asuna.Schema.UploadResponse => {
+  upload = ({ token }, file, options): AxiosResponse<Asuna.Schema.UploadResponse[]> => {
     logger.log('[upload] file', file, options);
     return this.service.upload({ token }, file, options);
   };

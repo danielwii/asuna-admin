@@ -173,10 +173,10 @@ class ContentIndex extends React.Component<IProps, IState> {
     return (
       <div>
         {creatable && (
-          <>
+          <React.Fragment>
             <Button onClick={this.create}>Create</Button>
             <Divider type="vertical" />
-          </>
+          </React.Fragment>
         )}
         <Button onClick={this.refresh}>Refresh</Button>
 

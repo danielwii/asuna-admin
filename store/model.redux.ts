@@ -1,16 +1,16 @@
 import { all, call, put, select, takeLatest } from 'redux-saga/effects';
 
-import { message }     from 'antd';
+import { message } from 'antd';
 import { reduxAction } from 'node-buffs';
-import * as R          from 'ramda';
-import _               from 'lodash';
+import * as R from 'ramda';
+import _ from 'lodash';
 
-import { contentActions }   from './content.redux';
-import { modelProxy }       from '../adapters/model';
+import { contentActions } from './content.redux';
+import { modelProxy } from '../adapters/model';
 import { createLogger, lv } from '../helpers';
-import { RootState }        from 'store/index';
+import { RootState } from 'store/index';
 
-const logger = createLogger('store:models', lv.warn);
+const logger = createLogger('store:models', lv.info);
 
 // --------------------------------------------------------------
 // Module actionTypes
@@ -18,16 +18,15 @@ const logger = createLogger('store:models', lv.warn);
 
 const modelsActionTypes = {
   // ACTION: 'module::action'
-  FETCH                   : 'models::fetch',
-  FETCH_SUCCESS           : 'models::fetch-success',
-  UPSERT                  : 'models::upsert',
-  REMOVE                  : 'models::remove',
-  LOAD_ALL_SCHEMAS        : 'models::load-all-schemas',
+  FETCH: 'models::fetch',
+  FETCH_SUCCESS: 'models::fetch-success',
+  UPSERT: 'models::upsert',
+  REMOVE: 'models::remove',
+  LOAD_ALL_SCHEMAS: 'models::load-all-schemas',
   LOAD_ALL_SCHEMAS_SUCCESS: 'models::load-all-schemas-success',
 };
 
 export const isAvailable = action => action.type.startsWith('models::') && !action.transient;
-
 
 // --------------------------------------------------------------
 // Module actions
@@ -35,7 +34,7 @@ export const isAvailable = action => action.type.startsWith('models::') && !acti
 
 const modelsActions = {
   // action: (args) => ({ type, payload })
-  fetch       : (modelName: string, data) =>
+  fetch: (modelName: string, data) =>
     reduxAction(modelsActionTypes.FETCH, {
       modelName,
       data,
@@ -44,19 +43,19 @@ const modelsActions = {
   fetchSuccess: (modelName: string, response) =>
     reduxAction(modelsActionTypes.FETCH_SUCCESS, {
       modelName,
-      models : { [modelName]: { [response.id]: response } },
+      models: { [modelName]: { [response.id]: response } },
       loading: { [modelName]: false },
     }),
 
-  upsert: (modelName: string, data, callback: (response) => void) => ({
-    type   : modelsActionTypes.UPSERT,
+  upsert: (modelName: string, data: object, callback: (response) => void) => ({
+    type: modelsActionTypes.UPSERT,
     payload: { modelName, data },
     callback,
   }),
   // upsert: (modelName, data) => reduxAction(modelsActionTypes.UPSERT, { modelName, data }),
   remove: (modelName: string, data) => reduxAction(modelsActionTypes.REMOVE, { modelName, data }),
 
-  loadAllSchemas       : () => reduxAction(modelsActionTypes.LOAD_ALL_SCHEMAS),
+  loadAllSchemas: () => reduxAction(modelsActionTypes.LOAD_ALL_SCHEMAS),
   loadAllSchemasSuccess: schemas =>
     reduxAction(modelsActionTypes.LOAD_ALL_SCHEMAS_SUCCESS, { schemas }),
 };
@@ -69,7 +68,7 @@ const modelsActions = {
 // --------------------------------------------------------------
 
 const modelsSagaFunctions = {
-  * fetch({ payload: { modelName, data } }) {
+  *fetch({ payload: { modelName, data } }) {
     const { token } = yield select<RootState>(state => state.auth);
     if (token) {
       message.loading(`loading model '${modelName}'...`);
@@ -84,8 +83,8 @@ const modelsSagaFunctions = {
       }
     }
   },
-  * upsert({ payload: { modelName, data }, callback }) {
-    const { token }   = yield select<RootState>(state => state.auth);
+  *upsert({ payload: { modelName, data }, callback }) {
+    const { token } = yield select<RootState>(state => state.auth);
     const { schemas } = yield select<RootState>(state => state.models);
     if (token) {
       message.info(`upsert model '${modelName}'...`);
@@ -110,7 +109,7 @@ const modelsSagaFunctions = {
       }
     }
   },
-  * remove({ payload: { modelName, data } }) {
+  *remove({ payload: { modelName, data } }) {
     const { token } = yield select<RootState>(state => state.auth);
     if (token) {
       message.info(`remove model '${modelName}'...`);
@@ -128,21 +127,21 @@ const modelsSagaFunctions = {
       }
     }
   },
-  * loadAllSchemas() {
+  *loadAllSchemas() {
     logger.log('[loadAllSchemas]', 'load all schemas in saga');
     const { token } = yield select<RootState>(state => state.auth);
     if (token) {
       message.loading('loading all schemas...');
       try {
-        const effects     = modelProxy.listSchemasCallable({ token });
+        const effects = modelProxy.listSchemasCallable({ token });
         const allResponse = yield all(effects);
 
         logger.log('[loadAllSchemas]', 'allResponse is', allResponse);
 
-        const schemas = Object.assign({}, ..._.map(
-          allResponse,
-          (response, name) => ({ [name]: response.data }),
-        ));
+        const schemas = Object.assign(
+          {},
+          ..._.map(allResponse, (response, name) => ({ [name]: response.data })),
+        );
         message.success('load all schemas success');
         yield put(modelsActions.loadAllSchemasSuccess(schemas));
         logger.log('[loadAllSchemas]', 'load all model schemas', effects, schemas);
@@ -153,7 +152,6 @@ const modelsSagaFunctions = {
     }
   },
 };
-
 
 const modelsSagas = [
   // takeLatest / takeEvery (actionType, actionSage)

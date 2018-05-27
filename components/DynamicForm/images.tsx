@@ -9,7 +9,7 @@ import { diff } from '../../helpers';
 import { createLogger, lv } from '../../helpers/logger';
 import { AuthState } from '../../store/auth.redux';
 
-const logger = createLogger('components:dynamic-form:images', lv.warn);
+const logger = createLogger('components:dynamic-form:images', lv.log);
 
 // --------------------------------------------------------------
 // Functions
@@ -34,24 +34,40 @@ function beforeUpload(file: RcFile, FileList: RcFile[]) {
   return isImage && isLt2M;
 }
 
-async function upload(auth, onChange, files, args?) {
-  logger.log('[upload]', { files, args });
-  const response = await apiProxy.upload(auth, args.file);
+async function upload(auth, option: any): Promise<Asuna.Schema.UploadResponse[] | undefined> {
+  logger.log('[upload]', { option });
+  const response = await apiProxy.upload(auth, option.file);
   logger.log('[upload]', { response });
 
-  if (/^20\d$/.test(response.status)) {
+  if (/^20\d$/.test(response.status as any)) {
     message.success('upload successfully.');
 
-    const images = [...(files || []), ...response.data];
-    logger.log('[upload]', { images });
-
-    onChange(images);
-    args.onSuccess();
+    option.onSuccess();
+    return response.data;
   } else {
     message.error('upload failed.');
-    args.onError();
+    option.onError();
   }
 }
+
+// async function upload(auth, onChange, files, args?) {
+//   logger.log('[upload]', { files, args });
+//   const response = await apiProxy.upload(auth, args.file);
+//   logger.log('[upload]', { response });
+
+//   if (/^20\d$/.test(response.status as any)) {
+//     message.success('upload successfully.');
+
+//     const images = [...(files || []), ...response.data];
+//     logger.log('[upload]', { images });
+
+//     onChange(images);
+//     args.onSuccess();
+//   } else {
+//     message.error('upload failed.');
+//     args.onError();
+//   }
+// }
 
 // --------------------------------------------------------------
 // Uploader
@@ -60,8 +76,8 @@ async function upload(auth, onChange, files, args?) {
 interface IProps {
   auth: AuthState;
   urlHandler: (res: Asuna.Schema.UploadResponse) => string;
-  value: Asuna.Schema.UploadResponse[];
-  onChange: () => void;
+  value: string;
+  onChange: (valute: any) => void;
 }
 
 export class ImageUploader extends React.Component<IProps> {
@@ -88,7 +104,7 @@ export class ImageUploader extends React.Component<IProps> {
     return shouldUpdate;
   }
 
-  handleChange = info => {
+  handleChange = (info: UploadChangeParam): void => {
     logger.log('[ImageUploader][handleChange]', info);
     if (info.file.status === 'uploading') {
       this.setState({ loading: true });
@@ -101,11 +117,20 @@ export class ImageUploader extends React.Component<IProps> {
     }
   };
 
-  render() {
-    const { auth, onChange, value: images, urlHandler } = this.props;
+  customRequest = async (option: any): Promise<void> => {
+    const { auth, onChange, value: image, urlHandler } = this.props;
+    const uploaded = await upload(auth, option);
+    if (uploaded) {
+      const image = urlHandler(uploaded[0]);
+      logger.log('[ImageUploader][render]', { uploaded, image });
+      onChange(image);
+    }
+  };
 
-    const image = images ? images[0] : null;
-    logger.log('[ImageUploader][render]', { images, image });
+  render() {
+    const { value: image } = this.props;
+
+    logger.log('[ImageUploader][render]', { image });
 
     const uploadButton = (
       <div>
@@ -122,11 +147,11 @@ export class ImageUploader extends React.Component<IProps> {
           className="avatar-uploader"
           showUploadList={false}
           supportServerRender
-          customRequest={(...args) => upload(auth, onChange, [], ...args)}
+          customRequest={this.customRequest}
           beforeUpload={beforeUpload}
           onChange={this.handleChange}
         >
-          {image ? <img style={{ width: '100%' }} src={urlHandler(image)} alt="" /> : uploadButton}
+          {image ? <img style={{ width: '100%' }} src={image} alt="" /> : uploadButton}
         </Upload>
       </div>
     );
@@ -182,13 +207,14 @@ export class ImagesUploader extends React.Component<IProps> {
     return shouldUpdate;
   }
 
-  wrapImagesToFileList = (images: Asuna.Schema.UploadResponse[]) => {
+  wrapImagesToFileList = (imagesStr: string): void => {
     const { urlHandler } = this.props;
-    logger.info('[wrapImagesToFileList]', 'images is', images);
+    const images = imagesStr ? imagesStr.split(',') : [];
+    logger.info('[wrapImagesToFileList]', { images });
     const fileList = _.map(images, (image, index) => ({
       uid: index,
       status: 'done',
-      url: urlHandler(image),
+      url: image,
     }));
     logger.info('[wrapImagesToFileList]', 'fileList is', fileList);
     this.setState({ fileList });
@@ -205,7 +231,18 @@ export class ImagesUploader extends React.Component<IProps> {
     });
   };
 
-  handleChange = ({ fileList }: UploadChangeParam) => this.setState({ fileList });
+  handleChange = ({ fileList }: UploadChangeParam): void => this.setState({ fileList });
+
+  customRequest = async (option: any): Promise<void> => {
+    const { auth, onChange, value: image, urlHandler } = this.props;
+    const uploaded = await upload(auth, option);
+    if (uploaded) {
+      const image = urlHandler(uploaded[0]);
+      const images = [this.state.images, image].join(',');
+      logger.log('[ImagesUploader][render]', { uploaded, image, images });
+      onChange(images);
+    }
+  };
 
   render() {
     const { auth, onChange } = this.props;
@@ -227,7 +264,7 @@ export class ImagesUploader extends React.Component<IProps> {
           listType="picture-card"
           fileList={fileList}
           supportServerRender
-          customRequest={(...args) => upload(auth, onChange, images, ...args)}
+          customRequest={this.customRequest}
           beforeUpload={beforeUpload}
           onPreview={this.handlePreview}
           onChange={this.handleChange}

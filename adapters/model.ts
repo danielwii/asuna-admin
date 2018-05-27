@@ -8,6 +8,7 @@ import { defaultColumns } from '../helpers';
 import { TablePagination } from './response';
 import { createLogger, lv } from '../helpers/logger';
 import { config, ConfigKey } from '../app/configure';
+import { AxiosResponse } from 'axios';
 
 export interface IModelBody {
   id?: number | string;
@@ -24,7 +25,11 @@ export interface IModelService {
 
   loadSchema(authToken: { token: string }, payload: { name: string }, data);
 
-  fetch(authToken: { token: string }, name: string, data: { endpoint?: string; id: number; profile?: string });
+  fetch(
+    authToken: { token: string },
+    name: string,
+    data: { endpoint?: string; id: number; profile?: string },
+  );
 
   remove(authToken: { token: string }, name: string, data: { endpoint?: string; id: number });
 
@@ -81,15 +86,21 @@ interface IModelProxy {
 
   remove(auth: { token }, name, data): any;
 
-  upsert(auth: { token: string; schemas? }, name: string, data: { body: IModelBody }): any;
+  upsert(
+    auth: { token: string; schemas? },
+    name: string,
+    data: { body: IModelBody },
+  ): Promise<AxiosResponse>;
 }
 
 export const modelProxy: IModelProxy = {
-  getModelConfig: (name: string): Asuna.Schema.ModelConfig => appContext.ctx.models.getModelConfig(name),
+  getModelConfig: (name: string): Asuna.Schema.ModelConfig =>
+    appContext.ctx.models.getModelConfig(name),
 
   getAssociationConfigs: name => appContext.ctx.models.getAssociationConfigs(name),
 
-  getFormSchema: (schemas, name, values) => appContext.ctx.models.getFormSchema(schemas, name, values),
+  getFormSchema: (schemas, name, values) =>
+    appContext.ctx.models.getFormSchema(schemas, name, values),
 
   getFieldsOfAssociations: () => appContext.ctx.models.getFieldsOfAssociations(),
 
@@ -134,8 +145,11 @@ export const modelProxy: IModelProxy = {
    * @param data       - model body
    * @returns {*}
    */
-  upsert: ({ token, schemas }: { token: string; schemas? }, name: string, data: { body: IModelBody }) =>
-    appContext.ctx.models.upsert({ token, schemas }, name, data),
+  upsert: (
+    { token, schemas }: { token: string; schemas? },
+    name: string,
+    data: { body: IModelBody },
+  ): Promise<AxiosResponse> => appContext.ctx.models.upsert({ token, schemas }, name, data),
 };
 
 export class ModelAdapter implements IModelProxy {
@@ -191,7 +205,9 @@ export class ModelAdapter implements IModelProxy {
     const hasForeignKeys = R.path(['config', 'selectable'], field);
 
     if (hasForeignKeys) {
-      return R.not(R.path(['config', 'many'])(field)) ? DynamicFormTypes.Association : DynamicFormTypes.ManyToMany;
+      return R.not(R.path(['config', 'many'])(field))
+        ? DynamicFormTypes.Association
+        : DynamicFormTypes.ManyToMany;
     }
 
     const advancedType = R.path(['config', 'info', 'type'])(field);
@@ -234,7 +250,11 @@ export class ModelAdapter implements IModelProxy {
     });
 
   // FIXME schemas can be found by storeConnector now.
-  upsert = ({ token, schemas }, name: string, data: { body: IModelBody }): Promise<any> => {
+  upsert = (
+    { token, schemas },
+    name: string,
+    data: { body: IModelBody },
+  ): Promise<AxiosResponse> => {
     logger.info('[upsert]', 'upsert', { name, data });
 
     const allSchemas = schemas || appContext.store.select(R.path(['models', 'schemas']));
@@ -282,7 +302,12 @@ export class ModelAdapter implements IModelProxy {
 
       return config;
     }
-    logger.warn('[getModelConfig]', `'${name}' not found in`, this.modelConfigs, 'generate a default one.');
+    logger.warn(
+      '[getModelConfig]',
+      `'${name}' not found in`,
+      this.modelConfigs,
+      'generate a default one.',
+    );
     return { model: {}, table: defaultColumns };
   };
 
@@ -348,7 +373,11 @@ export class ModelAdapter implements IModelProxy {
   public loadModels(auth: { token: string }, name: string, configs?: ModelListConfig): any {
     logger.info('[loadModels]', { name, configs, modelConfig: this.getModelConfig(name) });
     const page = R.pathOr(1, ['pagination', 'current'], configs);
-    const size = R.pathOr(config.get(ConfigKey.DEFAULT_PAGE_SIZE), ['pagination', 'pageSize'], configs);
+    const size = R.pathOr(
+      config.get(ConfigKey.DEFAULT_PAGE_SIZE),
+      ['pagination', 'pageSize'],
+      configs,
+    );
     return this.service.loadModels(auth, name, {
       pagination: { page, size },
       sorter: configs && configs.sorter,
@@ -363,7 +392,9 @@ export class ModelAdapter implements IModelProxy {
     }
 
     const defaultFields = R.pathOr(['id', 'name'], [associationName, 'fields'])(this.associations);
-    const fields = R.pathOr(defaultFields, [associationName, 'fields'])(this.getFieldsOfAssociations());
+    const fields = R.pathOr(defaultFields, [associationName, 'fields'])(
+      this.getFieldsOfAssociations(),
+    );
     logger.info('[loadAssociation]', {
       defaultFields,
       fields,
@@ -380,8 +411,14 @@ export class ModelAdapter implements IModelProxy {
     this.service.loadSchema({ token }, name, this.getModelConfig(name) as Asuna.Schema.ModelOpt);
 
   listAssociationsCallable = ({ token }, associationNames) =>
-    Object.assign({}, ...associationNames.map(name => ({ [name]: this.loadAssociation({ token }, name) })));
+    Object.assign(
+      {},
+      ...associationNames.map(name => ({ [name]: this.loadAssociation({ token }, name) })),
+    );
 
   listSchemasCallable = ({ token }) =>
-    Object.assign({}, ...this.allModels.map(name => ({ [name]: this.loadSchema({ token }, name) })));
+    Object.assign(
+      {},
+      ...this.allModels.map(name => ({ [name]: this.loadSchema({ token }, name) })),
+    );
 }
