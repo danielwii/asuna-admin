@@ -59,7 +59,7 @@ async function upload(auth, onChange, files, args?) {
 
 interface IProps {
   auth: AuthState;
-  api: string;
+  urlHandler: (res: Asuna.Schema.UploadResponse) => string;
   value: Asuna.Schema.UploadResponse[];
   onChange: () => void;
 }
@@ -102,7 +102,7 @@ export class ImageUploader extends React.Component<IProps> {
   };
 
   render() {
-    const { auth, onChange, value: images, api } = this.props;
+    const { auth, onChange, value: images, urlHandler } = this.props;
 
     const image = images ? images[0] : null;
     logger.log('[ImageUploader][render]', { images, image });
@@ -126,11 +126,7 @@ export class ImageUploader extends React.Component<IProps> {
           beforeUpload={beforeUpload}
           onChange={this.handleChange}
         >
-          {image ? (
-            <img style={{ width: '100%' }} src={`${api}/${image.filename}?prefix=${image.prefix}`} alt="" />
-          ) : (
-            uploadButton
-          )}
+          {image ? <img style={{ width: '100%' }} src={urlHandler(image)} alt="" /> : uploadButton}
         </Upload>
       </div>
     );
@@ -176,31 +172,23 @@ export class ImagesUploader extends React.Component<IProps> {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
+    const TAG = '[shouldComponentUpdate]';
     const propsDiff = diff(this.props, nextProps);
     const stateDiff = diff(this.state, nextState);
     const shouldUpdate = propsDiff.isDifferent || stateDiff.isDifferent;
     if (shouldUpdate) {
-      logger.info(
-        '[shouldComponentUpdate]',
-        {
-          nextProps,
-          nextState,
-          propsDiff,
-          stateDiff,
-        },
-        shouldUpdate,
-      );
+      logger.info(TAG, { nextProps, nextState, propsDiff, stateDiff }, shouldUpdate);
     }
     return shouldUpdate;
   }
 
-  wrapImagesToFileList = images => {
-    const { api } = this.props;
+  wrapImagesToFileList = (images: Asuna.Schema.UploadResponse[]) => {
+    const { urlHandler } = this.props;
     logger.info('[wrapImagesToFileList]', 'images is', images);
     const fileList = _.map(images, (image, index) => ({
       uid: index,
       status: 'done',
-      url: `${api}/${image.filename}?prefix=${image.prefix}`,
+      url: urlHandler(image),
     }));
     logger.info('[wrapImagesToFileList]', 'fileList is', fileList);
     this.setState({ fileList });

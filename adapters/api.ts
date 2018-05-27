@@ -18,17 +18,18 @@ export interface IApiService {
 const logger = createLogger('adapters:api');
 
 export const apiProxy = {
-  upload: ({ token }, file, options?) => appContext.ctx.api.upload({ token }, file, options),
-  getVersion: ({ token }) => appContext.ctx.api.getVersion({ token }),
+  upload: ({ token }, file, options?): Asuna.Schema.UploadResponse =>
+    appContext.ctx.api.upload({ token }, file, options),
+  getVersion: ({ token }): string => appContext.ctx.api.getVersion({ token }),
 };
 
 export class ApiAdapter {
   constructor(private service: IApiService) {}
 
-  upload = ({ token }, file, options) => {
+  upload = ({ token }, file, options): Asuna.Schema.UploadResponse => {
     logger.log('[upload] file', file, options);
     return this.service.upload({ token }, file, options);
   };
 
-  getVersion = ({ token }) => this.service.getVersion({ token });
+  getVersion = ({ token }): string => this.service.getVersion({ token });
 }

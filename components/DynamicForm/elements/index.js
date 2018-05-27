@@ -9,6 +9,7 @@ import { ImagesUploader, ImageUploader } from '../images';
 import { VideoUploader } from '../videos';
 import { Authorities } from '../authorities';
 import { createLogger, lv } from '../../../helpers/index';
+import { config, ConfigKey } from '../../../app/configure';
 
 const logger = createLogger('components:dynamic-form:elements', lv.warn);
 
@@ -48,7 +49,14 @@ export const generatePlain = (
   formItemLayout = horizontalFormItemLayout,
 ) => {
   logger.log('[generatePlain]', { key, label, text, help });
-  return <Form.Item key={key || label} {...formItemLayout} label={label} help={help}>{`${text}`}</Form.Item>;
+  return (
+    <Form.Item
+      key={key || label}
+      {...formItemLayout}
+      label={label}
+      help={help}
+    >{`${text}`}</Form.Item>
+  );
 };
 
 export const generateComponent = (form, options, Component, formItemLayout = {}) => {
@@ -84,7 +92,12 @@ export const generateCheckbox = (form, options, formItemLayout) => {
 
   const fieldName = key || name;
   const labelName = label || name || key;
-  return generateComponent(form, { fieldName, labelName, ...options }, <Checkbox />, formItemLayout);
+  return generateComponent(
+    form,
+    { fieldName, labelName, ...options },
+    <Checkbox />,
+    formItemLayout,
+  );
 };
 
 export const generateInputNumber = (form, options, formItemLayout = defaultFormItemLayout) => {
@@ -92,7 +105,12 @@ export const generateInputNumber = (form, options, formItemLayout = defaultFormI
   logger.info('[generateInputNumber]', options);
   const fieldName = key || name;
   const labelName = label || name || key;
-  return generateComponent(form, { fieldName, labelName, ...options }, <InputNumber />, formItemLayout);
+  return generateComponent(
+    form,
+    { fieldName, labelName, ...options },
+    <InputNumber />,
+    formItemLayout,
+  );
 };
 
 export const generateInput = (
@@ -106,7 +124,10 @@ export const generateInput = (
   let component;
   if (iconType) {
     component = (
-      <Input prefix={<Icon type={iconType} style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder={placeholder} />
+      <Input
+        prefix={<Icon type={iconType} style={{ color: 'rgba(0,0,0,.25)' }} />}
+        placeholder={placeholder}
+      />
     );
   } else {
     component = <Input placeholder={placeholder} />;
@@ -132,7 +153,12 @@ export const generateTextArea = (form, options, formItemLayout) => {
 
   const fieldName = key || name;
   const labelName = label || name || key;
-  return generateComponent(form, { fieldName, labelName, ...options }, <Input.TextArea />, formItemLayout);
+  return generateComponent(
+    form,
+    { fieldName, labelName, ...options },
+    <Input.TextArea />,
+    formItemLayout,
+  );
 };
 
 /**
@@ -148,9 +174,19 @@ export const generateDateTime = (form, options, formItemLayout = defaultFormItem
   const labelName = label || name || key;
 
   if (mode === 'time') {
-    return generateComponent(form, { fieldName, labelName, ...options }, <TimePicker />, formItemLayout);
+    return generateComponent(
+      form,
+      { fieldName, labelName, ...options },
+      <TimePicker />,
+      formItemLayout,
+    );
   } else if (mode === 'date') {
-    return generateComponent(form, { fieldName, labelName, ...options }, <DatePicker />, formItemLayout);
+    return generateComponent(
+      form,
+      { fieldName, labelName, ...options },
+      <DatePicker />,
+      formItemLayout,
+    );
   }
   return generateComponent(
     form,
@@ -174,27 +210,29 @@ export const generateSwitch = (form, options, formItemLayout = defaultFormItemLa
 };
 
 export const generateImages = (form, options, formItemLayout = defaultFormItemLayout) => {
-  const { key, name, label, auth, api } = options;
+  const { key, name, label, auth } = options;
 
   const fieldName = key || name;
   const labelName = label || name || key;
+  const handler = config.get(ConfigKey.IMAGE_RES_HANDLER);
   return generateComponent(
     form,
     { fieldName, labelName, ...options },
-    <ImagesUploader auth={auth} api={api} />,
+    <ImagesUploader auth={auth} urlHandler={handler} />,
     formItemLayout,
   );
 };
 
 export const generateImage = (form, options, formItemLayout = defaultFormItemLayout) => {
-  const { key, name, label, auth, api } = options;
+  const { key, name, label, auth } = options;
 
   const fieldName = key || name;
   const labelName = label || name || key;
+  const handler = config.get(ConfigKey.IMAGE_RES_HANDLER);
   return generateComponent(
     form,
     { fieldName, labelName, ...options },
-    <ImageUploader auth={auth} api={api} />,
+    <ImageUploader auth={auth} urlHandler={handler} />,
     formItemLayout,
   );
 };
@@ -217,7 +255,12 @@ export const generateAuthorities = (form, options, formItemLayout = defaultFormI
 
   const fieldName = key || name;
   const labelName = label || name || key;
-  return generateComponent(form, { fieldName, labelName, ...options }, <Authorities />, formItemLayout);
+  return generateComponent(
+    form,
+    { fieldName, labelName, ...options },
+    <Authorities />,
+    formItemLayout,
+  );
 };
 
 export const generateRichTextEditor = (form, options, formItemLayout = defaultFormItemLayout) => {

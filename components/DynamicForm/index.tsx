@@ -1,7 +1,7 @@
-import React     from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import _         from 'lodash';
-import * as R    from 'ramda';
+import _ from 'lodash';
+import * as R from 'ramda';
 
 import { Anchor, Button, Col, Form, Row, Tag } from 'antd';
 
@@ -23,11 +23,11 @@ import {
   generateVideo,
 } from './elements';
 
-import { generateSelect }    from './elements/select';
-import { diff }              from '../../helpers';
+import { generateSelect } from './elements/select';
+import { diff } from '../../helpers';
 import { config, ConfigKey } from '../../app/configure';
-import { AuthState }         from '../../store/auth.redux';
-import { createLogger, lv }  from '../../helpers/logger';
+import { AuthState } from '../../store/auth.redux';
+import { createLogger, lv } from '../../helpers/logger';
 
 const logger = createLogger('components:dynamic-form', lv.warn);
 
@@ -35,28 +35,28 @@ export const DynamicFormTypes = {
   // --------------------------------------------------------------
   // Basic Types
   // --------------------------------------------------------------
-  Checkbox   : 'Checkbox',
-  Button     : 'Button',
-  Hidden     : 'Hidden',
-  Plain      : 'Plain',
-  Input      : 'Input',
+  Checkbox: 'Checkbox',
+  Button: 'Button',
+  Hidden: 'Hidden',
+  Plain: 'Plain',
+  Input: 'Input',
   InputNumber: 'InputNumber',
-  TextArea   : 'TextArea',
-  DateTime   : 'DateTime',
-  Date       : 'Date',
-  Switch     : 'Switch',
+  TextArea: 'TextArea',
+  DateTime: 'DateTime',
+  Date: 'Date',
+  Switch: 'Switch',
   Authorities: 'Authorities',
-  Enum       : 'Enum',
-  EnumFilter : 'EnumFilter',
+  Enum: 'Enum',
+  EnumFilter: 'EnumFilter',
   // --------------------------------------------------------------
   // Advanced Types
   // --------------------------------------------------------------
-  Image      : 'Image',
-  Images     : 'Images',
-  Video      : 'Video',
-  RichText   : 'RichText',
+  Image: 'Image',
+  Images: 'Images',
+  Video: 'Video',
+  RichText: 'RichText',
   Association: 'Association',
-  ManyToMany : 'ManyToMany',
+  ManyToMany: 'ManyToMany',
 };
 
 interface IProps {
@@ -81,20 +81,19 @@ interface IProps {
  * }
  */
 export class DynamicForm2 extends React.Component<IProps & IFormFix & FormComponentProps> {
-
   buildField = (field, index) => {
     const { form, auth } = this.props;
 
-    const options            = {
+    const options = {
       ...field.options,
-      key : field.key || field.name,
+      key: field.key || field.name,
       name: field.name,
       help: field.options.tooltip || field.options.help,
       auth,
     };
     const defaultAssociation = {
-      name  : 'name',
-      value : 'id',
+      name: 'name',
+      value: 'id',
       fields: ['id', 'name'],
     };
 
@@ -103,18 +102,27 @@ export class DynamicForm2 extends React.Component<IProps & IFormFix & FormCompon
     // all readonly or hidden field will rendered as plain component
     if (['readonly', 'hidden'].indexOf(_.get(field, 'options.accessible')) > -1) {
       return generatePlain({
-        key: index, label: options.name, text: field.value, help: options.help,
+        key: index,
+        label: options.name,
+        text: field.value,
+        help: options.help,
       });
     } else if (['hide-value'].indexOf(_.get(field, 'options.accessible')) > -1) {
       return generatePlain({
-        key: index, label: options.name, text: null, help: options.help,
+        key: index,
+        label: options.name,
+        text: null,
+        help: options.help,
       });
     }
 
     switch (field.type) {
       case DynamicFormTypes.Plain:
         return generatePlain({
-          key: index, label: options.name, text: field.value, help: options.help,
+          key: index,
+          label: options.name,
+          text: field.value,
+          help: options.help,
         });
       case DynamicFormTypes.Input:
         return generateInput(form, options);
@@ -135,14 +143,15 @@ export class DynamicForm2 extends React.Component<IProps & IFormFix & FormCompon
       case DynamicFormTypes.Authorities:
         return generateAuthorities(form, options);
       case DynamicFormTypes.Image:
-        return generateImage(form, { ...options, api: config.get(ConfigKey.IMAGE_API) });
+        return generateImage(form, { ...options });
       case DynamicFormTypes.Images:
-        return generateImages(form, { ...options, api: config.get(ConfigKey.IMAGE_API) });
+        return generateImages(form, { ...options });
       case DynamicFormTypes.Switch:
         return generateSwitch(form, options);
       case DynamicFormTypes.RichText:
         return generateRichTextEditor(form, {
-          ...options, imageApi: config.get(ConfigKey.IMAGE_API),
+          ...options,
+          imageApi: config.get(ConfigKey.IMAGE_API),
         });
       case DynamicFormTypes.ManyToMany: {
         // --------------------------------------------------------------
@@ -153,14 +162,14 @@ export class DynamicForm2 extends React.Component<IProps & IFormFix & FormCompon
           const { modelName, association = defaultAssociation } = R.path(['foreignOpts', 0])(field);
 
           const items = R.path(['associations', modelName, 'items'])(field);
-          const type  = R.path(['options', 'filterType'])(field);
+          const type = R.path(['options', 'filterType'])(field);
           return generateSelect(form, {
             ...options,
             items,
-            mode        : 'multiple',
+            mode: 'multiple',
             withSortTree: type === 'Sort',
-            getName     : R.prop(association.name || defaultAssociation.name),
-            getValue    : R.prop(association.value || defaultAssociation.value),
+            getName: R.prop(association.name || defaultAssociation.name),
+            getValue: R.prop(association.value || defaultAssociation.value),
           });
         }
         logger.warn('[buildField]', 'foreignOpts is required in association.', { field });
@@ -172,7 +181,7 @@ export class DynamicForm2 extends React.Component<IProps & IFormFix & FormCompon
         // --------------------------------------------------------------
         logger.log('[DynamicForm2]', '[buildField][EnumFilter]', { field });
         const items = R.path(['options', 'enumData'])(field);
-        const type  = R.path(['options', 'filterType'])(field);
+        const type = R.path(['options', 'filterType'])(field);
         logger.log('[DynamicForm2]', '[buildField][EnumFilter]', { type, items });
         return generateSelect(form, {
           ...options,
@@ -204,11 +213,13 @@ export class DynamicForm2 extends React.Component<IProps & IFormFix & FormCompon
           return generateSelect(form, {
             ...options,
             items,
-            getName : R.prop(association.name || defaultAssociation.name),
+            getName: R.prop(association.name || defaultAssociation.name),
             getValue: R.prop(association.value || defaultAssociation.value),
           });
         }
-        logger.warn('[DynamicForm2]', '[buildField]', 'foreignOpts is required in association.', { field });
+        logger.warn('[DynamicForm2]', '[buildField]', 'foreignOpts is required in association.', {
+          field,
+        });
         return <div>association need foreignOpts.</div>;
       }
       default:
@@ -221,7 +232,7 @@ export class DynamicForm2 extends React.Component<IProps & IFormFix & FormCompon
     }
   };
 
-  handleOnSubmit = (e) => {
+  handleOnSubmit = e => {
     logger.info('[DynamicForm2]', '[handleOnSubmit]', 'onSubmit', e);
     e.preventDefault();
 
@@ -242,8 +253,9 @@ export class DynamicForm2 extends React.Component<IProps & IFormFix & FormCompon
     // remove fields which type is not included
     // pure component will not trigger error handler
 
-    const renderFields = _.map(_.filter(fields, field => !!field.type), (field, index) =>
-      <EnhancedPureElement key={index} field={field} index={index} builder={this.buildField} />);
+    const renderFields = _.map(_.filter(fields, field => !!field.type), (field, index) => (
+      <EnhancedPureElement key={index} field={field} index={index} builder={this.buildField} />
+    ));
 
     return (
       <div className="dynamic-form">
@@ -298,29 +310,28 @@ class FormAnchor extends React.Component<IFormAnchorProps> {
   }
 
   render() {
-    const { fields }   = this.props;
+    const { fields } = this.props;
     const renderFields = R.compose(
       R.values(),
       R.omit(['id']),
-      R.map((field) => {
+      R.map(field => {
         logger.log('[anchor]', { field });
-        const noValue       = R.isNil(field.value) || R.isEmpty(field.value) || (
-          false
+        const noValue =
+          R.isNil(field.value) ||
+          R.isEmpty(field.value) ||
+          false;
           // 目前使用的 RichText 在点击时会自动设置 value 为 '<p></p>'
           // (field.type === DynamicFormTypes.RichText) && field.value === '<p></p>'
-        );
-        const fieldName     = field.options.label || field.options.name || field.name;
+        const fieldName = field.options.label || field.options.name || field.name;
         const requiredColor = field.options.required ? 'red' : '';
-        const color         = noValue ? requiredColor : 'green';
-        const title         = (
+        const color = noValue ? requiredColor : 'green';
+        const title = (
           <div>
-            {field.options.required && <span style={{ color: 'red' }}>*{' '}</span>}
+            {field.options.required && <span style={{ color: 'red' }}>* </span>}
             <Tag color={color}>{fieldName}</Tag>
           </div>
         );
-        return (
-          <Anchor.Link key={field.name} title={title} href={`#dynamic-form-${field.name}`} />
-        );
+        return <Anchor.Link key={field.name} title={title} href={`#dynamic-form-${field.name}`} />;
       }),
       R.filter(field => field.type),
       R.filter(R.compose(R.not, R.pathOr(false, ['options', 'hidden']))),
@@ -330,11 +341,7 @@ class FormAnchor extends React.Component<IFormAnchorProps> {
       return '';
     }
 
-    return (
-      <Anchor>
-        {renderFields}
-      </Anchor>
-    );
+    return <Anchor>{renderFields}</Anchor>;
   }
 }
 
@@ -352,20 +359,25 @@ class EnhancedPureElement extends React.Component<IPureElementProps> {
   // };
 
   shouldComponentUpdate(nextProps, nextState) {
-    const isRequired   = R.path(['options', 'required'])(nextProps.field);
-    const propsDiff    = diff(this.props, nextProps);
-    const stateDiff    = diff(this.state, nextState);
+    const isRequired = R.path(['options', 'required'])(nextProps.field);
+    const propsDiff = diff(this.props, nextProps);
+    const stateDiff = diff(this.state, nextState);
     const shouldUpdate = isRequired || propsDiff.isDifferent || stateDiff.isDifferent;
     if (shouldUpdate) {
-      logger.info('[EnhancedPureElement]', '[shouldComponentUpdate]', {
-        props: this.props,
-        state: this.state,
-        nextProps,
-        nextState,
-        propsDiff,
-        stateDiff,
-        isRequired,
-      }, shouldUpdate);
+      logger.info(
+        '[EnhancedPureElement]',
+        '[shouldComponentUpdate]',
+        {
+          props: this.props,
+          state: this.state,
+          nextProps,
+          nextState,
+          propsDiff,
+          stateDiff,
+          isRequired,
+        },
+        shouldUpdate,
+      );
     }
     return shouldUpdate;
   }
