@@ -1,6 +1,6 @@
 {
   "name": "asuna-admin",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "repository": "git@github.com:danielwii/asuna-admin.git",
   "author": "Daniel Wei <danielwii0326@gmail.com>",
   "license": "MIT",
@@ -37,7 +37,7 @@
     "autod": "autod",
     "dev": "NODE_ENV=dev node $NODE_DEBUG_OPTION server.js",
     "build": "next build",
-    "start": "NODE_ENV=production node dist/server.js",
+    "start": "NODE_ENV=production node server.js",
     "storybook": "NODE_ENV=dev start-storybook -p 6006",
     "build-storybook": "NODE_ENV=dev build-storybook",
     "collect": "sh ./bin/collect.sh",
