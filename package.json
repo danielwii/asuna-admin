@@ -71,7 +71,7 @@
     "lodash": "^4.17.10",
     "moment": "^2.22.1",
     "ncp": "^2.0.0",
-    "next": "5",
+    "next": "~6.0.1",
     "next-progressbar": "^1.0.0",
     "next-redux-saga": "^1",
     "next-redux-wrapper": "^1.3.5",
