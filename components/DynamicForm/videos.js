@@ -1,15 +1,15 @@
 /* eslint-disable jsx-a11y/media-has-caption */
-import React     from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import videojs   from 'video.js';
-import * as R    from 'ramda';
+import videojs from 'video.js';
+import * as R from 'ramda';
 
 import { Button, Icon, message, Upload } from 'antd';
 
-import { apiProxy }     from '../../adapters/api';
-import { createLogger } from '../../helpers';
+import { apiProxy } from '../../adapters/api';
+import { createLogger, lv } from '../../helpers/logger';
 
-const logger = createLogger('components:dynamic-form:video');
+const logger = createLogger('components:dynamic-form:video', lv.warn);
 
 // --------------------------------------------------------------
 // Function
@@ -51,16 +51,19 @@ async function upload(auth, onChange, files, args) {
 // eslint-disable-next-line import/prefer-default-export
 export class VideoUploader extends React.Component {
   static propTypes = {
-    auth    : PropTypes.shape({}), // auth token object
-    api     : PropTypes.string.isRequired,
-    value   : PropTypes.arrayOf(PropTypes.shape({
-      bucket  : PropTypes.string,
-      filename: PropTypes.string,
-      mode    : PropTypes.string,
-      prefix  : PropTypes.string,
-    })),
+    auth: PropTypes.shape({}), // auth token object
+    host: PropTypes.string.isRequired,
+    prefix: PropTypes.string.isRequired,
+    value: PropTypes.arrayOf(
+      PropTypes.shape({
+        bucket: PropTypes.string,
+        filename: PropTypes.string,
+        mode: PropTypes.string,
+        prefix: PropTypes.string,
+      }),
+    ),
     onChange: PropTypes.func,
-    multi   : PropTypes.bool,
+    multi: PropTypes.bool,
   };
 
   state = {
@@ -71,7 +74,7 @@ export class VideoUploader extends React.Component {
     multi: false,
   };
 
-  handleChange = (info) => {
+  handleChange = info => {
     const { multi } = this.props;
 
     let { fileList } = info;
@@ -86,7 +89,7 @@ export class VideoUploader extends React.Component {
     }
 
     // 2. read from response and show file link
-    fileList = fileList.map((file) => {
+    fileList = fileList.map(file => {
       if (file.response) {
         // Component will show file.url as link
         return { ...file, url: file.response.url };
@@ -95,7 +98,7 @@ export class VideoUploader extends React.Component {
     });
 
     // 3. filter successfully uploaded files according to response from server
-    fileList = fileList.filter((file) => {
+    fileList = fileList.filter(file => {
       if (file.response) {
         return file.response.status === 'success';
       }
@@ -105,10 +108,10 @@ export class VideoUploader extends React.Component {
     this.setState({ fileList });
   };
 
-  renderPlayer = (video) => {
+  renderPlayer = video => {
     logger.info('[VideoUploader][renderPlayer]', video);
 
-    const { api } = this.props;
+    const { host, prefix } = this.props;
 
     if (video) {
       const videoJsOptions = {
@@ -116,10 +119,12 @@ export class VideoUploader extends React.Component {
         // height  : 320,
         autoplay: false,
         controls: true,
-        sources : [{
-          src : `${api}/${video.filename}?prefix=${video.prefix}`,
-          type: 'video/mp4',
-        }],
+        sources: [
+          {
+            src: `${host}/${prefix}/${vide.prefix}/${video.filename}`,
+            type: 'video/mp4',
+          },
+        ],
       };
       return <VideoPlayer key={video.filename} {...videoJsOptions} />;
     }
@@ -130,9 +135,9 @@ export class VideoUploader extends React.Component {
     const { auth, onChange, value: videos } = this.props;
 
     const props = {
-      onChange           : this.handleChange,
-      multiple           : false,
-      customRequest      : (...args) => upload(auth, onChange, [], ...args),
+      onChange: this.handleChange,
+      multiple: false,
+      customRequest: (...args) => upload(auth, onChange, [], ...args),
       supportServerRender: true,
       beforeUpload,
     };
@@ -174,7 +179,7 @@ export default class VideoPlayer extends React.Component {
     return (
       <div data-vjs-player>
         {/* eslint-disable-next-line no-return-assign */}
-        <video ref={node => this.videoNode = node} className="video-js" />
+        <video ref={node => (this.videoNode = node)} className="video-js" />
         {/* language=CSS */}
         <style jsx>{`
           div[data-vjs-player] {

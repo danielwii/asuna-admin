@@ -4,6 +4,7 @@ import * as R from 'ramda';
 import _ from 'lodash';
 import deepDiff from 'deep-diff';
 import Truncate from 'react-truncate';
+import { join } from 'path';
 
 import { Checkbox, Popconfirm, Tooltip, Icon, Button } from 'antd';
 
@@ -91,7 +92,8 @@ export const columnHelper = {
   generateActions: (actions, extras?) => ({
     key: 'action',
     title: 'Action',
-    render: (text, record) => actions(text, record, extras ? auth => extras(text, record, auth) : null),
+    render: (text, record) =>
+      actions(text, record, extras ? auth => extras(text, record, auth) : null),
   }),
   /**
    * 生成预览小图
@@ -108,9 +110,14 @@ export const columnHelper = {
     render: text => {
       if (text) {
         try {
-          const value = render ? render(text) : JSON.parse(text);
-          const images = _.map(value, config.get(ConfigKey.IMAGE_RES_HANDLER));
-          return images.map((image, index) => <img key={index} src={image} width="200" />);
+          const value = render ? render(text) : text;
+          if (value) {
+            const images = value.split(',');
+            const host = config.get(ConfigKey.IMAGE_HOST);
+            return _.map(images, (image, index) => (
+              <img key={index} src={join(host, image)} width="200" />
+            ));
+          }
         } catch (e) {
           logger.error('[generateImage]', e, { key, title, text });
         }
@@ -168,7 +175,11 @@ export const commonColumns = {
   actions: columnHelper.generateActions,
 };
 
-export const defaultColumns = actions => [commonColumns.id, commonColumns.updatedAt, commonColumns.actions(actions)];
+export const defaultColumns = actions => [
+  commonColumns.id,
+  commonColumns.updatedAt,
+  commonColumns.actions(actions),
+];
 
 export const defaultNameColumns = actions => [
   commonColumns.id,

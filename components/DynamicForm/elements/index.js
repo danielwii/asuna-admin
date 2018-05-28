@@ -3,7 +3,7 @@ import React from 'react';
 
 import { Checkbox, DatePicker, Form, Icon, Input, InputNumber, Switch, TimePicker } from 'antd';
 
-import { BraftRichEditor } from '../../../components/RichEditor';
+import { BraftRichEditor } from '../../RichEditor';
 
 import { ImagesUploader, ImageUploader } from '../images';
 import { VideoUploader } from '../videos';
@@ -214,11 +214,13 @@ export const generateImages = (form, options, formItemLayout = defaultFormItemLa
 
   const fieldName = key || name;
   const labelName = label || name || key;
+  const host = config.get(ConfigKey.IMAGE_HOST);
+  const prefix = config.get(ConfigKey.IMAGE_PREFIX);
   const handler = config.get(ConfigKey.IMAGE_RES_HANDLER);
   return generateComponent(
     form,
     { fieldName, labelName, ...options },
-    <ImagesUploader auth={auth} urlHandler={handler} />,
+    <ImagesUploader auth={auth} host={host} prefix={prefix} urlHandler={handler} />,
     formItemLayout,
   );
 };
@@ -228,24 +230,29 @@ export const generateImage = (form, options, formItemLayout = defaultFormItemLay
 
   const fieldName = key || name;
   const labelName = label || name || key;
+  const host = config.get(ConfigKey.IMAGE_HOST);
+  const prefix = config.get(ConfigKey.IMAGE_PREFIX);
   const handler = config.get(ConfigKey.IMAGE_RES_HANDLER);
   return generateComponent(
     form,
     { fieldName, labelName, ...options },
-    <ImageUploader auth={auth} urlHandler={handler} />,
+    <ImageUploader auth={auth} host={host} prefix={prefix} urlHandler={handler} />,
     formItemLayout,
   );
 };
 
 export const generateVideo = (form, options, formItemLayout = defaultFormItemLayout) => {
-  const { key, name, label, auth, api } = options;
+  const { key, name, label, auth } = options;
 
   const fieldName = key || name;
   const labelName = label || name || key;
+  const host = config.get(ConfigKey.VIDEO_HOST);
+  const prefix = config.get(ConfigKey.VIDEO_PREFIX);
+  const handler = config.get(ConfigKey.VIDEO_RES_HANDLER);
   return generateComponent(
     form,
     { fieldName, labelName, ...options },
-    <VideoUploader auth={auth} api={api} />,
+    <VideoUploader auth={auth} host={host} prefix={prefix} urlHandler={handler} />,
     formItemLayout,
   );
 };
@@ -264,14 +271,17 @@ export const generateAuthorities = (form, options, formItemLayout = defaultFormI
 };
 
 export const generateRichTextEditor = (form, options, formItemLayout = defaultFormItemLayout) => {
-  const { key, name, label, auth, imageApi } = options;
+  const { key, name, label, auth } = options;
 
   const fieldName = key || name;
   const labelName = label || name || key;
+  const host = config.get(ConfigKey.ATTACHES_HOST);
+  const prefix = config.get(ConfigKey.ATTACHES_PREFIX);
+  const handler = config.get(ConfigKey.ATTACHES_PREFIX);
   return generateComponent(
     form,
     { fieldName, labelName, ...options },
-    <BraftRichEditor auth={auth} imageApi={imageApi} />,
+    <BraftRichEditor auth={auth} host={host} prefix={prefix} urlHandler={handler} />,
     formItemLayout,
   );
 };

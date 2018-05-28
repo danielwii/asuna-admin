@@ -16,7 +16,7 @@ import * as schemaHelper from '../../helpers/schema';
 import { Pane } from '../../components/Panes';
 import { createLogger, lv } from '../../helpers/logger';
 
-const logger = createLogger('modules:content:upsert', lv.info);
+const logger = createLogger('modules:content:upsert', lv.warn);
 
 // --------------------------------------------------------------
 // Build Form

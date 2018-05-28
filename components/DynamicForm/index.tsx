@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import * as R from 'ramda';
+import { join } from 'path';
 
 import { Anchor, Button, Col, Form, Row, Tag } from 'antd';
 
@@ -139,20 +140,17 @@ export class DynamicForm2 extends React.Component<IProps & IFormFix & FormCompon
       case DynamicFormTypes.Date:
         return generateDateTime(form, { ...options, mode: 'date' });
       case DynamicFormTypes.Video:
-        return generateVideo(form, { ...options, api: config.get(ConfigKey.VIDEO_API) });
+        return generateVideo(form, options);
       case DynamicFormTypes.Authorities:
         return generateAuthorities(form, options);
       case DynamicFormTypes.Image:
-        return generateImage(form, { ...options });
+        return generateImage(form, options);
       case DynamicFormTypes.Images:
-        return generateImages(form, { ...options });
+        return generateImages(form, options);
       case DynamicFormTypes.Switch:
         return generateSwitch(form, options);
       case DynamicFormTypes.RichText:
-        return generateRichTextEditor(form, {
-          ...options,
-          imageApi: config.get(ConfigKey.IMAGE_API),
-        });
+        return generateRichTextEditor(form, options);
       case DynamicFormTypes.ManyToMany: {
         // --------------------------------------------------------------
         // ManyToMany RelationShip
@@ -316,12 +314,9 @@ class FormAnchor extends React.Component<IFormAnchorProps> {
       R.omit(['id']),
       R.map(field => {
         logger.log('[anchor]', { field });
-        const noValue =
-          R.isNil(field.value) ||
-          R.isEmpty(field.value) ||
-          false;
-          // 目前使用的 RichText 在点击时会自动设置 value 为 '<p></p>'
-          // (field.type === DynamicFormTypes.RichText) && field.value === '<p></p>'
+        const noValue = R.isNil(field.value) || R.isEmpty(field.value) || false;
+        // 目前使用的 RichText 在点击时会自动设置 value 为 '<p></p>'
+        // (field.type === DynamicFormTypes.RichText) && field.value === '<p></p>'
         const fieldName = field.options.label || field.options.name || field.name;
         const requiredColor = field.options.required ? 'red' : '';
         const color = noValue ? requiredColor : 'green';

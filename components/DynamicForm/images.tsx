@@ -1,5 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
+import { join } from 'path';
 
 import { Icon, message, Modal, Upload } from 'antd';
 import { RcFile, UploadChangeParam, UploadFile } from 'antd/es/upload/interface';
@@ -50,34 +51,17 @@ async function upload(auth, option: any): Promise<Asuna.Schema.UploadResponse[] 
   }
 }
 
-// async function upload(auth, onChange, files, args?) {
-//   logger.log('[upload]', { files, args });
-//   const response = await apiProxy.upload(auth, args.file);
-//   logger.log('[upload]', { response });
-
-//   if (/^20\d$/.test(response.status as any)) {
-//     message.success('upload successfully.');
-
-//     const images = [...(files || []), ...response.data];
-//     logger.log('[upload]', { images });
-
-//     onChange(images);
-//     args.onSuccess();
-//   } else {
-//     message.error('upload failed.');
-//     args.onError();
-//   }
-// }
-
 // --------------------------------------------------------------
 // Uploader
 // --------------------------------------------------------------
 
 interface IProps {
   auth: AuthState;
+  host: string;
+  prefix: string;
   urlHandler: (res: Asuna.Schema.UploadResponse) => string;
-  value: string;
-  onChange: (valute: any) => void;
+  value?: string;
+  onChange?: (value: any) => void;
 }
 
 export class ImageUploader extends React.Component<IProps> {
@@ -111,24 +95,22 @@ export class ImageUploader extends React.Component<IProps> {
       return;
     }
     if (info.file.status === 'done') {
-      // Get this url from response in real world.
-      // eslint-disable-next-line no-unused-vars
       getBase64(info.file.originFileObj, () => this.setState({ loading: false }));
     }
   };
 
   customRequest = async (option: any): Promise<void> => {
-    const { auth, onChange, value: image, urlHandler } = this.props;
+    const { auth, onChange, prefix, urlHandler } = this.props;
     const uploaded = await upload(auth, option);
     if (uploaded) {
-      const image = urlHandler(uploaded[0]);
+      const image = join(prefix, urlHandler(uploaded[0]));
       logger.log('[ImageUploader][render]', { uploaded, image });
-      onChange(image);
+      onChange!(image);
     }
   };
 
   render() {
-    const { value: image } = this.props;
+    const { value: image, host } = this.props;
 
     logger.log('[ImageUploader][render]', { image });
 
@@ -151,7 +133,7 @@ export class ImageUploader extends React.Component<IProps> {
           beforeUpload={beforeUpload}
           onChange={this.handleChange}
         >
-          {image ? <img style={{ width: '100%' }} src={image} alt="" /> : uploadButton}
+          {image ? <img style={{ width: '100%' }} src={join(host, image)} alt="" /> : uploadButton}
         </Upload>
       </div>
     );
@@ -163,7 +145,7 @@ export class ImagesUploader extends React.Component<IProps> {
     previewVisible: boolean;
     previewImage: string;
     fileList: UploadFile[];
-    images: Asuna.Schema.UploadResponse[];
+    // images: Asuna.Schema.UploadResponse[];
   };
 
   constructor(props) {
@@ -172,7 +154,7 @@ export class ImagesUploader extends React.Component<IProps> {
       previewVisible: false,
       previewImage: '',
       fileList: [],
-      images: props.value,
+      // images: props.value,
     };
   }
 
@@ -182,7 +164,9 @@ export class ImagesUploader extends React.Component<IProps> {
   UNSAFE_componentWillMount() {
     logger.info('[componentWillMount]', this.props);
     const { value: images } = this.props;
-    this.wrapImagesToFileList(images);
+    if (images) {
+      this.wrapImagesToFileList(images);
+    }
   }
 
   /**
@@ -208,19 +192,20 @@ export class ImagesUploader extends React.Component<IProps> {
   }
 
   wrapImagesToFileList = (imagesStr: string): void => {
-    const { urlHandler } = this.props;
-    const images = imagesStr ? imagesStr.split(',') : [];
+    const { host } = this.props;
+    const images = imagesStr ? _.compact(imagesStr.split(',')) : [];
     logger.info('[wrapImagesToFileList]', { images });
     const fileList = _.map(images, (image, index) => ({
       uid: index,
       status: 'done',
-      url: image,
+      url: join(host, image),
     }));
     logger.info('[wrapImagesToFileList]', 'fileList is', fileList);
     this.setState({ fileList });
   };
 
   handleCancel = () => {
+    logger.log('[ImagesUploader][handleCancel]', { props: this.props, state: this.state });
     this.setState({ previewVisible: false });
   };
 
@@ -231,23 +216,29 @@ export class ImagesUploader extends React.Component<IProps> {
     });
   };
 
-  handleChange = ({ fileList }: UploadChangeParam): void => this.setState({ fileList });
+  handleChange = (info: UploadChangeParam): void => {
+    logger.log('[ImagesUploader][handleChange]', { info });
+    const { onChange } = this.props;
+    const images = _.compact(info.fileList.map(file => file.url)).join(',');
+    logger.log('[ImagesUploader][handleChange]', { images });
+    onChange!(images);
+  };
 
   customRequest = async (option: any): Promise<void> => {
-    const { auth, onChange, value: image, urlHandler } = this.props;
+    const { auth, onChange, urlHandler, prefix, value } = this.props;
     const uploaded = await upload(auth, option);
     if (uploaded) {
-      const image = urlHandler(uploaded[0]);
-      const images = [this.state.images, image].join(',');
-      logger.log('[ImagesUploader][render]', { uploaded, image, images });
-      onChange(images);
+      logger.log('[ImagesUploader][customRequest]', { props: this.props, state: this.state });
+      const image = join(prefix, urlHandler(uploaded[0]));
+      const uploadedImages = value;
+      const images = _.compact([uploadedImages, image]).join(',');
+      logger.log('[ImagesUploader][customRequest]', { uploaded, image, images, uploadedImages });
+      onChange!(images);
     }
   };
 
   render() {
-    const { auth, onChange } = this.props;
-
-    const { previewVisible, previewImage, fileList, images } = this.state;
+    const { previewVisible, previewImage, fileList } = this.state;
 
     logger.info('[render]', { fileList });
 

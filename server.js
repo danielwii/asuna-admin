@@ -36,6 +36,7 @@ const pathNeedsProxy = pathname =>
   pathname.startsWith('/socket.io/') ||
   pathname.startsWith('/api/') ||
   pathname.startsWith('/rest/') ||
+  pathname.startsWith('/uploads/') ||
   pathname.startsWith('/admin/');
 
 app.prepare().then(() => {

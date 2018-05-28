@@ -1,4 +1,4 @@
-import { imageResToUrl, videoResToUrl } from '../helpers/upload';
+import { responseToUrl } from '../helpers/upload';
 
 export const enum StringCase {
   None = 'None',
@@ -37,8 +37,12 @@ export const enum ConfigKey {
   API_RESPONSE_PAGE_MODE = 'API_RESPONSE_PAGE_MODE',
   API_RESPONSE_ASSOCIATION_MODE = 'API_RESPONSE_ASSOCIATION_MODE',
 
-  IMAGE_API = 'IMAGE_API',
-  VIDEO_API = 'VIDEO_API',
+  IMAGE_HOST = 'IMAGE_HOST',
+  IMAGE_PREFIX = 'IMAGE_PREFIX',
+  VIDEO_HOST = 'VIDEO_HOST',
+  VIDEO_PREFIX = 'VIDEO_PREFIX',
+  ATTACHES_HOST = 'ATTACHES_HOST',
+  ATTACHES_PREFIX = 'ATTACHES_PREFIX',
 
   /**
    * 默认返回 table 的页面大小
@@ -52,6 +56,7 @@ export const enum ConfigKey {
 
   IMAGE_RES_HANDLER = 'IMAGE_RES_HANDLER',
   VIDEO_RES_HANDLER = 'VIDEO_RES_HANDLER',
+  ATTACHES_RES_HANDLER = 'ATTACHES_RES_HANDLER',
 }
 
 interface ConfigOpts {
@@ -60,11 +65,16 @@ interface ConfigOpts {
   AUTH_HEADER?: AuthHeader;
   API_RESPONSE_PAGE_MODE?: ApiResponsePageMode;
   API_RESPONSE_ASSOCIATION_MODE?: ApiResponseAssociationMode;
-  IMAGE_API?: string;
-  VIDEO_API?: string;
   DEFAULT_PAGE_SIZE?: number;
+  IMAGE_HOST?: string;
+  IMAGE_PREFIX?: string;
+  VIDEO_HOST?: string;
+  VIDEO_PREFIX?: string;
+  ATTACHES_HOST?: string;
+  ATTACHES_PREFIX?: string;
   IMAGE_RES_HANDLER?: (res: Asuna.Schema.UploadResponse) => string;
   VIDEO_RES_HANDLER?: (res: Asuna.Schema.UploadResponse) => string;
+  ATTACHES_RES_HANDLER?: (res: Asuna.Schema.UploadResponse) => string;
 }
 
 const defaultConfiguration: ConfigOpts = {
@@ -78,8 +88,15 @@ const defaultConfiguration: ConfigOpts = {
    */
   API_RESPONSE_ASSOCIATION_MODE: ApiResponseAssociationMode.ID,
   DEFAULT_PAGE_SIZE: 25,
-  IMAGE_RES_HANDLER: imageResToUrl,
-  VIDEO_RES_HANDLER: videoResToUrl,
+  IMAGE_HOST: '/',
+  IMAGE_PREFIX: 'uploads/images',
+  VIDEO_HOST: '/',
+  VIDEO_PREFIX: 'uploads/videos',
+  ATTACHES_HOST: '/',
+  ATTACHES_PREFIX: 'uploads/attaches',
+  IMAGE_RES_HANDLER: responseToUrl,
+  VIDEO_RES_HANDLER: responseToUrl,
+  ATTACHES_RES_HANDLER: responseToUrl,
 };
 
 class Config {
