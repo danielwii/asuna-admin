@@ -10,7 +10,7 @@ import { diff } from '../../helpers';
 import { createLogger, lv } from '../../helpers/logger';
 import { AuthState } from '../../store/auth.redux';
 
-const logger = createLogger('components:dynamic-form:images', lv.log);
+const logger = createLogger('components:dynamic-form:images', lv.warn);
 
 // --------------------------------------------------------------
 // Functions

@@ -120,6 +120,7 @@ export const columnHelper = {
           }
         } catch (e) {
           logger.error('[generateImage]', e, { key, title, text });
+          return text;
         }
       }
       return 'n/a';

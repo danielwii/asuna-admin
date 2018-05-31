@@ -9,6 +9,7 @@ const { createProxyServer } = require('http-proxy');
 const { parse } = require('url');
 const next = require('next');
 const { createConfigLoader } = require('node-buffs');
+const { join } = require('path');
 
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
@@ -39,6 +40,14 @@ const pathNeedsProxy = pathname =>
   pathname.startsWith('/uploads/') ||
   pathname.startsWith('/admin/');
 
+/**
+ * FIXME 用于识别是否是历史图片数据，这里的配置需要配置文件化
+ * @param pathname
+ * @returns boolean
+ */
+const pastImagesPath = pathname =>
+  pathname.startsWith('/data/') || pathname.startsWith('/Uploads/');
+
 app.prepare().then(() => {
   createServer((req, res) => {
     // Be sure to pass `true` as the second argument to `url.parse`.
@@ -47,6 +56,9 @@ app.prepare().then(() => {
     const { pathname } = parsedUrl;
 
     if (pathNeedsProxy(pathname)) {
+      proxy.web(req, res, { target: configurator.loadConfig('PROXY_API') });
+    } else if (pastImagesPath(pathname)) {
+      req.url = join('uploads/images', req.url);
       proxy.web(req, res, { target: configurator.loadConfig('PROXY_API') });
     } else {
       handle(req, res, parsedUrl);

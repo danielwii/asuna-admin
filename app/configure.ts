@@ -66,7 +66,13 @@ interface ConfigOpts {
   API_RESPONSE_PAGE_MODE?: ApiResponsePageMode;
   API_RESPONSE_ASSOCIATION_MODE?: ApiResponseAssociationMode;
   DEFAULT_PAGE_SIZE?: number;
+  /**
+   * 可以理解为不会被存入数据库的前缀
+   */
   IMAGE_HOST?: string;
+  /**
+   * 将被存入数据库的前缀
+   */
   IMAGE_PREFIX?: string;
   VIDEO_HOST?: string;
   VIDEO_PREFIX?: string;

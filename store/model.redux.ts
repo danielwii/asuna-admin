@@ -10,7 +10,7 @@ import { modelProxy } from '../adapters/model';
 import { createLogger, lv } from '../helpers';
 import { RootState } from 'store/index';
 
-const logger = createLogger('store:models', lv.info);
+const logger = createLogger('store:models', lv.warn);
 
 // --------------------------------------------------------------
 // Module actionTypes
