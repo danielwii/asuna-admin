@@ -121,7 +121,7 @@ export class VideoUploader extends React.Component {
         controls: true,
         sources: [
           {
-            src: `${host}/${prefix}/${vide.prefix}/${video.filename}`,
+            src: `${host}/${prefix}/${video.prefix}/${video.filename}`,
             type: 'video/mp4',
           },
         ],

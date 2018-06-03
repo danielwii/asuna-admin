@@ -1,6 +1,6 @@
 {
   "name": "asuna-admin",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "repository": "git@github.com:danielwii/asuna-admin.git",
   "author": "Daniel Wei <danielwii0326@gmail.com>",
   "license": "MIT",
@@ -10,20 +10,41 @@
   "engines": {
     "node": ">=9 <10.2"
   },
-  "files": ["dist", "bin"],
+  "files": [
+    "dist",
+    "bin"
+  ],
   "jest": {
     "globals": {
       "ts-jest": {
         "babelConfig": {
-          "plugins": [["babel-plugin-async-import"]]
+          "plugins": [
+            [
+              "babel-plugin-async-import"
+            ]
+          ]
         },
         "tsConfigFile": "tsconfig.jest.json"
       }
     },
-    "moduleFileExtensions": ["js", "json", "ts", "tsx"],
-    "coveragePathIgnorePatterns": ["/node_modules/", "/test/", "/.asuna"],
-    "moduleDirectories": ["node_modules", "."],
-    "modulePathIgnorePatterns": ["/.asuna"],
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts",
+      "tsx"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/test/",
+      "/.asuna"
+    ],
+    "moduleDirectories": [
+      "node_modules",
+      "."
+    ],
+    "modulePathIgnorePatterns": [
+      "/.asuna"
+    ],
     "testRegex": ".spec.tsx?$",
     "transform": {
       "^.+\\.(t|j)sx?$": "ts-jest"
@@ -71,7 +92,7 @@
     "lodash": "^4.17.10",
     "moment": "^2.22.1",
     "ncp": "^2.0.0",
-    "next": "~6.0.1",
+    "next": "^6.0.1",
     "next-progressbar": "^1.0.0",
     "next-redux-saga": "^1",
     "next-redux-wrapper": "^1.3.5",

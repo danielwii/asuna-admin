@@ -1,25 +1,18 @@
 import React from 'react';
 
 const snowCss = () => ({
-  animationName          : 'snowing',
-  animationDuration      : `${(Math.random() * 3000) + 3000}ms`,
+  animationName: 'snowing',
+  animationDuration: `${Math.random() * 3000 + 3000}ms`,
   animationIterationCount: 'infinite',
-  animationDelay         : `${Math.random() * 2000}ms`,
+  animationDelay: `${Math.random() * 2000}ms`,
 });
 
-const randomCssCircle = (key) => {
+const randomCssCircle = key => {
   const cx = `${Math.random() * 100}%`;
-  const cy = (-Math.random() * 90) - 10;
+  const cy = -Math.random() * 90 - 10;
 
   return (
-    <circle
-      key={key}
-      style={snowCss()}
-      cx={cx}
-      cy={cy}
-      r={Math.random() * 5}
-      fill="#7EE"
-    >
+    <circle key={key} style={snowCss()} cx={cx} cy={cy} r={Math.random() * 5} fill="#7EE">
       {/* language=CSS */}
       <style jsx global>
         {`

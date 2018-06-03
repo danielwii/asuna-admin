@@ -1,25 +1,26 @@
-/* eslint-disable no-undef,no-param-reassign */
 import React from 'react';
-import _     from 'lodash';
+import _ from 'lodash';
 
 export default class extends React.Component {
+  private canvas;
+
   componentDidMount() {
     const { canvas } = this;
-    canvas.width     = 160;
-    canvas.height    = 160;
-    const context    = canvas.getContext('2d');
-    let sequenceNo   = 0;
+    canvas.width = 160;
+    canvas.height = 160;
+    const context = canvas.getContext('2d');
+    let sequenceNo = 0;
 
     const step = () => {
       context.clearRect(0, 0, canvas.width, canvas.height);
-      this.drawLogo(context, sequenceNo += 1);
+      this.drawLogo(context, (sequenceNo += 1));
       window.requestAnimationFrame(step);
     };
     window.requestAnimationFrame(step);
   }
 
   drawLogo(context, sequenceNo) {
-    _.range(10).forEach((index) => {
+    _.range(10).forEach(index => {
       context.save();
       context.translate(80, 80);
 
@@ -27,7 +28,7 @@ export default class extends React.Component {
       context.shadowBlur = 20;
 
       const rotateWave = ((sequenceNo / 4) * Math.PI) / 180;
-      context.rotate(((36 * index * Math.PI) / 180) + rotateWave);
+      context.rotate((36 * index * Math.PI) / 180 + rotateWave);
       context.fillStyle = 'rgba(0, 200, 200, 0.25)';
 
       const widthWave = 10 * Math.cos((sequenceNo * Math.PI) / 540);
@@ -37,6 +38,14 @@ export default class extends React.Component {
   }
 
   render() {
-    return (<canvas ref={(canvas) => { this.canvas = canvas; }}>Canvas Not Support?!</canvas>);
+    return (
+      <canvas
+        ref={canvas => {
+          this.canvas = canvas;
+        }}
+      >
+        Canvas Not Support?!
+      </canvas>
+    );
   }
 }
