@@ -1,13 +1,14 @@
-import React     from 'react';
+/* eslint-disable jsx-a11y/anchor-is-valid */
+import React from 'react';
 import PropTypes from 'prop-types';
-import styled    from 'styled-components';
+import styled from 'styled-components';
 
 import { Button, Dropdown, Icon, Layout, Menu } from 'antd';
 
 // eslint-disable-next-line import/extensions
 import { authActions } from '../store/auth.actions';
 // eslint-disable-next-line import/extensions
-import pkg             from '../package.json';
+import pkg from '../package.json';
 
 const { Header } = Layout;
 
@@ -25,10 +26,10 @@ const StyledVersion = styled.span`
 
 export default class extends React.Component {
   static propTypes = {
-    auth  : PropTypes.shape({}),
-    app   : PropTypes.shape({}),
+    auth: PropTypes.shape({}),
+    app: PropTypes.shape({}),
     onSync: PropTypes.func,
-    env   : PropTypes.string,
+    env: PropTypes.string,
   };
 
   logout = () => {
@@ -39,11 +40,15 @@ export default class extends React.Component {
   menu = () => (
     <Menu>
       <Menu.Item>
-        <a target="_blank" rel="noopener noreferrer" href="#">Profile</a>
+        <a target="_blank" rel="noopener noreferrer" href="#">
+          Profile
+        </a>
       </Menu.Item>
       <Menu.Divider />
       <Menu.Item>
-        <a target="_blank" rel="noopener noreferrer" onClick={this.logout}>Logout</a>
+        <a target="_blank" rel="noopener noreferrer" onClick={this.logout}>
+          Logout
+        </a>
       </Menu.Item>
     </Menu>
   );
@@ -55,7 +60,9 @@ export default class extends React.Component {
         <div className="logo">
           <StyledLogoImg src="/static/logo.png" alt="mast" />
         </div>
-        <StyledVersion>{env}-v{pkg.version}::{app.version}</StyledVersion>
+        <StyledVersion>
+          {env}-v{pkg.version}::{app.version}
+        </StyledVersion>
         {/*
         <Menu
           theme="dark"
@@ -73,11 +80,11 @@ export default class extends React.Component {
               <Dropdown overlay={this.menu()}>
                 <a>{auth.username}</a>
               </Dropdown>
-              .
-              {' '}
-              <Button icon="sync" onClick={onSync} />
+              . <Button icon="sync" onClick={onSync} />
             </div>
-          ) : <Icon type="loading" style={{ marginLeft: 8, fontSize: 24 }} spin />}
+          ) : (
+            <Icon type="loading" style={{ marginLeft: 8, fontSize: 24 }} spin />
+          )}
         </div>
         {/* language=CSS */}
         <style jsx>{`

@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import * as R from 'ramda';
-import { join } from 'path';
 
 import { Anchor, Button, Col, Form, Row, Tag } from 'antd';
 
@@ -26,7 +25,6 @@ import {
 
 import { generateSelect } from './elements/select';
 import { diff } from '../../helpers';
-import { config, ConfigKey } from '../../app/configure';
 import { AuthState } from '../../store/auth.redux';
 import { createLogger, lv } from '../../helpers/logger';
 
@@ -102,29 +100,14 @@ export class DynamicForm2 extends React.Component<IProps & IFormFix & FormCompon
 
     // all readonly or hidden field will rendered as plain component
     if (['readonly', 'hidden'].indexOf(_.get(field, 'options.accessible')) > -1) {
-      return generatePlain({
-        key: index,
-        label: options.name,
-        text: field.value,
-        help: options.help,
-      });
+      return generatePlain({ text: field.value, ...options });
     } else if (['hide-value'].indexOf(_.get(field, 'options.accessible')) > -1) {
-      return generatePlain({
-        key: index,
-        label: options.name,
-        text: null,
-        help: options.help,
-      });
+      return generatePlain({ text: null, ...options });
     }
 
     switch (field.type) {
       case DynamicFormTypes.Plain:
-        return generatePlain({
-          key: index,
-          label: options.name,
-          text: field.value,
-          help: options.help,
-        });
+        return generatePlain({ text: field.value, ...options });
       case DynamicFormTypes.Input:
         return generateInput(form, options);
       case DynamicFormTypes.Checkbox:
@@ -329,7 +312,12 @@ class FormAnchor extends React.Component<IFormAnchorProps> {
         return <Anchor.Link key={field.name} title={title} href={`#dynamic-form-${field.name}`} />;
       }),
       R.filter(field => field.type),
-      R.filter(R.compose(R.not, R.pathOr(false, ['options', 'hidden']))),
+      R.filter(
+        R.compose(
+          R.not,
+          R.pathOr(false, ['options', 'hidden']),
+        ),
+      ),
     )(fields);
 
     if (R.anyPass([R.isNil, R.isEmpty])(fields)) {
@@ -347,12 +335,6 @@ interface IPureElementProps {
 }
 
 class EnhancedPureElement extends React.Component<IPureElementProps> {
-  // static propTypes = {
-  //   field  : PropTypes.shape({}),
-  //   index  : PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  //   builder: PropTypes.func.isRequired,
-  // };
-
   shouldComponentUpdate(nextProps, nextState) {
     const isRequired = R.path(['options', 'required'])(nextProps.field);
     const propsDiff = diff(this.props, nextProps);

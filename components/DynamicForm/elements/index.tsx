@@ -1,4 +1,3 @@
-/* eslint-disable indent,function-paren-newline */
 import React from 'react';
 
 import { Checkbox, DatePicker, Form, Icon, Input, InputNumber, Switch, TimePicker } from 'antd';
@@ -13,9 +12,14 @@ import { config, ConfigKey } from '../../../app/configure';
 
 const logger = createLogger('components:dynamic-form:elements', lv.warn);
 
-const defaultFormItemLayout = {};
+interface IFormItemLayout {
+  labelCol?: { offset?: number; span?: number };
+  wrapperCol?: { offset?: number; span?: number };
+}
 
-const horizontalFormItemLayout = {
+const defaultFormItemLayout: IFormItemLayout = {};
+
+const horizontalFormItemLayout: IFormItemLayout = {
   labelCol: { offset: 0, span: 5 },
   wrapperCol: { offset: 0, span: 19 },
 };
@@ -25,7 +29,7 @@ const horizontalFormItemLayout = {
 //
 // export const generate = (form, {
 //   key, name, label,
-// }, formItemLayout = defaultFormItemLayout) => {
+// }, formItemLayout: IFormItemLayout = defaultFormItemLayout) => {
 // //   logger.info('generate', key, name);
 //   const fieldName = key || name;
 //   const labelName = label || name || key;
@@ -44,22 +48,26 @@ const horizontalFormItemLayout = {
 // --------------------------------------------------------------
 
 export const generatePlain = (
-  // eslint-disable-next-line react/prop-types
-  { key, label, text, help },
-  formItemLayout = horizontalFormItemLayout,
+  options,
+  formItemLayout: IFormItemLayout = horizontalFormItemLayout,
 ) => {
-  logger.log('[generatePlain]', { key, label, text, help });
+  const { key, label, text, help } = options;
+  logger.log('[generatePlain]', options);
+  const fieldName = key || name;
+  const labelName = label || name || key;
   return (
-    <Form.Item
-      key={key || label}
-      {...formItemLayout}
-      label={label}
-      help={help}
-    >{`${text}`}</Form.Item>
+    <Form.Item key={fieldName} {...formItemLayout} label={labelName} help={help}>
+      {text}
+    </Form.Item>
   );
 };
 
-export const generateComponent = (form, options, Component, formItemLayout = {}) => {
+export const generateComponent = (
+  form,
+  options,
+  Component,
+  formItemLayout: IFormItemLayout = {},
+) => {
   const { fieldName, labelName = fieldName, opts = {}, help } = options;
   if (fieldName) {
     logger.info('[generateComponent]', options);
@@ -87,7 +95,7 @@ export const generateHidden = (form, { key, name }) => {
   return null;
 };
 
-export const generateCheckbox = (form, options, formItemLayout) => {
+export const generateCheckbox = (form, options, formItemLayout?: IFormItemLayout) => {
   const { key, name, label } = options;
 
   const fieldName = key || name;
@@ -100,7 +108,11 @@ export const generateCheckbox = (form, options, formItemLayout) => {
   );
 };
 
-export const generateInputNumber = (form, options, formItemLayout = defaultFormItemLayout) => {
+export const generateInputNumber = (
+  form,
+  options,
+  formItemLayout: IFormItemLayout = defaultFormItemLayout,
+) => {
   const { key, name, label } = options;
   logger.info('[generateInputNumber]', options);
   const fieldName = key || name;
@@ -116,7 +128,7 @@ export const generateInputNumber = (form, options, formItemLayout = defaultFormI
 export const generateInput = (
   form,
   { key, name, label, required = false, requiredMessage, placeholder = '', iconType, help, length },
-  formItemLayout,
+  formItemLayout?: IFormItemLayout,
 ) => {
   const fieldName = key || name;
   const labelName = label || name || key;
@@ -148,7 +160,7 @@ export const generateInput = (
   );
 };
 
-export const generateTextArea = (form, options, formItemLayout) => {
+export const generateTextArea = (form, options, formItemLayout?: IFormItemLayout) => {
   const { key, name, label } = options;
 
   const fieldName = key || name;
@@ -167,7 +179,11 @@ export const generateTextArea = (form, options, formItemLayout) => {
  * @param formItemLayout
  * @returns {null}
  */
-export const generateDateTime = (form, options, formItemLayout = defaultFormItemLayout) => {
+export const generateDateTime = (
+  form,
+  options,
+  formItemLayout: IFormItemLayout = defaultFormItemLayout,
+) => {
   const { key, name, label, mode = '' } = options;
   logger.info('[generateDateTime]', options);
   const fieldName = key || name;
@@ -196,7 +212,11 @@ export const generateDateTime = (form, options, formItemLayout = defaultFormItem
   );
 };
 
-export const generateSwitch = (form, options, formItemLayout = defaultFormItemLayout) => {
+export const generateSwitch = (
+  form,
+  options,
+  formItemLayout: IFormItemLayout = defaultFormItemLayout,
+) => {
   const { key, name, label } = options;
 
   const fieldName = key || name;
@@ -209,7 +229,11 @@ export const generateSwitch = (form, options, formItemLayout = defaultFormItemLa
   );
 };
 
-export const generateImages = (form, options, formItemLayout = defaultFormItemLayout) => {
+export const generateImages = (
+  form,
+  options,
+  formItemLayout: IFormItemLayout = defaultFormItemLayout,
+) => {
   const { key, name, label, auth } = options;
 
   const fieldName = key || name;
@@ -225,7 +249,11 @@ export const generateImages = (form, options, formItemLayout = defaultFormItemLa
   );
 };
 
-export const generateImage = (form, options, formItemLayout = defaultFormItemLayout) => {
+export const generateImage = (
+  form,
+  options,
+  formItemLayout: IFormItemLayout = defaultFormItemLayout,
+) => {
   const { key, name, label, auth } = options;
 
   const fieldName = key || name;
@@ -241,7 +269,11 @@ export const generateImage = (form, options, formItemLayout = defaultFormItemLay
   );
 };
 
-export const generateVideo = (form, options, formItemLayout = defaultFormItemLayout) => {
+export const generateVideo = (
+  form,
+  options,
+  formItemLayout: IFormItemLayout = defaultFormItemLayout,
+) => {
   const { key, name, label, auth } = options;
 
   const fieldName = key || name;
@@ -257,7 +289,11 @@ export const generateVideo = (form, options, formItemLayout = defaultFormItemLay
   );
 };
 
-export const generateAuthorities = (form, options, formItemLayout = defaultFormItemLayout) => {
+export const generateAuthorities = (
+  form,
+  options,
+  formItemLayout: IFormItemLayout = defaultFormItemLayout,
+) => {
   const { key, name, label } = options;
 
   const fieldName = key || name;
@@ -270,7 +306,11 @@ export const generateAuthorities = (form, options, formItemLayout = defaultFormI
   );
 };
 
-export const generateRichTextEditor = (form, options, formItemLayout = defaultFormItemLayout) => {
+export const generateRichTextEditor = (
+  form,
+  options,
+  formItemLayout: IFormItemLayout = defaultFormItemLayout,
+) => {
   const { key, name, label, auth } = options;
 
   const fieldName = key || name;

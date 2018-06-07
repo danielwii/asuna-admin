@@ -48,7 +48,6 @@ async function upload(auth, onChange, files, args) {
 // Uploader
 // --------------------------------------------------------------
 
-// eslint-disable-next-line import/prefer-default-export
 export class VideoUploader extends React.Component {
   static propTypes = {
     auth: PropTypes.shape({}), // auth token object

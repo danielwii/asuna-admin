@@ -5,6 +5,7 @@ import _ from 'lodash';
 
 import { Button, Divider, Modal, Table } from 'antd';
 
+import { RootState } from '../../store';
 import { panesActions } from '../../store/panes.actions';
 import { contentActions } from '../../store/content.redux';
 import { modelsActions } from '../../store/model.redux';
@@ -38,16 +39,17 @@ interface IState {
   columns: any;
   pagination?: TablePagination;
   filters?: object;
-  sorter?: {
-    [key: string]: 'asc' | 'desc';
-  };
+  sorter?: object;
+  // sorter?: {
+  //   [key: string]: 'asc' | 'desc';
+  // };
 }
 
 class ContentIndex extends React.Component<IProps, IState> {
   constructor(props) {
     super(props);
 
-    const { dispatch, basis, auth, activeKey } = this.props;
+    const { basis, auth, activeKey } = this.props;
 
     logger.info('[constructor]', 'basis is', basis);
 
@@ -69,6 +71,7 @@ class ContentIndex extends React.Component<IProps, IState> {
     );
 
     // content::name => name
+    // prettier-ignore
     const modelName = R.compose(R.nth(1), R.split(/::/), R.path(['pane', 'key']))(basis);
     const configs = modelProxy.getModelConfig(modelName);
     logger.info('[constructor]', { configs, modelName });
@@ -84,10 +87,16 @@ class ContentIndex extends React.Component<IProps, IState> {
       columns,
       creatable: configs.creatable !== false,
       key: activeKey,
+      sorter: {
+        columnKey: 'id',
+        field: 'id',
+        order: 'descend',
+      },
     };
 
     logger.log('[constructor]', 'current modelName is', modelName);
-    dispatch(contentActions.loadModels(modelName));
+    const { pagination, filters, sorter } = this.state;
+    this.handleTableChange(pagination, filters, sorter);
   }
 
   shouldComponentUpdate(nextProps, nextState, nextContext) {
@@ -203,6 +212,6 @@ class ContentIndex extends React.Component<IProps, IState> {
   }
 }
 
-const mapStateToProps = state => ({ ...state.content, auth: state.auth });
+const mapStateToProps = (state: RootState) => ({ ...state.content, auth: state.auth });
 
 export default connect(mapStateToProps)(ContentIndex);

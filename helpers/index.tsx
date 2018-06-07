@@ -34,6 +34,13 @@ export const columnHelper = {
     sorter: true,
     render: text => (render ? render(text) : text),
   }),
+  generateID: (key = 'id', title = 'ID', render?) => ({
+    key,
+    title,
+    dataIndex: key,
+    sorter: true,
+    render: text => (render ? render(text) : text),
+  }),
   generate: (key, title, render?) => ({
     key,
     title,
@@ -163,8 +170,8 @@ export const columnHelper = {
  * 通用配置
  */
 export const commonColumns = {
-  any: any => columnHelper.generate(any, any.toUpperCase()),
-  id: columnHelper.generate('id', 'ID'),
+  any: (key, title?) => columnHelper.generate(key, title || key.toUpperCase()),
+  id: columnHelper.generateID(),
   name: columnHelper.generate('name', '名称'),
   description: columnHelper.generate('description', '描述'),
   title: columnHelper.generate('title', '标题'),
