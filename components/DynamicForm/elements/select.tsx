@@ -12,12 +12,12 @@ import { createLogger, lv } from '../../../helpers/index';
 const logger = createLogger('components:dynamic-form:elements', lv.warn);
 
 interface IMixedSelectProps {
-  value?: number | string | any[];
+  value?: any[];
   onChange?: (selectedItems: number | string | any[]) => void;
 }
 
 interface IMixedSelectState {
-  selectedItems: number | string | any[];
+  selectedItems: any[];
 }
 
 type SelectOptions = {
@@ -104,81 +104,85 @@ export const generateSelect = (
 
     renderSortTree = () => {
       const { selectedItems } = this.state;
-      const SortableItem = SortableElement(({ value, sortIndex }) => {
-        const item = items.find(current => current.id === value);
-        const optionName = this.extractName(item);
-        const optionValue = this.extractValue(item);
-        return (
-          <React.Fragment>
-            <li>
-              <span className="sort-index">No. {sortIndex}</span>
-              <span>
-                {'#'}
-                {optionValue}
-                {': '}
-                {optionName}
-              </span>
-            </li>
+      const SortableItem = SortableElement<{ value: string; sortIndex: number }>(
+        ({ value, sortIndex }) => {
+          const item = items.find(current => current.id === value);
+          const optionName = this.extractName(item);
+          const optionValue = this.extractValue(item);
+          return (
+            <React.Fragment>
+              <li>
+                <span className="sort-index">No. {sortIndex}</span>
+                <span>
+                  {'#'}
+                  {optionValue}
+                  {': '}
+                  {optionName}
+                </span>
+              </li>
+              {/* language=CSS */}
+              <style jsx>{`
+                li {
+                  position: relative;
+                  display: block;
+                  padding: 0.5rem 0.5rem 0.5rem 3.5rem;
+                  margin: 0.5rem 0;
+                  /*height: 2rem;*/
+                  line-height: 1rem;
+                  color: #000;
+                  text-decoration: none;
+                  border-radius: 0.2rem;
+                  transition: all 0.1s ease-out;
+                  box-shadow: 0 0 0.5rem grey;
+                }
+
+                li .sort-index {
+                  position: absolute;
+                  left: -1.3rem;
+                  /*top: 50%;*/
+                  top: 1rem;
+                  margin-top: -1.3rem;
+                  width: 4rem;
+                  line-height: 2rem;
+                  border: 0.3rem solid #fff;
+                  text-align: center;
+                  border-radius: 0.2rem;
+                  background-color: white;
+                  box-shadow: 0 0 0.5rem grey;
+                }
+
+                li:hover {
+                  background: #d6d4d4;
+                  text-decoration: none;
+                  transform: scale(1.02);
+                }
+              `}</style>
+            </React.Fragment>
+          );
+        },
+      );
+      const SortableList = SortableContainer<{ selectedSortedItems: any[] }>(
+        ({ selectedSortedItems }) => (
+          <ul>
+            {selectedSortedItems.map((value, index) => (
+              <SortableItem
+                key={`item-${Symbol(index).toString()}`}
+                index={index}
+                sortIndex={index}
+                value={value}
+              />
+            ))}
             {/* language=CSS */}
             <style jsx>{`
-              li {
-                position: relative;
-                display: block;
-                padding: 0.5rem 0.5rem 0.5rem 3.5rem;
-                margin: 0.5rem 0;
-                /*height: 2rem;*/
-                line-height: 1rem;
-                color: #000;
-                text-decoration: none;
-                border-radius: 0.2rem;
-                transition: all 0.1s ease-out;
-                box-shadow: 0 0 0.5rem grey;
-              }
-
-              li .sort-index {
-                position: absolute;
-                left: -1.3rem;
-                /*top: 50%;*/
-                top: 1rem;
-                margin-top: -1.3rem;
-                width: 4rem;
-                line-height: 2rem;
-                border: 0.3rem solid #fff;
-                text-align: center;
-                border-radius: 0.2rem;
-                background-color: white;
-                box-shadow: 0 0 0.5rem grey;
-              }
-
-              li:hover {
-                background: #d6d4d4;
-                text-decoration: none;
-                transform: scale(1.02);
+              ul {
+                list-style: none;
+                padding: 0;
+                margin: 2rem;
               }
             `}</style>
-          </React.Fragment>
-        );
-      });
-      const SortableList = SortableContainer(({ selectedSortedItems }) => (
-        <ul>
-          {selectedSortedItems.map((value, index) => (
-            <SortableItem
-              key={`item-${Symbol(index).toString()}`}
-              index={index}
-              sortIndex={index}
-              value={value}
-            />
-          ))}
-          {/* language=CSS */}
-          <style jsx>{`
-            ul {
-              list-style: none;
-              padding: 0;
-              margin: 2rem;
-            }
-          `}</style>
-        </ul>
-      ));
+          </ul>
+        ),
+      );
 
       return <SortableList selectedSortedItems={selectedItems} onSortEnd={this.onSortEnd} />;
     };
