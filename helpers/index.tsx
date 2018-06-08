@@ -41,6 +41,18 @@ export const columnHelper = {
     sorter: true,
     render: text => (render ? render(text) : text),
   }),
+  generateRelation: (key, title, render?) => ({
+    key,
+    title,
+    relation: key,
+    dataIndex: key,
+    render: text => {
+      if (_.isString(render)) {
+        return text ? text[render] : null;
+      }
+      return render ? render(text) : text;
+    },
+  }),
   generate: (key, title, render?) => ({
     key,
     title,

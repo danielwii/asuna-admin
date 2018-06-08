@@ -1,5 +1,6 @@
 import * as R from 'ramda';
 import * as _ from 'lodash';
+import { AxiosResponse } from 'axios';
 
 import { DynamicFormTypes } from '../components/DynamicForm';
 import { appContext } from '../app/context';
@@ -8,7 +9,6 @@ import { defaultColumns } from '../helpers';
 import { TablePagination } from './response';
 import { createLogger, lv } from '../helpers/logger';
 import { config, ConfigKey } from '../app/configure';
-import { AxiosResponse } from 'axios';
 
 export interface IModelBody {
   id?: number | string;
@@ -20,7 +20,12 @@ export interface IModelService {
   loadModels(
     authToken: { token: string },
     name: string,
-    configs?: { pagination?: Asuna.Pageable; filters?; sorter? } & Asuna.Schema.ModelOpt,
+    configs?: {
+      relations?: string[];
+      pagination?: Asuna.Pageable;
+      filters?;
+      sorter?;
+    } & Asuna.Schema.ModelOpt,
   );
 
   loadSchema(authToken: { token: string }, payload: { name: string }, data);
@@ -56,13 +61,14 @@ export interface IModelService {
 // Main
 // --------------------------------------------------------------
 
-const logger = createLogger('adapters:models', lv.warn);
+const logger = createLogger('adapters:models', lv.log);
 
 export interface ModelListConfig {
   endpoint?: string;
   pagination?: TablePagination;
   filters?;
   sorter?: Sorter | null;
+  relations?: string[];
 }
 
 interface IModelProxy {
@@ -331,35 +337,40 @@ export class ModelAdapter implements IModelProxy {
     return R.compose(
       R.mergeAll,
       R.map((formatted: Asuna.Schema.FormSchema) => ({ [formatted.name]: formatted })),
-      R.map((field: Asuna.Schema.ModelSchema): Asuna.Schema.FormSchema => {
-        const ref = R.pathOr(field.name, ['config', 'info', 'ref'])(field);
-        const length = R.path(['config', 'length'])(field);
-        const required = R.not(R.pathOr(true, ['config', 'nullable'])(field));
-        return {
-          name: ref || field.name,
-          ref,
-          type: this.identifyType(field),
-          options: {
-            ...R.path(['config', 'info'])(field),
-            length: length ? +length : null,
-            label: R.pathOr(null, ['config', 'info', 'name'])(field),
-            // foreignKeys: R.path(['config', 'foreignKeys'])(field), // @deprecated
-            selectable: R.path<string>(['config', 'selectable'])(field),
-            required: required || R.pathOr(false, ['config', 'info', 'required'])(field),
-            ...R.path(['model', 'settings', field.name], this.getModelConfig(name)),
-          },
-          // 不存在时返回 undefined，而不能返回 null
-          // null 会被当作值在更新时被传递
-          value: values ? R.prop(field.name)(values) : undefined,
-        };
-      }),
+      R.map(
+        (field: Asuna.Schema.ModelSchema): Asuna.Schema.FormSchema => {
+          const ref = R.pathOr(field.name, ['config', 'info', 'ref'])(field);
+          const length = R.path(['config', 'length'])(field);
+          const required = R.not(R.pathOr(true, ['config', 'nullable'])(field));
+          return {
+            name: ref || field.name,
+            ref,
+            type: this.identifyType(field),
+            options: {
+              ...R.path(['config', 'info'])(field),
+              length: length ? +length : null,
+              label: R.pathOr(null, ['config', 'info', 'name'])(field),
+              // foreignKeys: R.path(['config', 'foreignKeys'])(field), // @deprecated
+              selectable: R.path<string>(['config', 'selectable'])(field),
+              required: required || R.pathOr(false, ['config', 'info', 'required'])(field),
+              ...R.path(['model', 'settings', field.name], this.getModelConfig(name)),
+            },
+            // 不存在时返回 undefined，而不能返回 null
+            // null 会被当作值在更新时被传递
+            value: values ? R.prop(field.name)(values) : undefined,
+          };
+        },
+      ),
     )(schema) as { [member: string]: Asuna.Schema.FormSchema };
   };
 
   getFieldsOfAssociations = R.memoize(() => {
     logger.info('[getFieldsOfAssociations]', 'modelConfigs is', this.modelConfigs);
     const concatValues = (l, r) => (R.is(String, l) ? l : R.uniq(R.concat(l, r)));
-    const isNotEmpty = R.compose(R.not, R.anyPass([R.isEmpty, R.isNil]));
+    const isNotEmpty = R.compose(
+      R.not,
+      R.anyPass([R.isEmpty, R.isNil]),
+    );
     const associationsFields = R.compose(
       R.reduce(R.mergeDeepWith(concatValues), {}),
       R.filter(isNotEmpty),
@@ -381,6 +392,7 @@ export class ModelAdapter implements IModelProxy {
     return this.service.loadModels(auth, name, {
       pagination: { page, size },
       sorter: configs && configs.sorter,
+      relations: configs && configs.relations,
       ...(this.getModelConfig(name) as Asuna.Schema.ModelOpt),
     });
   }

@@ -32,6 +32,7 @@ interface IProps extends ReduxProps {
 interface IState {
   key: string;
   modelName: string;
+  relations: string[];
   /**
    * 不为 true 时页面不显示新建按钮
    */
@@ -82,9 +83,21 @@ class ContentIndex extends React.Component<IProps, IState> {
       callRefresh: this.refresh,
     });
 
+    const relations = R.compose(
+      R.filter(
+        R.compose(
+          R.not,
+          R.isEmpty,
+        ),
+      ),
+      R.map(R.values),
+      R.map(R.pick(['relation'])),
+    )(columns);
+
     this.state = {
       modelName,
       columns,
+      relations,
       creatable: configs.creatable !== false,
       key: activeKey,
       sorter: {
@@ -153,12 +166,14 @@ class ContentIndex extends React.Component<IProps, IState> {
 
   handleTableChange = (pagination, filters, sorter) => {
     logger.info('[handleTableChange]', { pagination, filters, sorter });
-    const { modelName } = this.state;
+    const { modelName, relations } = this.state;
     const { dispatch } = this.props;
     const transformedSorter = !_.isEmpty(sorter)
       ? ({ [sorter.field]: sorter.order.slice(0, -3) } as Sorter)
       : null;
-    dispatch(contentActions.loadModels(modelName, { pagination, sorter: transformedSorter }));
+    dispatch(
+      contentActions.loadModels(modelName, { relations, pagination, sorter: transformedSorter }),
+    );
     this.setState({ pagination, filters, sorter });
   };
 

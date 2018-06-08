@@ -1,12 +1,12 @@
 import { call, put, select, takeLatest } from 'redux-saga/effects';
 
-import * as R          from 'ramda';
+import * as R from 'ramda';
 import { reduxAction } from 'node-buffs';
-import { message }     from 'antd';
+import { message } from 'antd';
 
 import { ModelListConfig, modelProxy } from '../adapters/model';
-import { createLogger, lv }            from '../helpers';
-import { RootState }                   from 'store/index';
+import { createLogger, lv } from '../helpers';
+import { RootState } from 'store/index';
 
 const logger = createLogger('store:content', lv.warn);
 
@@ -16,8 +16,8 @@ const logger = createLogger('store:content', lv.warn);
 
 const contentActionTypes = {
   // ACTION: 'module::action'
-  CONTENT_LOAD_MODELS        : 'content::load-models',
-  CONTENT_LOAD_MODELS_FAILED : 'content::load-models-failed',
+  CONTENT_LOAD_MODELS: 'content::load-models',
+  CONTENT_LOAD_MODELS_FAILED: 'content::load-models-failed',
   CONTENT_LOAD_MODELS_SUCCESS: 'content::load-models-success',
 };
 
@@ -29,16 +29,16 @@ export const isAvailable = action => action.type.startsWith('content::') && !act
 
 interface LoadModelsParams extends SagaParams {
   payload: {
-    name: string,
+    name: string;
     models: {
-      [key: string]: { extras: ModelListConfig, loading: true }
-    }
-  }
+      [key: string]: { extras: ModelListConfig; loading: true };
+    };
+  };
 }
 
 const contentActions = {
   // action: (args) => ({ type, payload })
-  loadModels       : (name: string, extras?: ModelListConfig) =>
+  loadModels: (name: string, extras?: ModelListConfig) =>
     reduxAction(contentActionTypes.CONTENT_LOAD_MODELS, {
       name,
       models: { [name]: { extras, loading: true } },
@@ -60,7 +60,9 @@ function* loadModels({ payload: { name, models } }: LoadModelsParams) {
   const { token } = yield select<RootState>(state => state.auth);
   if (token) {
     try {
-      const { [name]: { extras } } = models;
+      const {
+        [name]: { extras },
+      } = models;
       logger.info('[loadModels]', 'loading content', { name, extras });
       message.loading(`loading content '${name}'...`);
 
@@ -68,9 +70,11 @@ function* loadModels({ payload: { name, models } }: LoadModelsParams) {
       message.success(`load content '${name}' success`);
       logger.log('[loadModels]', 'loaded content', { name, response });
 
-      yield put(contentActions.loadModelsSuccess({
-        [name]: { data: response.data, loading: false },
-      }));
+      yield put(
+        contentActions.loadModelsSuccess({
+          [name]: { data: response.data, loading: false },
+        }),
+      );
     } catch (e) {
       logger.warn('[loadModels]', { e });
       message.error(e.message);
@@ -92,15 +96,10 @@ const initialState = {};
 
 const contentReducer = (previousState = initialState, action) => {
   if (isAvailable(action)) {
-    return R.mergeDeepRight(previousState, action.payload)
+    return R.mergeDeepRight(previousState, action.payload);
   } else {
     return previousState;
   }
 };
 
-export {
-  contentActionTypes,
-  contentActions,
-  contentSagas,
-  contentReducer,
-};
+export { contentActionTypes, contentActions, contentSagas, contentReducer };
