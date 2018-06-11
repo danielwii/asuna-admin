@@ -5,6 +5,7 @@ import _ from 'lodash';
 import deepDiff from 'deep-diff';
 import Truncate from 'react-truncate';
 import { join } from 'path';
+import styled from 'styled-components';
 
 import { Checkbox, Popconfirm, Tooltip, Icon, Button } from 'antd';
 
@@ -18,6 +19,11 @@ const logger = createLogger('helpers', lv.warn);
 export * from './logger';
 export * from './cast';
 export * from './error';
+
+const ThumbImage = styled.img`
+  max-width: 200px;
+  max-height: 80px;
+`;
 
 export const authHeader = token => {
   if (config.is(ConfigKey.AUTH_HEADER, AuthHeader.AuthHeaderAsBearerToken)) {
@@ -150,16 +156,7 @@ export const columnHelper = {
             const images = value.split(',');
             const host = config.get(ConfigKey.IMAGE_HOST);
             return _.map(images, (image, index) => (
-              <>
-                <img key={index} src={join(host, image)} />
-                {/* language=CSS */}
-                <style jsx>{`
-                  img {
-                    width: 200px;
-                    max-height: 80px;
-                  }
-                `}</style>
-              </>
+              <ThumbImage key={index} src={join(host, image)} />
             ));
           }
         } catch (e) {

@@ -61,7 +61,7 @@ export interface IModelService {
 // Main
 // --------------------------------------------------------------
 
-const logger = createLogger('adapters:models', lv.log);
+const logger = createLogger('adapters:models', lv.warn);
 
 export interface ModelListConfig {
   endpoint?: string;

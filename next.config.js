@@ -1,10 +1,11 @@
 const webpack = require('webpack');
 const Jarvis = require('webpack-jarvis');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-const withTypescript = require('@zeit/next-typescript');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
-const withProgressBar = require('next-progressbar');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+const R = require('ramda');
+const withTypescript = require('@zeit/next-typescript');
+const withProgressBar = require('next-progressbar');
 const withCss = require('@zeit/next-css');
 
 const jarvis = new Jarvis({ port: 1337 });
@@ -17,73 +18,70 @@ if (typeof require !== 'undefined') {
   require.extensions['.css'] = file => {};
 }
 
-module.exports = withProgressBar(
-  withTypescript(
-    withCss({
-      webpack: (config, options) => {
-        const { dev, isServer, buildId } = options;
-        if (!isServer && buildId) {
-          console.log('> [webpack] building...', buildId);
-        }
+module.exports = R.compose(
+  withProgressBar,
+  withTypescript,
+  withCss,
+)({
+  webpack: (config, options) => {
+    const { dev, isServer, buildId } = options;
+    if (!isServer && buildId) {
+      console.log('> [webpack] building...', buildId);
+    }
 
-        console.log(`> [webpack] [${isServer ? 'Server' : 'Client'}] ...`);
+    console.log(`> [webpack] [${isServer ? 'Server' : 'Client'}] ...`);
 
-        config.plugins = config.plugins || [];
-        config.resolve.plugins = config.resolve.plugins || [];
+    config.plugins = config.plugins || [];
+    config.resolve.plugins = config.resolve.plugins || [];
 
-        if (isServer) {
-          config.plugins.push(new ForkTsCheckerWebpackPlugin());
-          if (dev) {
-            config.plugins.push(jarvis);
-            config.plugins.push(bundleAnalyzerPlugin);
-          }
-        } else {
-          if (!dev) {
-            // enable source-map in production mode
-            // config.devtool = 'source-map';
+    if (isServer) {
+      config.plugins.push(new ForkTsCheckerWebpackPlugin());
+      if (dev) {
+        config.plugins.push(jarvis);
+        config.plugins.push(bundleAnalyzerPlugin);
+      }
+    } else {
+      if (!dev) {
+        // enable source-map in production mode
+        // config.devtool = 'source-map';
 
-            // https://github.com/zeit/next.js/issues/1582
-            config.plugins = config.plugins.filter(plugin => {
-              return plugin.constructor.name !== 'UglifyJsPlugin';
-            });
-          }
+        // https://github.com/zeit/next.js/issues/1582
+        config.plugins = config.plugins.filter(plugin => {
+          return plugin.constructor.name !== 'UglifyJsPlugin';
+        });
+      }
 
-          // Fixes npm packages that depend on `fs` module
-          config.node = { fs: 'empty' };
-        }
+      // Fixes npm packages that depend on `fs` module
+      config.node = { fs: 'empty' };
+    }
 
-        // config.module.rules.push({
-        //   test: /\.css$/, use: [{
-        //     loader : 'postcss-loader',
-        //     options: {
-        //       plugins: function() {
-        //         return [
-        //           require('postcss-import')(),
-        //           require('autoprefixer')(),
-        //         ];
-        //       },
-        //     },
-        //   }],
-        // });
+    // config.module.rules.push({
+    //   test: /\.css$/, use: [{
+    //     loader : 'postcss-loader',
+    //     options: {
+    //       plugins: function() {
+    //         return [
+    //           require('postcss-import')(),
+    //           require('autoprefixer')(),
+    //         ];
+    //       },
+    //     },
+    //   }],
+    // });
 
-        config.resolve.plugins.push(tsconfigPathsPlugin);
+    config.resolve.plugins.push(tsconfigPathsPlugin);
 
-        // https://github.com/moment/moment/issues/2517
-        config.plugins.push(contextReplacementPlugin);
+    // https://github.com/moment/moment/issues/2517
+    config.plugins.push(contextReplacementPlugin);
 
-        // fix `react-dom/server could not be resolved` issue in next v5.0.0
-        // delete config.resolve.alias['react-dom'];
+    return config;
+  },
 
-        return config;
-      },
+  serverRuntimeConfig: {
+    isServer: true,
+  },
 
-      serverRuntimeConfig: {
-        isServer: true,
-      },
-
-      publicRuntimeConfig: {
-        env: process.env.ENV || 'dev',
-      },
-    }),
-  ),
-);
+  publicRuntimeConfig: {
+    env: process.env.ENV || 'dev',
+  },
+});
