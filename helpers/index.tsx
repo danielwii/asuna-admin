@@ -60,11 +60,10 @@ export const columnHelper = {
     sorter: true,
     render: text => {
       const value = render ? render(text) : text;
-      return (
-        <Truncate trimWhitespace lines={1} ellipsis={<Tooltip title={value}>...</Tooltip>}>
-          {value}
-        </Truncate>
-      );
+      if (_.isString(value) && value.length > 20) {
+        return <Tooltip title={value}>{value.slice(0, 20) + '...'}</Tooltip>;
+      }
+      return value;
     },
   }),
   generateLink: (key, title, render?) => ({
@@ -75,6 +74,23 @@ export const columnHelper = {
     render: text => {
       if (text) {
         const value = render ? render(text) : text;
+        if (_.isString(value) && value.length > 30) {
+          return (
+            <Tooltip title={value}>
+              <Button href={value} size="small" type="dashed" target="_blank">
+                {value.slice(0, 30) + '...'}
+                <Icon type="link" />
+              </Button>
+              {/* language=CSS */}
+              <style jsx>{`
+                /* 用于修复 tooltip 最大宽度固定以致长文本显示异常的问题 */
+                :global(.ant-tooltip-inner) {
+                  max-width: inherit;
+                }
+              `}</style>
+            </Tooltip>
+          );
+        }
         return (
           <Button href={value} size="small" type="dashed" target="_blank">
             {value}
@@ -134,7 +150,16 @@ export const columnHelper = {
             const images = value.split(',');
             const host = config.get(ConfigKey.IMAGE_HOST);
             return _.map(images, (image, index) => (
-              <img key={index} src={join(host, image)} width="200" />
+              <>
+                <img key={index} src={join(host, image)} />
+                {/* language=CSS */}
+                <style jsx>{`
+                  img {
+                    width: 200px;
+                    max-height: 80px;
+                  }
+                `}</style>
+              </>
             ));
           }
         } catch (e) {
