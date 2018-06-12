@@ -1,6 +1,6 @@
 {
   "name": "asuna-admin",
-  "version": "0.6.8",
+  "version": "0.6.9",
   "repository": "git@github.com:danielwii/asuna-admin.git",
   "author": "Daniel Wei <danielwii0326@gmail.com>",
   "license": "MIT",
@@ -120,7 +120,7 @@
     "socket.io-client": "^2.1.1",
     "styled-components": "^3.3.2",
     "typescript": "^2.9.1",
-    "video.js": "^7.0.3"
+    "video.js": "^7.0.5"
   },
   "devDependencies": {
     "@storybook/addon-actions": "^3.4.7",
@@ -129,7 +129,7 @@
     "@types/braft-editor": "^1.1.2",
     "@types/debug": "^0.0.30",
     "@types/enzyme": "^3.1.10",
-    "@types/jest": "^23.0.0",
+    "@types/jest": "^23.0.2",
     "@types/next-redux-wrapper": "^1.4.1",
     "@types/prop-types": "^15.5.3",
     "@types/socket.io-client": "^1.4.32",
@@ -138,7 +138,7 @@
     "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^8.2.3",
     "babel-plugin-async-import": "^2.0.1",
-    "babel-plugin-import": "^1.7.0",
+    "babel-plugin-import": "^1.8.0",
     "babel-plugin-module-resolver": "^3.1.1",
     "babel-plugin-styled-components": "^1.5.1",
     "cz-conventional-changelog": "^2.1.0",
@@ -153,8 +153,8 @@
     "prettier": "^1.13.5",
     "pretty-quick": "^1.6.0",
     "ts-jest": "joaovieira/ts-jest#babel-peerDependency-release",
-    "tsconfig-paths": "^3.3.2",
-    "tsconfig-paths-webpack-plugin": "^3.1.4",
+    "tsconfig-paths": "^3.4.0",
+    "tsconfig-paths-webpack-plugin": "^3.2.0",
     "webpack-bundle-analyzer": "^2.13.1",
     "webpack-jarvis": "0.3.2"
   },
