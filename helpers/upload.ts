@@ -3,7 +3,7 @@
 // --------------------------------------------------------------
 
 import { join } from 'path';
-import { createLogger, lv } from './logger';
+import { createLogger } from './logger';
 
 const logger = createLogger('helpers', 'warn');
 

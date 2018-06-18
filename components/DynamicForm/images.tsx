@@ -7,7 +7,7 @@ import { RcFile, UploadChangeParam, UploadFile } from 'antd/es/upload/interface'
 
 import { apiProxy } from '../../adapters/api';
 import { diff } from '../../helpers';
-import { createLogger, lv } from '../../helpers/logger';
+import { createLogger } from '../../helpers/logger';
 import { AuthState } from '../../store/auth.redux';
 
 const logger = createLogger('components:dynamic-form:images', 'warn');

@@ -11,7 +11,7 @@ import { RootState } from './';
 import { authProxy } from '../adapters/auth';
 import { panesActions } from './panes.actions';
 import { routerActions } from './router.redux';
-import { createLogger, lv } from '../helpers';
+import { createLogger } from '../helpers';
 
 const logger = createLogger('store:auth', 'warn');
 

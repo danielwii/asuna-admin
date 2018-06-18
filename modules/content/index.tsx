@@ -14,7 +14,7 @@ import { modelProxy } from '../../adapters/model';
 import { responseProxy, TablePagination } from '../../adapters/response';
 
 import { castModelKey, diff } from '../../helpers';
-import { createLogger, lv } from '../../helpers/logger';
+import { createLogger } from '../../helpers/logger';
 
 const logger = createLogger('modules:content:index', 'warn');
 

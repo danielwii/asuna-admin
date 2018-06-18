@@ -1,14 +1,10 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
-import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
 import { Button, Dropdown, Icon, Layout, Menu } from 'antd';
-
-// eslint-disable-next-line import/extensions
-import { authActions } from '../store/auth.actions';
-// eslint-disable-next-line import/extensions
-import pkg from '../package.json';
+import * as pkg from '../package.json';
+import { AuthState } from '../store/auth.redux';
+import { AppState } from '../store/app.redux';
 
 const { Header } = Layout;
 
@@ -24,19 +20,15 @@ const StyledVersion = styled.span`
   vertical-align: baseline;
 `;
 
-export default class extends React.Component {
-  static propTypes = {
-    auth: PropTypes.shape({}),
-    app: PropTypes.shape({}),
-    onSync: PropTypes.func,
-    env: PropTypes.string,
-  };
+interface IProps {
+  auth: AuthState;
+  app: AppState;
+  env: string;
+  onSync: () => void;
+  logout: () => void;
+}
 
-  logout = () => {
-    const { dispatch } = this.props;
-    dispatch(authActions.logout());
-  };
-
+export default class extends React.Component<IProps> {
   menu = () => (
     <Menu>
       <Menu.Item>
@@ -44,7 +36,7 @@ export default class extends React.Component {
       </Menu.Item>
       <Menu.Divider />
       <Menu.Item>
-        <a onClick={this.logout}>Logout</a>
+        <a onClick={this.props.logout}>Logout</a>
       </Menu.Item>
     </Menu>
   );
@@ -57,7 +49,7 @@ export default class extends React.Component {
           <StyledLogoImg src="/static/logo.png" alt="mast" />
         </div>
         <StyledVersion>
-          {env}-v{pkg.version}::{app.version}
+          {env}-v{(pkg as any).version}::{app.version}
         </StyledVersion>
         {/*
         <Menu
