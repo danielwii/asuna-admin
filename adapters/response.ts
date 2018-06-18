@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import { config } from '../app/configure';
 import { appContext } from '../app/context';
 
-import { createLogger, lv } from '../helpers/logger';
+import { createLogger } from '../helpers/logger';
 
 const logger = createLogger('adapters::response', 'warn');
 

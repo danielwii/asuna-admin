@@ -31,10 +31,8 @@ export class BraftRichEditor extends React.Component<IProps, IState> {
   };
 
   componentDidMount() {
-    // eslint-disable-next-line global-require
     BraftEditor = require('braft-editor').default;
     logger.debug('[componentDidMount]', { state: this.state, props: this.props });
-    // eslint-disable-next-line react/no-did-mount-set-state
     this.setState({ loading: false });
   }
 
@@ -47,26 +45,6 @@ export class BraftRichEditor extends React.Component<IProps, IState> {
     const { onChange } = this.props;
     onChange!(html);
   };
-
-  /*
-  buildRawDraftContentState = () => {
-    const { value } = this.props;
-    logger.debug('render by props', this.props);
-
-    if (R.isEmpty(value)) {
-      return null;
-    }
-
-    const blocksFromHTML = convertFromHTML(value);
-    logger.debug('blocksFromHTML is', blocksFromHTML);
-
-    // eslint-disable-next-line function-paren-newline
-    const contentState = ContentState.createFromBlockArray(
-      blocksFromHTML.contentBlocks, blocksFromHTML.entityMap);
-    logger.debug('contentState is', contentState);
-    return convertToRaw(contentState);
-  };
-*/
 
   beforeUpload = file => {
     const isImage = ['image/jpeg', 'image/png'].indexOf(file.type) > -1;
@@ -112,47 +90,6 @@ export class BraftRichEditor extends React.Component<IProps, IState> {
     const { value } = this.props;
 
     if (loading) return <p>loading editor...</p>;
-
-    /*
-    const extendControls = [
-      {
-        type: 'split',
-      }, {
-        type     : 'button',
-        text     : '预览',
-        className: 'preview-button',
-        onClick  : this.preview,
-      }, {
-        type     : 'dropdown',
-        width    : 80,
-        text     : <span>下拉菜单</span>,
-        component: <h1 style={{
-          width: 200, color: '#ffffff', padding: 10, margin: 0,
-        }}
-        >Hello World!
-        </h1>,
-      }, {
-        type     : 'modal',
-        text     : '弹出框',
-        className: 'modal-button',
-        modal    : {
-          title      : '这是一个弹出框',
-          showClose  : true,
-          showCancel : true,
-          showConfirm: true,
-          confirmable: true,
-          onConfirm  : () => console.log(1),
-          onCancel   : () => console.log(2),
-          onClose    : () => console.log(3),
-          children   : (
-            <div style={{ width: 480, height: 320, padding: 30 }}>
-              <span>Hello World！</span>
-            </div>
-          ),
-        },
-      },
-    ];
-*/
 
     const editorProps = {
       height: 500,

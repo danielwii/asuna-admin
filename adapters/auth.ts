@@ -1,5 +1,5 @@
 import { appContext } from '../app/context';
-import { createLogger, lv } from '../helpers/logger';
+import { createLogger } from '../helpers/logger';
 
 // --------------------------------------------------------------
 // Types

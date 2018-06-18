@@ -3,7 +3,7 @@ import getConfig from 'next/config';
 
 import { appContext } from '../app/context';
 import { appActions } from '../store/app.actions';
-import { createLogger, lv } from '../helpers';
+import { createLogger } from '../helpers';
 
 const logger = createLogger('adapters:ws', 'warn');
 
