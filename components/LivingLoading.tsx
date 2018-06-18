@@ -14,7 +14,7 @@ const StyledLoading = styled.div`
 `;
 
 interface IStyledHeartbeat {
-  heartbeat: boolean;
+  heartbeat: boolean | null;
 }
 
 const StyledHeartbeat = styled.div`
@@ -29,17 +29,21 @@ const StyledHeartbeat = styled.div`
   text-align: center;
   padding: 0.5rem;
   color: #fff;
-  background-color: ${(props: IStyledHeartbeat) => (props.heartbeat ? '#449d44' : '#c9302c')};
-  border-color: ${(props: IStyledHeartbeat) => (props.heartbeat ? '#4cae4c' : '#d43f3a')};
+  background-color: ${(props: IStyledHeartbeat) =>
+    props.heartbeat === null ? '#cc9900' : props.heartbeat ? '#449d44' : '#c9302c'};
+  border-color: ${(props: IStyledHeartbeat) =>
+    props.heartbeat === null ? '#cc9900' : props.heartbeat ? '#4cae4c' : '#d43f3a'};
   border-radius: 0.5rem;
   box-shadow: ${(props: IStyledHeartbeat) =>
-    props.heartbeat
-      ? 'inset 0 0.1rem 0.1rem rgba(0,0,0,.075), 0 0 0.75rem rgba(76, 174, 76, 0.6)'
-      : 'inset 0 0.1rem 0.1rem rgba(0,0,0,.075), 0 0 0.75rem rgba(212, 63, 58, 0.6)'};
+    props.heartbeat === null
+      ? 'inset 0 0.1rem 0.1rem rgba(0,0,0,.075), 0 0 0.75rem rgba(204, 153, 0, 0.6)'
+      : props.heartbeat
+        ? 'inset 0 0.1rem 0.1rem rgba(0,0,0,.075), 0 0 0.75rem rgba(76, 174, 76, 0.6)'
+        : 'inset 0 0.1rem 0.1rem rgba(0,0,0,.075), 0 0 0.75rem rgba(212, 63, 58, 0.6)'};
 `;
 
 interface IProps {
-  heartbeat: boolean;
+  heartbeat: boolean | null;
 }
 
 export default class extends React.Component<IProps> {
@@ -81,10 +85,15 @@ export default class extends React.Component<IProps> {
 
   render() {
     const { heartbeat } = this.props;
+
     return (
       <StyledLoading>
         <StyledHeartbeat heartbeat={heartbeat}>
-          {heartbeat ? 'Loading from backend...' : 'Backend server unavailable.'}
+          {heartbeat === null
+            ? 'Waiting for connecting...'
+            : heartbeat
+              ? 'Loading from backend...'
+              : 'Backend server unavailable.'}
         </StyledHeartbeat>
         <canvas
           ref={canvas => {

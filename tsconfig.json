@@ -7,9 +7,8 @@
     "allowJs": true,
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
-    "pretty": true,
-//    "noUnusedLocals": true,
-//    "noUnusedParameters": true,
+    //    "noUnusedLocals": true,
+    //    "noUnusedParameters": true,
     "strictNullChecks": true, // 可选参数会被自动地加上 | undefined
     "removeComments": false,
     "preserveConstEnums": true,
@@ -18,10 +17,5 @@
     "outDir": "dist",
     "baseUrl": "."
   },
-  "exclude": [
-    "examples",
-    "dist",
-    ".next",
-    "stories"
-  ]
+  "exclude": ["examples", "dist", ".next", "stories"]
 }
