@@ -1,11 +1,11 @@
-import { call, put, select, takeLatest } from 'redux-saga/effects';
+import { call, put, select } from 'redux-saga/effects';
 
 import * as R from 'ramda';
 import { reduxAction } from 'node-buffs';
 import { message } from 'antd';
 
 import { ModelListConfig, modelProxy } from '../adapters/model';
-import { createLogger, lv } from '../helpers';
+import { createLogger } from '../helpers';
 import { RootState } from 'store/index';
 
 const logger = createLogger('store:content', 'warn');

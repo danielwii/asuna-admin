@@ -5,7 +5,7 @@ import { castModelKey, castModelName } from './cast';
 import { modelProxy } from '../adapters/model';
 import { DynamicFormTypes } from '../components/DynamicForm';
 import { storeConnector } from '../store';
-import { createLogger, lv } from './logger';
+import { createLogger } from './logger';
 
 const logger = createLogger('helpers:schema', 'warn');
 

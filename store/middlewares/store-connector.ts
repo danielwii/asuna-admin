@@ -1,4 +1,4 @@
-import { createLogger, lv } from '../../helpers';
+import { createLogger } from '../../helpers';
 
 const logger = createLogger('store:connector', 'warn');
 

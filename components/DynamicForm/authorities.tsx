@@ -4,7 +4,7 @@ import * as R from 'ramda';
 import { Checkbox, Table } from 'antd';
 
 import { menuProxy } from '../../adapters/menu';
-import { createLogger, lv } from '../../helpers';
+import { createLogger } from '../../helpers';
 
 const logger = createLogger('components:authorities', 'warn');
 

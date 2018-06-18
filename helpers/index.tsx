@@ -12,7 +12,7 @@ import { Button, Checkbox, Icon, Popconfirm, Tooltip } from 'antd';
 import { config } from '../app/configure';
 
 import { castModelKey } from './cast';
-import { createLogger, lv } from './logger';
+import { createLogger } from './logger';
 
 const logger = createLogger('helpers', 'warn');
 

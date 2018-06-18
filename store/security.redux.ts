@@ -7,7 +7,7 @@ import * as R from 'ramda';
 import { RootState } from './';
 import { securityProxy } from '../adapters/security';
 import { authActions } from './auth.actions';
-import { createLogger, lv } from '../helpers/logger';
+import { createLogger } from '../helpers/logger';
 
 const logger = createLogger('store:security', 'warn');
 
