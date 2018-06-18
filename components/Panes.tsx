@@ -1,11 +1,11 @@
-import React  from 'react';
-import _      from 'lodash';
+import React from 'react';
+import _ from 'lodash';
 import * as R from 'ramda';
 
 import { Button, Divider, Tabs } from 'antd';
 
 import { createLogger } from '../helpers';
-import ModulesLoader    from '../modules';
+import ModulesLoader from '../modules';
 
 const logger = createLogger('components:panes');
 
@@ -19,12 +19,12 @@ export type Pane = {
   //   component: object;
   //   state: object;
   // }
-}
+};
 
 interface IProps {
   panes?: {
     [key: string]: Pane;
-  }
+  };
   activeKey?: string;
   onActive: (key: string) => void;
   onClose: (key: string) => void;
@@ -36,7 +36,6 @@ interface IState {
 }
 
 class Panes extends React.Component<IProps, IState> {
-
   state: IState = {
     titles: {},
   };
@@ -68,15 +67,16 @@ class Panes extends React.Component<IProps, IState> {
     const title = titles[activeKey];
 
     const operations = (
-      <React.Fragment>
+      <>
         {panes && <Button icon="close-square" onClick={() => onCloseWithout()} />}
-        {panes && R.keys(panes).length > 1 && (
-          <React.Fragment>
-            <Divider type="vertical" />
-            <Button icon="minus-square" onClick={() => onCloseWithout(activeKey)} />
-          </React.Fragment>
-        )}
-      </React.Fragment>
+        {panes &&
+          R.keys(panes).length > 1 && (
+            <React.Fragment>
+              <Divider type="vertical" />
+              <Button icon="minus-square" onClick={() => onCloseWithout(activeKey)} />
+            </React.Fragment>
+          )}
+      </>
     );
 
     return (

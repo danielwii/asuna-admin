@@ -40,11 +40,11 @@ export default class extends React.Component {
   menu = () => (
     <Menu>
       <Menu.Item>
-        <button>Profile</button>
+        <a>Profile</a>
       </Menu.Item>
       <Menu.Divider />
       <Menu.Item>
-        <button onClick={this.logout}>Logout</button>
+        <a onClick={this.logout}>Logout</a>
       </Menu.Item>
     </Menu>
   );

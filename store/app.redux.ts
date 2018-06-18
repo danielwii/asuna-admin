@@ -150,14 +150,18 @@ const appEpics = [
 // --------------------------------------------------------------
 
 interface AppState {
-  heartbeat: boolean;
+  /**
+   * null - 表示还未得到明确的连接状态
+   * true | false - 表示真实的连接状态
+   */
+  heartbeat: boolean | null;
   loading: boolean;
   restored: boolean;
   version?: string;
 }
 
 const initialState: AppState = {
-  heartbeat: false,
+  heartbeat: null,
   loading: true, // 初始化状态，用于加载 loading 图
   restored: false, // 标记恢复状态，恢复后不再等待恢复信息
 };
