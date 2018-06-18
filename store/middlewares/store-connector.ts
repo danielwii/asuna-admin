@@ -1,6 +1,6 @@
 import { createLogger, lv } from '../../helpers';
 
-const logger = createLogger('store:connector', lv.warn);
+const logger = createLogger('store:connector', 'warn');
 
 export interface IStoreConnector<T> {
   connect(state: T): void;
@@ -11,17 +11,16 @@ export interface IStoreConnector<T> {
 }
 
 export const storeConnector: IStoreConnector<any> = {
-  connect : (state) => {
+  connect: state => {
     this.state = state;
   },
   getState: name => this.state[name],
-  select  : cb => cb(this.state),
+  select: cb => cb(this.state),
 };
 
-export const createStoreConnectorMiddleware = cb =>
-  ({ getState }) => next => (action) => {
-    storeConnector.connect(getState());
-    if (cb) cb(action);
-    logger.log(action.type, { action, state: getState() });
-    return next(action);
-  };
+export const createStoreConnectorMiddleware = cb => ({ getState }) => next => action => {
+  storeConnector.connect(getState());
+  if (cb) cb(action);
+  logger.log(action.type, { action, state: getState() });
+  return next(action);
+};

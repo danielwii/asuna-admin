@@ -1,14 +1,15 @@
 import { call, put, select, takeLatest } from 'redux-saga/effects';
 
 import { reduxAction } from 'node-buffs';
-import { message }     from 'antd';
+import { message } from 'antd';
+import * as R from 'ramda';
 
-import { RootState }        from './';
-import { securityProxy }    from '../adapters/security';
-import { authActions }      from './auth.actions';
+import { RootState } from './';
+import { securityProxy } from '../adapters/security';
+import { authActions } from './auth.actions';
 import { createLogger, lv } from '../helpers/logger';
 
-const logger = createLogger('store:security', lv.warn);
+const logger = createLogger('store:security', 'warn');
 
 // --------------------------------------------------------------
 // Module actionTypes
@@ -16,10 +17,10 @@ const logger = createLogger('store:security', lv.warn);
 
 const securityActionTypes = {
   // ACTION: 'security::action'
-  LOAD_ALL_ROLES        : 'security::load-all-roles',
+  LOAD_ALL_ROLES: 'security::load-all-roles',
   LOAD_ALL_ROLES_SUCCESS: 'security::load-all-roles-success',
 
-  GET_CURRENT_USER        : 'security::get-current-user',
+  GET_CURRENT_USER: 'security::get-current-user',
   GET_CURRENT_USER_SUCCESS: 'security::get-current-user-success',
 
   UPDATE_PASSWORD: 'security::update-password',
@@ -27,18 +28,16 @@ const securityActionTypes = {
 
 export const isAvailable = action => action.type.startsWith('security::') && !action.transient;
 
-
 // --------------------------------------------------------------
 // Module actions
 // --------------------------------------------------------------
 
 const securityActions = {
   // action: (args) => ({ type, payload })
-  loadAllRoles       : () => reduxAction(securityActionTypes.LOAD_ALL_ROLES),
-  loadAllRolesSuccess: roles =>
-    reduxAction(securityActionTypes.LOAD_ALL_ROLES_SUCCESS, { roles }),
+  loadAllRoles: () => reduxAction(securityActionTypes.LOAD_ALL_ROLES),
+  loadAllRolesSuccess: roles => reduxAction(securityActionTypes.LOAD_ALL_ROLES_SUCCESS, { roles }),
 
-  getCurrentUser       : () => reduxAction(securityActionTypes.GET_CURRENT_USER),
+  getCurrentUser: () => reduxAction(securityActionTypes.GET_CURRENT_USER),
   getCurrentUserSuccess: user =>
     reduxAction(securityActionTypes.GET_CURRENT_USER_SUCCESS, { user }),
 
@@ -54,7 +53,7 @@ const securityActions = {
 // --------------------------------------------------------------
 
 const securitySagaFunctions = {
-  * loadAllRoles() {
+  *loadAllRoles() {
     const { token } = yield select<RootState>(state => state.auth);
     if (token) {
       message.loading('loading all roles...');
@@ -70,7 +69,7 @@ const securitySagaFunctions = {
     }
   },
 
-  * getCurrentUser() {
+  *getCurrentUser() {
     const { token } = yield select<RootState>(state => state.auth);
     if (token) {
       message.loading('loading current user...');
@@ -104,13 +103,9 @@ const initialState = {};
 
 const securityReducer = (previousState = initialState, action) => {
   if (isAvailable(action)) {
-    switch (action.type) {
-      default:
-        return { ...previousState, ...action.payload };
-    }
-  } else {
-    return previousState;
+    return R.mergeDeepRight(previousState, action.payload);
   }
+  return previousState;
 };
 
 export {

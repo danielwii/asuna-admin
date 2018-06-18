@@ -6,7 +6,7 @@ import { Checkbox, Table } from 'antd';
 import { menuProxy } from '../../adapters/menu';
 import { createLogger, lv } from '../../helpers';
 
-const logger = createLogger('components:authorities', lv.warn);
+const logger = createLogger('components:authorities', 'warn');
 
 interface IProps {
   value?: string | {};
@@ -58,7 +58,7 @@ export class Authorities extends React.Component<IProps, IState> {
 
   static updateDataSource = authorities => {
     const registeredModels = menuProxy.getRegisteredModels();
-    logger.info(
+    logger.debug(
       '[updateDataSource]',
       'all registeredModels is',
       registeredModels,
@@ -81,7 +81,7 @@ export class Authorities extends React.Component<IProps, IState> {
       ),
     )(registeredModels);
 
-    logger.info('[updateDataSource]', 'dataSource is', dataSource);
+    logger.debug('[updateDataSource]', 'dataSource is', dataSource);
     return dataSource;
   };
 

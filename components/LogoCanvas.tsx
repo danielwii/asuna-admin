@@ -5,7 +5,7 @@ export default class extends React.Component {
   private canvas;
 
   componentDidMount() {
-    const { canvas } = this;
+    const canvas = this.canvas;
     canvas.width = 160;
     canvas.height = 160;
     const context = canvas.getContext('2d');

@@ -5,7 +5,7 @@ import { appContext } from '../app/context';
 
 import { createLogger, lv } from '../helpers/logger';
 
-const logger = createLogger('adapters::response', lv.warn);
+const logger = createLogger('adapters::response', 'warn');
 
 export interface TablePagination {
   showSizeChanger: boolean;

@@ -5,7 +5,7 @@
 import { join } from 'path';
 import { createLogger, lv } from './logger';
 
-const logger = createLogger('helpers', lv.warn);
+const logger = createLogger('helpers', 'warn');
 
 export function responseToUrl(res: Asuna.Schema.UploadResponse) {
   return join(res.prefix, res.filename);

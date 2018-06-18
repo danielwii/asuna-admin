@@ -1,11 +1,11 @@
 import React from 'react';
 
 import { Button, Form, Icon, Input } from 'antd';
-import { WrappedFormUtils }          from 'antd/lib/form/Form';
+import { WrappedFormUtils } from 'antd/lib/form/Form';
 
-import { createLogger, lv } from '../helpers';
+import { createLogger } from '../helpers';
 
-const logger = createLogger('components:login', lv.warn);
+const logger = createLogger('components:login', 'warn');
 
 // TODO using DynamicForm's component instead
 function generateInput(form, name, type, required, message, placeholder, iconType) {
@@ -34,11 +34,11 @@ interface IState {
 class NormalLoginForm extends React.Component<IProps, IState> {
   state: IState = { loading: false };
 
-  handleSubmit = (e) => {
+  handleSubmit = e => {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        logger.info('Received values of form: ', values);
+        logger.debug('Received values of form: ', values);
         const { username, password } = values;
         this.setState({ loading: true });
 
@@ -57,26 +57,38 @@ class NormalLoginForm extends React.Component<IProps, IState> {
   }
 
   render() {
-    const { form }    = this.props;
+    const { form } = this.props;
     const { loading } = this.state;
 
     if (loading) {
       return <div>login... &gt;__________,.&lt;</div>;
     }
 
-    const usernameInput = generateInput(form, 'username', 'input', true, 'Please input your username!', 'Username', 'user');
-    const passwordInput = generateInput(form, 'password', 'password', true, 'Please input your Password!', 'Password', 'lock');
+    const usernameInput = generateInput(
+      form,
+      'username',
+      'input',
+      true,
+      'Please input your username!',
+      'Username',
+      'user',
+    );
+    const passwordInput = generateInput(
+      form,
+      'password',
+      'password',
+      true,
+      'Please input your Password!',
+      'Password',
+      'lock',
+    );
 
-    logger.info('[render]', { usernameInput, passwordInput });
+    logger.debug('[render]', { usernameInput, passwordInput });
 
     return (
       <Form onSubmit={this.handleSubmit} className="login-form">
-        <Form.Item>
-          {usernameInput}
-        </Form.Item>
-        <Form.Item>
-          {passwordInput}
-        </Form.Item>
+        <Form.Item>{usernameInput}</Form.Item>
+        <Form.Item>{passwordInput}</Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit" className="login-form-button">
             Log in

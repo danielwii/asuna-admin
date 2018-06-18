@@ -25,7 +25,7 @@ interface IAuthProxy {
 // Main
 // --------------------------------------------------------------
 
-const logger = createLogger('adapters:auth', lv.warn);
+const logger = createLogger('adapters:auth', 'warn');
 
 export const authProxy: IAuthProxy = {
   login: (username, password) => appContext.ctx.auth.login(username, password),

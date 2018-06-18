@@ -1,4 +1,4 @@
-import _      from 'lodash';
+import _ from 'lodash';
 import * as R from 'ramda';
 
 import { isAvailable, panesActionTypes } from './panes.actions';
@@ -26,7 +26,7 @@ interface PanesState {
 
 const initialState: PanesState = {
   activeKey: null,
-  panes    : {},
+  panes: {},
 };
 
 const panesCleaner = rootState => ({ ...rootState, panes: initialState });
@@ -35,32 +35,43 @@ const panesReducer = (previousState = initialState, action) => {
   if (isAvailable(action)) {
     switch (action.type) {
       case panesActionTypes.OPEN: {
-        const { payload: { pane } } = action;
+        const {
+          payload: { pane },
+        } = action;
         return { activeKey: pane.key, panes: { ...previousState.panes, [pane.key]: pane } };
       }
       case panesActionTypes.ACTIVE: {
-        const { payload: { key } } = action;
+        const {
+          payload: { key },
+        } = action;
         return { ...previousState, activeKey: key };
       }
       case panesActionTypes.CLOSE: {
         const { activeKey, panes } = previousState;
-        const { payload: { key } } = action;
+        const {
+          payload: { key },
+        } = action;
 
-        const index     = R.compose(R.indexOf(activeKey), R.keys)(panes);
+        const index = R.compose(
+          R.indexOf(activeKey),
+          R.keys,
+        )(panes);
         const nextPanes = _.omit(panes, key);
 
         const nextKeys = _.keys(nextPanes);
-        const nextKey  = _.has(nextPanes, activeKey)
+        const nextKey = _.has(nextPanes, activeKey)
           ? activeKey
-          // 关闭当前 tab 时定位到后面一个 tab
-          : nextKeys[_.min([index, nextKeys.length - 1])];
+          : // 关闭当前 tab 时定位到后面一个 tab
+            nextKeys[_.min([index, nextKeys.length - 1])];
         return { activeKey: nextKey, panes: nextPanes };
       }
       case panesActionTypes.CLOSE_ALL: {
         return {};
       }
       case panesActionTypes.CLOSE_WITHOUT: {
-        const { payload: { activeKey } } = action;
+        const {
+          payload: { activeKey },
+        } = action;
         if (activeKey) {
           const panes = R.pick([activeKey])(previousState.panes);
           return R.merge(previousState, { panes });
@@ -70,13 +81,8 @@ const panesReducer = (previousState = initialState, action) => {
       default:
         return { ...previousState, ...action.payload };
     }
-  } else {
-    return previousState;
   }
+  return previousState;
 };
 
-export {
-  panesSagas,
-  panesCleaner,
-  panesReducer,
-};
+export { panesSagas, panesCleaner, panesReducer };

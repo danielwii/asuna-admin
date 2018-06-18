@@ -7,7 +7,7 @@ import { DynamicFormTypes } from '../components/DynamicForm';
 import { storeConnector } from '../store';
 import { createLogger, lv } from './logger';
 
-const logger = createLogger('helpers:schema', lv.warn);
+const logger = createLogger('helpers:schema', 'warn');
 
 export const peek = (message, callback?) => fields => {
   if (callback) callback();
@@ -19,9 +19,10 @@ export const tables = {
   treeDecorator({ schema, items }) {
     const TAG = '[treeDecorator]';
     logger.log(TAG, { schema, items });
-    const field = R.compose(R.find((field: Asuna.Schema.FormSchema) => field.options.type === 'Tree'), R.values)(
-      schema,
-    );
+    const field = R.compose(
+      R.find((field: Asuna.Schema.FormSchema) => field.options.type === 'Tree'),
+      R.values,
+    )(schema);
     if (field) {
       logger.log(TAG, { field });
       // TODO need implemented.
@@ -64,10 +65,12 @@ export const asyncLoadAssociationsDecorator = async fields => {
   const associations = R.filter(field => R.contains(field.type)(relationShips))(fields);
 
   if (R.not(R.isEmpty(associations))) {
-    logger.info(TAG, 'associations is', associations);
+    logger.debug(TAG, 'associations is', associations);
 
     // 当已经拉取过数据后不再进行拉取
-    const filteredAssociations = R.pickBy(field => R.not(R.has('associations', field)))(associations);
+    const filteredAssociations = R.pickBy(field => R.not(R.has('associations', field)))(
+      associations,
+    );
     logger.log(TAG, { filteredAssociations });
     if (R.isEmpty(filteredAssociations)) {
       return fields;
@@ -78,7 +81,7 @@ export const asyncLoadAssociationsDecorator = async fields => {
     const wrappedAssociations = await Promise.all(
       R.values(filteredAssociations).map(async field => {
         const selectable = R.pathOr([], ['options', 'selectable'])(field);
-        logger.info(TAG, 'handle field', { field, selectable });
+        logger.debug(TAG, 'handle field', { field, selectable });
         if (selectable) {
           const fieldsOfAssociations = modelProxy.getFieldsOfAssociations();
 
@@ -88,21 +91,27 @@ export const asyncLoadAssociationsDecorator = async fields => {
               association: fieldsOfAssociations[selectable],
             },
           ];
-          logger.info(TAG, 'foreignOpts is', foreignOpts);
+          logger.debug(TAG, 'foreignOpts is', foreignOpts);
 
           const effects = modelProxy.listAssociationsCallable(auth, [selectable]);
-          logger.info(TAG, 'list associations callable', effects);
+          logger.debug(TAG, 'list associations callable', effects);
 
           let allResponse = {};
           try {
             allResponse = await Promise.all(R.values(effects));
-            logger.info(TAG, 'allResponse is', allResponse);
+            logger.debug(TAG, 'allResponse is', allResponse);
           } catch (e) {
             logger.error(TAG, e);
           }
 
           const foreignKeysResponse = R.zipObj([selectable], R.map(R.prop('data'), allResponse));
-          logger.info(TAG, 'foreignOpts is', foreignOpts, 'foreignKeysResponse is', foreignKeysResponse);
+          logger.debug(
+            TAG,
+            'foreignOpts is',
+            foreignOpts,
+            'foreignKeysResponse is',
+            foreignKeysResponse,
+          );
 
           return { ...field, foreignOpts, associations: foreignKeysResponse };
         }
@@ -112,21 +121,25 @@ export const asyncLoadAssociationsDecorator = async fields => {
     );
 
     const pairedWrappedAssociations = R.zipObj(R.keys(filteredAssociations), wrappedAssociations);
-    logger.info(TAG, 'wrapped associations', { pairedWrappedAssociations });
+    logger.debug(TAG, 'wrapped associations', { pairedWrappedAssociations });
 
     // FIXME 临时解决关联数据从 entities 到 ids 的转换
 
     const transformedAssociations = R.map(association => {
       let value;
       if (_.isArrayLike(association.value)) {
-        value = association.value ? R.map(entity => R.propOr(entity, 'id', entity))(association.value) : undefined;
+        value = association.value
+          ? R.map(entity => R.propOr(entity, 'id', entity))(association.value)
+          : undefined;
       } else {
-        value = association.value ? R.propOr(association.value, 'id', association.value) : undefined;
+        value = association.value
+          ? R.propOr(association.value, 'id', association.value)
+          : undefined;
       }
       return { ...association, value };
     })(pairedWrappedAssociations);
 
-    logger.info(TAG, 'transformed associations', transformedAssociations);
+    logger.debug(TAG, 'transformed associations', transformedAssociations);
 
     return R.mergeDeepRight(fields, transformedAssociations);
   }
@@ -143,9 +156,15 @@ export const associationDecorator = fields => {
   const TAG = '[associationDecorator]';
   logger.log(TAG, { fields });
 
-  const associationFields = R.filter(R.compose(R.not, R.isNil, R.prop('associations')))(fields);
+  const associationFields = R.filter(
+    R.compose(
+      R.not,
+      R.isNil,
+      R.prop('associations'),
+    ),
+  )(fields);
   if (R.not(R.isEmpty(associationFields))) {
-    logger.info(TAG, { associationFields });
+    logger.debug(TAG, { associationFields });
     const wrapForeignOpt = R.map(opt => ({
       ...opt,
       association: modelProxy.getAssociationConfigs(opt.modelName),
@@ -154,10 +173,10 @@ export const associationDecorator = fields => {
       ...field,
       foreignOpts: wrapForeignOpt(field.foreignOpts),
     }))(associationFields);
-    logger.info(TAG, { withAssociations, wrapForeignOpt });
+    logger.debug(TAG, { withAssociations, wrapForeignOpt });
 
     const wrappedFields = R.mergeDeepRight(fields, withAssociations);
-    logger.info(TAG, { wrappedFields });
+    logger.debug(TAG, { wrappedFields });
 
     return wrappedFields;
   }
@@ -171,7 +190,7 @@ export const jsonDecorator = fields => {
 
   const jsonFields = R.filter(R.pathEq(['options', 'json'], 'str'))(fields);
   if (R.not(R.isEmpty(jsonFields))) {
-    logger.info(TAG, { jsonFields });
+    logger.debug(TAG, { jsonFields });
 
     const toJson = value => {
       if (R.is(String, value) && value.length) {
@@ -181,7 +200,8 @@ export const jsonDecorator = fields => {
           logger.warn(TAG, e, { jsonFields });
           return null;
         }
-      } else if (R.is(Object, value)) {
+      }
+      if (R.is(Object, value)) {
         return value;
       }
       return null;
@@ -210,7 +230,7 @@ export const enumDecorator = fields => {
   if (R.not(R.isEmpty(enumFilterFields))) {
     const [, enumFilterField] = R.toPairs(enumFilterFields)[0];
     // console.log(enumFilterField);
-    logger.info(TAG, { enumFilterField });
+    logger.debug(TAG, { enumFilterField });
 
     const enums = R.compose(
       R.map(castModelName), // 默认情况下需要调整枚举名称用于找到相应的关联
@@ -218,7 +238,7 @@ export const enumDecorator = fields => {
       R.path(['options', 'enumData']),
     )(enumFilterField);
     const current = castModelName(R.pathOr('', ['value'])(enumFilterField));
-    logger.info(TAG, { enums, current });
+    logger.debug(TAG, { enums, current });
 
     // check if positions has value already
     // save positions value if no value exists, update models' sequence for else
@@ -249,7 +269,7 @@ export const enumDecorator = fields => {
           ...R.fromPairs(positionsFieldPair),
         })
       : filteredFields;
-    logger.info(TAG, {
+    logger.debug(TAG, {
       current,
       filteredNames,
       filteredFields,

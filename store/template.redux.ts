@@ -1,4 +1,5 @@
 // import { call, put, takeLatest } from 'redux-saga/effects';
+import * as R from 'ramda';
 
 // --------------------------------------------------------------
 // Module actionTypes
@@ -9,7 +10,6 @@ const actionTypes = {
 };
 
 const isAvailable = action => action.type.startsWith(/* module:: */) && !action.transient;
-
 
 // --------------------------------------------------------------
 // Module actions
@@ -47,13 +47,9 @@ const initialState = {};
 
 const reducer = (previousState = initialState, action) => {
   if (isAvailable(action)) {
-    switch (action.type) {
-      default:
-        return { ...previousState, ...action.payload };
-    }
-  } else {
-    return previousState;
+    return R.mergeDeepRight(previousState, action.payload);
   }
+  return previousState;
 };
 
 export {

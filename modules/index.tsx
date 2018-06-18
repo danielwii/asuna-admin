@@ -1,6 +1,6 @@
-import React   from 'react';
+import React from 'react';
 import dynamic from 'next/dynamic';
-import _       from 'lodash';
+import _ from 'lodash';
 
 import { createLogger } from '../helpers';
 
@@ -9,15 +9,15 @@ const logger = createLogger('modules:index');
 export default dynamic({
   modules: ({ module }) => {
     const components = {
-      'content::index' : import('./content/index'),
+      'content::index': import('./content/index'),
       'content::upsert': import('./content/upsert'),
-      default          : import('./undefined'),
+      default: import('./undefined'),
     };
 
-    logger.info('looking for module', module);
+    logger.debug('looking for module', module);
 
     if (_.has(components, module)) {
-      logger.info('module includes in components', components);
+      logger.debug('module includes in components', components);
       return { Component: components[module] };
     }
 
@@ -30,5 +30,5 @@ export default dynamic({
 
     return { Component: components.default };
   },
-  render : (props, { Component }) => <Component {...props} />,
+  render: (props, { Component }) => <Component {...props} />,
 });

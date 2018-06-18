@@ -14,7 +14,7 @@ import { config } from '../app/configure';
 import { castModelKey } from './cast';
 import { createLogger, lv } from './logger';
 
-const logger = createLogger('helpers', lv.warn);
+const logger = createLogger('helpers', 'warn');
 
 export * from './logger';
 export * from './cast';
