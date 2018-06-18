@@ -8,7 +8,7 @@ import { ModelListConfig, modelProxy } from '../adapters/model';
 import { createLogger, lv } from '../helpers';
 import { RootState } from 'store/index';
 
-const logger = createLogger('store:content', lv.warn);
+const logger = createLogger('store:content', 'warn');
 
 // --------------------------------------------------------------
 // Module actionTypes
@@ -63,7 +63,7 @@ function* loadModels({ payload: { name, models } }: LoadModelsParams) {
       const {
         [name]: { extras },
       } = models;
-      logger.info('[loadModels]', 'loading content', { name, extras });
+      logger.debug('[loadModels]', 'loading content', { name, extras });
       message.loading(`loading content '${name}'...`);
 
       const response = yield call(modelProxy.loadModels, { token }, name, extras);
@@ -97,9 +97,8 @@ const initialState = {};
 const contentReducer = (previousState = initialState, action) => {
   if (isAvailable(action)) {
     return R.mergeDeepRight(previousState, action.payload);
-  } else {
-    return previousState;
   }
+  return previousState;
 };
 
 export { contentActionTypes, contentActions, contentSagas, contentReducer };

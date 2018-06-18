@@ -10,7 +10,7 @@ import { diff } from '../../helpers';
 import { createLogger, lv } from '../../helpers/logger';
 import { AuthState } from '../../store/auth.redux';
 
-const logger = createLogger('components:dynamic-form:images', lv.warn);
+const logger = createLogger('components:dynamic-form:images', 'warn');
 
 // --------------------------------------------------------------
 // Functions
@@ -45,10 +45,9 @@ async function upload(auth, option: any): Promise<Asuna.Schema.UploadResponse[] 
 
     option.onSuccess();
     return response.data;
-  } else {
-    message.error('upload failed.');
-    option.onError();
   }
+  message.error('upload failed.');
+  option.onError();
 }
 
 // --------------------------------------------------------------
@@ -74,7 +73,7 @@ export class ImageUploader extends React.Component<IProps> {
     const stateDiff = diff(this.state, nextState);
     const shouldUpdate = propsDiff.isDifferent || stateDiff.isDifferent;
     if (shouldUpdate) {
-      logger.info(
+      logger.debug(
         '[ImageUploader][shouldComponentUpdate]',
         {
           nextProps,
@@ -166,7 +165,7 @@ export class ImagesUploader extends React.Component<IProps> {
    * set fileList for Uploader at first time
    */
   UNSAFE_componentWillMount() {
-    logger.info('[componentWillMount]', this.props);
+    logger.debug('[componentWillMount]', this.props);
     const { value: images } = this.props;
     if (images) {
       this.wrapImagesToFileList(images);
@@ -179,7 +178,7 @@ export class ImagesUploader extends React.Component<IProps> {
    * @param nextContext
    */
   UNSAFE_componentWillReceiveProps(nextProps, nextContext) {
-    logger.info('[componentWillReceiveProps]', nextProps, nextContext);
+    logger.debug('[componentWillReceiveProps]', nextProps, nextContext);
     const { value: images } = nextProps;
     this.wrapImagesToFileList(images);
   }
@@ -190,7 +189,7 @@ export class ImagesUploader extends React.Component<IProps> {
     const stateDiff = diff(this.state, nextState);
     const shouldUpdate = propsDiff.isDifferent || stateDiff.isDifferent;
     if (shouldUpdate) {
-      logger.info(TAG, { nextProps, nextState, propsDiff, stateDiff }, shouldUpdate);
+      logger.debug(TAG, { nextProps, nextState, propsDiff, stateDiff }, shouldUpdate);
     }
     return shouldUpdate;
   }
@@ -198,13 +197,13 @@ export class ImagesUploader extends React.Component<IProps> {
   wrapImagesToFileList = (imagesStr: string): void => {
     const { host } = this.props;
     const images = imagesStr ? _.compact(imagesStr.split(',')) : [];
-    logger.info('[wrapImagesToFileList]', { images });
+    logger.debug('[wrapImagesToFileList]', { images });
     const fileList = _.map(images, (image, index) => ({
       uid: index,
       status: 'done',
       url: join(host || '', image),
     }));
-    logger.info('[wrapImagesToFileList]', 'fileList is', fileList);
+    logger.debug('[wrapImagesToFileList]', 'fileList is', fileList);
     this.setState({ fileList });
   };
 
@@ -244,7 +243,7 @@ export class ImagesUploader extends React.Component<IProps> {
   render() {
     const { previewVisible, previewImage, fileList } = this.state;
 
-    logger.info('[render]', { fileList });
+    logger.debug('[render]', { fileList });
 
     const uploadButton = (
       <div>

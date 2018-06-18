@@ -26,9 +26,9 @@ import {
 import { generateSelect } from './elements/select';
 import { diff } from '../../helpers';
 import { AuthState } from '../../store/auth.redux';
-import { createLogger, lv } from '../../helpers/logger';
+import { createLogger } from '../../helpers/logger';
 
-const logger = createLogger('components:dynamic-form', lv.warn);
+const logger = createLogger('components:dynamic-form', 'warn');
 
 export const DynamicFormTypes = {
   // --------------------------------------------------------------
@@ -85,10 +85,10 @@ export class DynamicForm2 extends React.Component<IProps & IFormFix & FormCompon
 
     const options = {
       ...field.options,
+      auth,
       key: field.key || field.name,
       name: field.name,
       help: field.options.tooltip || field.options.help,
-      auth,
     };
     const defaultAssociation = {
       name: 'name',
@@ -101,7 +101,8 @@ export class DynamicForm2 extends React.Component<IProps & IFormFix & FormCompon
     // all readonly or hidden field will rendered as plain component
     if (['readonly', 'hidden'].indexOf(_.get(field, 'options.accessible')) > -1) {
       return generatePlain({ text: field.value, ...options });
-    } else if (['hide-value'].indexOf(_.get(field, 'options.accessible')) > -1) {
+    }
+    if (['hide-value'].indexOf(_.get(field, 'options.accessible')) > -1) {
       return generatePlain({ text: null, ...options });
     }
 
@@ -138,7 +139,7 @@ export class DynamicForm2 extends React.Component<IProps & IFormFix & FormCompon
         // --------------------------------------------------------------
         // ManyToMany RelationShip
         // --------------------------------------------------------------
-        logger.info('[DynamicForm2]', '[buildField][ManyToMany]', { field });
+        logger.debug('[DynamicForm2]', '[buildField][ManyToMany]', { field });
         if (R.has('foreignOpts')(field)) {
           const { modelName, association = defaultAssociation } = R.path(['foreignOpts', 0])(field);
 
@@ -174,7 +175,7 @@ export class DynamicForm2 extends React.Component<IProps & IFormFix & FormCompon
         // --------------------------------------------------------------
         // Enum / RelationShip
         // --------------------------------------------------------------
-        logger.info('[DynamicForm2]', '[buildField][Enum]', field);
+        logger.debug('[DynamicForm2]', '[buildField][Enum]', field);
         const items = R.path(['options', 'enumData'])(field);
         return generateSelect(form, {
           ...options,
@@ -186,7 +187,7 @@ export class DynamicForm2 extends React.Component<IProps & IFormFix & FormCompon
         // --------------------------------------------------------------
         // OneToMany / OneToOne RelationShip
         // --------------------------------------------------------------
-        logger.info('[DynamicForm2]', '[buildField][Association]', field);
+        logger.debug('[DynamicForm2]', '[buildField][Association]', field);
         if (R.has('foreignOpts')(field)) {
           const { modelName, association = defaultAssociation } = R.path(['foreignOpts', 0])(field);
 
@@ -214,7 +215,7 @@ export class DynamicForm2 extends React.Component<IProps & IFormFix & FormCompon
   };
 
   handleOnSubmit = e => {
-    logger.info('[DynamicForm2]', '[handleOnSubmit]', 'onSubmit', e);
+    logger.debug('[DynamicForm2]', '[handleOnSubmit]', 'onSubmit', e);
     e.preventDefault();
 
     const { form, onSubmit } = this.props;
@@ -341,17 +342,17 @@ class EnhancedPureElement extends React.Component<IPureElementProps> {
     const stateDiff = diff(this.state, nextState);
     const shouldUpdate = isRequired || propsDiff.isDifferent || stateDiff.isDifferent;
     if (shouldUpdate) {
-      logger.info(
+      logger.debug(
         '[EnhancedPureElement]',
         '[shouldComponentUpdate]',
         {
-          props: this.props,
-          state: this.state,
           nextProps,
           nextState,
           propsDiff,
           stateDiff,
           isRequired,
+          props: this.props,
+          state: this.state,
         },
         shouldUpdate,
       );
@@ -361,7 +362,7 @@ class EnhancedPureElement extends React.Component<IPureElementProps> {
 
   render() {
     const { field, index, builder } = this.props;
-    logger.info('[EnhancedPureElement]', '[render]', { props: this.props, state: this.state });
+    logger.debug('[EnhancedPureElement]', '[render]', { props: this.props, state: this.state });
 
     // options.hidden = true 时需要隐藏该元素
     const hidden = R.pathOr(false, ['options', 'hidden'])(field);

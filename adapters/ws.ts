@@ -1,23 +1,22 @@
 import { connect, Socket } from 'socket.io-client';
-import getConfig           from 'next/config';
+import getConfig from 'next/config';
 
-import { appContext }       from '../app/context';
-import { appActions }       from '../store/app.actions';
+import { appContext } from '../app/context';
+import { appActions } from '../store/app.actions';
 import { createLogger, lv } from '../helpers';
 
-const logger = createLogger('adapters:ws', lv.warn);
+const logger = createLogger('adapters:ws', 'warn');
 
 const { serverRuntimeConfig = {} } = getConfig() || {};
 
 export class WsAdapter {
-
   private port?: number;
   private namespace: string;
 
   private static io: typeof Socket;
 
-  constructor(opts: { port?: number, namespace?: string } = {}) {
-    this.port      = opts.port;
+  constructor(opts: { port?: number; namespace?: string } = {}) {
+    this.port = opts.port;
     this.namespace = opts.namespace || 'admin';
 
     if (!serverRuntimeConfig.isServer && !WsAdapter.io) {
@@ -38,7 +37,7 @@ export class WsAdapter {
           appContext.dispatch(appActions.heartbeatStop());
         }
       });
-      WsAdapter.io.on('error', (error) => {
+      WsAdapter.io.on('error', error => {
         logger.error('[error]', { id: WsAdapter.io.id, appContext, error });
         const { heartbeat } = appContext.store.select(state => state.app);
         if (heartbeat) {
@@ -47,5 +46,4 @@ export class WsAdapter {
       });
     }
   }
-
 }

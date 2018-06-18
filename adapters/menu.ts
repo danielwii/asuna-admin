@@ -13,7 +13,7 @@ export interface IMenuService {}
 // Main
 // --------------------------------------------------------------
 
-const logger = createLogger('adapters:menu', lv.warn);
+const logger = createLogger('adapters:menu', 'warn');
 
 export const menuProxy = {
   init: (isSysAdmin, authorities) => appContext.ctx.menu.init(isSysAdmin, authorities),

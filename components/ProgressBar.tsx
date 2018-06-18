@@ -7,7 +7,7 @@ import { fadeIn, fadeOut } from 'react-animations';
 
 import { createLogger, lv } from '../helpers/logger';
 
-const logger = createLogger('components:progress-bar', lv.warn);
+const logger = createLogger('components:progress-bar', 'warn');
 
 interface IFadeDiv {
   out: boolean;

@@ -1,18 +1,19 @@
 import { call, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 
 import { REHYDRATE } from 'redux-persist/constants';
-import _             from 'lodash';
+import _ from 'lodash';
+import * as R from 'ramda';
 
 import { appActions, appActionTypes, isAvailable } from './app.actions';
 
-import { actions, RootState }    from './';
+import { actions, RootState } from './';
 import { securitySagaFunctions } from './security.redux';
-import { menuSagaFunctions }     from './menu.redux';
-import { modelsSagaFunctions }   from './model.redux';
-import { routerActions }         from './router.redux';
-import { authActions }           from './auth.actions';
-import { apiProxy }              from '../adapters/api';
-import { createLogger, lv }      from '../helpers/logger';
+import { menuSagaFunctions } from './menu.redux';
+import { modelsSagaFunctions } from './model.redux';
+import { routerActions } from './router.redux';
+import { authActions } from './auth.actions';
+import { apiProxy } from '../adapters/api';
+import { createLogger, lv } from '../helpers/logger';
 
 // import { Observable } from 'rxjs/Observable';
 
@@ -22,7 +23,7 @@ import { createLogger, lv }      from '../helpers/logger';
 // import 'rxjs/add/operator/switchMap';
 // import 'rxjs/add/operator/mapTo';
 
-const logger = createLogger('store:app', lv.warn);
+const logger = createLogger('store:app', 'warn');
 
 // --------------------------------------------------------------
 // Module sagas
@@ -87,7 +88,7 @@ function* rehydrateWatcher(action) {
   logger.log('[rehydrateWatcher]', action);
   yield put(appActions.restored());
   const token = _.get(action, 'payload.auth.token');
-  const path  = _.get(action, 'payload.router.path');
+  const path = _.get(action, 'payload.router.path');
   logger.log('[rehydrateWatcher]', !!token, path);
   if (token) {
     yield put(routerActions.toIndex());
@@ -98,14 +99,14 @@ function* rehydrateWatcher(action) {
  * 查询运行中的服务端版本，版本不一致时更新当前的版本，同时进行同步操作
  */
 function* heartbeat({ force }) {
-  const { token }     = yield select<RootState>(state => state.auth);
+  const { token } = yield select<RootState>(state => state.auth);
   const app: AppState = yield select<RootState>(state => state.app);
 
   try {
-    logger.info('[heartbeat]', { apiProxy, version: apiProxy.getVersion });
+    logger.debug('[heartbeat]', { apiProxy, version: apiProxy.getVersion });
 
     const response = yield call(apiProxy.getVersion, { token });
-    logger.info('[heartbeat]', { response, version: app.version });
+    logger.debug('[heartbeat]', { response, version: app.version });
 
     // 版本不一致时执行同步操作
     if (force || (!!app.version && app.version !== response.data)) {
@@ -143,7 +144,6 @@ const appEpics = [
   //   .switchMap(() => Observable.interval(60 * 1000).mapTo(appActions.ping())),
 ];
 
-
 // --------------------------------------------------------------
 // Module reducers
 // action = { payload: any? }
@@ -158,24 +158,15 @@ interface AppState {
 
 const initialState: AppState = {
   heartbeat: false,
-  loading  : true,  // 初始化状态，用于加载 loading 图
-  restored : false, // 标记恢复状态，恢复后不再等待恢复信息
+  loading: true, // 初始化状态，用于加载 loading 图
+  restored: false, // 标记恢复状态，恢复后不再等待恢复信息
 };
 
 const appReducer = (previousState: AppState = initialState, action) => {
   if (isAvailable(action)) {
-    switch (action.type) {
-      default:
-        return { ...previousState, ...action.payload };
-    }
-  } else {
-    return previousState;
+    return R.mergeDeepRight(previousState, action.payload);
   }
+  return previousState;
 };
 
-export {
-  appSagas,
-  appEpics,
-  appReducer,
-  AppState,
-};
+export { appSagas, appEpics, appReducer, AppState };

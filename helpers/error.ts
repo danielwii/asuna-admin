@@ -13,7 +13,7 @@ interface FormError {
   };
 }
 
-const logger = createLogger('helpers:errors', lv.warn);
+const logger = createLogger('helpers:errors', 'warn');
 
 export function isErrorResponse(error) {
   const isError = R.pathEq(['response', 'data', 'name'], 'Error')(error);

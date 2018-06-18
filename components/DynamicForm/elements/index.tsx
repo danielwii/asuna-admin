@@ -10,7 +10,7 @@ import { Authorities } from '../authorities';
 import { createLogger, lv } from '../../../helpers/index';
 import { config } from '../../../app/configure';
 
-const logger = createLogger('components:dynamic-form:elements', lv.warn);
+const logger = createLogger('components:dynamic-form:elements', 'warn');
 
 interface IFormItemLayout {
   labelCol?: { offset?: number; span?: number };
@@ -30,7 +30,7 @@ const horizontalFormItemLayout: IFormItemLayout = {
 // export const generate = (form, {
 //   key, name, label,
 // }, formItemLayout: IFormItemLayout = defaultFormItemLayout) => {
-// //   logger.info('generate', key, name);
+// //   logger.debug('generate', key, name);
 //   const fieldName = key || name;
 //   const labelName = label || name || key;
 //   if (name) {
@@ -70,7 +70,7 @@ export const generateComponent = (
 ) => {
   const { fieldName, labelName = fieldName, opts = {}, help } = options;
   if (fieldName) {
-    logger.info('[generateComponent]', options);
+    logger.debug('[generateComponent]', options);
     const decorator = form.getFieldDecorator(fieldName, opts);
     return (
       <Form.Item key={fieldName} {...formItemLayout} label={labelName} help={help}>
@@ -82,7 +82,7 @@ export const generateComponent = (
 };
 
 export const generateHidden = (form, { key, name }) => {
-  logger.info('generateHidden', key, name);
+  logger.debug('generateHidden', key, name);
   const fieldName = key || name;
   if (name) {
     return (
@@ -114,7 +114,7 @@ export const generateInputNumber = (
   formItemLayout: IFormItemLayout = defaultFormItemLayout,
 ) => {
   const { key, name, label } = options;
-  logger.info('[generateInputNumber]', options);
+  logger.debug('[generateInputNumber]', options);
   const fieldName = key || name;
   const labelName = label || name || key;
   return generateComponent(
@@ -185,7 +185,7 @@ export const generateDateTime = (
   formItemLayout: IFormItemLayout = defaultFormItemLayout,
 ) => {
   const { key, name, label, mode = '' } = options;
-  logger.info('[generateDateTime]', options);
+  logger.debug('[generateDateTime]', options);
   const fieldName = key || name;
   const labelName = label || name || key;
 
@@ -196,7 +196,8 @@ export const generateDateTime = (
       <TimePicker />,
       formItemLayout,
     );
-  } else if (mode === 'date') {
+  }
+  if (mode === 'date') {
     return generateComponent(
       form,
       { fieldName, labelName, ...options },

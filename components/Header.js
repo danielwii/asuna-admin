@@ -40,15 +40,11 @@ export default class extends React.Component {
   menu = () => (
     <Menu>
       <Menu.Item>
-        <a target="_blank" rel="noopener noreferrer" href="#">
-          Profile
-        </a>
+        <button>Profile</button>
       </Menu.Item>
       <Menu.Divider />
       <Menu.Item>
-        <a target="_blank" rel="noopener noreferrer" onClick={this.logout}>
-          Logout
-        </a>
+        <button onClick={this.logout}>Logout</button>
       </Menu.Item>
     </Menu>
   );

@@ -16,7 +16,7 @@ import { responseProxy, TablePagination } from '../../adapters/response';
 import { castModelKey, diff } from '../../helpers';
 import { createLogger, lv } from '../../helpers/logger';
 
-const logger = createLogger('modules:content:index', lv.warn);
+const logger = createLogger('modules:content:index', 'warn');
 
 interface IProps extends ReduxProps {
   basis: {
@@ -52,7 +52,7 @@ class ContentIndex extends React.Component<IProps, IState> {
 
     const { basis, auth, activeKey } = this.props;
 
-    logger.info('[constructor]', 'basis is', basis);
+    logger.debug('[constructor]', 'basis is', basis);
 
     const actions = (text, record, extras) => (
       <span>
@@ -75,7 +75,7 @@ class ContentIndex extends React.Component<IProps, IState> {
     // prettier-ignore
     const modelName = R.compose(R.nth(1), R.split(/::/), R.path(['pane', 'key']))(basis);
     const configs = modelProxy.getModelConfig(modelName);
-    logger.info('[constructor]', { configs, modelName });
+    logger.debug('[constructor]', { configs, modelName });
 
     const columns = R.prop('table', configs)(actions, {
       auth,
@@ -113,13 +113,13 @@ class ContentIndex extends React.Component<IProps, IState> {
   }
 
   shouldComponentUpdate(nextProps, nextState, nextContext) {
-    logger.info('[shouldComponentUpdate]', { nextProps, nextState, nextContext });
+    logger.debug('[shouldComponentUpdate]', { nextProps, nextState, nextContext });
     const { key } = this.state;
     const { activeKey } = nextProps;
     const samePane = key === activeKey;
     const propsDiff = diff(this.props, nextProps);
     const shouldUpdate = samePane && propsDiff.isDifferent;
-    logger.info('[shouldComponentUpdate]', { key, activeKey, samePane, shouldUpdate, propsDiff });
+    logger.debug('[shouldComponentUpdate]', { key, activeKey, samePane, shouldUpdate, propsDiff });
     return shouldUpdate;
   }
 
@@ -165,7 +165,7 @@ class ContentIndex extends React.Component<IProps, IState> {
   };
 
   handleTableChange = (pagination, filters, sorter) => {
-    logger.info('[handleTableChange]', { pagination, filters, sorter });
+    logger.debug('[handleTableChange]', { pagination, filters, sorter });
     const { modelName, relations } = this.state;
     const { dispatch } = this.props;
     const transformedSorter = !_.isEmpty(sorter)
@@ -192,7 +192,7 @@ class ContentIndex extends React.Component<IProps, IState> {
 
     const { items: dataSource, pagination } = responseProxy.extract(response);
 
-    logger.info('[render]', { creatable, models, dataSource, columns, pagination });
+    logger.debug('[render]', { creatable, models, dataSource, columns, pagination });
 
     return (
       <div>

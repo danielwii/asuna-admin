@@ -10,13 +10,12 @@ import * as R from 'ramda';
 const routerActionTypes = {
   // ACTION: 'module::action'
   TO_INDEX: 'router::to-index',
-  TO_HOME : 'router::to-home',
+  TO_HOME: 'router::to-home',
   TO_LOGIN: 'router::to-login',
-  GOTO    : 'router::goto',
+  GOTO: 'router::goto',
 };
 
 export const isAvailable = action => action.type.startsWith('router::') && !action.transient;
-
 
 // --------------------------------------------------------------
 // Module routerActions
@@ -25,9 +24,9 @@ export const isAvailable = action => action.type.startsWith('router::') && !acti
 const routerActions = {
   // action: (args) => ({ type, payload })
   toIndex: () => ({ type: routerActionTypes.TO_INDEX, payload: { path: '/' } }),
-  toHome : () => ({ type: routerActionTypes.TO_HOME, payload: { path: '/home' } }),
+  toHome: () => ({ type: routerActionTypes.TO_HOME, payload: { path: '/home' } }),
   toLogin: () => ({ type: routerActionTypes.TO_LOGIN, payload: { path: '/login' } }),
-  goto   : path => ({ type: routerActionTypes.GOTO, payload: { path } }),
+  goto: path => ({ type: routerActionTypes.GOTO, payload: { path } }),
 };
 
 // --------------------------------------------------------------
@@ -61,14 +60,8 @@ const initialState = {
 const routerReducer = (previousState = initialState, action) => {
   if (isAvailable(action)) {
     return R.mergeDeepRight(previousState, action.payload);
-  } else {
-    return previousState;
   }
+  return previousState;
 };
 
-export {
-  routerActionTypes,
-  routerActions,
-  routerSagas,
-  routerReducer,
-};
+export { routerActionTypes, routerActions, routerSagas, routerReducer };

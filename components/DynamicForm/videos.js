@@ -9,7 +9,7 @@ import { Button, Icon, message, Upload } from 'antd';
 import { apiProxy } from '../../adapters/api';
 import { createLogger, lv } from '../../helpers/logger';
 
-const logger = createLogger('components:dynamic-form:video', lv.warn);
+const logger = createLogger('components:dynamic-form:video', 'warn');
 
 // --------------------------------------------------------------
 // Function
@@ -108,7 +108,7 @@ export class VideoUploader extends React.Component {
   };
 
   renderPlayer = video => {
-    logger.info('[VideoUploader][renderPlayer]', video);
+    logger.debug('[VideoUploader][renderPlayer]', video);
 
     const { host, prefix } = this.props;
 

@@ -7,10 +7,10 @@ import _ from 'lodash';
 
 import { contentActions } from './content.redux';
 import { modelProxy } from '../adapters/model';
-import { createLogger, lv } from '../helpers';
+import { createLogger } from '../helpers';
 import { RootState } from 'store/index';
 
-const logger = createLogger('store:models', lv.warn);
+const logger = createLogger('store:models', 'warn');
 
 // --------------------------------------------------------------
 // Module actionTypes
@@ -172,13 +172,9 @@ const modelsCleaner = rootState => ({ ...rootState, models: initialState });
 
 const modelsReducer = (previousState = initialState, action) => {
   if (isAvailable(action)) {
-    switch (action.type) {
-      default:
-        return R.omit(['modelName', 'data'])(R.mergeDeepRight(previousState, action.payload));
-    }
-  } else {
-    return previousState;
+    return R.mergeDeepRight(previousState, action.payload);
   }
+  return previousState;
 };
 
 export {

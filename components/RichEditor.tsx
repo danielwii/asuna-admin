@@ -3,11 +3,11 @@ import { message } from 'antd';
 import { join } from 'path';
 
 import { apiProxy } from '../adapters/api';
-import { createLogger, lv } from '../helpers/logger';
+import { createLogger } from '../helpers/logger';
 
 import { AuthState } from '../store/auth.redux';
 
-const logger = createLogger('components:rich-editor', lv.warn);
+const logger = createLogger('components:rich-editor', 'warn');
 
 let BraftEditor;
 
@@ -33,17 +33,17 @@ export class BraftRichEditor extends React.Component<IProps, IState> {
   componentDidMount() {
     // eslint-disable-next-line global-require
     BraftEditor = require('braft-editor').default;
-    logger.info('[componentDidMount]', { state: this.state, props: this.props });
+    logger.debug('[componentDidMount]', { state: this.state, props: this.props });
     // eslint-disable-next-line react/no-did-mount-set-state
     this.setState({ loading: false });
   }
 
   handleChange = content => {
-    logger.info('[handleChange]', 'content is', content);
+    logger.debug('[handleChange]', 'content is', content);
   };
 
   handleHTMLChange = html => {
-    logger.info('[handleHTMLChange]', 'html is', html);
+    logger.debug('[handleHTMLChange]', 'html is', html);
     const { onChange } = this.props;
     onChange!(html);
   };
@@ -51,19 +51,19 @@ export class BraftRichEditor extends React.Component<IProps, IState> {
   /*
   buildRawDraftContentState = () => {
     const { value } = this.props;
-    logger.info('render by props', this.props);
+    logger.debug('render by props', this.props);
 
     if (R.isEmpty(value)) {
       return null;
     }
 
     const blocksFromHTML = convertFromHTML(value);
-    logger.info('blocksFromHTML is', blocksFromHTML);
+    logger.debug('blocksFromHTML is', blocksFromHTML);
 
     // eslint-disable-next-line function-paren-newline
     const contentState = ContentState.createFromBlockArray(
       blocksFromHTML.contentBlocks, blocksFromHTML.entityMap);
-    logger.info('contentState is', contentState);
+    logger.debug('contentState is', contentState);
     return convertToRaw(contentState);
   };
 */
@@ -83,16 +83,16 @@ export class BraftRichEditor extends React.Component<IProps, IState> {
 
   uploadFn = async param => {
     const { auth, prefix, urlHandler } = this.props;
-    logger.info('[uploadFn]', 'param is', param);
+    logger.debug('[uploadFn]', 'param is', param);
 
     const response = await apiProxy.upload(auth, param.file, {
       onUploadProgress(progressEvent) {
-        logger.info('[uploadFn][progressFn]', 'event is', progressEvent);
+        logger.debug('[uploadFn][progressFn]', 'event is', progressEvent);
         param.progress((progressEvent.loaded / progressEvent.total) * 100);
       },
     });
 
-    logger.info('[uploadFn]', 'response is', response);
+    logger.debug('[uploadFn]', 'response is', response);
 
     if (/^20\d$/.test(response.status as any)) {
       const image = urlHandler ? urlHandler(response.data[0]) : response.data[0];

@@ -9,7 +9,7 @@ import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-ho
 import { generateComponent } from '.';
 import { createLogger, lv } from '../../../helpers/index';
 
-const logger = createLogger('components:dynamic-form:elements', lv.warn);
+const logger = createLogger('components:dynamic-form:elements', 'warn');
 
 interface IMixedSelectProps {
   value?: any[];
@@ -53,13 +53,13 @@ export const generateSelect = (
 ) => {
   const fieldName = key || name;
   const labelName = label || name || key;
-  logger.info('[generateSelect]', { items, enumSelector });
+  logger.debug('[generateSelect]', { items, enumSelector });
 
   class MixedSelect extends React.Component<IMixedSelectProps, IMixedSelectState> {
     constructor(props) {
       super(props);
 
-      logger.info('[MixedSelect]', '[constructor]', this.props);
+      logger.debug('[MixedSelect]', '[constructor]', this.props);
       this.state = {
         selectedItems: this.props.value || [],
       };
@@ -78,7 +78,8 @@ export const generateSelect = (
           enumSelector.name,
           getValue,
         )(item);
-      } else if (_.isArray(getValue(item))) {
+      }
+      if (_.isArray(getValue(item))) {
         return R.compose(
           R.prop(1),
           getValue,
@@ -93,7 +94,8 @@ export const generateSelect = (
           enumSelector.value,
           getValue,
         )(item);
-      } else if (_.isArray(getValue(item))) {
+      }
+      if (_.isArray(getValue(item))) {
         return R.compose(
           R.prop(0),
           getValue,
@@ -188,7 +190,7 @@ export const generateSelect = (
     };
 
     render() {
-      logger.info('[MixedSelect]', '[render]', { state: this.state, props: this.props });
+      logger.debug('[MixedSelect]', '[render]', { state: this.state, props: this.props });
       return (
         <React.Fragment>
           <Select

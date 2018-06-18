@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import _ from 'lodash';
 
 import styled from 'styled-components';
@@ -47,7 +46,7 @@ export default class extends React.Component<IProps> {
   private canvas;
 
   componentDidMount() {
-    const { canvas } = this;
+    const canvas = this.canvas;
     canvas.width = 200;
     canvas.height = 200;
     const context = canvas.getContext('2d');

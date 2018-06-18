@@ -61,7 +61,7 @@ export interface IModelService {
 // Main
 // --------------------------------------------------------------
 
-const logger = createLogger('adapters:models', lv.warn);
+const logger = createLogger('adapters:models', 'warn');
 
 export interface ModelListConfig {
   endpoint?: string;
@@ -193,9 +193,9 @@ export class ModelAdapter implements IModelProxy {
 
     logger.log('[ModelAdapter]', '[constructor]', { configs, modelConfigs });
     R.forEachObjIndexed((config, name) => {
-      logger.info('[ModelAdapter][constructor]', 'check', name, config);
-      if (!config.table) logger.info('[ModelAdapter]', '[constructor]', name, 'should set table');
-      if (!config.model) logger.info('[ModelAdapter]', '[constructor]', name, 'should set model');
+      logger.debug('[ModelAdapter][constructor]', 'check', name, config);
+      if (!config.table) logger.debug('[ModelAdapter]', '[constructor]', name, 'should set table');
+      if (!config.model) logger.debug('[ModelAdapter]', '[constructor]', name, 'should set model');
     })(modelConfigs);
   }
 
@@ -261,19 +261,19 @@ export class ModelAdapter implements IModelProxy {
     name: string,
     data: { body: IModelBody },
   ): Promise<AxiosResponse> => {
-    logger.info('[upsert]', 'upsert', { name, data });
+    logger.debug('[upsert]', 'upsert', { name, data });
 
     const allSchemas = schemas || appContext.store.select(R.path(['models', 'schemas']));
 
     const fields = this.getFormSchema(allSchemas, name);
-    logger.info('[upsert]', 'fields is', fields);
+    logger.debug('[upsert]', 'fields is', fields);
 
     const fixKeys = _.mapKeys(data.body, (value, key) => _.get(fields, `${key}.ref`, key));
     const transformed = _.mapValues(fixKeys, (value, key) => {
       // json 用于描述该字段需要通过字符串转换处理，目前用于服务器端不支持 JSON 数据格式的情况
       return _.get(fields, `${key}.options.json`) === 'str' ? JSON.stringify(value) : value;
     });
-    logger.info('[upsert]', 'transformed is', transformed);
+    logger.debug('[upsert]', 'transformed is', transformed);
 
     const id = R.path(['body', 'id'])(data);
     if (id) {
@@ -296,7 +296,7 @@ export class ModelAdapter implements IModelProxy {
   getModelConfig = (name): Asuna.Schema.ModelConfig => {
     const config = R.prop(name)(this.modelConfigs);
     if (config) {
-      logger.info('[getModelConfig]', name, 'config is', config);
+      logger.debug('[getModelConfig]', name, 'config is', config);
 
       // 未定义具体模型时，使用默认定义
       if (!config.model) {
@@ -365,7 +365,7 @@ export class ModelAdapter implements IModelProxy {
   };
 
   getFieldsOfAssociations = R.memoize(() => {
-    logger.info('[getFieldsOfAssociations]', 'modelConfigs is', this.modelConfigs);
+    logger.debug('[getFieldsOfAssociations]', 'modelConfigs is', this.modelConfigs);
     const concatValues = (l, r) => (R.is(String, l) ? l : R.uniq(R.concat(l, r)));
     const isNotEmpty = R.compose(
       R.not,
@@ -382,7 +382,7 @@ export class ModelAdapter implements IModelProxy {
   });
 
   public loadModels(auth: { token: string }, name: string, configs?: ModelListConfig): any {
-    logger.info('[loadModels]', { name, configs, modelConfig: this.getModelConfig(name) });
+    logger.debug('[loadModels]', { name, configs, modelConfig: this.getModelConfig(name) });
     const page = R.pathOr(1, ['pagination', 'current'], configs);
     const size = R.pathOr(config.get('DEFAULT_PAGE_SIZE'), ['pagination', 'pageSize'], configs);
     return this.service.loadModels(auth, name, {
@@ -403,7 +403,7 @@ export class ModelAdapter implements IModelProxy {
     const fields = R.pathOr(defaultFields, [associationName, 'fields'])(
       this.getFieldsOfAssociations(),
     );
-    logger.info('[loadAssociation]', {
+    logger.debug('[loadAssociation]', {
       defaultFields,
       fields,
       associationName,

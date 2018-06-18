@@ -16,7 +16,7 @@ import * as schemaHelper from '../../helpers/schema';
 import { Pane } from '../../components/Panes';
 import { createLogger, lv } from '../../helpers/logger';
 
-const logger = createLogger('modules:content:upsert', lv.warn);
+const logger = createLogger('modules:content:upsert', 'warn');
 
 // --------------------------------------------------------------
 // Build Form
@@ -32,17 +32,23 @@ const ContentForm = Form.create({
       }
       return Form.createFormField({ ...field });
     })(fields);
-    logger.info('[ContentForm][mapPropsToFields]', ' fields is', fields);
-    logger.info('[ContentForm][mapPropsToFields]', ' mapped fields is', mappedFields);
+    logger.debug('[ContentForm][mapPropsToFields]', ' fields is', fields);
+    logger.debug('[ContentForm][mapPropsToFields]', ' mapped fields is', mappedFields);
     return mappedFields;
   },
   onFieldsChange(props: any, changedFields) {
-    logger.info('[ContentForm][onFieldsChange]', 'onFieldsChange', props, changedFields);
+    logger.debug('[ContentForm][onFieldsChange]', 'onFieldsChange', props, changedFields);
     const filteredChangedFields = R.compose(
       R.pickBy((field, key) => {
         const oldVar = R.path(['fields', key, 'value'])(props);
         const newVar = field.value;
-        logger.info('[ContentForm][onFieldsChange]', { oldVar, newVar, field, key, changedFields });
+        logger.debug('[ContentForm][onFieldsChange]', {
+          oldVar,
+          newVar,
+          field,
+          key,
+          changedFields,
+        });
         return oldVar !== newVar || field.errors != null;
       }),
       R.map(field => {
@@ -57,7 +63,11 @@ const ContentForm = Form.create({
       R.filter(field => !R.prop('validating', field)),
     )(changedFields);
     if (!R.isEmpty(filteredChangedFields)) {
-      logger.info('[ContentForm][onFieldsChange]', 'real changed fields is', filteredChangedFields);
+      logger.debug(
+        '[ContentForm][onFieldsChange]',
+        'real changed fields is',
+        filteredChangedFields,
+      );
       props.onChange(filteredChangedFields);
     }
   },
@@ -96,8 +106,12 @@ class ContentUpsert extends React.Component<IProps, IState> {
     const { basis } = this.props;
 
     // content::create::name::timestamp => name
-    const modelName = R.compose(R.nth(2), R.split(/::/), R.path(['pane', 'key']))(basis);
-    logger.info('[constructor]', 'model name is ', modelName);
+    const modelName = R.compose(
+      R.nth(2),
+      R.split(/::/),
+      R.path(['pane', 'key']),
+    )(basis);
+    logger.debug('[constructor]', 'model name is ', modelName);
 
     const isInsertMode = this.detectUpsertMode(modelName);
 
@@ -137,8 +151,12 @@ class ContentUpsert extends React.Component<IProps, IState> {
     const { isInsertMode } = this.state;
 
     // content::create::name::timestamp => name
-    const modelName = R.compose(R.nth(2), R.split(/::/), R.path(['pane', 'key']))(basis);
-    logger.info('[componentWillMount]', 'model name is ', modelName);
+    const modelName = R.compose(
+      R.nth(2),
+      R.split(/::/),
+      R.path(['pane', 'key']),
+    )(basis);
+    logger.debug('[componentWillMount]', 'model name is ', modelName);
 
     // --------------------------------------------------------------
     // Build form fields with all needed data
@@ -151,7 +169,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
     // }
 
     const formFields = R.omit(['created_at', 'updated_at'])(formSchema);
-    logger.info('[componentWillMount]', 'form fields is', formFields);
+    logger.debug('[componentWillMount]', 'form fields is', formFields);
 
     // --------------------------------------------------------------
     // Using pre decorators instead
@@ -196,7 +214,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
         },
       } = nextProps;
 
-      logger.info('[componentWillReceiveProps]', { modelName, record });
+      logger.debug('[componentWillReceiveProps]', { modelName, record });
       const fieldValues = R.pathOr({}, [modelName, record.id])(models);
       logger.log('[componentWillReceiveProps]', 'field values is', fieldValues);
       this.handleFormChange(R.map(value => ({ value }))(fieldValues));
@@ -234,7 +252,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
 
     const record = R.path(['pane', 'data', 'record'])(basis);
     if (record) {
-      logger.info('[detectUpsertMode]', 'set to update mode and load model...', record);
+      logger.debug('[detectUpsertMode]', 'set to update mode and load model...', record);
       dispatch(modelsActions.fetch(modelName, { id: record.id, profile: 'detail' }));
       return false;
     }
@@ -258,7 +276,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
       const decoratedFields = R.pipe(...preDecorators('LOAD'))(allChangedFields);
 
       const stateDiff = diff(this.state, { fields: decoratedFields }, { include: ['fields'] });
-      logger.info('[handleFormChange]', {
+      logger.debug('[handleFormChange]', {
         fields,
         decoratedFields,
         stateDiff,
@@ -274,7 +292,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
       );
       const hasSelectable = !R.isEmpty(R.filter(R.path(['options', 'selectable']), changedFields));
 
-      logger.info('[handleFormChange]', {
+      logger.debug('[handleFormChange]', {
         changedFields,
         updateModeAtTheFirstTime,
         hasEnumFilter,
@@ -286,7 +304,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
         this.setState({
           loadings: { ...this.state.loadings, ASSOCIATIONS: true },
         });
-        logger.info('[handleFormChange]', 'load async decorated fields');
+        logger.debug('[handleFormChange]', 'load async decorated fields');
         const asyncDecoratedFields = await R.pipeP(...asyncDecorators('ASSOCIATIONS'))(
           decoratedFields,
         );
@@ -305,7 +323,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
   };
 
   handleFormSubmit = event => {
-    logger.info('[handleFormSubmit]', event);
+    logger.debug('[handleFormSubmit]', event);
     event.preventDefault();
     const { originalFieldValues } = this.state;
 
@@ -313,7 +331,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
       R.pickBy((value, key) => (originalFieldValues ? value !== originalFieldValues[key] : true)),
       R.map(R.prop('value')),
     )(this.state.fields);
-    logger.info('[handleFormSubmit]', { fieldPairs });
+    logger.debug('[handleFormSubmit]', { fieldPairs });
 
     const id = R.prop('id')(originalFieldValues);
 
