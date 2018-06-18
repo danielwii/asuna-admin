@@ -1,20 +1,22 @@
 import { toCamelCase, toSnakeCase } from 'node-buffs';
 
-import { config, ConfigKey, StringCase } from '../app/configure';
+import { config } from '../app/configure';
 
 export function castModelKey(key) {
-  if (config.is(ConfigKey.MODEL_KEYS_CASE, StringCase.Camel)) {
+  if (config.is('MODEL_KEYS_CASE', 'Camel')) {
     return toCamelCase(key);
-  } else if (config.is(ConfigKey.MODEL_KEYS_CASE, StringCase.Snake)) {
+  }
+  if (config.is('MODEL_KEYS_CASE', 'Snake')) {
     return toSnakeCase(key);
   }
   return key;
 }
 
 export function castModelName(key) {
-  if (config.is(ConfigKey.MODEL_NAME_CASE, StringCase.Camel)) {
+  if (config.is('MODEL_NAME_CASE', 'Camel')) {
     return toCamelCase(key);
-  } else if (config.is(ConfigKey.MODEL_NAME_CASE, StringCase.Snake)) {
+  }
+  if (config.is('MODEL_NAME_CASE', 'Snake')) {
     return toSnakeCase(key);
   }
   return key;

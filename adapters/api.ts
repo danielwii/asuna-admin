@@ -25,7 +25,11 @@ export const apiProxy = {
 };
 
 export class ApiAdapter {
-  constructor(private service: IApiService) {}
+  private service: IApiService;
+
+  constructor(service: IApiService) {
+    this.service = service;
+  }
 
   upload = ({ token }, file, options): AxiosResponse<Asuna.Schema.UploadResponse[]> => {
     logger.log('[upload] file', file, options);

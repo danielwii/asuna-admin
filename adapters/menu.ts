@@ -1,14 +1,13 @@
 import * as R from 'ramda';
 
 import { createLogger, lv } from '../helpers';
-import { appContext }       from '../app/context';
+import { appContext } from '../app/context';
 
 // --------------------------------------------------------------
 // Types
 // --------------------------------------------------------------
 
-export interface IMenuService {
-}
+export interface IMenuService {}
 
 // --------------------------------------------------------------
 // Main
@@ -17,14 +16,17 @@ export interface IMenuService {
 const logger = createLogger('adapters:menu', lv.warn);
 
 export const menuProxy = {
-  init               : (isSysAdmin, authorities) => appContext.ctx.menu.init(isSysAdmin, authorities),
+  init: (isSysAdmin, authorities) => appContext.ctx.menu.init(isSysAdmin, authorities),
   getRegisteredModels: () => appContext.ctx.menu.getRegisteredModels(),
 };
 
 export class MenuAdapter {
+  private service: IMenuService;
+  private registeredModels: Asuna.Schema.Menu[];
 
-  constructor(private service: IMenuService,
-              private registeredModels: Asuna.Schema.Menu[]) {
+  constructor(service: IMenuService, registeredModels: Asuna.Schema.Menu[]) {
+    this.service = service;
+    this.registeredModels = registeredModels;
   }
 
   getRegisteredModels = (): Asuna.Schema.Menu[] => this.registeredModels;
@@ -38,7 +40,9 @@ export class MenuAdapter {
     }
 
     const includedSubMenus = (menu: Asuna.Schema.Menu): Asuna.Schema.SubMenu[] =>
-      R.filter((subMenu: Asuna.Schema.SubMenu) => R.propOr(false, `${menu.key}::${subMenu.key}`)(authorities))(menu.subMenus);
+      R.filter((subMenu: Asuna.Schema.SubMenu) =>
+        R.propOr(false, `${menu.key}::${subMenu.key}`)(authorities),
+      )(menu.subMenus);
 
     const menus = R.compose(
       R.filter(menu => R.not(R.isEmpty(R.prop('subMenus', menu)))),

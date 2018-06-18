@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+require('colors');
 const { createServer } = require('http');
 const { createProxyServer } = require('http-proxy');
 const { parse } = require('url');
@@ -55,8 +56,8 @@ app.prepare().then(() => {
     }
   }).listen(port, err => {
     if (err) throw err;
-    console.log(`> Ready on http://localhost:${port}`);
-    console.log(`> NODE_ENV: ${process.env.NODE_ENV}`);
-    console.log(`> ENV: ${process.env.ENV}`);
+    console.log(`> Ready on http://localhost:${port}`.bgCyan.black.bold);
+    console.log(`> NODE_ENV: ${process.env.NODE_ENV}`.bgCyan.black.bold);
+    console.log(`> ENV: ${process.env.ENV}`.bgCyan.black.bold);
   });
 });

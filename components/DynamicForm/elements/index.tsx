@@ -8,7 +8,7 @@ import { ImagesUploader, ImageUploader } from '../images';
 import { VideoUploader } from '../videos';
 import { Authorities } from '../authorities';
 import { createLogger, lv } from '../../../helpers/index';
-import { config, ConfigKey } from '../../../app/configure';
+import { config } from '../../../app/configure';
 
 const logger = createLogger('components:dynamic-form:elements', lv.warn);
 
@@ -238,9 +238,9 @@ export const generateImages = (
 
   const fieldName = key || name;
   const labelName = label || name || key;
-  const host = config.get(ConfigKey.IMAGE_HOST);
-  const prefix = config.get(ConfigKey.IMAGE_PREFIX);
-  const handler = config.get(ConfigKey.IMAGE_RES_HANDLER);
+  const host = config.get('IMAGE_HOST');
+  const prefix = config.get('IMAGE_PREFIX');
+  const handler = config.get('IMAGE_RES_HANDLER');
   return generateComponent(
     form,
     { fieldName, labelName, ...options },
@@ -258,9 +258,9 @@ export const generateImage = (
 
   const fieldName = key || name;
   const labelName = label || name || key;
-  const host = config.get(ConfigKey.IMAGE_HOST);
-  const prefix = config.get(ConfigKey.IMAGE_PREFIX);
-  const handler = config.get(ConfigKey.IMAGE_RES_HANDLER);
+  const host = config.get('IMAGE_HOST');
+  const prefix = config.get('IMAGE_PREFIX');
+  const handler = config.get('IMAGE_RES_HANDLER');
   return generateComponent(
     form,
     { fieldName, labelName, ...options },
@@ -278,9 +278,9 @@ export const generateVideo = (
 
   const fieldName = key || name;
   const labelName = label || name || key;
-  const host = config.get(ConfigKey.VIDEO_HOST);
-  const prefix = config.get(ConfigKey.VIDEO_PREFIX);
-  const handler = config.get(ConfigKey.VIDEO_RES_HANDLER);
+  const host = config.get('VIDEO_HOST');
+  const prefix = config.get('VIDEO_PREFIX');
+  const handler = config.get('VIDEO_RES_HANDLER');
   return generateComponent(
     form,
     { fieldName, labelName, ...options },
@@ -315,9 +315,9 @@ export const generateRichTextEditor = (
 
   const fieldName = key || name;
   const labelName = label || name || key;
-  const host = config.get(ConfigKey.ATTACHES_HOST);
-  const prefix = config.get(ConfigKey.ATTACHES_PREFIX);
-  const handler = config.get(ConfigKey.ATTACHES_PREFIX);
+  const host = config.get('ATTACHES_HOST');
+  const prefix = config.get('ATTACHES_PREFIX');
+  const handler = config.get('ATTACHES_RES_HANDLER');
   return generateComponent(
     form,
     { fieldName, labelName, ...options },
