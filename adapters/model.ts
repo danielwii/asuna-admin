@@ -8,7 +8,7 @@ import { appContext } from '../app/context';
 import { defaultColumns } from '../helpers';
 import { TablePagination } from './response';
 import { createLogger, lv } from '../helpers/logger';
-import { config, ConfigKey } from '../app/configure';
+import { config } from '../app/configure';
 
 export interface IModelBody {
   id?: number | string;
@@ -384,11 +384,7 @@ export class ModelAdapter implements IModelProxy {
   public loadModels(auth: { token: string }, name: string, configs?: ModelListConfig): any {
     logger.info('[loadModels]', { name, configs, modelConfig: this.getModelConfig(name) });
     const page = R.pathOr(1, ['pagination', 'current'], configs);
-    const size = R.pathOr(
-      config.get(ConfigKey.DEFAULT_PAGE_SIZE),
-      ['pagination', 'pageSize'],
-      configs,
-    );
+    const size = R.pathOr(config.get('DEFAULT_PAGE_SIZE'), ['pagination', 'pageSize'], configs);
     return this.service.loadModels(auth, name, {
       pagination: { page, size },
       sorter: configs && configs.sorter,

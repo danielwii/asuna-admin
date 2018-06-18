@@ -7,9 +7,9 @@ import Truncate from 'react-truncate';
 import { join } from 'path';
 import styled from 'styled-components';
 
-import { Checkbox, Popconfirm, Tooltip, Icon, Button } from 'antd';
+import { Button, Checkbox, Icon, Popconfirm, Tooltip } from 'antd';
 
-import { AuthHeader, config, ConfigKey } from '../app/configure';
+import { config } from '../app/configure';
 
 import { castModelKey } from './cast';
 import { createLogger, lv } from './logger';
@@ -26,7 +26,7 @@ const ThumbImage = styled.img`
 `;
 
 export const authHeader = token => {
-  if (config.is(ConfigKey.AUTH_HEADER, AuthHeader.AuthHeaderAsBearerToken)) {
+  if (config.is('AUTH_HEADER', 'AuthHeaderAsBearerToken')) {
     return { headers: { Authorization: `Bearer ${token}` } };
   }
   return { headers: { Authorization: token } };
@@ -154,9 +154,9 @@ export const columnHelper = {
           const value = render ? render(text) : text;
           if (value) {
             const images = value.split(',');
-            const host = config.get(ConfigKey.IMAGE_HOST);
+            const host = config.get('IMAGE_HOST');
             return _.map(images, (image, index) => (
-              <ThumbImage key={index} src={join(host, image)} />
+              <ThumbImage key={index} src={join(host || '', image)} />
             ));
           }
         } catch (e) {
@@ -177,7 +177,7 @@ export const columnHelper = {
    * @returns {{title: any; dataIndex: string | any; key: string | any; render: (isActive, record) => any}}
    */
   generateBoolean: (key, title, { auth, modelName, callRefresh }) => ({
-    title: title,
+    title,
     dataIndex: castModelKey(key),
     key: castModelKey(key),
     render: (isActive, record) => (

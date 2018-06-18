@@ -1,6 +1,6 @@
 {
   "name": "asuna-admin",
-  "version": "0.6.9",
+  "version": "0.7.0",
   "repository": "git@github.com:danielwii/asuna-admin.git",
   "author": "Daniel Wei <danielwii0326@gmail.com>",
   "license": "MIT",
@@ -69,12 +69,13 @@
     "postinstall": "yarn collect",
     "precommit": "pretty-quick --staged"
   },
+  "peerDependencies": {},
   "dependencies": {
     "@fortawesome/fontawesome": "^1.1.8",
     "@fortawesome/fontawesome-free-solid": "^5.0.13",
     "@fortawesome/react-fontawesome": "^0.0.20",
     "@zeit/next-css": "^0.2.0",
-    "@zeit/next-typescript": "^0.1.1",
+    "@zeit/next-typescript": "^1.1.0",
     "antd": "^3.6.2",
     "async": "^2.6.1",
     "axios": "^0.18.0",
@@ -89,7 +90,7 @@
     "fork-ts-checker-webpack-plugin": "^0.4.2",
     "http-proxy": "^1.17.0",
     "immutable": "^3.8.2",
-    "localforage": "^1.7.1",
+    "localforage": "^1.7.2",
     "lodash": "^4.17.10",
     "moment": "^2.22.2",
     "ncp": "^2.0.0",
@@ -102,9 +103,9 @@
     "polished": "^1.9.2",
     "prop-types": "^15.6.1",
     "ramda": "^0.25.0",
-    "react": "^16.4.0",
+    "react": "^16.4.1",
     "react-animations": "^1.0.0",
-    "react-dom": "^16.4.0",
+    "react-dom": "^16.4.1",
     "react-redux": "^5.0.7",
     "react-sortable-hoc": "^0.8.3",
     "react-truncate": "^2.3.0",
@@ -119,8 +120,8 @@
     "shelljs": "^0.8.2",
     "socket.io-client": "^2.1.1",
     "styled-components": "^3.3.2",
-    "typescript": "^2.9.1",
-    "video.js": "^7.0.5"
+    "typescript": "^2.9.2",
+    "video.js": "^7.0.3"
   },
   "devDependencies": {
     "@storybook/addon-actions": "^3.4.7",
@@ -129,7 +130,7 @@
     "@types/braft-editor": "^1.1.2",
     "@types/debug": "^0.0.30",
     "@types/enzyme": "^3.1.10",
-    "@types/jest": "^23.0.2",
+    "@types/jest": "^23.1.0",
     "@types/next-redux-wrapper": "^1.4.1",
     "@types/prop-types": "^15.5.3",
     "@types/socket.io-client": "^1.4.32",
@@ -155,6 +156,9 @@
     "ts-jest": "joaovieira/ts-jest#babel-peerDependency-release",
     "tsconfig-paths": "^3.4.0",
     "tsconfig-paths-webpack-plugin": "^3.2.0",
+    "tslint": "^5.10.0",
+    "tslint-config-airbnb": "^5.9.2",
+    "tslint-config-prettier": "^1.13.0",
     "webpack-bundle-analyzer": "^2.13.1",
     "webpack-jarvis": "0.3.2"
   },

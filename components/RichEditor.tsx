@@ -14,9 +14,9 @@ let BraftEditor;
 interface IProps {
   // FIXME 在调用 apiProxy 时需要使用 auth，但不应该在组件中感知到 auth
   auth: AuthState;
-  host: string;
-  prefix: string;
-  urlHandler: (res: Asuna.Schema.UploadResponse) => string;
+  host?: string;
+  prefix?: string;
+  urlHandler?: (res: Asuna.Schema.UploadResponse) => string;
   value?: string;
   onChange?: (value) => void;
 }
@@ -88,17 +88,17 @@ export class BraftRichEditor extends React.Component<IProps, IState> {
     const response = await apiProxy.upload(auth, param.file, {
       onUploadProgress(progressEvent) {
         logger.info('[uploadFn][progressFn]', 'event is', progressEvent);
-        param.progress(progressEvent.loaded / progressEvent.total * 100);
+        param.progress((progressEvent.loaded / progressEvent.total) * 100);
       },
     });
 
     logger.info('[uploadFn]', 'response is', response);
 
     if (/^20\d$/.test(response.status as any)) {
-      const image = urlHandler(response.data[0]);
+      const image = urlHandler ? urlHandler(response.data[0]) : response.data[0];
       param.success({
         image,
-        url: join(prefix, image),
+        url: join(prefix || '', '' + image),
       });
     } else {
       param.error({

@@ -57,9 +57,9 @@ async function upload(auth, option: any): Promise<Asuna.Schema.UploadResponse[] 
 
 interface IProps {
   auth: AuthState;
-  host: string;
-  prefix: string;
-  urlHandler: (res: Asuna.Schema.UploadResponse) => string;
+  host?: string;
+  prefix?: string;
+  urlHandler?: (res: Asuna.Schema.UploadResponse) => string;
   value?: string;
   onChange?: (value: any) => void;
 }
@@ -103,7 +103,7 @@ export class ImageUploader extends React.Component<IProps> {
     const { auth, onChange, prefix, urlHandler } = this.props;
     const uploaded = await upload(auth, option);
     if (uploaded) {
-      const image = join(prefix, urlHandler(uploaded[0]));
+      const image = join(prefix || '', urlHandler ? urlHandler(uploaded[0]) : '' + uploaded[0]);
       logger.log('[ImageUploader][render]', { uploaded, image });
       onChange!(image);
     }
@@ -133,7 +133,11 @@ export class ImageUploader extends React.Component<IProps> {
           beforeUpload={beforeUpload}
           onChange={this.handleChange}
         >
-          {image ? <img style={{ width: '100%' }} src={join(host, image)} alt="" /> : uploadButton}
+          {image ? (
+            <img style={{ width: '100%' }} src={join(host || '', image)} alt="" />
+          ) : (
+            uploadButton
+          )}
         </Upload>
       </div>
     );
@@ -198,7 +202,7 @@ export class ImagesUploader extends React.Component<IProps> {
     const fileList = _.map(images, (image, index) => ({
       uid: index,
       status: 'done',
-      url: join(host, image),
+      url: join(host || '', image),
     }));
     logger.info('[wrapImagesToFileList]', 'fileList is', fileList);
     this.setState({ fileList });
@@ -229,7 +233,7 @@ export class ImagesUploader extends React.Component<IProps> {
     const uploaded = await upload(auth, option);
     if (uploaded) {
       logger.log('[ImagesUploader][customRequest]', { props: this.props, state: this.state });
-      const image = join(prefix, urlHandler(uploaded[0]));
+      const image = join(prefix || '', urlHandler ? urlHandler(uploaded[0]) : '' + uploaded[0]);
       const uploadedImages = value;
       const images = _.compact([uploadedImages, image]).join(',');
       logger.log('[ImagesUploader][customRequest]', { uploaded, image, images, uploadedImages });

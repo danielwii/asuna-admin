@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 
-import { ApiResponsePageMode, config, ConfigKey } from '../app/configure';
-import { appContext }                             from '../app/context';
+import { config } from '../app/configure';
+import { appContext } from '../app/context';
 
 import { createLogger, lv } from '../helpers/logger';
 
@@ -17,7 +17,7 @@ export interface TablePagination {
 }
 
 interface IResponseProxy {
-  extract: (apiResponse: object) => { items: object[], pagination: TablePagination };
+  extract: (apiResponse: object) => { items: object[]; pagination: TablePagination };
 }
 
 export const responseProxy: IResponseProxy = {
@@ -25,9 +25,9 @@ export const responseProxy: IResponseProxy = {
 };
 
 export class ResponseAdapter implements IResponseProxy {
-  extractPageable = (apiResponse): Asuna.Pageable & { total: number; } => {
-    switch (config.get(ConfigKey.API_RESPONSE_PAGE_MODE)) {
-      case (ApiResponsePageMode.SpringJPA): {
+  extractPageable = (apiResponse): Asuna.Pageable & { total: number } => {
+    switch (config.get('API_RESPONSE_PAGE_MODE')) {
+      case 'SpringJPA': {
         const names = [
           'first',
           'last',
@@ -42,16 +42,8 @@ export class ResponseAdapter implements IResponseProxy {
         const { size, number, totalElements } = _.pick(apiResponse, names);
         return { page: number, size, total: totalElements };
       }
-      case (ApiResponsePageMode.SQLAlchemy): {
-        const names = [
-          'has_next',
-          'has_prev',
-          'items',
-          'page',
-          'pages',
-          'size',
-          'total',
-        ];
+      case 'SQLAlchemy': {
+        const names = ['has_next', 'has_prev', 'items', 'page', 'pages', 'size', 'total'];
 
         const { page, size, total } = _.pick(apiResponse, names);
         return { page, size, total };
@@ -69,15 +61,15 @@ export class ResponseAdapter implements IResponseProxy {
     const { page, size, total: totalElements } = this.extractPageable(apiResponse);
     return {
       showSizeChanger: true,
-      showTotal      : (total, range) => `${range[0]}-${range[1]} of ${total} items`,
-      current        : page,
-      pageSize       : size,
-      total          : totalElements,
+      showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
+      current: page,
+      pageSize: size,
+      total: totalElements,
       pageSizeOptions: ['10', '25', '50', '100'],
     };
   };
 
-  extract = (apiResponse) => {
+  extract = apiResponse => {
     const { items } = apiResponse;
     return { items, pagination: this.extractPagination(apiResponse) };
   };

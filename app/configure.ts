@@ -1,63 +1,21 @@
 import { responseToUrl } from '../helpers/upload';
 
-export const enum StringCase {
-  None = 'None',
-  Snake = 'Snake',
-  Camel = 'Camel',
-}
+export type StringCase = 'None' | 'Snake' | 'Camel';
 
-export const enum ApiResponsePageMode {
-  SQLAlchemy = 'SQLAlchemy',
-  SpringJPA = 'SpringJPA',
-  Default = 'Default',
-}
+export type ApiResponsePageMode = 'SQLAlchemy' | 'SpringJPA' | 'Default';
 
-export const enum ApiResponseAssociationMode {
-  ID = 'ids',
-  ENTITY = 'entity',
-}
+export type ApiResponseAssociationMode = 'ids' | 'entity';
 
-export const enum AuthHeader {
+export type AuthHeader =
   /**
    * header: Authorization: token
    * default
    */
-  AuthHeader = 'AuthHeader',
+  | 'AuthHeader'
   /**
    * header: Authorization: `Bearer ${token}`
    */
-  AuthHeaderAsBearerToken = 'AuthHeaderAsBearerToken',
-}
-
-export const enum ConfigKey {
-  MODEL_KEYS_CASE = 'MODEL_KEYS_CASE',
-  MODEL_NAME_CASE = 'MODEL_NAME_CASE',
-  AUTH_HEADER = 'AUTH_HEADER',
-
-  API_RESPONSE_PAGE_MODE = 'API_RESPONSE_PAGE_MODE',
-  API_RESPONSE_ASSOCIATION_MODE = 'API_RESPONSE_ASSOCIATION_MODE',
-
-  IMAGE_HOST = 'IMAGE_HOST',
-  IMAGE_PREFIX = 'IMAGE_PREFIX',
-  VIDEO_HOST = 'VIDEO_HOST',
-  VIDEO_PREFIX = 'VIDEO_PREFIX',
-  ATTACHES_HOST = 'ATTACHES_HOST',
-  ATTACHES_PREFIX = 'ATTACHES_PREFIX',
-
-  /**
-   * 默认返回 table 的页面大小
-   * @type {string}
-   */
-  DEFAULT_PAGE_SIZE = 'DEFAULT_PAGE_SIZE',
-
-  // --------------------------------------------------------------
-  // 定义特定的资源 url 处理函数
-  // --------------------------------------------------------------
-
-  IMAGE_RES_HANDLER = 'IMAGE_RES_HANDLER',
-  VIDEO_RES_HANDLER = 'VIDEO_RES_HANDLER',
-  ATTACHES_RES_HANDLER = 'ATTACHES_RES_HANDLER',
-}
+  | 'AuthHeaderAsBearerToken';
 
 interface ConfigOpts {
   MODEL_KEYS_CASE?: StringCase;
@@ -65,6 +23,10 @@ interface ConfigOpts {
   AUTH_HEADER?: AuthHeader;
   API_RESPONSE_PAGE_MODE?: ApiResponsePageMode;
   API_RESPONSE_ASSOCIATION_MODE?: ApiResponseAssociationMode;
+  /**
+   * 默认返回 table 的页面大小
+   * @type {string}
+   */
   DEFAULT_PAGE_SIZE?: number;
   /**
    * 可以理解为不会被存入数据库的前缀
@@ -78,21 +40,24 @@ interface ConfigOpts {
   VIDEO_PREFIX?: string;
   ATTACHES_HOST?: string;
   ATTACHES_PREFIX?: string;
+  // --------------------------------------------------------------
+  // 定义特定的资源 url 处理函数
+  // --------------------------------------------------------------
   IMAGE_RES_HANDLER?: (res: Asuna.Schema.UploadResponse) => string;
   VIDEO_RES_HANDLER?: (res: Asuna.Schema.UploadResponse) => string;
   ATTACHES_RES_HANDLER?: (res: Asuna.Schema.UploadResponse) => string;
 }
 
 const defaultConfiguration: ConfigOpts = {
-  MODEL_KEYS_CASE: StringCase.None,
-  MODEL_NAME_CASE: StringCase.None,
-  AUTH_HEADER: AuthHeader.AuthHeaderAsBearerToken,
-  API_RESPONSE_PAGE_MODE: ApiResponsePageMode.Default,
+  MODEL_KEYS_CASE: 'None',
+  MODEL_NAME_CASE: 'None',
+  AUTH_HEADER: 'AuthHeaderAsBearerToken',
+  API_RESPONSE_PAGE_MODE: 'Default',
 
   /**
    * 配置关联数据返回的是 id 还是 entity，默认是 ID 模式
    */
-  API_RESPONSE_ASSOCIATION_MODE: ApiResponseAssociationMode.ID,
+  API_RESPONSE_ASSOCIATION_MODE: 'ids',
   DEFAULT_PAGE_SIZE: 25,
   IMAGE_HOST: '/',
   IMAGE_PREFIX: 'uploads/images',
@@ -108,15 +73,15 @@ const defaultConfiguration: ConfigOpts = {
 class Config {
   opts = defaultConfiguration;
 
-  update(opts: ConfigOpts = {}) {
+  update(opts: ConfigOpts = {}): void {
     this.opts = Object.assign(this.opts, opts);
   }
 
-  get(key: ConfigKey, defaultValue?) {
+  get<K extends keyof ConfigOpts>(key: K, defaultValue?): ConfigOpts[K] {
     return this.opts[key] || defaultValue;
   }
 
-  is(key: ConfigKey, value) {
+  is<K extends keyof ConfigOpts>(key: K, value: ConfigOpts[K]): boolean {
     // console.log({ opts: this.opts, key, value, result: this.opts[key] === value });
     return this.opts[key] === value;
   }

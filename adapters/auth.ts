@@ -34,7 +34,11 @@ export const authProxy: IAuthProxy = {
 };
 
 export class AuthAdapter implements IAuthProxy {
-  constructor(private service: IAuthService) {}
+  private service: IAuthService;
+
+  constructor(service: IAuthService) {
+    this.service = service;
+  }
 
   login = (username, password) => this.service.login(username, password);
   logout = () => this.service.logout();
