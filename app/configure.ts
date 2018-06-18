@@ -1,12 +1,12 @@
 import { responseToUrl } from '../helpers/upload';
 
-export type StringCase = 'None' | 'Snake' | 'Camel';
+type StringCase = 'None' | 'Snake' | 'Camel';
 
-export type ApiResponsePageMode = 'SQLAlchemy' | 'SpringJPA' | 'Default';
+type ApiResponsePageMode = 'SQLAlchemy' | 'SpringJPA' | 'Default';
 
-export type ApiResponseAssociationMode = 'ids' | 'entity';
+type ApiResponseAssociationMode = 'ids' | 'entity';
 
-export type AuthHeader =
+type AuthHeader =
   /**
    * header: Authorization: token
    * default

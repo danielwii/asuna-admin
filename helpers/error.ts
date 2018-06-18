@@ -1,8 +1,7 @@
 import { AxiosResponse } from 'axios';
-
 import * as R from 'ramda';
 
-import { createLogger, lv } from './logger';
+import { createLogger } from './logger';
 
 interface FormError {
   [key: string]: {
