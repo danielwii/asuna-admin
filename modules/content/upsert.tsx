@@ -6,7 +6,7 @@ import moment from 'moment';
 
 import { Form, Icon, message } from 'antd';
 
-import { diff, isErrorResponse, toFormErrors } from '../../helpers';
+import { diff, isErrorResponse, toFormErrors, createLogger } from '../../helpers';
 import { DynamicForm2, DynamicFormTypes } from '../../components/DynamicForm';
 
 import { modelProxy } from '../../adapters/model';
@@ -14,7 +14,6 @@ import { AuthState } from '../../store/auth.redux';
 import { modelsActions } from '../../store/model.redux';
 import * as schemaHelper from '../../helpers/schema';
 import { Pane } from '../../components/Panes';
-import { createLogger, lv } from '../../helpers/logger';
 
 const logger = createLogger('modules:content:upsert', 'warn');
 
@@ -32,12 +31,11 @@ const ContentForm = Form.create({
       }
       return Form.createFormField({ ...field });
     })(fields);
-    logger.debug('[ContentForm][mapPropsToFields]', ' fields is', fields);
-    logger.debug('[ContentForm][mapPropsToFields]', ' mapped fields is', mappedFields);
+    logger.debug('[ContentForm][mapPropsToFields]', { fields, mappedFields });
     return mappedFields;
   },
   onFieldsChange(props: any, changedFields) {
-    logger.debug('[ContentForm][onFieldsChange]', 'onFieldsChange', props, changedFields);
+    logger.debug('[ContentForm][onFieldsChange]', { props, changedFields });
     const filteredChangedFields = R.compose(
       R.pickBy((field, key) => {
         const oldVar = R.path(['fields', key, 'value'])(props);
@@ -53,7 +51,6 @@ const ContentForm = Form.create({
       }),
       R.map(field => {
         let { value } = field;
-        // eslint-disable-next-line no-underscore-dangle
         if (value && value._isAMomentObject) {
           value = value.toDate();
         }
@@ -63,11 +60,7 @@ const ContentForm = Form.create({
       R.filter(field => !R.prop('validating', field)),
     )(changedFields);
     if (!R.isEmpty(filteredChangedFields)) {
-      logger.debug(
-        '[ContentForm][onFieldsChange]',
-        'real changed fields is',
-        filteredChangedFields,
-      );
+      logger.debug('[ContentForm][onFieldsChange]', { filteredChangedFields });
       props.onChange(filteredChangedFields);
     }
   },

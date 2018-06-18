@@ -1,6 +1,6 @@
 import * as R from 'ramda';
 
-import { createLogger, lv } from '../helpers';
+import { createLogger } from '../helpers';
 import { appContext } from '../app/context';
 
 // --------------------------------------------------------------

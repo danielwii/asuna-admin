@@ -5,9 +5,8 @@ import { AxiosResponse } from 'axios';
 import { DynamicFormTypes } from '../components/DynamicForm';
 import { appContext } from '../app/context';
 
-import { defaultColumns } from '../helpers';
+import { createLogger, defaultColumns } from '../helpers';
 import { TablePagination } from './response';
-import { createLogger, lv } from '../helpers/logger';
 import { config } from '../app/configure';
 
 export interface IModelBody {
