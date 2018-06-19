@@ -23,7 +23,6 @@ yarn-debug.log*
 yarn-error.log*
 static/libs
 .asuna
-/config.js
 
 # services/*.js # set in .git/info/exclude
 examples/
