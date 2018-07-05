@@ -1,17 +1,17 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import dynamic from 'next/dynamic';
 
 import 'moment/locale/zh-cn';
 
 import { RootState, withReduxSaga } from '../store';
-import { appActions } from '../store/app.actions';
+import MainPage from '../layout/main';
 
 import { register } from '../services/register';
 import { createLogger } from '../helpers';
 import { appContext } from '../app/context';
-import { AuthState } from 'store/auth.redux';
-import { AppState } from 'store/app.redux';
+import { appActions } from '../store/app.actions';
+import { AuthState } from '../store/auth.redux';
+import { AppState } from '../store/app.redux';
 
 const logger = createLogger('pages:index', 'warn');
 
@@ -20,14 +20,6 @@ const logger = createLogger('pages:index', 'warn');
 // --------------------------------------------------------------
 
 appContext.setup({ register, module: 'index' });
-
-// --------------------------------------------------------------
-// Dynamic load main layout
-// --------------------------------------------------------------
-
-const DynamicMainLayoutLoading = dynamic(import('../layout/main'), {
-  loading: () => <div>&nbsp;</div>,
-});
 
 // --------------------------------------------------------------
 // Index Component
@@ -64,14 +56,7 @@ class Index extends React.Component<IProps> {
     } = this.props;
     logger.debug('[render]', this.props);
 
-    return (
-      <DynamicMainLayoutLoading
-        loading={loading}
-        heartbeat={heartbeat}
-        auth={auth}
-        appInfo={appInfo}
-      />
-    );
+    return <MainPage loading={loading} heartbeat={heartbeat} auth={auth} appInfo={appInfo} />;
   }
 }
 

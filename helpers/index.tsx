@@ -20,6 +20,15 @@ export * from './logger';
 export * from './cast';
 export * from './error';
 
+const FluxCenterBox = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #f5f5f5;
+  border-radius: 0.2rem;
+  padding: 0.1rem;
+`;
+
 const ThumbImage = styled.img`
   max-width: 200px;
   max-height: 80px;
@@ -155,8 +164,10 @@ export const columnHelper = {
           if (value) {
             const images = value.split(',');
             const host = config.get('IMAGE_HOST');
-            return _.map(images, (image, index) => (
-              <ThumbImage key={index} src={join(host || '', image)} />
+            return _.map(images, image => (
+              <FluxCenterBox key={image}>
+                <ThumbImage src={join(host || '', image)} />
+              </FluxCenterBox>
             ));
           }
         } catch (e) {

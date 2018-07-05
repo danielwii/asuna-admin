@@ -1,17 +1,17 @@
 import { AnyAction, Dispatch } from 'redux';
 
 import getConfig from 'next/config';
-import Rx        from 'rxjs';
+import { Subject } from 'rxjs';
 
-import { AuthAdapter, IAuthService }         from '../adapters/auth';
+import { AuthAdapter, IAuthService } from '../adapters/auth';
 import { ISecurityService, SecurityAdapter } from '../adapters/security';
-import { IModelService, ModelAdapter }       from '../adapters/model';
-import { IMenuService, MenuAdapter }         from '../adapters/menu';
-import { ResponseAdapter }                   from '../adapters/response';
-import { ApiAdapter, IApiService }           from '../adapters/api';
-import { WsAdapter }                         from '../adapters/ws';
-import { IStoreConnector }                   from '../store/middlewares/store-connector';
-import { RootState }                         from '../store';
+import { IModelService, ModelAdapter } from '../adapters/model';
+import { IMenuService, MenuAdapter } from '../adapters/menu';
+import { ResponseAdapter } from '../adapters/response';
+import { ApiAdapter, IApiService } from '../adapters/api';
+import { WsAdapter } from '../adapters/ws';
+import { IStoreConnector } from '../store/middlewares/store-connector';
+import { RootState } from '../store';
 
 // --------------------------------------------------------------
 // Types
@@ -36,19 +36,18 @@ export interface IIndexRegister extends ILoginRegister {
     associations: Asuna.Schema.Associations;
     modelConfigs: Asuna.Schema.ModelOpts;
     registeredModels: Asuna.Schema.Menus;
-
   };
 }
 
 type LoginModuleRegister = {
   module: 'login';
-  register: ILoginRegister,
-}
+  register: ILoginRegister;
+};
 
 type IndexModuleRegister = {
   module: 'index';
-  register: IIndexRegister,
-}
+  register: IIndexRegister;
+};
 
 // --------------------------------------------------------------
 // Setup context
@@ -72,13 +71,13 @@ class AppContext {
 
   constructor() {
     this._context = { ...this._context, ws: new WsAdapter() };
-    this._subject = new Rx.Subject();
-    this._subject.subscribe({
-      // next: (action) => console.log('observer: ', action)
-    });
+    this._subject = new Subject();
+    // this._subject.subscribe({
+    //   next: (action) => console.log('observer: ', action)
+    // });
     (async () => {
       const { storeConnector } = await import('../store/middlewares/store-connector');
-      this._storeConnector     = storeConnector;
+      this._storeConnector = storeConnector;
     })();
   }
 
@@ -119,15 +118,15 @@ class AppContext {
       } else {
         this._context = {
           ...this._context,
-          auth    : new AuthAdapter(register.createAuthService()),
+          auth: new AuthAdapter(register.createAuthService()),
           response: new ResponseAdapter(),
-          menu    : new MenuAdapter(
+          menu: new MenuAdapter(
             register.createMenuService(),
             register.createDefinitions().registeredModels,
           ),
-          api     : new ApiAdapter(register.createApiService()),
+          api: new ApiAdapter(register.createApiService()),
           security: new SecurityAdapter(register.createSecurityService()),
-          models  : new ModelAdapter(
+          models: new ModelAdapter(
             register.createModelService(),
             register.createDefinitions().modelConfigs,
             register.createDefinitions().associations,
@@ -136,17 +135,17 @@ class AppContext {
       }
     } else {
       const register = moduleRegister;
-      this._context  = {
+      this._context = {
         ...this._context,
-        auth    : new AuthAdapter(register.createAuthService()),
+        auth: new AuthAdapter(register.createAuthService()),
         response: new ResponseAdapter(),
-        menu    : new MenuAdapter(
+        menu: new MenuAdapter(
           register.createMenuService(),
           register.createDefinitions().registeredModels,
         ),
-        api     : new ApiAdapter(register.createApiService()),
+        api: new ApiAdapter(register.createApiService()),
         security: new SecurityAdapter(register.createSecurityService()),
-        models  : new ModelAdapter(
+        models: new ModelAdapter(
           register.createModelService(),
           register.createDefinitions().modelConfigs,
           register.createDefinitions().associations,
@@ -161,6 +160,10 @@ class AppContext {
 
   get store() {
     return this._storeConnector;
+  }
+
+  get subject() {
+    return this._subject;
   }
 }
 

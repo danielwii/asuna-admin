@@ -4,6 +4,7 @@ import * as R from 'ramda';
 import _ from 'lodash';
 
 import { Button, Divider, Modal, Table } from 'antd';
+import { Subscription } from 'rxjs';
 
 import { RootState } from '../../store';
 import { panesActions } from '../../store/panes.actions';
@@ -15,6 +16,7 @@ import { responseProxy, TablePagination } from '../../adapters/response';
 
 import { castModelKey, diff } from '../../helpers';
 import { createLogger } from '../../helpers/logger';
+import { appContext } from 'app/context';
 
 const logger = createLogger('modules:content:index', 'warn');
 
@@ -44,6 +46,7 @@ interface IState {
   // sorter?: {
   //   [key: string]: 'asc' | 'desc';
   // };
+  subscription: Subscription;
 }
 
 class ContentIndex extends React.Component<IProps, IState> {
@@ -57,13 +60,13 @@ class ContentIndex extends React.Component<IProps, IState> {
     const actions = (text, record, extras) => (
       <span>
         {extras && extras(auth)}
-        <Button size="small" type="dashed" onClick={() => this.edit(text, record)}>
+        <Button size="small" type="dashed" onClick={() => this._edit(text, record)}>
           Edit
         </Button>
         {R.not(R.prop(castModelKey('isSystem'), record)) && (
           <React.Fragment>
             <Divider type="vertical" />
-            <Button size="small" type="danger" onClick={() => this.remove(text, record)}>
+            <Button size="small" type="danger" onClick={() => this._remove(text, record)}>
               Delete
             </Button>
           </React.Fragment>
@@ -80,7 +83,7 @@ class ContentIndex extends React.Component<IProps, IState> {
     const columns = R.prop('table', configs)(actions, {
       auth,
       modelName,
-      callRefresh: this.refresh,
+      callRefresh: this._refresh,
     });
 
     const relations = R.compose(
@@ -105,11 +108,21 @@ class ContentIndex extends React.Component<IProps, IState> {
         field: 'id',
         order: 'descend',
       },
+      subscription: appContext.subject.subscribe({
+        next: action => {
+          logger.log('[observer]', { modelName, activeKey, action });
+        },
+      }),
     };
 
     logger.log('[constructor]', 'current modelName is', modelName);
     const { pagination, filters, sorter } = this.state;
-    this.handleTableChange(pagination, filters, sorter);
+    this._handleTableChange(pagination, filters, sorter);
+  }
+
+  componentWillUnmount() {
+    logger.log('[componentWillUnmount]', 'destory subscriber');
+    this.state.subscription.unsubscribe();
   }
 
   shouldComponentUpdate(nextProps, nextState, nextContext) {
@@ -123,7 +136,7 @@ class ContentIndex extends React.Component<IProps, IState> {
     return shouldUpdate;
   }
 
-  create = () => {
+  _create = () => {
     const { modelName } = this.state;
     const { dispatch } = this.props;
     dispatch(
@@ -135,8 +148,8 @@ class ContentIndex extends React.Component<IProps, IState> {
     );
   };
 
-  edit = (text, record) => {
-    logger.log('[edit]', record);
+  _edit = (text, record) => {
+    logger.log('[edit]', { text, record });
     const { modelName } = this.state;
     const { dispatch } = this.props;
     dispatch(
@@ -149,7 +162,7 @@ class ContentIndex extends React.Component<IProps, IState> {
     );
   };
 
-  remove = (text, record) => {
+  _remove = (text, record) => {
     logger.log('[remove]', record);
     const { modelName } = this.state;
     const { dispatch } = this.props;
@@ -164,7 +177,7 @@ class ContentIndex extends React.Component<IProps, IState> {
     });
   };
 
-  handleTableChange = (pagination, filters, sorter) => {
+  _handleTableChange = (pagination, filters, sorter) => {
     logger.debug('[handleTableChange]', { pagination, filters, sorter });
     const { modelName, relations } = this.state;
     const { dispatch } = this.props;
@@ -177,9 +190,9 @@ class ContentIndex extends React.Component<IProps, IState> {
     this.setState({ pagination, filters, sorter });
   };
 
-  refresh = () => {
+  _refresh = () => {
     const { pagination, filters, sorter } = this.state;
-    this.handleTableChange(pagination, filters, sorter);
+    this._handleTableChange(pagination, filters, sorter);
   };
 
   render() {
@@ -198,11 +211,11 @@ class ContentIndex extends React.Component<IProps, IState> {
       <div>
         {creatable && (
           <React.Fragment>
-            <Button onClick={this.create}>Create</Button>
+            <Button onClick={this._create}>Create</Button>
             <Divider type="vertical" />
           </React.Fragment>
         )}
-        <Button onClick={this.refresh}>Refresh</Button>
+        <Button onClick={this._refresh}>Refresh</Button>
 
         <hr />
 
@@ -213,7 +226,7 @@ class ContentIndex extends React.Component<IProps, IState> {
           loading={loading}
           columns={columns}
           pagination={pagination as any}
-          onChange={this.handleTableChange}
+          onChange={this._handleTableChange}
         />
         {/* language=CSS */}
         <style jsx global>{`

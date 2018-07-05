@@ -96,7 +96,10 @@ const combinedReducers = combineReducers(reducers);
 
 const crossSliceReducer = (state, action) => {
   if (action.type === actionTypes.CLEAN) {
-    const cleanedState = R.compose(modelsCleaner, panesCleaner)(state);
+    const cleanedState = R.compose(
+      modelsCleaner,
+      panesCleaner,
+    )(state);
     logger.log('[crossSliceReducer]', { state, action, cleanedState });
     return cleanedState;
   }
@@ -132,21 +135,27 @@ function* rootSaga() {
 // Root epics
 // --------------------------------------------------------------
 
-export const rootEpics = combineEpics(...appEpics);
+export const rootEpic = combineEpics(...appEpics);
 
 // --------------------------------------------------------------
 // Setup store with redux-saga
 // --------------------------------------------------------------
 
-const storeConnectorMiddleware = createStoreConnectorMiddleware(action => appContext.actionHandler(action));
-const epicMiddleware = createEpicMiddleware(rootEpics);
+const storeConnectorMiddleware = createStoreConnectorMiddleware(action =>
+  appContext.actionHandler(action),
+);
+const epicMiddleware = createEpicMiddleware();
 const sagaMiddleware = createSagaMiddleware();
 const loggerMiddleware = createReduxLogger({ collapsed: true });
 
 export const configureStore = (state = initialState) => {
   let store;
   if (serverRuntimeConfig.isServer) {
-    store = createStore(rootReducers, state, applyMiddleware(sagaMiddleware, epicMiddleware, storeConnectorMiddleware));
+    store = createStore(
+      rootReducers,
+      state,
+      applyMiddleware(sagaMiddleware, epicMiddleware, storeConnectorMiddleware),
+    );
   } else {
     // 在开发模式时开启日志
     if (process.env.NODE_ENV === 'development') {
@@ -167,6 +176,7 @@ export const configureStore = (state = initialState) => {
   }
 
   store.sagaTask = sagaMiddleware.run(rootSaga);
+  epicMiddleware.run(rootEpic);
 
   return store;
 };
