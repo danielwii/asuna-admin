@@ -83,6 +83,9 @@ const modelsSagaFunctions = {
       }
     }
   },
+  /**
+   * refresh models after model upsert in event bus
+   */
   *upsert({ payload: { modelName, data }, callback }) {
     const { token } = yield select<RootState>(state => state.auth);
     const { schemas } = yield select<RootState>(state => state.models);
@@ -96,8 +99,6 @@ const modelsSagaFunctions = {
 
         // save model data when upsert is success
         yield put(modelsActions.fetchSuccess(modelName, response.data));
-        // refresh models in content index
-        yield put(contentActions.loadModels(modelName));
       } catch (error) {
         logger.warn('[upsert]', error, { error });
         try {

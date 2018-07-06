@@ -1,7 +1,7 @@
 import { connect, Socket } from 'socket.io-client';
 import getConfig from 'next/config';
 
-import { appContext } from '../app/context';
+import { appContext } from '../core/context';
 import { appActions } from '../store/app.actions';
 import { createLogger } from '../helpers';
 

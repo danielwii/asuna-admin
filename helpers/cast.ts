@@ -1,6 +1,6 @@
 import { toCamelCase, toSnakeCase } from 'node-buffs';
 
-import { config } from '../app/configure';
+import { config } from '../core/configure';
 
 export function castModelKey(key) {
   if (config.is('MODEL_KEYS_CASE', 'Camel')) {

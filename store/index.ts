@@ -27,7 +27,7 @@ import { panesCleaner, panesReducer, panesSagas } from './panes.redux';
 
 import { createStoreConnectorMiddleware, storeConnector } from './middlewares/store-connector';
 
-import { appContext } from '../app/context';
+import { appContext } from '../core/context';
 import { createLogger } from '../helpers';
 
 export { storeConnector };

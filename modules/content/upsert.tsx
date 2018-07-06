@@ -8,6 +8,7 @@ import { Form, Icon, message } from 'antd';
 
 import { diff, isErrorResponse, toFormErrors, createLogger } from '../../helpers';
 import { DynamicForm2, DynamicFormTypes } from '../../components/DynamicForm';
+import { sendEvent, EventType } from '../../core/events';
 
 import { modelProxy } from '../../adapters/model';
 import { AuthState } from '../../store/auth.redux';
@@ -106,7 +107,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
     )(basis);
     logger.debug('[constructor]', 'model name is ', modelName);
 
-    const isInsertMode = this.detectUpsertMode(modelName);
+    const isInsertMode = this._detectUpsertMode(modelName);
 
     this.state = {
       preDecorators: tag => [
@@ -210,7 +211,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
       logger.debug('[componentWillReceiveProps]', { modelName, record });
       const fieldValues = R.pathOr({}, [modelName, record.id])(models);
       logger.log('[componentWillReceiveProps]', 'field values is', fieldValues);
-      this.handleFormChange(R.map(value => ({ value }))(fieldValues));
+      this._handleFormChange(R.map(value => ({ value }))(fieldValues));
       this.setState({ originalFieldValues: fieldValues });
     }
   }
@@ -240,7 +241,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
     return shouldUpdate;
   }
 
-  detectUpsertMode = modelName => {
+  _detectUpsertMode = modelName => {
     const { dispatch, basis } = this.props;
 
     const record = R.path(['pane', 'data', 'record'])(basis);
@@ -256,7 +257,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
    * Saving changed field values in props
    * @param changedFields
    */
-  handleFormChange = async changedFields => {
+  _handleFormChange = async changedFields => {
     const { isInsertMode, init } = this.state;
     logger.log('[handleFormChange]', { changedFields, state: this.state });
     if (!R.isEmpty(changedFields)) {
@@ -315,7 +316,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
     }
   };
 
-  handleFormSubmit = event => {
+  _handleFormSubmit = event => {
     logger.debug('[handleFormSubmit]', event);
     event.preventDefault();
     const { originalFieldValues } = this.state;
@@ -339,14 +340,17 @@ class ContentUpsert extends React.Component<IProps, IState> {
           if (_.isString(errors)) {
             message.error(errors);
           } else {
-            this.handleFormChange(errors);
+            this._handleFormChange(errors);
             this.setState({ hasErrors: true });
           }
         } else {
           this.setState({ hasErrors: false });
           // FIXME 当前页面暂未切换为 update 模式，临时关闭当前页面
           if (isInsertMode) {
+            sendEvent(EventType.MODEL_INSERT, { modelName });
             onClose();
+          } else {
+            sendEvent(EventType.MODEL_UPDATE, { modelName, id });
           }
         }
       }),
@@ -382,8 +386,8 @@ class ContentUpsert extends React.Component<IProps, IState> {
         anchor
         auth={auth}
         fields={fields}
-        onChange={this.handleFormChange}
-        onSubmit={this.handleFormSubmit}
+        onChange={this._handleFormChange}
+        onSubmit={this._handleFormSubmit}
       />
     );
   }

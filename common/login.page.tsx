@@ -1,18 +1,18 @@
-import React       from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
-import styled      from 'styled-components';
+import styled from 'styled-components';
 
 import AntdLayout from '../layout/antd';
-import Login      from '../containers/Login';
-import Loading    from '../components/LivingLoading';
-import Snow       from '../components/Snow';
+import Login from '../containers/Login';
+import Loading from '../components/LivingLoading';
+import Snow from '../components/Snow';
 import LogoCanvas from '../components/LogoCanvas';
 
 import { RootState, withReduxSaga } from '../store';
 
-import { register }     from '../services/register';
-import { appContext }   from '../app/context';
-import { AppState }     from '../store/app.redux';
+import { register } from '../services/register';
+import { appContext } from '../core/context';
+import { AppState } from '../store/app.redux';
 import { createLogger } from '../helpers';
 
 const logger = createLogger('pages:login');
@@ -47,7 +47,6 @@ interface IProps extends ReduxProps {
 }
 
 class LoginPage extends React.Component<IProps> {
-
   constructor(props) {
     super(props);
     appContext.setup(register);
@@ -59,23 +58,24 @@ class LoginPage extends React.Component<IProps> {
   }
 
   render() {
-    const { app: { heartbeat } } = this.props;
+    const {
+      app: { heartbeat },
+    } = this.props;
     return (
       <AntdLayout>
-        {
-          heartbeat
-            ? (
-              <StyledFullFlexContainer>
-                <Snow />
-                <StyledLogoWrapper>
-                  <LogoCanvas />
-                </StyledLogoWrapper>
-                <StyledLoginWrapper>
-                  <Login {...this.props} />
-                </StyledLoginWrapper>
-              </StyledFullFlexContainer>)
-            : <Loading heartbeat={heartbeat} />
-        }
+        {heartbeat ? (
+          <StyledFullFlexContainer>
+            <Snow />
+            <StyledLogoWrapper>
+              <LogoCanvas />
+            </StyledLogoWrapper>
+            <StyledLoginWrapper>
+              <Login {...this.props} />
+            </StyledLoginWrapper>
+          </StyledFullFlexContainer>
+        ) : (
+          <Loading heartbeat={heartbeat} />
+        )}
       </AntdLayout>
     );
   }
@@ -83,7 +83,7 @@ class LoginPage extends React.Component<IProps> {
 
 const mapStateToProps = (state: RootState) => ({
   global: state.global,
-  app   : state.app,
+  app: state.app,
 });
 
 export const DefaultLoginPage = withReduxSaga(connect(mapStateToProps)(LoginPage as any));

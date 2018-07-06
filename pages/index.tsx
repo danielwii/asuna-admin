@@ -8,7 +8,7 @@ import MainPage from '../layout/main';
 
 import { register } from '../services/register';
 import { createLogger } from '../helpers';
-import { appContext } from '../app/context';
+import { appContext } from '../core/context';
 import { appActions } from '../store/app.actions';
 import { AuthState } from '../store/auth.redux';
 import { AppState } from '../store/app.redux';

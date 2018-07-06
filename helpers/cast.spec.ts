@@ -1,5 +1,5 @@
 import { castModelKey, castModelName } from './cast';
-import { config } from '../app/configure';
+import { config } from '../core/configure';
 
 describe('cast', () => {
   it('should cat model key correctly', () => {

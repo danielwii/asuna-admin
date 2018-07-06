@@ -1,4 +1,4 @@
-import { appContext } from '../app/context';
+import { appContext } from '../core/context';
 import { createLogger } from '../helpers/logger';
 
 // --------------------------------------------------------------

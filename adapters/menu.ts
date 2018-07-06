@@ -1,7 +1,7 @@
 import * as R from 'ramda';
 
 import { createLogger } from '../helpers';
-import { appContext } from '../app/context';
+import { appContext } from '../core/context';
 
 // --------------------------------------------------------------
 // Types

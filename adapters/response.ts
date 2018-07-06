@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 
-import { config } from '../app/configure';
-import { appContext } from '../app/context';
+import { config } from '../core/configure';
+import { appContext } from '../core/context';
 
 import { createLogger } from '../helpers/logger';
 

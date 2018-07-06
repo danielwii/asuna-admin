@@ -8,7 +8,7 @@ import { ImagesUploader, ImageUploader } from '../images';
 import { VideoUploader } from '../videos';
 import { Authorities } from '../authorities';
 import { createLogger } from '../../../helpers/index';
-import { config } from '../../../app/configure';
+import { config } from '../../../core/configure';
 
 const logger = createLogger('components:dynamic-form:elements', 'warn');
 

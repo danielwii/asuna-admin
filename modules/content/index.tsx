@@ -6,6 +6,7 @@ import _ from 'lodash';
 import { Button, Divider, Modal, Table } from 'antd';
 import { Subscription } from 'rxjs';
 
+import { sendEvent, EventType, bus, ActionEvent } from '../../core/events';
 import { RootState } from '../../store';
 import { panesActions } from '../../store/panes.actions';
 import { contentActions } from '../../store/content.redux';
@@ -16,7 +17,7 @@ import { responseProxy, TablePagination } from '../../adapters/response';
 
 import { castModelKey, diff } from '../../helpers';
 import { createLogger } from '../../helpers/logger';
-import { appContext } from 'app/context';
+import { appContext } from '../../core/context';
 
 const logger = createLogger('modules:content:index', 'warn');
 
@@ -47,6 +48,7 @@ interface IState {
   //   [key: string]: 'asc' | 'desc';
   // };
   subscription: Subscription;
+  busSubscription: Subscription;
 }
 
 class ContentIndex extends React.Component<IProps, IState> {
@@ -55,7 +57,7 @@ class ContentIndex extends React.Component<IProps, IState> {
 
     const { basis, auth, activeKey } = this.props;
 
-    logger.debug('[constructor]', 'basis is', basis);
+    logger.debug('[constructor]', { basis });
 
     const actions = (text, record, extras) => (
       <span>
@@ -110,19 +112,30 @@ class ContentIndex extends React.Component<IProps, IState> {
       },
       subscription: appContext.subject.subscribe({
         next: action => {
-          logger.log('[observer]', { modelName, activeKey, action });
+          // logger.log('[observer-content-index]', { modelName, activeKey, action });
+        },
+      }),
+      busSubscription: bus.subscribe({
+        next: (action: ActionEvent) => {
+          if (
+            [EventType.MODEL_INSERT, EventType.MODEL_UPDATE].includes(action.type) &&
+            action.payload.modelName === modelName
+          ) {
+            logger.log('[bus-content-index]', { modelName, activeKey, action });
+            this._refresh();
+          }
         },
       }),
     };
 
-    logger.log('[constructor]', 'current modelName is', modelName);
     const { pagination, filters, sorter } = this.state;
     this._handleTableChange(pagination, filters, sorter);
   }
 
   componentWillUnmount() {
-    logger.log('[componentWillUnmount]', 'destory subscriber');
+    logger.log('[componentWillUnmount]', 'destory subscription');
     this.state.subscription.unsubscribe();
+    this.state.busSubscription.unsubscribe();
   }
 
   shouldComponentUpdate(nextProps, nextState, nextContext) {

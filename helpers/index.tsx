@@ -9,7 +9,7 @@ import styled from 'styled-components';
 
 import { Button, Checkbox, Icon, Popconfirm, Tooltip } from 'antd';
 
-import { config } from '../app/configure';
+import { config } from '../core/configure';
 
 import { castModelKey } from './cast';
 import { createLogger } from './logger';

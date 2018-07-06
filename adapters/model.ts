@@ -3,11 +3,11 @@ import * as _ from 'lodash';
 import { AxiosResponse } from 'axios';
 
 import { DynamicFormTypes } from '../components/DynamicForm';
-import { appContext } from '../app/context';
+import { appContext } from '../core/context';
 
 import { createLogger, defaultColumns } from '../helpers';
 import { TablePagination } from './response';
-import { config } from '../app/configure';
+import { config } from '../core/configure';
 
 export interface IModelBody {
   id?: number | string;
