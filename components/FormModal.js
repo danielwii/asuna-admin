@@ -16,7 +16,8 @@ const LightForm = Form.create({
     return _.mapValues(fields, field => Form.createFormField({ ...field }));
   },
   onFieldsChange(props, changedFields) {
-    props.onChange(changedFields);
+    const { onChange } = props;
+    onChange(changedFields);
   },
 })(DynamicForm2);
 
@@ -35,7 +36,8 @@ export class FormModal extends React.Component {
   };
 
   componentWillMount() {
-    this.setState({ fields: { ...this.props.fields } });
+    const { fields } = this.props;
+    this.setState({ fields: { ...fields } });
   }
 
   showModal = () => {
@@ -46,6 +48,7 @@ export class FormModal extends React.Component {
 
   handleOk = () => {
     const { onSubmit } = this.props;
+    const { fields } = this.state;
     this.form.validateFields(async (err, values) => {
       if (err) {
         logger.error('[FormModal][handleOk]', 'error occurred in form', { values, err });
@@ -59,7 +62,7 @@ export class FormModal extends React.Component {
           this.setState({
             visible: false,
             confirmLoading: false,
-            fields: R.map(field => ({ ...field, value: undefined }))(this.state.fields),
+            fields: R.map(field => ({ ...field, value: undefined }))(fields),
           });
         } catch (e) {
           const errors = toFormErrors(e.response);
@@ -78,8 +81,9 @@ export class FormModal extends React.Component {
   };
 
   handleFormChange = changedFields => {
-    logger.log('[handleFormChange]', { fields: this.state.fields, changedFields });
-    this.setState({ fields: R.mergeDeepRight(this.state.fields, changedFields) });
+    const { fields } = this.state;
+    logger.log('[handleFormChange]', { fields, changedFields });
+    this.setState({ fields: R.mergeDeepRight(fields, changedFields) });
   };
 
   handleCancel = () => {

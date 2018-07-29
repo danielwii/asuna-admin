@@ -5,7 +5,8 @@
   },
   "extends": [
     "airbnb",
-    "plugin:jest/recommended"
+    "plugin:jest/recommended",
+    "prettier"
   ],
   "settings": {
     "import/resolver": {
@@ -17,9 +18,11 @@
   },
   "parser": "babel-eslint",
   "plugins": [
-    "jest"
+    "jest",
+    "prettier"
   ],
   "rules": {
+    "prettier/prettier": "error",
     "import/extensions": ["error", "never", { "packages": "always" }],
     "import/no-unresolved": "off",
     "function-paren-newline": ["error", "consistent"],
@@ -29,6 +32,7 @@
     "react/jsx-closing-tag-location": 0,
     "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
     "react/require-default-props": [0, { "forbidDefaultForRequired": false }],
+    "react/jsx-one-expression-per-line": 0,
     "no-multi-spaces": 0,
     "class-methods-use-this": 0,
     "object-curly-newline": [0],

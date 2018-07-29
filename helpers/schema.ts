@@ -30,6 +30,7 @@ export const tables = {
     return { schema, items };
   },
 };
+
 export const hiddenComponentDecorator = fields => {
   const TAG = '[hiddenComponentDecorator]';
   logger.log(TAG, { fields });
@@ -156,12 +157,9 @@ export const associationDecorator = fields => {
   const TAG = '[associationDecorator]';
   logger.log(TAG, { fields });
 
+  // prettier-ignore
   const associationFields = R.filter(
-    R.compose(
-      R.not,
-      R.isNil,
-      R.prop('associations'),
-    ),
+    R.compose(R.not, R.isNil, R.prop('associations')),
   )(fields);
   if (R.not(R.isEmpty(associationFields))) {
     logger.debug(TAG, { associationFields });
