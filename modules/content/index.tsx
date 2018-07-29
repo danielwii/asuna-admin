@@ -88,13 +88,9 @@ class ContentIndex extends React.Component<IProps, IState> {
       callRefresh: this._refresh,
     });
 
+    // prettier-ignore
     const relations = R.compose(
-      R.filter(
-        R.compose(
-          R.not,
-          R.isEmpty,
-        ),
-      ),
+      R.filter(R.compose(R.not, R.isEmpty)),
       R.map(R.values),
       R.map(R.pick(['relation'])),
     )(columns);
@@ -133,7 +129,7 @@ class ContentIndex extends React.Component<IProps, IState> {
   }
 
   componentWillUnmount() {
-    logger.log('[componentWillUnmount]', 'destory subscription');
+    logger.log('[componentWillUnmount]', 'destroy subscriptions');
     this.state.subscription.unsubscribe();
     this.state.busSubscription.unsubscribe();
   }
