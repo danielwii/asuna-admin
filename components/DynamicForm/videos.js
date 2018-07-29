@@ -49,6 +49,10 @@ async function upload(auth, onChange, files, args) {
 // --------------------------------------------------------------
 
 export class VideoUploader extends React.Component {
+  prop = {
+    multi: false,
+  };
+
   static propTypes = {
     auth: PropTypes.shape({}), // auth token object
     host: PropTypes.string.isRequired,
@@ -67,10 +71,6 @@ export class VideoUploader extends React.Component {
 
   state = {
     fileList: [],
-  };
-
-  prop = {
-    multi: false,
   };
 
   handleChange = info => {
@@ -132,6 +132,7 @@ export class VideoUploader extends React.Component {
 
   render() {
     const { auth, onChange, value: videos } = this.props;
+    const { fileList } = this.state;
 
     const props = {
       onChange: this.handleChange,
@@ -143,7 +144,7 @@ export class VideoUploader extends React.Component {
 
     return (
       <div>
-        <Upload {...props} fileList={this.state.fileList}>
+        <Upload {...props} fileList={fileList}>
           <Button>
             <Icon type="upload" /> upload
           </Button>
@@ -180,12 +181,14 @@ export default class VideoPlayer extends React.Component {
         {/* eslint-disable-next-line no-return-assign */}
         <video ref={node => (this.videoNode = node)} className="video-js" />
         {/* language=CSS */}
-        <style jsx>{`
-          div[data-vjs-player] {
-            width: 100%;
-            height: 20rem;
-          }
-        `}</style>
+        <style jsx>
+          {`
+            div[data-vjs-player] {
+              width: 100%;
+              height: 20rem;
+            }
+          `}
+        </style>
       </div>
     );
   }
