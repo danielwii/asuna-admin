@@ -79,13 +79,13 @@ export const generateSelect = (
           getValue,
         )(item);
       }
-      if (_.isArray(getValue(item))) {
+      if (_.isArray((getValue as any)(item))) {
         return R.compose(
           R.prop(1),
           getValue,
         )(item);
       }
-      return getName(item);
+      return (getName as any)(item);
     };
 
     extractValue = item => {
@@ -95,13 +95,13 @@ export const generateSelect = (
           getValue,
         )(item);
       }
-      if (_.isArray(getValue(item))) {
+      if (_.isArray((getValue as any)(item))) {
         return R.compose(
           R.prop(0),
           getValue,
         )(item);
       }
-      return getValue(item);
+      return (getValue as any)(item);
     };
 
     renderSortTree = () => {

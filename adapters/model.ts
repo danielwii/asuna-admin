@@ -32,7 +32,7 @@ export interface IModelService {
   fetch(
     authToken: { token: string },
     name: string,
-    data: { endpoint?: string; id: number; profile?: string },
+    data: { endpoint?: string; id: number; profile?: Asuna.Profile },
   );
 
   remove(authToken: { token: string }, name: string, data: { endpoint?: string; id: number });
@@ -87,7 +87,11 @@ interface IModelProxy {
 
   listAssociationsCallable(auth: { token }, associationNames: string[]): any;
 
-  fetch(auth: { token }, name, data): any;
+  fetch(
+    auth: { token },
+    name,
+    data: { endpoint?: string; id: number; profile?: Asuna.Profile },
+  ): any;
 
   remove(auth: { token }, name, data): any;
 

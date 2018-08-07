@@ -4,6 +4,8 @@ declare namespace Asuna {
     size: number;
   }
 
+  type Profile = 'detail' | 'ids';
+
   namespace Error {
     enum Code {
       /**

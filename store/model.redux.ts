@@ -34,7 +34,7 @@ export const isAvailable = action => action.type.startsWith('models::') && !acti
 
 const modelsActions = {
   // action: (args) => ({ type, payload })
-  fetch: (modelName: string, data) =>
+  fetch: (modelName: string, data: { id: number | string; profile: Asuna.Profile }) =>
     reduxAction(modelsActionTypes.FETCH, {
       modelName,
       data,

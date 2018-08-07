@@ -6,7 +6,7 @@ import _ from 'lodash';
 import { Button, Divider, Modal, Table } from 'antd';
 import { Subscription } from 'rxjs';
 
-import { sendEvent, EventType, bus, ActionEvent } from '../../core/events';
+import { ActionEvent, bus, EventType } from '../../core/events';
 import { RootState } from '../../store';
 import { panesActions } from '../../store/panes.actions';
 import { contentActions } from '../../store/content.redux';
@@ -190,8 +190,10 @@ class ContentIndex extends React.Component<IProps, IState> {
     logger.debug('[handleTableChange]', { pagination, filters, sorter });
     const { modelName, relations } = this.state;
     const { dispatch } = this.props;
-    const transformedSorter = !_.isEmpty(sorter)
-      ? ({ [sorter.field]: sorter.order.slice(0, -3) } as Sorter)
+    // using state sorter if no sorter found in parameters
+    const availableSorter = _.isEmpty(sorter) ? this.state.sorter : sorter;
+    const transformedSorter = !_.isEmpty(availableSorter)
+      ? ({ [availableSorter.field]: availableSorter.order.slice(0, -3) } as Sorter)
       : null;
     dispatch(
       contentActions.loadModels(modelName, { relations, pagination, sorter: transformedSorter }),

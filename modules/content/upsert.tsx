@@ -247,7 +247,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
     const record = R.path(['pane', 'data', 'record'])(basis);
     if (record) {
       logger.debug('[detectUpsertMode]', 'set to update mode and load model...', record);
-      dispatch(modelsActions.fetch(modelName, { id: record.id, profile: 'detail' }));
+      dispatch(modelsActions.fetch(modelName, { id: record.id, profile: 'ids' }));
       return false;
     }
     return true;
