@@ -1,6 +1,6 @@
 {
   "name": "asuna-admin",
-  "version": "0.8.4",
+  "version": "0.8.5",
   "repository": "git@github.com:danielwii/asuna-admin.git",
   "author": "Daniel Wei <danielwii0326@gmail.com>",
   "license": "MIT",
@@ -11,8 +11,7 @@
     "node": ">=9 <10.2"
   },
   "files": [
-    "dist",
-    "bin"
+    "."
   ],
   "jest": {
     "globals": {
