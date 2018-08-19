@@ -6,6 +6,9 @@ node_modules
 # testing
 /coverage
 
+# build
+/.awcache
+
 # production
 /build
 /dist
@@ -25,4 +28,3 @@ static/libs
 .asuna
 
 # services/*.js # set in .git/info/exclude
-examples/

@@ -113,7 +113,7 @@
     "shelljs": "^0.8.2",
     "socket.io-client": "^2.1.1",
     "styled-components": "^3.4.2",
-    "typescript": "^2.9.2",
+    "url-join": "^4.0.0",
     "video.js": "^7.1.0"
   },
   "devDependencies": {
@@ -128,9 +128,12 @@
     "@types/prop-types": "^15.5.5",
     "@types/socket.io-client": "^1.4.32",
     "@types/styled-jsx": "^2.2.4",
+    "@types/url-join": "^0.8.2",
     "@types/video.js": "^7.2.1",
+    "awesome-typescript-loader": "^5.2.0",
     "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^8.2.6",
+    "babel-loader": "^8.0.0-beta",
     "babel-plugin-async-import": "^2.0.2",
     "babel-plugin-import": "^1.8.0",
     "babel-plugin-module-resolver": "^3.1.1",
@@ -148,14 +151,19 @@
     "jest": "^23.5.0",
     "prettier": "^1.14.2",
     "pretty-quick": "^1.6.0",
+    "source-map-loader": "^0.2.4",
     "ts-jest": "joaovieira/ts-jest#babel-peerDependency-release",
     "tsconfig-paths": "^3.5.0",
     "tsconfig-paths-webpack-plugin": "^3.2.0",
     "tslint": "^5.11.0",
     "tslint-config-airbnb": "^5.9.2",
     "tslint-config-prettier": "^1.14.0",
+    "typescript": "^2.9.2",
+    "webpack": "^4.16.5",
     "webpack-bundle-analyzer": "^2.13.1",
-    "webpack-jarvis": "0.3.2"
+    "webpack-cli": "^3.1.0",
+    "webpack-jarvis": "0.3.2",
+    "webpack-node-externals": "^1.7.2"
   },
   "config": {
     "commitizen": {

@@ -177,9 +177,11 @@ export default class VideoPlayer extends React.Component {
   // see https://github.com/videojs/video.js/pull/3856
   render() {
     return (
-      <div data-vjs-player>
-        {/* eslint-disable-next-line no-return-assign */}
-        <video ref={node => (this.videoNode = node)} className="video-js" />
+      <>
+        <div data-vjs-player>
+          {/* eslint-disable-next-line no-return-assign */}
+          <video ref={node => (this.videoNode = node)} className="video-js" />
+        </div>
         {/* language=CSS */}
         <style jsx>
           {`
@@ -189,7 +191,7 @@ export default class VideoPlayer extends React.Component {
             }
           `}
         </style>
-      </div>
+      </>
     );
   }
 }

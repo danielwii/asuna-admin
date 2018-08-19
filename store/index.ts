@@ -25,7 +25,7 @@ import { contentReducer, contentSagas } from './content.redux';
 import { securityReducer, securitySagas } from './security.redux';
 import { panesCleaner, panesReducer, panesSagas } from './panes.redux';
 
-import { createStoreConnectorMiddleware, storeConnector } from './middlewares/store-connector';
+import { createStoreConnectorMiddleware, storeConnector } from './middlewares';
 
 import { appContext } from '../core/context';
 import { createLogger } from '../helpers';

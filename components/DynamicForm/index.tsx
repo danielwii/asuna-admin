@@ -240,38 +240,41 @@ export class DynamicForm2 extends React.Component<IProps & IFormFix & FormCompon
     ));
 
     return (
-      <div className="dynamic-form">
-        <Row type="flex" gutter={anchor ? 16 : 0}>
-          <Col span={anchor ? 18 : 24}>
-            <Form>
-              {/* {_.map(fieldGroups, this.buildFieldGroup)} */}
-              {/* {_.map(fields, this.buildField)} */}
-              {renderFields}
-              {!delegate && (
-                <Form.Item>
-                  <Button
-                    type="primary"
-                    htmlType="submit"
-                    onClick={this.handleOnSubmit}
-                    // disabled={hasErrors(getFieldsError())}
-                  >
-                    Submit
-                  </Button>
-                </Form.Item>
-              )}
-            </Form>
-          </Col>
-          <Col span={anchor ? 6 : 0}>
-            <FormAnchor fields={fields} />
-          </Col>
-        </Row>
+      <>
+        <div className="dynamic-form">
+          <Row type="flex" gutter={anchor ? 16 : 0}>
+            <Col span={anchor ? 18 : 24}>
+              <Form>
+                {/* {_.map(fieldGroups, this.buildFieldGroup)} */}
+                {/* {_.map(fields, this.buildField)} */}
+                {renderFields}
+                {!delegate && (
+                  <Form.Item>
+                    <Button
+                      type="primary"
+                      htmlType="submit"
+                      onClick={this.handleOnSubmit}
+                      // disabled={hasErrors(getFieldsError())}
+                    >
+                      Submit
+                    </Button>
+                  </Form.Item>
+                )}
+              </Form>
+            </Col>
+            <Col span={anchor ? 6 : 0}>
+              <FormAnchor fields={fields} />
+            </Col>
+          </Row>
+        </div>
+        {/* TODO global may not working with webpack right now, throws Cannot read property 'indexOf' of undefined */}
         {/* language=CSS */}
-        <style global jsx>{`
-          .dynamic-form .ant-form-item {
-            margin-bottom: 0;
-          }
-        `}</style>
-      </div>
+        {/*<style global jsx>{`*/}
+        {/*.dynamic-form .ant-form-item {*/}
+        {/*margin-bottom: 0;*/}
+        {/*}*/}
+        {/*`}</style>*/}
+      </>
     );
   }
 }
@@ -367,18 +370,20 @@ class EnhancedPureElement extends React.Component<IPureElementProps> {
     // options.hidden = true 时需要隐藏该元素
     const hidden = R.pathOr(false, ['options', 'hidden'])(field);
     return (
-      <div key={index} id={`dynamic-form-${field.name}`} hidden={hidden}>
-        {builder(field, index)}
-        <hr />
+      <>
+        <div key={index} id={`dynamic-form-${field.name}`} hidden={hidden}>
+          {builder(field, index)}
+          <hr />
+        </div>
         {/* language=CSS */}
         <style jsx>{`
-          hr {
+          div hr {
             border-style: none;
             border-bottom: 0.05rem solid #bfbfbf;
             box-shadow: #bfbfbf 0 0 0.3rem;
           }
         `}</style>
-      </div>
+      </>
     );
   }
 }

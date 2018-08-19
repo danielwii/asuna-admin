@@ -17,5 +17,10 @@
     "outDir": "dist",
     "baseUrl": "."
   },
+  "awesomeTypescriptLoaderOptions": {
+    "useBabel": true,
+    "babelCore": "@babel/core",
+    "useCache": false
+  },
   "exclude": ["examples", "dist", ".next", "stories"]
 }

@@ -10,7 +10,7 @@ import { IMenuService, MenuAdapter } from '../adapters/menu';
 import { ResponseAdapter } from '../adapters/response';
 import { ApiAdapter, IApiService } from '../adapters/api';
 import { WsAdapter } from '../adapters/ws';
-import { IStoreConnector } from '../store/middlewares/store-connector';
+import { IStoreConnector } from '../store/middlewares';
 import { RootState } from '../store';
 
 // --------------------------------------------------------------
@@ -76,7 +76,7 @@ class AppContext {
     //   next: (action) => console.log('observer: ', action)
     // });
     (async () => {
-      const { storeConnector } = await import('../store/middlewares/store-connector');
+      const { storeConnector } = await import('../store/middlewares');
       this._storeConnector = storeConnector;
     })();
   }

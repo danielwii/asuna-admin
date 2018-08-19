@@ -91,11 +91,13 @@ export const columnHelper = {
         const value = render ? render(text) : text;
         if (_.isString(value) && value.length > 30) {
           return (
-            <Tooltip title={value}>
-              <Button href={value} size="small" type="dashed" target="_blank">
-                {value.slice(0, 30) + '...'}
-                <Icon type="link" />
-              </Button>
+            <>
+              <Tooltip title={value}>
+                <Button href={value} size="small" type="dashed" target="_blank">
+                  {value.slice(0, 30) + '...'}
+                  <Icon type="link" />
+                </Button>
+              </Tooltip>
               {/* language=CSS */}
               <style jsx>{`
                 /* 用于修复 tooltip 最大宽度固定以致长文本显示异常的问题 */
@@ -103,7 +105,7 @@ export const columnHelper = {
                   max-width: inherit;
                 }
               `}</style>
-            </Tooltip>
+            </>
           );
         }
         return (

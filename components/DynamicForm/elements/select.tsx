@@ -7,7 +7,7 @@ import { Select } from 'antd';
 import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc';
 
 import { generateComponent } from '.';
-import { createLogger } from '../../../helpers/index';
+import { createLogger } from '../../../helpers/logger';
 
 const logger = createLogger('components:dynamic-form:elements', 'warn');
 
@@ -112,7 +112,7 @@ export const generateSelect = (
           const optionName = this.extractName(item);
           const optionValue = this.extractValue(item);
           return (
-            <React.Fragment>
+            <>
               <li>
                 <span className="sort-index">No. {sortIndex}</span>
                 <span>
@@ -159,21 +159,23 @@ export const generateSelect = (
                   transform: scale(1.02);
                 }
               `}</style>
-            </React.Fragment>
+            </>
           );
         },
       );
       const SortableList = SortableContainer<{ selectedSortedItems: any[] }>(
         ({ selectedSortedItems }) => (
-          <ul>
-            {selectedSortedItems.map((value, index) => (
-              <SortableItem
-                key={`item-${Symbol(index).toString()}`}
-                index={index}
-                sortIndex={index}
-                value={value}
-              />
-            ))}
+          <>
+            <ul>
+              {selectedSortedItems.map((value, index) => (
+                <SortableItem
+                  key={`item-${Symbol(index).toString()}`}
+                  index={index}
+                  sortIndex={index}
+                  value={value}
+                />
+              ))}
+            </ul>
             {/* language=CSS */}
             <style jsx>{`
               ul {
@@ -182,7 +184,7 @@ export const generateSelect = (
                 margin: 2rem;
               }
             `}</style>
-          </ul>
+          </>
         ),
       );
 
