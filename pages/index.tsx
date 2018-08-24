@@ -6,11 +6,11 @@ import 'moment/locale/zh-cn';
 import MainPage from '../layout/main';
 
 import { register } from '../services/register';
-import { createLogger } from '../helpers';
 
 import { appContext } from '../core/context';
 
 import { RootState, withReduxSaga, appActions, AuthState, AppState } from '@asuna-admin/store';
+import { createLogger } from '@asuna-admin/helpers';
 
 const logger = createLogger('pages:index', 'warn');
 

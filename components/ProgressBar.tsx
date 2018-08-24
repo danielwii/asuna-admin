@@ -5,7 +5,7 @@ import { Progress } from 'antd';
 import styled, { keyframes } from 'styled-components';
 import { fadeIn, fadeOut } from 'react-animations';
 
-import { createLogger } from '../helpers/logger';
+import { createLogger } from '@asuna-admin/helpers';
 
 const logger = createLogger('components:progress-bar', 'warn');
 

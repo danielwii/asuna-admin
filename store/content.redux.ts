@@ -5,9 +5,9 @@ import { reduxAction } from 'node-buffs';
 import { message } from 'antd';
 
 import { ModelListConfig, modelProxy } from '../adapters/model';
-import { createLogger } from '../helpers';
 
 import { RootState } from '@asuna-admin/store';
+import { createLogger } from '@asuna-admin/helpers';
 
 const logger = createLogger('store:content', 'warn');
 

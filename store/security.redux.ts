@@ -7,7 +7,8 @@ import * as R from 'ramda';
 import { RootState } from './';
 import { securityProxy } from '../adapters/security';
 import { authActions } from './auth.actions';
-import { createLogger } from '../helpers/logger';
+
+import { createLogger } from '@asuna-admin/helpers';
 
 const logger = createLogger('store:security', 'warn');
 

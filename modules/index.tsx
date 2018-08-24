@@ -2,7 +2,7 @@ import React from 'react';
 import dynamic from 'next/dynamic';
 import _ from 'lodash';
 
-import { createLogger } from '../helpers';
+import { createLogger } from '@asuna-admin/helpers';
 
 const logger = createLogger('modules:index');
 

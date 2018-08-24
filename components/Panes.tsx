@@ -4,8 +4,9 @@ import * as R from 'ramda';
 
 import { Button, Divider, Tabs } from 'antd';
 
-import { createLogger } from '../helpers';
 import ModulesLoader from '../modules';
+
+import { createLogger } from '@asuna-admin/helpers';
 
 const logger = createLogger('components:panes');
 

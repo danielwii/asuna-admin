@@ -4,9 +4,9 @@ import * as R from 'ramda';
 import _ from 'lodash';
 
 import { menuProxy } from '../adapters/menu';
-import { createLogger } from '../helpers/logger';
 
 import { RootState } from '@asuna-admin/store';
+import { createLogger } from '@asuna-admin/helpers';
 
 const logger = createLogger('store:menu', 'warn');
 

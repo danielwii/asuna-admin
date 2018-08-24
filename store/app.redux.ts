@@ -13,7 +13,8 @@ import { modelsSagaFunctions } from './model.redux';
 import { routerActions } from './router.redux';
 import { authActions } from './auth.actions';
 import { apiProxy } from '../adapters/api';
-import { createLogger } from '../helpers/logger';
+
+import { createLogger } from '@asuna-admin/helpers';
 
 // import { Observable } from 'rxjs/Observable';
 

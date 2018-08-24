@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import { config } from '../core/configure';
 import { appContext } from '../core/context';
 
-import { createLogger } from '../helpers/logger';
+import { createLogger } from '@asuna-admin/helpers';
 
 const logger = createLogger('adapters::response', 'warn');
 

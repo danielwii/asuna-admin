@@ -3,7 +3,7 @@ import React from 'react';
 import { Button, Form, Icon, Input } from 'antd';
 import { WrappedFormUtils } from 'antd/lib/form/Form';
 
-import { createLogger } from '../helpers';
+import { createLogger } from '@asuna-admin/helpers';
 
 const logger = createLogger('components:login', 'warn');
 

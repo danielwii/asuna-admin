@@ -1,48 +1,48 @@
-import React     from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import _         from 'lodash';
-import styled    from 'styled-components';
+import _ from 'lodash';
+import styled from 'styled-components';
 
 import { Button, Divider, Form, Icon, List } from 'antd';
 
-import { createLogger } from '../helpers/logger';
+import { createLogger } from '@asuna-admin/helpers';
 
 import { DynamicForm2, DynamicFormTypes } from './DynamicForm';
 
 const logger = createLogger('components:dynamic-property');
 
 export const inspectElementTypes = {
-  Type    : 'Type',
-  Text    : 'Text',
+  Type: 'Type',
+  Text: 'Text',
   Checkbox: 'Checkbox',
 };
 
 export const propertyTypes = {
   String: {
-    type      : 'String',
-    name      : '文本框',
+    type: 'String',
+    name: '文本框',
     inspection: [
       {
         type: inspectElementTypes.Type,
-        key : 'type',
+        key: 'type',
         name: '类型',
       },
       {
         type: inspectElementTypes.Text,
-        key : 'name',
+        key: 'name',
         name: '名称',
       },
       {
         type: inspectElementTypes.Checkbox,
-        key : 'required',
+        key: 'required',
         name: '必填',
       },
     ],
-    editForm  : [
+    editForm: [
       {
-        key  : 'name',
-        name : '名称',
-        type : DynamicFormTypes.Input,
+        key: 'name',
+        name: '名称',
+        type: DynamicFormTypes.Input,
         value: null,
       },
     ],
@@ -59,19 +59,19 @@ export const propertyTypes = {
     //   value: null,
     // }],
   },
-  Text  : { key: 'Text', name: '长文本框' },
+  Text: { key: 'Text', name: '长文本框' },
 };
 
-const StyledFlexContainer       = styled.div`
+const StyledFlexContainer = styled.div`
   display: flex;
   margin: 1rem;
   justify-content: space-evenly;
 `;
-const StyledConfigContainer     = styled.div`
+const StyledConfigContainer = styled.div`
   margin-right: 1rem;
   flex-grow: 1;
 `;
-const StyledContentContainer    = styled.div`
+const StyledContentContainer = styled.div`
   flex-grow: 2;
 `;
 const StyledComponentsContainer = styled.div`
@@ -85,20 +85,20 @@ const StyledComponentsContainer = styled.div`
 const StyledInspectionContainer = styled.div`
   position: relative;
 `;
-const StyledInspectionButtons   = styled.div`
+const StyledInspectionButtons = styled.div`
   position: absolute;
   top: 0;
   right: 0;
   button {
-    margin: 0 .1rem;
+    margin: 0 0.1rem;
   }
 `;
 
 export class DynamicProperty extends React.Component {
   static propTypes = {
-    onAddProperty   : PropTypes.func.isRequired,
+    onAddProperty: PropTypes.func.isRequired,
     onRemoveProperty: PropTypes.func.isRequired,
-    properties      : PropTypes.arrayOf(PropTypes.shape({})),
+    properties: PropTypes.arrayOf(PropTypes.shape({})),
   };
 
   constructor(props) {
@@ -107,19 +107,19 @@ export class DynamicProperty extends React.Component {
     this.state = { toBeEdited: {} };
   }
 
-  addProperty = (property) => {
+  addProperty = property => {
     logger.log('add property', property);
     const { onAddProperty } = this.props;
     onAddProperty(property);
   };
 
-  removeProperty = (property) => {
+  removeProperty = property => {
     logger.log('remove property', property);
     const { onRemoveProperty } = this.props;
     onRemoveProperty(property);
   };
 
-  editProperty = (property) => {
+  editProperty = property => {
     this.setState({ toBeEdited: property });
   };
 
@@ -130,33 +130,46 @@ export class DynamicProperty extends React.Component {
         {property.name}
       </Button>
       {/* language=CSS */}
-      <style jsx>{`
-        div {
-          margin-bottom: .5rem;
-        }
-      `}
+      <style jsx>
+        {`
+          div {
+            margin-bottom: 0.5rem;
+          }
+        `}
       </style>
     </div>
   );
 
-  buildInspectionElements = (property) => {
+  buildInspectionElements = property => {
     logger.log('build elements', property);
-    return _.map(property.inspection, (element) => {
+    return _.map(property.inspection, element => {
       switch (element.type) {
         case inspectElementTypes.Type:
-          return <div>{element.name}: {property.name}</div>;
+          return (
+            <div>
+              {element.name}: {property.name}
+            </div>
+          );
         // case inspectElementTypes.Text:
         //   return <div>{element.name}: {element.value}</div>;
         case inspectElementTypes.Checkbox:
           // return <Checkbox defaultChecked={element.value} readonly>{element.name}</Checkbox>;
-          return <div>{element.name}: <Icon type={element.value ? 'check' : 'close'} /></div>;
+          return (
+            <div>
+              {element.name}: <Icon type={element.value ? 'check' : 'close'} />
+            </div>
+          );
         default:
-          return <div>{element.name}: {element.value}</div>;
+          return (
+            <div>
+              {element.name}: {element.value}
+            </div>
+          );
       }
     });
   };
 
-  buildInspection = (property) => {
+  buildInspection = property => {
     switch (property.type) {
       case propertyTypes.String.type:
         return (
@@ -178,7 +191,7 @@ export class DynamicProperty extends React.Component {
     }
   };
 
-  buildInspections = (properties) => {
+  buildInspections = properties => {
     logger.log('build inspects', properties);
     return <List dataSource={properties} renderItem={this.buildInspection} />;
   };
@@ -228,14 +241,13 @@ export class DynamicProperty extends React.Component {
     // })(DynamicForm2);
 
     logger.log('toBeEdited is', toBeEdited);
-    const fields = _
-      .chain(toBeEdited.editForm)
+    const fields = _.chain(toBeEdited.editForm)
       .map(editable => ({
         [editable.key]: {
-          key    : editable.key,
-          name   : editable.name,
-          type   : DynamicFormTypes[editable.type],
-          value  : 'test',
+          key: editable.key,
+          name: editable.name,
+          type: DynamicFormTypes[editable.type],
+          value: 'test',
           options: editable.options,
         },
       }))
@@ -256,9 +268,10 @@ export class DynamicProperty extends React.Component {
         {/* </Sticky> */}
         <p>...properties</p>
         <Divider dashed>Properties</Divider>
-        <StyledFlexContainer ref={(node) => {
-          this.container = node;
-        }}
+        <StyledFlexContainer
+          ref={node => {
+            this.container = node;
+          }}
         >
           <StyledConfigContainer>
             <EditFormWrapper fields={fields} />

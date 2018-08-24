@@ -7,7 +7,8 @@ import * as R from 'ramda';
 import { Button, Icon, message, Upload } from 'antd';
 
 import { apiProxy } from '../../adapters/api';
-import { createLogger } from '../../helpers/logger';
+
+import { createLogger } from '@asuna-admin/helpers';
 
 const logger = createLogger('components:dynamic-form:video', 'warn');
 

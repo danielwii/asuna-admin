@@ -11,7 +11,8 @@ import { RootState } from './';
 import { authProxy } from '../adapters/auth';
 import { panesActions } from './panes.actions';
 import { routerActions } from './router.redux';
-import { createLogger } from '../helpers';
+
+import { createLogger } from '@asuna-admin/helpers';
 
 const logger = createLogger('store:auth', 'warn');
 

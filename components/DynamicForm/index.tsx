@@ -24,10 +24,9 @@ import {
 } from './elements';
 
 import { generateSelect } from './elements/select';
-import { diff } from '../../helpers';
-import { createLogger } from '../../helpers/logger';
 
 import { AuthState } from '@asuna-admin/store';
+import { createLogger, diff } from '@asuna-admin/helpers';
 
 const logger = createLogger('components:dynamic-form', 'warn');
 

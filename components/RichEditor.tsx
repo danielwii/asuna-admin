@@ -3,9 +3,9 @@ import { message } from 'antd';
 import { join } from 'path';
 
 import { apiProxy } from '../adapters/api';
-import { createLogger } from '../helpers/logger';
 
 import { AuthState } from '@asuna-admin/store';
+import { createLogger } from '@asuna-admin/helpers';
 
 const logger = createLogger('components:rich-editor', 'warn');
 

@@ -5,9 +5,9 @@ import * as R from 'ramda';
 
 import { Form, Modal, message } from 'antd';
 
+import { createLogger, toFormErrors } from '@asuna-admin/helpers';
+
 import { DynamicForm2 } from './DynamicForm';
-import { createLogger } from '../helpers/logger';
-import { toFormErrors } from '../helpers/error';
 
 const logger = createLogger('components:form-modal', 'warn');
 

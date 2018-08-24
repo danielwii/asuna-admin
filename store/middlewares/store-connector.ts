@@ -1,4 +1,4 @@
-import { createLogger } from '../../helpers';
+import { createLogger } from '@asuna-admin/helpers';
 
 const logger = createLogger('store:connector', 'warn');
 

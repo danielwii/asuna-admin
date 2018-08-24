@@ -6,10 +6,9 @@ import { Icon, message, Modal, Upload } from 'antd';
 import { RcFile, UploadChangeParam, UploadFile } from 'antd/es/upload/interface';
 
 import { apiProxy } from '../../adapters/api';
-import { diff } from '../../helpers';
-import { createLogger } from '../../helpers/logger';
 
 import { AuthState } from '@asuna-admin/store';
+import { createLogger, diff } from '@asuna-admin/helpers';
 
 const logger = createLogger('components:dynamic-form:images', 'warn');
 

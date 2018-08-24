@@ -28,7 +28,8 @@ import { panesCleaner, panesReducer, panesSagas } from './panes.redux';
 import { createStoreConnectorMiddleware, storeConnector } from './middlewares';
 
 import { appContext } from '../core/context';
-import { createLogger } from '../helpers';
+
+import { createLogger } from '@asuna-admin/helpers';
 
 export { storeConnector };
 
