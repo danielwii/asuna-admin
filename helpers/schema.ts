@@ -4,7 +4,7 @@ import * as R from 'ramda';
 import { castModelKey, castModelName } from './cast';
 import { modelProxy } from '../adapters/model';
 import { DynamicFormTypes } from '../components/DynamicForm';
-import { storeConnector } from '../store';
+import { storeConnector } from '@asuna-admin/store';
 import { createLogger } from './logger';
 
 const logger = createLogger('helpers:schema', 'warn');

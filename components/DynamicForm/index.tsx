@@ -25,8 +25,9 @@ import {
 
 import { generateSelect } from './elements/select';
 import { diff } from '../../helpers';
-import { AuthState } from '../../store/auth.redux';
 import { createLogger } from '../../helpers/logger';
+
+import { AuthState } from '@asuna-admin/store';
 
 const logger = createLogger('components:dynamic-form', 'warn');
 

@@ -6,6 +6,7 @@ module.exports = {
     helpers: path.resolve(__dirname, 'helpers'),
     store: path.resolve(__dirname, 'store'),
     common: path.resolve(__dirname, 'common'),
+    adapters: path.resolve(__dirname, 'adapters'),
     // components_snow: path.resolve(__dirname, 'components/snow'),
   },
   devtool: 'source-map',
@@ -18,6 +19,9 @@ module.exports = {
   resolve: {
     // Add '.ts' and '.tsx' as resolvable extensions.
     extensions: ['.ts', '.tsx', '.js', '.json'],
+    alias: {
+      '@asuna-admin/store': path.resolve(__dirname, 'store/'),
+    },
   },
   module: {
     rules: [

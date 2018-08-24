@@ -2,7 +2,7 @@ import { connect, Socket } from 'socket.io-client';
 import getConfig from 'next/config';
 
 import { appContext } from '../core/context';
-import { appActions } from '../store/app.actions';
+import { appActions } from '@asuna-admin/store';
 import { createLogger } from '../helpers';
 
 const logger = createLogger('adapters:ws', 'warn');

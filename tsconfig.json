@@ -16,12 +16,16 @@
     "sourceMap": true,
     "skipLibCheck": true,
     "outDir": "dist",
-    "baseUrl": "."
+    "baseUrl": ".",
+    "paths": {
+      "@asuna-admin/store": ["./store"]
+    }
   },
-  "awesomeTypescriptLoaderOptions": {
-    "useBabel": true,
-    "babelCore": "@babel/core",
-    "useCache": false
-  },
+  //  using ts-loader now
+  //  "awesomeTypescriptLoaderOptions": {
+  //    "useBabel": true,
+  //    "babelCore": "@babel/core",
+  //    "useCache": false
+  //  },
   "exclude": ["examples", "dist", ".next", "stories", ".storybook", "node_modules"]
 }

@@ -10,8 +10,8 @@ import { IMenuService, MenuAdapter } from '../adapters/menu';
 import { ResponseAdapter } from '../adapters/response';
 import { ApiAdapter, IApiService } from '../adapters/api';
 import { WsAdapter } from '../adapters/ws';
-import { IStoreConnector } from '../store/middlewares';
-import { RootState } from '../store';
+
+import { RootState, IStoreConnector } from '@asuna-admin/store';
 
 // --------------------------------------------------------------
 // Types
@@ -76,7 +76,7 @@ class AppContext {
     //   next: (action) => console.log('observer: ', action)
     // });
     (async () => {
-      const { storeConnector } = await import('../store/middlewares');
+      const { storeConnector } = await import('@asuna-admin/store');
       this._storeConnector = storeConnector;
     })();
   }

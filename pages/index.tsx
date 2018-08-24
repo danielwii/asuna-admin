@@ -3,15 +3,14 @@ import { connect } from 'react-redux';
 
 import 'moment/locale/zh-cn';
 
-import { RootState, withReduxSaga } from '../store';
 import MainPage from '../layout/main';
 
 import { register } from '../services/register';
 import { createLogger } from '../helpers';
+
 import { appContext } from '../core/context';
-import { appActions } from '../store/app.actions';
-import { AuthState } from '../store/auth.redux';
-import { AppState } from '../store/app.redux';
+
+import { RootState, withReduxSaga, appActions, AuthState, AppState } from '@asuna-admin/store';
 
 const logger = createLogger('pages:index', 'warn');
 

@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import * as R from 'ramda';
 
-import { isAvailable, panesActionTypes } from './panes.actions';
+import { isPanesModule, panesActionTypes } from './panes.actions';
 
 // --------------------------------------------------------------
 // Module sagas
@@ -32,7 +32,7 @@ const initialState: PanesState = {
 const panesCleaner = rootState => ({ ...rootState, panes: initialState });
 
 const panesReducer = (previousState = initialState, action) => {
-  if (isAvailable(action)) {
+  if (isPanesModule(action)) {
     switch (action.type) {
       case panesActionTypes.OPEN: {
         const {

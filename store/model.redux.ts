@@ -8,7 +8,8 @@ import _ from 'lodash';
 import { contentActions } from './content.redux';
 import { modelProxy } from '../adapters/model';
 import { createLogger } from '../helpers';
-import { RootState } from 'store/index';
+
+import { RootState } from '@asuna-admin/store';
 
 const logger = createLogger('store:models', 'warn');
 

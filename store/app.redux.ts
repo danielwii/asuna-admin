@@ -4,7 +4,7 @@ import { REHYDRATE } from 'redux-persist/constants';
 import _ from 'lodash';
 import * as R from 'ramda';
 
-import { appActions, appActionTypes, isAvailable } from './app.actions';
+import { appActions, appActionTypes, isAppModule } from './app.actions';
 
 import { actions, RootState } from './';
 import { securitySagaFunctions } from './security.redux';
@@ -167,7 +167,7 @@ const initialState: AppState = {
 };
 
 const appReducer = (previousState: AppState = initialState, action) => {
-  if (isAvailable(action)) {
+  if (isAppModule(action)) {
     return R.mergeDeepRight(previousState, action.payload);
   }
   return previousState;

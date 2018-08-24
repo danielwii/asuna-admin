@@ -8,7 +8,8 @@ import { RcFile, UploadChangeParam, UploadFile } from 'antd/es/upload/interface'
 import { apiProxy } from '../../adapters/api';
 import { diff } from '../../helpers';
 import { createLogger } from '../../helpers/logger';
-import { AuthState } from '../../store/auth.redux';
+
+import { AuthState } from '@asuna-admin/store';
 
 const logger = createLogger('components:dynamic-form:images', 'warn');
 

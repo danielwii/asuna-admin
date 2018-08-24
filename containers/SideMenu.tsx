@@ -1,12 +1,15 @@
 import { connect } from 'react-redux';
 
-import SideMenu         from '../components/SideMenu';
-import { panesActions } from '../store/panes.actions';
-import { RootState }    from '../store';
+import SideMenu from '../components/SideMenu';
 
-const mapStateToProps    = (state: RootState) => ({ ...state.menu });
+import { panesActions, RootState } from '@asuna-admin/store';
+
+const mapStateToProps = (state: RootState) => ({ ...state.menu });
 const mapDispatchToProps = dispatch => ({
   onOpen: pane => dispatch(panesActions.open(pane)),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(SideMenu);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(SideMenu);

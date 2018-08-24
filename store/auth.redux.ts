@@ -5,7 +5,7 @@ import * as R from 'ramda';
 import { message } from 'antd';
 import { REHYDRATE } from 'redux-persist/constants';
 
-import { authActions, authActionTypes, isAvailable } from './auth.actions';
+import { authActions, authActionTypes, isAuthModule } from './auth.actions';
 
 import { RootState } from './';
 import { authProxy } from '../adapters/auth';
@@ -102,7 +102,7 @@ const initialState: AuthState = {
 };
 
 const authReducer = (previousState: AuthState = initialState, action) => {
-  if (isAvailable(action)) {
+  if (isAuthModule(action)) {
     return R.mergeDeepRight(previousState, action.payload);
   }
   return previousState;

@@ -5,7 +5,7 @@ import { join } from 'path';
 import { apiProxy } from '../adapters/api';
 import { createLogger } from '../helpers/logger';
 
-import { AuthState } from '../store/auth.redux';
+import { AuthState } from '@asuna-admin/store';
 
 const logger = createLogger('components:rich-editor', 'warn');
 

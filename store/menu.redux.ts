@@ -5,7 +5,8 @@ import _ from 'lodash';
 
 import { menuProxy } from '../adapters/menu';
 import { createLogger } from '../helpers/logger';
-import { RootState } from 'store/index';
+
+import { RootState } from '@asuna-admin/store';
 
 const logger = createLogger('store:menu', 'warn');
 

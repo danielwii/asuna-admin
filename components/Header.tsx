@@ -3,8 +3,8 @@ import styled from 'styled-components';
 
 import { Button, Dropdown, Icon, Layout, Menu } from 'antd';
 import * as pkg from '../package.json';
-import { AuthState } from '../store/auth.redux';
-import { AppState } from '../store/app.redux';
+
+import { AppState, AuthState } from '@asuna-admin/store';
 
 const { Header } = Layout;
 

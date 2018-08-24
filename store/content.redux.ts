@@ -6,7 +6,8 @@ import { message } from 'antd';
 
 import { ModelListConfig, modelProxy } from '../adapters/model';
 import { createLogger } from '../helpers';
-import { RootState } from 'store/index';
+
+import { RootState } from '@asuna-admin/store';
 
 const logger = createLogger('store:content', 'warn');
 

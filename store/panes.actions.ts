@@ -6,15 +6,14 @@ import { reduxAction } from 'node-buffs';
 
 export const panesActionTypes = {
   // ACTION: 'module::action'
-  OPEN         : 'panes::open',
-  ACTIVE       : 'panes::active',
-  CLOSE        : 'panes::close',
-  CLOSE_ALL    : 'panes::close-all',
+  OPEN: 'panes::open',
+  ACTIVE: 'panes::active',
+  CLOSE: 'panes::close',
+  CLOSE_ALL: 'panes::close-all',
   CLOSE_WITHOUT: 'panes::close-without',
 };
 
-export const isAvailable = action => action.type.startsWith('panes::') && !action.transient;
-
+export const isPanesModule = action => action.type.startsWith('panes::') && !action.transient;
 
 // --------------------------------------------------------------
 // Module actions
@@ -22,9 +21,9 @@ export const isAvailable = action => action.type.startsWith('panes::') && !actio
 
 export const panesActions = {
   // action: (args) => ({ type, payload })
-  open          : pane => reduxAction(panesActionTypes.OPEN, { pane }),
-  active        : key => reduxAction(panesActionTypes.ACTIVE, { key }),
-  close         : key => reduxAction(panesActionTypes.CLOSE, { key }),
-  closeAll      : () => reduxAction(panesActionTypes.CLOSE_ALL),
+  open: pane => reduxAction(panesActionTypes.OPEN, { pane }),
+  active: key => reduxAction(panesActionTypes.ACTIVE, { key }),
+  close: key => reduxAction(panesActionTypes.CLOSE, { key }),
+  closeAll: () => reduxAction(panesActionTypes.CLOSE_ALL),
   onCloseWithout: activeKey => reduxAction(panesActionTypes.CLOSE_WITHOUT, { activeKey }),
 };

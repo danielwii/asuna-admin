@@ -3,9 +3,8 @@ import { connect } from 'react-redux';
 import * as R from 'ramda';
 
 import Header from '../components/Header';
-import { RootState } from '../store';
-import { appActions } from '../store/app.actions';
-import { authActions } from '../store/auth.actions';
+
+import { RootState, appActions, authActions } from '@asuna-admin/store';
 
 const { publicRuntimeConfig = {} } = getConfig() || {};
 
