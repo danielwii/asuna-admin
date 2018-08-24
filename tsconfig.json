@@ -9,7 +9,8 @@
     "allowSyntheticDefaultImports": true,
     //    "noUnusedLocals": true,
     //    "noUnusedParameters": true,
-    "strictNullChecks": true, // 可选参数会被自动地加上 | undefined
+    // 可选参数会被自动地加上 | undefined
+    "strictNullChecks": true,
     "removeComments": false,
     "preserveConstEnums": true,
     "sourceMap": true,
@@ -22,5 +23,5 @@
     "babelCore": "@babel/core",
     "useCache": false
   },
-  "exclude": ["examples", "dist", ".next", "stories"]
+  "exclude": ["examples", "dist", ".next", "stories", ".storybook", "node_modules"]
 }

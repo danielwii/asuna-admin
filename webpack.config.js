@@ -5,6 +5,8 @@ module.exports = {
   entry: {
     helpers: path.resolve(__dirname, 'helpers'),
     store: path.resolve(__dirname, 'store'),
+    common: path.resolve(__dirname, 'common'),
+    // components_snow: path.resolve(__dirname, 'components/snow'),
   },
   devtool: 'source-map',
   output: {
@@ -20,7 +22,11 @@ module.exports = {
   module: {
     rules: [
       // All files with a '.ts' or '.tsx' extension will be handled by 'awesome-typescript-loader'.
-      { test: /\.tsx?$/, loader: 'awesome-typescript-loader' },
+      { test: /\.ts$/, loader: 'ts-loader' },
+      { test: /\.tsx$/, loader: 'babel-loader!ts-loader' },
+
+      // https://github.com/zeit/styled-jsx/issues/479
+      // { test: /\.tsx?$/, loader: 'awesome-typescript-loader' },
 
       // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
       { enforce: 'pre', test: /\.js$/, loader: 'source-map-loader' },
