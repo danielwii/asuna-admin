@@ -1,3 +1,3 @@
-import { DefaultLoginPage } from '../common/login.page';
+import { DefaultLoginPage } from '@asuna-admin/common';
 
 export default DefaultLoginPage;

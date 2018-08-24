@@ -22,6 +22,7 @@ module.exports = {
     alias: {
       '@asuna-admin/store': path.resolve(__dirname, 'store/'),
       '@asuna-admin/adapters': path.resolve(__dirname, 'adapters/'),
+      '@asuna-admin/common': path.resolve(__dirname, 'common/'),
       '@asuna-admin/helpers': path.resolve(__dirname, 'helpers/'),
     },
   },

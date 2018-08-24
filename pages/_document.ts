@@ -1,3 +1,3 @@
-import { StyledDocument } from '../common/document';
+import { StyledDocument } from '@asuna-admin/common';
 
 export default StyledDocument;
