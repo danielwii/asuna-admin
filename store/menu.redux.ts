@@ -3,10 +3,9 @@ import { put, select, takeLatest } from 'redux-saga/effects';
 import * as R from 'ramda';
 import _ from 'lodash';
 
-import { menuProxy } from '../adapters/menu';
-
 import { RootState } from '@asuna-admin/store';
 import { createLogger } from '@asuna-admin/helpers';
+import { menuProxy } from '@asuna-admin/adapters';
 
 const logger = createLogger('store:menu', 'warn');
 

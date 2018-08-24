@@ -6,10 +6,10 @@ import * as R from 'ramda';
 import _ from 'lodash';
 
 import { contentActions } from './content.redux';
-import { modelProxy } from '../adapters/model';
 
 import { RootState } from '@asuna-admin/store';
 import { createLogger } from '@asuna-admin/helpers';
+import { modelProxy } from '@asuna-admin/adapters';
 
 const logger = createLogger('store:models', 'warn');
 

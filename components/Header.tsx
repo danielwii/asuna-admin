@@ -48,6 +48,7 @@ export default class extends React.Component<IProps> {
         <div className="logo">
           <StyledLogoImg src="/static/logo.png" alt="mast" />
         </div>
+        {/*prettier-ignore*/}
         <StyledVersion>
           {env}-v{(pkg as any).version}::{app.version}
         </StyledVersion>

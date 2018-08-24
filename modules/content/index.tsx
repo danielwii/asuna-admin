@@ -7,14 +7,12 @@ import { Button, Divider, Modal, Table } from 'antd';
 import { Subscription } from 'rxjs';
 
 import { ActionEvent, bus, EventType } from '../../core/events';
-import { modelProxy } from '../../adapters/model';
-
-import { responseProxy, TablePagination } from '../../adapters/response';
 
 import { appContext } from '../../core/context';
 
 import { contentActions, modelsActions, panesActions, RootState } from '@asuna-admin/store';
 import { castModelKey, createLogger, diff } from '@asuna-admin/helpers';
+import { modelProxy, responseProxy, TablePagination } from '@asuna-admin/adapters';
 
 const logger = createLogger('modules:content:index', 'warn');
 

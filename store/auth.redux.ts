@@ -8,11 +8,11 @@ import { REHYDRATE } from 'redux-persist/constants';
 import { authActions, authActionTypes, isAuthModule } from './auth.actions';
 
 import { RootState } from './';
-import { authProxy } from '../adapters/auth';
 import { panesActions } from './panes.actions';
 import { routerActions } from './router.redux';
 
 import { createLogger } from '@asuna-admin/helpers';
+import { authProxy } from '@asuna-admin/adapters';
 
 const logger = createLogger('store:auth', 'warn');
 

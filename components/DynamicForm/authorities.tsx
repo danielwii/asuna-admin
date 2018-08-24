@@ -3,9 +3,8 @@ import * as R from 'ramda';
 
 import { Checkbox, Table } from 'antd';
 
-import { menuProxy } from '../../adapters/menu';
-
 import { createLogger } from '@asuna-admin/helpers';
+import { menuProxy } from '@asuna-admin/adapters';
 
 const logger = createLogger('components:authorities', 'warn');
 

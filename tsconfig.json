@@ -19,6 +19,7 @@
     "baseUrl": ".",
     "paths": {
       "@asuna-admin/store": ["./store"],
+      "@asuna-admin/adapters": ["./adapters"],
       "@asuna-admin/helpers": ["./helpers"]
     }
   },

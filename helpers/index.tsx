@@ -197,7 +197,7 @@ export const columnHelper = {
       <Popconfirm
         title={isActive ? `是否注销: ${record.id}` : `是否激活: ${record.id}`}
         onConfirm={async () => {
-          const { modelProxy } = require('../adapters/model');
+          const { modelProxy } = require('@asuna-admin/adapters');
           await modelProxy.upsert(auth, modelName, {
             body: {
               id: record.id,

@@ -12,9 +12,9 @@ import { menuSagaFunctions } from './menu.redux';
 import { modelsSagaFunctions } from './model.redux';
 import { routerActions } from './router.redux';
 import { authActions } from './auth.actions';
-import { apiProxy } from '../adapters/api';
 
 import { createLogger } from '@asuna-admin/helpers';
+import { apiProxy } from '@asuna-admin/adapters';
 
 // import { Observable } from 'rxjs/Observable';
 

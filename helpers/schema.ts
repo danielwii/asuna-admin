@@ -2,10 +2,11 @@ import _ from 'lodash';
 import * as R from 'ramda';
 
 import { castModelKey, castModelName } from './cast';
-import { modelProxy } from '../adapters/model';
 import { DynamicFormTypes } from '../components/DynamicForm';
+
 import { storeConnector } from '@asuna-admin/store';
-import { createLogger } from './logger';
+import { createLogger } from '@asuna-admin/helpers';
+import { modelProxy } from '@asuna-admin/adapters';
 
 const logger = createLogger('helpers:schema', 'warn');
 

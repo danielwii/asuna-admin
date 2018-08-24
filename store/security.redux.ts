@@ -5,10 +5,10 @@ import { message } from 'antd';
 import * as R from 'ramda';
 
 import { RootState } from './';
-import { securityProxy } from '../adapters/security';
 import { authActions } from './auth.actions';
 
 import { createLogger } from '@asuna-admin/helpers';
+import { securityProxy } from '@asuna-admin/adapters';
 
 const logger = createLogger('store:security', 'warn');
 

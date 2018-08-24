@@ -4,10 +4,9 @@ import * as R from 'ramda';
 import { reduxAction } from 'node-buffs';
 import { message } from 'antd';
 
-import { ModelListConfig, modelProxy } from '../adapters/model';
-
 import { RootState } from '@asuna-admin/store';
 import { createLogger } from '@asuna-admin/helpers';
+import { ModelListConfig, modelProxy } from '@asuna-admin/adapters';
 
 const logger = createLogger('store:content', 'warn');
 
