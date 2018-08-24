@@ -2,7 +2,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
 
-import AntdLayout from '../layout/antd';
 import Login from '../containers/Login';
 import Loading from '../components/LivingLoading';
 import Snow from '../components/Snow';
@@ -13,6 +12,7 @@ import { register } from '../services/register';
 import { RootState, withReduxSaga, AppState } from '@asuna-admin/store';
 import { createLogger } from '@asuna-admin/helpers';
 import { appContext } from '@asuna-admin/core';
+import { AntdLayout } from '@asuna-admin/layout';
 
 const logger = createLogger('pages:login');
 

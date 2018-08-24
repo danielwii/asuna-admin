@@ -3,9 +3,8 @@ import { Provider } from 'react-redux';
 
 import { storiesOf } from '@storybook/react';
 
-import MainLayout from '../layout/main';
-
 import { configureStore } from '@asuna-admin/store';
+import { MainLayout } from '@asuna-admin/layout';
 
 const initialState = {
   activeKey: 'test-1',

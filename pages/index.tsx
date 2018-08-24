@@ -3,13 +3,12 @@ import { connect } from 'react-redux';
 
 import 'moment/locale/zh-cn';
 
-import MainPage from '../layout/main';
-
 import { register } from '../services/register';
 
 import { RootState, withReduxSaga, appActions, AuthState, AppState } from '@asuna-admin/store';
 import { createLogger } from '@asuna-admin/helpers';
 import { appContext } from '@asuna-admin/core';
+import { MainLayout } from '@asuna-admin/layout';
 
 const logger = createLogger('pages:index', 'warn');
 
@@ -54,7 +53,7 @@ class Index extends React.Component<IProps> {
     } = this.props;
     logger.debug('[render]', this.props);
 
-    return <MainPage loading={loading} heartbeat={heartbeat} auth={auth} appInfo={appInfo} />;
+    return <MainLayout loading={loading} heartbeat={heartbeat} auth={auth} appInfo={appInfo} />;
   }
 }
 

@@ -23,6 +23,7 @@ module.exports = {
       '@asuna-admin/store': path.resolve(__dirname, 'store/'),
       '@asuna-admin/adapters': path.resolve(__dirname, 'adapters/'),
       '@asuna-admin/core': path.resolve(__dirname, 'core/'),
+      '@asuna-admin/layout': path.resolve(__dirname, 'layout/'),
       '@asuna-admin/common': path.resolve(__dirname, 'common/'),
       '@asuna-admin/helpers': path.resolve(__dirname, 'helpers/'),
     },
