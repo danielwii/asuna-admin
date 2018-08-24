@@ -1,10 +1,9 @@
 import { connect, Socket } from 'socket.io-client';
 import getConfig from 'next/config';
 
-import { appContext } from '../core/context';
-
 import { appActions } from '@asuna-admin/store';
 import { createLogger } from '@asuna-admin/helpers';
+import { appContext } from '@asuna-admin/core';
 
 const logger = createLogger('adapters:ws', 'warn');
 

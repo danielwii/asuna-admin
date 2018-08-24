@@ -7,8 +7,9 @@ import { BraftRichEditor } from '../../RichEditor';
 import { ImagesUploader, ImageUploader } from '../images';
 import { VideoUploader } from '../videos';
 import { Authorities } from '../authorities';
-import { createLogger } from '../../../helpers/index';
-import { config } from '../../../core/configure';
+
+import { config } from '@asuna-admin/core';
+import { createLogger } from '@asuna-admin/helpers';
 
 const logger = createLogger('components:dynamic-form:elements', 'warn');
 

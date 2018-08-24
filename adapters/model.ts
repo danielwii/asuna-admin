@@ -3,12 +3,11 @@ import * as _ from 'lodash';
 import { AxiosResponse } from 'axios';
 
 import { DynamicFormTypes } from '../components/DynamicForm';
-import { appContext } from '../core/context';
 
 import { TablePagination } from './response';
-import { config } from '../core/configure';
 
 import { createLogger, defaultColumns } from '@asuna-admin/helpers';
+import { config, appContext } from '@asuna-admin/core';
 
 export interface IModelBody {
   id?: number | string;

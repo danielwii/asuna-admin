@@ -1,6 +1,5 @@
-import { appContext } from '../core/context';
-
 import { createLogger } from '@asuna-admin/helpers';
+import { appContext } from '@asuna-admin/core';
 
 // --------------------------------------------------------------
 // Types

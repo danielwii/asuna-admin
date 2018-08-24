@@ -9,10 +9,10 @@ import Snow from '../components/Snow';
 import LogoCanvas from '../components/LogoCanvas';
 
 import { register } from '../services/register';
-import { appContext } from '../core/context';
 
 import { RootState, withReduxSaga, AppState } from '@asuna-admin/store';
 import { createLogger } from '@asuna-admin/helpers';
+import { appContext } from '@asuna-admin/core';
 
 const logger = createLogger('pages:login');
 

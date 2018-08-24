@@ -1,9 +1,7 @@
 import * as _ from 'lodash';
 
-import { config } from '../core/configure';
-import { appContext } from '../core/context';
-
 import { createLogger } from '@asuna-admin/helpers';
+import { appContext, config } from '@asuna-admin/core';
 
 const logger = createLogger('adapters::response', 'warn');
 

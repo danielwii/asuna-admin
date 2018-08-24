@@ -7,10 +7,9 @@ import MainPage from '../layout/main';
 
 import { register } from '../services/register';
 
-import { appContext } from '../core/context';
-
 import { RootState, withReduxSaga, appActions, AuthState, AppState } from '@asuna-admin/store';
 import { createLogger } from '@asuna-admin/helpers';
+import { appContext } from '@asuna-admin/core';
 
 const logger = createLogger('pages:index', 'warn');
 
