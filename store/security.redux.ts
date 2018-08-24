@@ -26,7 +26,7 @@ const securityActionTypes = {
   UPDATE_PASSWORD: 'security::update-password',
 };
 
-export const isAvailable = action => action.type.startsWith('security::') && !action.transient;
+export const isSecurityModule = action => action.type.startsWith('security::') && !action.transient;
 
 // --------------------------------------------------------------
 // Module actions
@@ -102,7 +102,7 @@ const securitySagas = [
 const initialState = {};
 
 const securityReducer = (previousState = initialState, action) => {
-  if (isAvailable(action)) {
+  if (isSecurityModule(action)) {
     return R.mergeDeepRight(previousState, action.payload);
   }
   return previousState;

@@ -15,7 +15,7 @@ const routerActionTypes = {
   GOTO: 'router::goto',
 };
 
-export const isAvailable = action => action.type.startsWith('router::') && !action.transient;
+export const isRouterModule = action => action.type.startsWith('router::') && !action.transient;
 
 // --------------------------------------------------------------
 // Module routerActions
@@ -58,7 +58,7 @@ const initialState = {
 };
 
 const routerReducer = (previousState = initialState, action) => {
-  if (isAvailable(action)) {
+  if (isRouterModule(action)) {
     return R.mergeDeepRight(previousState, action.payload);
   }
   return previousState;

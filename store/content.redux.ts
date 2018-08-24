@@ -22,7 +22,7 @@ const contentActionTypes = {
   CONTENT_LOAD_MODELS_SUCCESS: 'content::load-models-success',
 };
 
-export const isAvailable = action => action.type.startsWith('content::') && !action.transient;
+export const isContentModule = action => action.type.startsWith('content::') && !action.transient;
 
 // --------------------------------------------------------------
 // Module actions
@@ -96,7 +96,7 @@ const contentSagas = [
 const initialState = {};
 
 const contentReducer = (previousState = initialState, action) => {
-  if (isAvailable(action)) {
+  if (isContentModule(action)) {
     return R.mergeDeepRight(previousState, action.payload);
   }
   return previousState;

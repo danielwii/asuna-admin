@@ -20,7 +20,7 @@ const menuActionTypes = {
   INIT_SUCCESS: 'menu::init-success',
 };
 
-export const isAvailable = action => action.type.startsWith('menu::') && !action.transient;
+export const isMenuModule = action => action.type.startsWith('menu::') && !action.transient;
 
 // --------------------------------------------------------------
 // Module menuActions
@@ -106,7 +106,7 @@ const initialState = {
 };
 
 const menuReducer = (previousState = initialState, action) => {
-  if (isAvailable(action)) {
+  if (isMenuModule(action)) {
     return R.mergeDeepRight(previousState, action.payload);
   }
   return previousState;

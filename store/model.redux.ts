@@ -27,7 +27,7 @@ const modelsActionTypes = {
   LOAD_ALL_SCHEMAS_SUCCESS: 'models::load-all-schemas-success',
 };
 
-export const isAvailable = action => action.type.startsWith('models::') && !action.transient;
+export const isModelModule = action => action.type.startsWith('models::') && !action.transient;
 
 // --------------------------------------------------------------
 // Module actions
@@ -173,7 +173,7 @@ const initialState = {};
 const modelsCleaner = rootState => ({ ...rootState, models: initialState });
 
 const modelsReducer = (previousState = initialState, action) => {
-  if (isAvailable(action)) {
+  if (isModelModule(action)) {
     return R.mergeDeepRight(previousState, action.payload);
   }
   return previousState;

@@ -9,7 +9,7 @@ const actionTypes = {
   // ACTION: 'module::action'
 };
 
-const isAvailable = action => action.type.startsWith(/* module:: */) && !action.transient;
+const isXXXModule = action => action.type.startsWith(/* module:: */) && !action.transient;
 
 // --------------------------------------------------------------
 // Module actions
@@ -46,7 +46,7 @@ const epics = [
 const initialState = {};
 
 const reducer = (previousState = initialState, action) => {
-  if (isAvailable(action)) {
+  if (isXXXModule(action)) {
     return R.mergeDeepRight(previousState, action.payload);
   }
   return previousState;
