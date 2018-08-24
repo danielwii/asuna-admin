@@ -22,6 +22,7 @@
       "@asuna-admin/adapters": ["./adapters"],
       "@asuna-admin/core": ["./core"],
       "@asuna-admin/layout": ["./layout"],
+      "@asuna-admin/modules": ["./modules"],
       "@asuna-admin/common": ["./common"],
       "@asuna-admin/helpers": ["./helpers"]
     }

@@ -3,10 +3,13 @@ const nodeExternals = require('webpack-node-externals');
 
 module.exports = {
   entry: {
-    helpers: path.resolve(__dirname, 'helpers'),
     store: path.resolve(__dirname, 'store'),
-    common: path.resolve(__dirname, 'common'),
     adapters: path.resolve(__dirname, 'adapters'),
+    core: path.resolve(__dirname, 'core'),
+    layout: path.resolve(__dirname, 'layout'),
+    modules: path.resolve(__dirname, 'modules'),
+    common: path.resolve(__dirname, 'common'),
+    helpers: path.resolve(__dirname, 'helpers'),
     // components_snow: path.resolve(__dirname, 'components/snow'),
   },
   devtool: 'source-map',
@@ -24,6 +27,7 @@ module.exports = {
       '@asuna-admin/adapters': path.resolve(__dirname, 'adapters/'),
       '@asuna-admin/core': path.resolve(__dirname, 'core/'),
       '@asuna-admin/layout': path.resolve(__dirname, 'layout/'),
+      '@asuna-admin/modules': path.resolve(__dirname, 'modules/'),
       '@asuna-admin/common': path.resolve(__dirname, 'common/'),
       '@asuna-admin/helpers': path.resolve(__dirname, 'helpers/'),
     },
