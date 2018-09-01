@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash';
 
 const snowCss = () => ({
   animationName: 'snowing',
@@ -31,7 +32,7 @@ const randomCssCircle = key => {
 
 export default () => (
   <svg className="svg-snow">
-    {[...Array(100).keys()].map((ele, index) => randomCssCircle(index))}
+    {_.range(100).map((ele, index) => randomCssCircle(index))}
     {/* language=CSS */}
     <style jsx>{`
       svg {

@@ -3,8 +3,10 @@
   "compilerOptions": {
     "target": "esnext",
     "module": "esnext",
-    "jsx": "preserve",
-    "allowJs": true,
+    //    "lib": [ "es2015", "dom" ],
+    "jsx": "react",
+    //    "jsxFactory": "React.createElement",
+    "allowJs": false,
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     //    "noUnusedLocals": true,
@@ -13,25 +15,55 @@
     "strictNullChecks": true,
     "removeComments": false,
     "preserveConstEnums": true,
-    "sourceMap": true,
+    //    "sourceMap": true,
+    "declaration": true,
+    //    "declarationDir": "types",
+    "declarationMap": true,
     "skipLibCheck": true,
-    "outDir": "dist",
+    "outDir": "lib",
     "baseUrl": ".",
     "paths": {
-      "@asuna-admin/store": ["./store"],
       "@asuna-admin/adapters": ["./adapters"],
+      "@asuna-admin/common": ["./common"],
+      "@asuna-admin/components/*": ["./components/*"],
+      "@asuna-admin/containers/*": ["./containers/*"],
       "@asuna-admin/core": ["./core"],
+      "@asuna-admin/helpers": ["./helpers"],
       "@asuna-admin/layout": ["./layout"],
       "@asuna-admin/modules": ["./modules"],
-      "@asuna-admin/common": ["./common"],
-      "@asuna-admin/helpers": ["./helpers"]
+      "@asuna-admin/store": ["./store"]
     }
+    //    "typeRoots": [
+    //      "node_modules/@types"
+    //    ]
   },
-  //  using ts-loader now
+  //  "include": [
+  //    "adapters",
+  //    "common",
+  //    "components",
+  //    "containers",
+  //    "core",
+  //    "helpers",
+  //    "layout",
+  //    "modules",
+  //    "store",
+  //    "typings/global.d.ts",
+  //    "global.d.ts",
+  //    "index.d.ts"
+  //  ],
   //  "awesomeTypescriptLoaderOptions": {
   //    "useBabel": true,
   //    "babelCore": "@babel/core",
   //    "useCache": false
   //  },
-  "exclude": ["examples", "dist", ".next", "stories", ".storybook", "node_modules"]
+  "exclude": [
+    ".storybook",
+    "stories",
+    ".next",
+    "examples",
+    "dist",
+    "node_modules",
+    // services is created by clients
+    "services"
+  ]
 }

@@ -1,4 +1,4 @@
-import withRedux from 'next-redux-wrapper';
+import withRedux, { NextReduxWrappedComponent } from 'next-redux-wrapper';
 import nextReduxSaga from 'next-redux-saga';
 import getConfig from 'next/config';
 import * as R from 'ramda';
@@ -191,6 +191,6 @@ export const configureStore = (state = initialState) => {
   return store;
 };
 
-export function withReduxSaga(BaseComponent) {
+export function withReduxSaga(BaseComponent): NextReduxWrappedComponent<any> {
   return withRedux(configureStore)(nextReduxSaga(BaseComponent));
 }

@@ -113,7 +113,7 @@ export const generateSelect = (
           const optionName = this.extractName(item);
           const optionValue = this.extractValue(item);
           return (
-            <>
+            <React.Fragment>
               <li>
                 <span className="sort-index">No. {sortIndex}</span>
                 <span>
@@ -160,13 +160,13 @@ export const generateSelect = (
                   transform: scale(1.02);
                 }
               `}</style>
-            </>
+            </React.Fragment>
           );
         },
       );
       const SortableList = SortableContainer<{ selectedSortedItems: any[] }>(
         ({ selectedSortedItems }) => (
-          <>
+          <React.Fragment>
             <ul>
               {selectedSortedItems.map((value, index) => (
                 <SortableItem
@@ -185,7 +185,7 @@ export const generateSelect = (
                 margin: 2rem;
               }
             `}</style>
-          </>
+          </React.Fragment>
         ),
       );
 

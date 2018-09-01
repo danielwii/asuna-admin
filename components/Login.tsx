@@ -22,12 +22,12 @@ function generateInput(form, name, type, required, message, placeholder, iconTyp
   return decorator(<Input placeholder={placeholder} />);
 }
 
-interface IProps {
+export interface IProps {
   form: WrappedFormUtils;
   login: (username: string, password: string, callback: (response) => void) => void;
 }
 
-interface IState {
+export interface IState {
   loading: true | false;
 }
 

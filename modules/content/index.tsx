@@ -106,7 +106,7 @@ class ContentIndex extends React.Component<IProps, IState> {
       busSubscription: bus.subscribe({
         next: (action: ActionEvent) => {
           if (
-            [EventType.MODEL_INSERT, EventType.MODEL_UPDATE].includes(action.type) &&
+            _.includes([EventType.MODEL_INSERT, EventType.MODEL_UPDATE], action.type) &&
             action.payload.modelName === modelName
           ) {
             logger.log('[bus-content-index]', { modelName, activeKey, action });

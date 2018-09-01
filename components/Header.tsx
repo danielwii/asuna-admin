@@ -20,7 +20,7 @@ const StyledVersion = styled.span`
   vertical-align: baseline;
 `;
 
-interface IProps {
+export interface IProps {
   auth: AuthState;
   app: AppState;
   env: string;

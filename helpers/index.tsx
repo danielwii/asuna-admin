@@ -91,7 +91,7 @@ export const columnHelper = {
         const value = render ? render(text) : text;
         if (_.isString(value) && value.length > 30) {
           return (
-            <>
+            <React.Fragment>
               <Tooltip title={value}>
                 <Button href={value} size="small" type="dashed" target="_blank">
                   {value.slice(0, 30) + '...'}
@@ -105,7 +105,7 @@ export const columnHelper = {
                   max-width: inherit;
                 }
               `}</style>
-            </>
+            </React.Fragment>
           );
         }
         return (

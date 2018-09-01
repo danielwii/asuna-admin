@@ -1,36 +1,39 @@
 import React from 'react';
-import _     from 'lodash';
+import _ from 'lodash';
 
 import { Layout, Menu } from 'antd';
 
 const { SubMenu } = Menu;
-const { Sider }   = Layout;
+const { Sider } = Layout;
 
-interface IProps {
-  onOpen: (params: { key: string, title: string, linkTo: string }) => void;
+export interface IProps {
+  onOpen: (params: { key: string; title: string; linkTo: string }) => void;
   menus?: {
-    key: string,
-    title: string,
+    key: string;
+    title: string;
     subMenus: {
-      key: string,
-      title: string,
-      linkTo: string,
-    }
-  }[]
+      key: string;
+      title: string;
+      linkTo: string;
+    };
+  }[];
 }
 
-interface IState {
-}
+export interface IState {}
 
 export default class extends React.Component<IProps, IState> {
-
   /**
    * item's props contains all properties set in menu item
    * @param key
    * @param title
    * @param link
    */
-  open = ({ key, item: { props: { title, link } } }) => {
+  open = ({
+    key,
+    item: {
+      props: { title, link },
+    },
+  }) => {
     const { onOpen } = this.props;
     onOpen({ key, title, linkTo: link });
   };
@@ -43,7 +46,8 @@ export default class extends React.Component<IProps, IState> {
             key={`${menu.key}::${subMenu.key}`}
             title={subMenu.title}
             link={subMenu.linkTo}
-          >{subMenu.title}
+          >
+            {subMenu.title}
           </Menu.Item>
         ))}
       </SubMenu>

@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 
-import Panes from '../components/Panes';
+import Panes from '@asuna-admin/components/Panes';
 
 import { RootState, panesActions } from '@asuna-admin/store';
 

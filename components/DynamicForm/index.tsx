@@ -240,7 +240,7 @@ export class DynamicForm2 extends React.Component<IProps & IFormFix & FormCompon
     ));
 
     return (
-      <>
+      <React.Fragment>
         <div className="dynamic-form">
           <Row type="flex" gutter={anchor ? 16 : 0}>
             <Col span={anchor ? 18 : 24}>
@@ -274,7 +274,7 @@ export class DynamicForm2 extends React.Component<IProps & IFormFix & FormCompon
         {/*margin-bottom: 0;*/}
         {/*}*/}
         {/*`}</style>*/}
-      </>
+      </React.Fragment>
     );
   }
 }
@@ -370,7 +370,7 @@ class EnhancedPureElement extends React.Component<IPureElementProps> {
     // options.hidden = true 时需要隐藏该元素
     const hidden = R.pathOr(false, ['options', 'hidden'])(field);
     return (
-      <>
+      <React.Fragment>
         <div key={index} id={`dynamic-form-${field.name}`} hidden={hidden}>
           {builder(field, index)}
           <hr />
@@ -383,7 +383,7 @@ class EnhancedPureElement extends React.Component<IPureElementProps> {
             box-shadow: #bfbfbf 0 0 0.3rem;
           }
         `}</style>
-      </>
+      </React.Fragment>
     );
   }
 }

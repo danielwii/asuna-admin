@@ -21,7 +21,7 @@ export type Pane = {
   // }
 };
 
-interface IProps {
+export interface IProps {
   panes?: {
     [key: string]: Pane;
   };
@@ -31,7 +31,7 @@ interface IProps {
   onCloseWithout: (key?: string) => void;
 }
 
-interface IState {
+export interface IState {
   titles: object;
 }
 
@@ -67,7 +67,7 @@ class Panes extends React.Component<IProps, IState> {
     const title = titles[activeKey];
 
     const operations = (
-      <>
+      <React.Fragment>
         {panes && <Button icon="close-square" onClick={() => onCloseWithout()} />}
         {panes &&
           R.keys(panes).length > 1 && (
@@ -76,7 +76,7 @@ class Panes extends React.Component<IProps, IState> {
               <Button icon="minus-square" onClick={() => onCloseWithout(activeKey)} />
             </React.Fragment>
           )}
-      </>
+      </React.Fragment>
     );
 
     return (

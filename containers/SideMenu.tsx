@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 
-import SideMenu from '../components/SideMenu';
+import SideMenu from '@asuna-admin/components/SideMenu';
 
 import { panesActions, RootState } from '@asuna-admin/store';
 

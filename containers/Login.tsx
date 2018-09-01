@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 
-import Login from '../components/Login';
+import Login from '@asuna-admin/components/Login';
 
 import { RootState, authActions } from '@asuna-admin/store';
 
@@ -14,4 +14,4 @@ const mapDispatchToProps = dispatch => ({
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(Login as any);
+)(Login);
