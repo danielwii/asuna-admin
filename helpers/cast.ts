@@ -1,8 +1,7 @@
 import { toCamelCase, toSnakeCase } from 'node-buffs';
 
-import { config } from '@asuna-admin/core';
-
 export function castModelKey(key) {
+  const { config } = require('@asuna-admin/core');
   if (config.is('MODEL_KEYS_CASE', 'Camel')) {
     return toCamelCase(key);
   }
@@ -13,6 +12,7 @@ export function castModelKey(key) {
 }
 
 export function castModelName(key) {
+  const { config } = require('@asuna-admin/core');
   if (config.is('MODEL_NAME_CASE', 'Camel')) {
     return toCamelCase(key);
   }

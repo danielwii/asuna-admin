@@ -21,17 +21,9 @@
     "declarationMap": true,
     "skipLibCheck": true,
     "outDir": "lib",
-    "baseUrl": ".",
+    "baseUrl": "./",
     "paths": {
-      "@asuna-admin/adapters": ["./adapters"],
-      "@asuna-admin/common": ["./common"],
-      "@asuna-admin/components/*": ["./components/*"],
-      "@asuna-admin/containers/*": ["./containers/*"],
-      "@asuna-admin/core": ["./core"],
-      "@asuna-admin/helpers": ["./helpers"],
-      "@asuna-admin/layout": ["./layout"],
-      "@asuna-admin/modules": ["./modules"],
-      "@asuna-admin/store": ["./store"]
+      "@asuna-admin/*": ["./*"]
     }
     //    "typeRoots": [
     //      "node_modules/@types"

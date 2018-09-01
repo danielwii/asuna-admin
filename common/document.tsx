@@ -1,7 +1,7 @@
 import React from 'react';
 
 import Document, { Head, Main, NextScript } from 'next/document';
-import { ServerStyleSheet }                 from 'styled-components';
+import { ServerStyleSheet } from 'styled-components';
 
 export class StyledDocument extends Document {
   props: any;
@@ -13,14 +13,12 @@ export class StyledDocument extends Document {
     // Next.js gives us a `transformPage` function
     // to be able to hook into the rendering of a page
     const transform = App => props =>
-            // Step 2: Retrieve styles from components in the page
-            sheet.collectStyles(<App {...props} />)
-          // Same as:
-          // return <StyleSheetManager sheet={sheet.instance}>
-          //    <App/>
-          // </StyleSheetManager>
-          // eslint-disable-next-line semi-style
-    ;
+      // Step 2: Retrieve styles from components in the page
+      sheet.collectStyles(<App {...props} />);
+    // Same as:
+    // return <StyleSheetManager sheet={sheet.instance}>
+    //    <App/>
+    // </StyleSheetManager>
     const page = renderPage(transform);
 
     // Step 3: Extract the styles as <style> tags
@@ -34,9 +32,7 @@ export class StyledDocument extends Document {
     return (
       <html lang="zh">
         <meta charSet="utf-8" />
-        <Head>
-          {this.props.styleTags}
-        </Head>
+        <Head>{this.props.styleTags}</Head>
         <body>
           <Main />
           <NextScript />

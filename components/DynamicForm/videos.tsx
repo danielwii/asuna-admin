@@ -1,13 +1,13 @@
-/* eslint-disable jsx-a11y/media-has-caption */
 import React from 'react';
-import PropTypes from 'prop-types';
 import videojs from 'video.js';
 import * as R from 'ramda';
+import _ from 'lodash';
 
 import { Button, Icon, message, Upload } from 'antd';
 
 import { createLogger } from '@asuna-admin/helpers';
 import { apiProxy } from '@asuna-admin/adapters';
+import { AuthState } from '@asuna-admin/store';
 
 const logger = createLogger('components:dynamic-form:video', 'warn');
 
@@ -28,12 +28,12 @@ function beforeUpload(file) {
   return isMP4 && isLt100M;
 }
 
-async function upload(auth, onChange, files, args) {
+async function upload(auth, onChange, files, args?) {
   logger.log('[upload]', args);
   const response = await apiProxy.upload(auth, args.file);
   logger.log('[upload]', 'response is', response);
 
-  if (/^20\d$/.test(response.status)) {
+  if (/^20\d$/.test(response.status as any)) {
     message.success('upload successfully.');
     args.onSuccess();
 
@@ -48,25 +48,19 @@ async function upload(auth, onChange, files, args) {
 // Uploader
 // --------------------------------------------------------------
 
-export class VideoUploader extends React.Component {
+export interface IProps {
+  auth: AuthState;
+  host?: string;
+  prefix?: string;
+  value?: string;
+  multi?: boolean;
+  onChange?: (value: any) => void;
+  urlHandler?: (value: any) => void;
+}
+
+export class VideoUploader extends React.Component<IProps> {
   prop = {
     multi: false,
-  };
-
-  static propTypes = {
-    auth: PropTypes.shape({}), // auth token object
-    host: PropTypes.string.isRequired,
-    prefix: PropTypes.string.isRequired,
-    value: PropTypes.arrayOf(
-      PropTypes.shape({
-        bucket: PropTypes.string,
-        filename: PropTypes.string,
-        mode: PropTypes.string,
-        prefix: PropTypes.string,
-      }),
-    ),
-    onChange: PropTypes.func,
-    multi: PropTypes.bool,
   };
 
   state = {
@@ -149,14 +143,16 @@ export class VideoUploader extends React.Component {
             <Icon type="upload" /> upload
           </Button>
         </Upload>
-        {R.type(videos) === 'Array' && videos.map(this.renderPlayer)}
+        {R.type(videos) === 'Array' && _.map(videos || [], this.renderPlayer)}
       </div>
     );
   }
 }
 
-// eslint-disable-next-line react/no-multi-comp
 export default class VideoPlayer extends React.Component {
+  player: videojs.Player;
+  videoNode: any;
+
   componentDidMount() {
     // instantiate Video.js
     this.player = videojs(this.videoNode, this.props, () => {
@@ -177,9 +173,8 @@ export default class VideoPlayer extends React.Component {
   // see https://github.com/videojs/video.js/pull/3856
   render() {
     return (
-      <>
+      <React.Fragment>
         <div data-vjs-player>
-          {/* eslint-disable-next-line no-return-assign */}
           <video ref={node => (this.videoNode = node)} className="video-js" />
         </div>
         {/* language=CSS */}
@@ -191,7 +186,7 @@ export default class VideoPlayer extends React.Component {
             }
           `}
         </style>
-      </>
+      </React.Fragment>
     );
   }
 }

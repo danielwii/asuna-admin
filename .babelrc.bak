@@ -1,15 +1,13 @@
 {
   "presets": [
-    "@babel/preset-typescript",
-    "@babel/preset-env"
+    "next/babel",
+    "@zeit/next-typescript/babel"
   ],
   "plugins": [
-    "@babel/plugin-syntax-dynamic-import",
-    "@babel/plugin-transform-runtime",
     ["styled-components", { "ssr": true, "displayName": true, "preprocess": false }],
     ["import", { "libraryName": "antd", "style": false }, "import-antd"],
     ["import", { "libraryName": "lodash", "libraryDirectory": "", "camel2DashComponentName": false }, "import-lodash"]
-    //    ["module-resolver", { "alias": { "asuna-admin": "." } }]
+//    ["module-resolver", { "alias": { "asuna-admin": "." } }]
   ],
   "comments": false,
   "compact": "auto"

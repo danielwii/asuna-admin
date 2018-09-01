@@ -41,7 +41,6 @@ function* init() {
       yield take(REHYDRATE);
     }
     logger.log('[init]', 'get version...');
-    // eslint-disable-next-line no-use-before-define
     // yield heartbeat();
     logger.log('[init]', 'load all roles...');
     yield securitySagaFunctions.loadAllRoles();

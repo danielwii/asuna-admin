@@ -25,7 +25,6 @@ export interface ISecurityService {
 // Main
 // --------------------------------------------------------------
 
-// eslint-disable-next-line no-unused-vars
 const logger = createLogger('adapters:security');
 
 export const securityProxy = {

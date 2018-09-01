@@ -119,9 +119,9 @@ export const columnHelper = {
     },
   }),
   generateCalendar: (key, title, render?) => ({
-    key,
+    key: castModelKey(key),
     title,
-    dataIndex: key,
+    dataIndex: castModelKey(key),
     sorter: true,
     render: text => {
       if (text) {
@@ -222,11 +222,11 @@ export const commonColumns = {
   name: columnHelper.generate('name', '名称'),
   description: columnHelper.generate('description', '描述'),
   title: columnHelper.generate('title', '标题'),
-  nameEn: columnHelper.generate(castModelKey('nameEn'), '英文名称'),
+  nameEn: columnHelper.generate('nameEn', '英文名称'),
   email: columnHelper.generate('email', 'Email'),
   type: columnHelper.generate('type', '类型'),
-  createdAt: columnHelper.generateCalendar(castModelKey('createdAt'), '创建时间'),
-  updatedAt: columnHelper.generateCalendar(castModelKey('updatedAt'), '更新时间'),
+  createdAt: columnHelper.generateCalendar('createdAt', '创建时间'),
+  updatedAt: columnHelper.generateCalendar('updatedAt', '更新时间'),
   actions: columnHelper.generateActions,
 };
 
