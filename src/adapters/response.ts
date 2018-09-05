@@ -1,10 +1,12 @@
 import * as _ from 'lodash';
 
 import { createLogger } from '@asuna-admin/logger';
-import { appContext } from '@asuna-admin/core';
+import { AppContext } from '@asuna-admin/core';
 import { Config } from '@asuna-admin/config';
 
-const logger = createLogger('adapters::response', 'warn');
+// --------------------------------------------------------------
+// Types
+// --------------------------------------------------------------
 
 export interface TablePagination {
   showSizeChanger: boolean;
@@ -19,8 +21,14 @@ interface IResponseProxy {
   extract: (apiResponse: object) => { items: object[]; pagination: TablePagination };
 }
 
+// --------------------------------------------------------------
+// Main
+// --------------------------------------------------------------
+
+const logger = createLogger('adapters::response', 'warn');
+
 export const responseProxy: IResponseProxy = {
-  extract: apiResponse => appContext.ctx.response.extract(apiResponse),
+  extract: apiResponse => AppContext.ctx.response.extract(apiResponse),
 };
 
 export class ResponseAdapter implements IResponseProxy {

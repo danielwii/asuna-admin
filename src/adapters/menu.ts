@@ -1,7 +1,7 @@
 import * as R from 'ramda';
 
 import { createLogger } from '@asuna-admin/logger';
-import { appContext } from '@asuna-admin/core';
+import { AppContext } from '@asuna-admin/core';
 
 // --------------------------------------------------------------
 // Types
@@ -16,8 +16,8 @@ export interface IMenuService {}
 const logger = createLogger('adapters:menu', 'warn');
 
 export const menuProxy = {
-  init: (isSysAdmin, authorities) => appContext.ctx.menu.init(isSysAdmin, authorities),
-  getRegisteredModels: () => appContext.ctx.menu.getRegisteredModels(),
+  init: (isSysAdmin, authorities) => AppContext.ctx.menu.init(isSysAdmin, authorities),
+  getRegisteredModels: () => AppContext.ctx.menu.getRegisteredModels(),
 };
 
 export class MenuAdapter {

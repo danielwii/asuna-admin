@@ -1,5 +1,5 @@
 import { createLogger } from '@asuna-admin/logger';
-import { appContext } from '@asuna-admin/core';
+import { AppContext } from '@asuna-admin/core';
 
 // --------------------------------------------------------------
 // Types
@@ -29,16 +29,16 @@ const logger = createLogger('adapters:security');
 
 export const securityProxy = {
   currentUser: (opts: { token: string }, configs?: IRequestConfig) =>
-    appContext.ctx.security.currentUser(opts, configs),
+    AppContext.ctx.security.currentUser(opts, configs),
 
   roles: (opts: { token: string }, configs?: IRequestConfig) =>
-    appContext.ctx.security.roles(opts, configs),
+    AppContext.ctx.security.roles(opts, configs),
 
   updatePassword: (
     opts: { token: string },
     data: { body: { email: string; password: string } },
     configs?: IRequestConfig,
-  ) => appContext.ctx.security.updatePassword(opts, data, configs),
+  ) => AppContext.ctx.security.updatePassword(opts, data, configs),
 };
 
 export class SecurityAdapter {

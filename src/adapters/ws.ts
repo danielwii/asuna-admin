@@ -1,13 +1,15 @@
 import { connect, Socket } from 'socket.io-client';
-import getConfig from 'next/config';
 
 import { appActions } from '@asuna-admin/store';
 import { createLogger } from '@asuna-admin/logger';
-import { appContext } from '@asuna-admin/core';
+import { AppContext } from '@asuna-admin/core';
+
+// --------------------------------------------------------------
+// Main
+// --------------------------------------------------------------
 
 const logger = createLogger('adapters:ws', 'warn');
-
-const { serverRuntimeConfig = {} } = getConfig() || {};
+const appContext = new AppContext();
 
 export class WsAdapter {
   private port?: number;
@@ -19,29 +21,29 @@ export class WsAdapter {
     this.port = opts.port;
     this.namespace = opts.namespace || 'admin';
 
-    if (!serverRuntimeConfig.isServer && !WsAdapter.io) {
+    if (!AppContext.serverRuntimeConfig.isServer && !WsAdapter.io) {
       WsAdapter.io = connect('/admin');
 
       WsAdapter.io.on('connect', () => {
         logger.log('[connect]', { id: WsAdapter.io.id, appContext });
-        appContext.dispatch(appActions.heartbeat());
+        AppContext.dispatch(appActions.heartbeat());
       });
       WsAdapter.io.on('reconnect', () => {
         logger.log('[reconnect]', { id: WsAdapter.io.id, appContext });
-        appContext.dispatch(appActions.heartbeat());
+        AppContext.dispatch(appActions.heartbeat());
       });
       WsAdapter.io.on('disconnect', () => {
         logger.error('[disconnect]', { id: WsAdapter.io.id, appContext });
-        const { heartbeat } = appContext.store.select(state => state.app);
+        const { heartbeat } = AppContext.store.select(state => state.app);
         if (heartbeat) {
-          appContext.dispatch(appActions.heartbeatStop());
+          AppContext.dispatch(appActions.heartbeatStop());
         }
       });
       WsAdapter.io.on('error', error => {
         logger.error('[error]', { id: WsAdapter.io.id, appContext, error });
-        const { heartbeat } = appContext.store.select(state => state.app);
+        const { heartbeat } = AppContext.store.select(state => state.app);
         if (heartbeat) {
-          appContext.dispatch(appActions.heartbeatStop());
+          AppContext.dispatch(appActions.heartbeatStop());
         }
       });
     }

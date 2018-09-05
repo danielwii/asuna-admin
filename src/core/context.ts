@@ -1,6 +1,5 @@
 import { AnyAction, Dispatch } from 'redux';
 
-import getConfig from 'next/config';
 import { Subject } from 'rxjs';
 
 import { RootState, IStoreConnector } from '@asuna-admin/store';
@@ -59,10 +58,10 @@ type IndexModuleRegister = {
 // Setup context
 // --------------------------------------------------------------
 
-const { serverRuntimeConfig = {} } = getConfig() || {};
-
 class AppContext {
-  private _context: {
+  static serverRuntimeConfig;
+
+  private static _context: {
     auth: AuthAdapter;
     response: ResponseAdapter;
     menu: MenuAdapter;
@@ -71,36 +70,52 @@ class AppContext {
     models: ModelAdapter;
     ws: WsAdapter;
   };
-  private _dispatch: Dispatch;
-  private _subject;
-  private _storeConnector: IStoreConnector<RootState>;
+  private static _dispatch: Dispatch;
+  private static _subject;
+  private static _storeConnector: IStoreConnector<RootState>;
 
-  constructor() {
+  constructor(nextGetConfig?) {
+    if (!AppContext.serverRuntimeConfig) {
+      const { serverRuntimeConfig: serverConfig = {} } = nextGetConfig ? nextGetConfig() : {};
+      AppContext.serverRuntimeConfig = serverConfig;
+    }
     // this._context = { ...this._context, ws: new WsAdapter(this) };
-    this._subject = new Subject();
+    if (!AppContext._subject) {
+      AppContext._subject = new Subject();
+    }
     // this._subject.subscribe({
     //   next: (action) => console.log('observer: ', action)
     // });
-    (async () => {
-      const { storeConnector } = await import('../store');
-      this._storeConnector = storeConnector;
-    })();
+    if (!AppContext._storeConnector) {
+      (async () => {
+        const { storeConnector } = await import('../store');
+        AppContext._storeConnector = storeConnector;
+      })();
+    }
   }
 
-  regStore(storeConnector: IStoreConnector<RootState>) {
-    this._storeConnector = storeConnector;
+  public static regStore(storeConnector: IStoreConnector<RootState>) {
+    if (!AppContext._storeConnector) {
+      AppContext._storeConnector = storeConnector;
+    }
   }
 
-  regDispatch(dispatch: Dispatch): void {
-    this._dispatch = this._dispatch || dispatch;
+  public static regDispatch(dispatch: Dispatch): void {
+    if (!AppContext._dispatch) {
+      AppContext._dispatch = AppContext._dispatch || dispatch;
+    }
   }
 
-  dispatch(action: AnyAction) {
-    !serverRuntimeConfig.isServer && this._dispatch && this._dispatch(action);
+  public static dispatch(action: AnyAction) {
+    !AppContext.serverRuntimeConfig.isServer &&
+      AppContext._dispatch &&
+      AppContext._dispatch(action);
   }
 
-  actionHandler(action: AnyAction) {
-    !serverRuntimeConfig.isServer && this._subject && this._subject.next(action);
+  public static actionHandler(action: AnyAction) {
+    !AppContext.serverRuntimeConfig.isServer &&
+      AppContext._subject &&
+      AppContext._subject.next(action);
   }
 
   /**
@@ -117,14 +132,14 @@ class AppContext {
     if (moduleRegister.module) {
       const register = moduleRegister.register;
       if (moduleRegister.module === 'login') {
-        this._context = {
-          ...this._context,
+        AppContext._context = {
+          ...AppContext._context,
           auth: new AuthAdapter(register.createAuthService()),
           ws: new WsAdapter(),
         };
       } else {
-        this._context = {
-          ...this._context,
+        AppContext._context = {
+          ...AppContext._context,
           auth: new AuthAdapter(register.createAuthService()),
           response: new ResponseAdapter(),
           menu: new MenuAdapter(
@@ -143,8 +158,8 @@ class AppContext {
       }
     } else {
       const register = moduleRegister;
-      this._context = {
-        ...this._context,
+      AppContext._context = {
+        ...AppContext._context,
         auth: new AuthAdapter(register.createAuthService()),
         response: new ResponseAdapter(),
         menu: new MenuAdapter(
@@ -163,19 +178,17 @@ class AppContext {
     }
   }
 
-  get ctx() {
-    return this._context;
+  public static get ctx() {
+    return AppContext._context;
   }
 
-  get store() {
-    return this._storeConnector;
+  public static get store() {
+    return AppContext._storeConnector;
   }
 
-  get subject() {
-    return this._subject;
+  public static get subject() {
+    return AppContext._subject;
   }
 }
 
-const appContext = new AppContext();
-
-export { AppContext, appContext };
+export { AppContext };

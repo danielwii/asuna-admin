@@ -9,9 +9,9 @@ import LogoCanvas from '../components/LogoCanvas';
 
 // import { register } from '../../services/register';
 
-import { RootState, withReduxSaga, AppState } from '@asuna-admin/store';
+import { RootState, AsunaStore, AppState } from '@asuna-admin/store';
 import { createLogger } from '@asuna-admin/logger';
-import { appContext } from '@asuna-admin/core';
+import { AppContext } from '@asuna-admin/core';
 import { AntdLayout } from '@asuna-admin/layout';
 
 const logger = createLogger('pages:login');
@@ -48,8 +48,8 @@ interface IProps extends ReduxProps {
 class LoginPage extends React.Component<IProps> {
   constructor(props) {
     super(props);
-    appContext.setup(register);
-    appContext.regDispatch(props.dispatch);
+    // appContext.setup(register);
+    AppContext.regDispatch(props.dispatch);
   }
 
   componentDidCatch(error, info) {
@@ -85,4 +85,7 @@ const mapStateToProps = (state: RootState) => ({
   app: state.app,
 });
 
-export const DefaultLoginPage = withReduxSaga(connect(mapStateToProps)(LoginPage as any));
+export const renderLoginPage = nextGetConfig => {
+  const store = new AsunaStore(nextGetConfig);
+  return store.withReduxSaga(connect(mapStateToProps)(LoginPage));
+};

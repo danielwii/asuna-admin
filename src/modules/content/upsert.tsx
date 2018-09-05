@@ -12,7 +12,7 @@ import { Pane } from '@asuna-admin/components';
 import { AuthState, modelsActions } from '@asuna-admin/store';
 import { diff, isErrorResponse, toFormErrors } from '@asuna-admin/helpers';
 import { modelProxy } from '@asuna-admin/adapters';
-import { sendEvent, EventType } from '@asuna-admin/core';
+import { EventBus, EventType } from '@asuna-admin/core';
 import { createLogger } from '@asuna-admin/logger';
 
 const logger = createLogger('modules:content:upsert', 'warn');
@@ -346,10 +346,10 @@ class ContentUpsert extends React.Component<IProps, IState> {
           this.setState({ hasErrors: false });
           // FIXME 当前页面暂未切换为 update 模式，临时关闭当前页面
           if (isInsertMode) {
-            sendEvent(EventType.MODEL_INSERT, { modelName });
+            EventBus.sendEvent(EventType.MODEL_INSERT, { modelName });
             onClose();
           } else {
-            sendEvent(EventType.MODEL_UPDATE, { modelName, id });
+            EventBus.sendEvent(EventType.MODEL_UPDATE, { modelName, id });
           }
         }
       }),

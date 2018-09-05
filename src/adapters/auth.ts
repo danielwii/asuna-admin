@@ -1,5 +1,5 @@
 import { createLogger } from '@asuna-admin/logger';
-import { appContext } from '@asuna-admin/core';
+import { AppContext } from '@asuna-admin/core';
 
 // --------------------------------------------------------------
 // Types
@@ -28,9 +28,9 @@ interface IAuthProxy {
 const logger = createLogger('adapters:auth', 'warn');
 
 export const authProxy: IAuthProxy = {
-  login: (username, password) => appContext.ctx.auth.login(username, password),
-  logout: () => appContext.ctx.auth.logout(),
-  extractToken: payload => appContext.ctx.auth.extractToken(payload),
+  login: (username, password) => AppContext.ctx.auth.login(username, password),
+  logout: () => AppContext.ctx.auth.logout(),
+  extractToken: payload => AppContext.ctx.auth.extractToken(payload),
 };
 
 export class AuthAdapter implements IAuthProxy {

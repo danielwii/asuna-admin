@@ -1,7 +1,4 @@
-import getConfig from 'next/config';
-import { Subject } from 'rxjs';
-
-const { serverRuntimeConfig = {} } = getConfig() || {};
+import { Observable, Subject } from 'rxjs';
 
 /**
  * the accept type for event-bus
@@ -21,22 +18,45 @@ interface ActionEvent {
   extras?: any;
 }
 
-// core event bus, the events will received both from client side and server side.
-const bus = new Subject();
+class EventBus {
+  private static serverRuntimeConfig;
+  private static subject: Subject<any>;
 
-function sendEvent(type: EventType.MODEL_INSERT, payload: { modelName: string }): void;
-function sendEvent(
-  type: EventType.MODEL_UPDATE,
-  payload: { modelName: string; id: number | string },
-): void;
-function sendEvent(
-  type: EventType.MODEL_DELETE,
-  payload: { modelName: string; id: number | string },
-): void;
-function sendEvent(type: EventType, payload: object, extras?: object): void {
-  if (!serverRuntimeConfig.isServer) {
-    bus.next({ type, payload, extras });
+  constructor(nextGetConfig) {
+    if (!EventBus.subject) {
+      EventBus.subject = new Subject<any>();
+    }
+    if (!EventBus.serverRuntimeConfig) {
+      const { serverRuntimeConfig: serverConfig = {} } = nextGetConfig ? nextGetConfig() : {};
+      EventBus.serverRuntimeConfig = serverConfig;
+    }
+  }
+
+  public static sendEvent(type: EventType.MODEL_INSERT, payload: { modelName: string }): void;
+  public static sendEvent(
+    type: EventType.MODEL_UPDATE,
+    payload: { modelName: string; id: number | string },
+  ): void;
+  public static sendEvent(
+    type: EventType.MODEL_DELETE,
+    payload: { modelName: string; id: number | string },
+  ): void;
+  public static sendEvent(type: EventType, payload: object, extras?: object): void {
+    if (!EventBus.serverRuntimeConfig.isServer) {
+      EventBus.subject.next({ type, payload, extras });
+    }
+  }
+
+  public static get observable(): Observable<{
+    type: EventType;
+    payload: object;
+    extras?: object;
+  }> {
+    return EventBus.subject;
   }
 }
 
-export { bus, sendEvent, EventType, ActionEvent };
+// core event bus, the events will received both from client side and server side.
+// const bus = new Subject();
+
+export { EventBus, EventType, ActionEvent };

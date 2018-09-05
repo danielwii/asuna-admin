@@ -1,10 +1,9 @@
 import withRedux, { NextReduxWrappedComponent } from 'next-redux-wrapper';
 import nextReduxSaga from 'next-redux-saga';
-import getConfig from 'next/config';
 import * as R from 'ramda';
 import { reduxAction } from 'node-buffs';
 
-import { applyMiddleware, combineReducers, createStore } from 'redux';
+import { applyMiddleware, combineReducers, createStore, Store } from 'redux';
 
 import createSagaMiddleware from 'redux-saga';
 import { all } from 'redux-saga/effects';
@@ -26,7 +25,7 @@ import { securityReducer, securitySagas } from './security.redux';
 import { panesCleaner, panesReducer, panesSagas } from './panes.redux';
 import { createStoreConnectorMiddleware, storeConnector } from './middlewares';
 
-import { appContext } from '@asuna-admin/core';
+import { AppContext } from '@asuna-admin/core';
 import { createLogger } from '@asuna-admin/logger';
 
 export { storeConnector };
@@ -41,40 +40,6 @@ export * from './model.redux';
 export * from './content.redux';
 export * from './middlewares';
 
-const { serverRuntimeConfig = {} } = getConfig() || {};
-
-// --------------------------------------------------------------
-// Init
-// --------------------------------------------------------------
-
-const logger = createLogger('store');
-
-const initialState = {};
-
-const persistConfig = {
-  key: 'root',
-  storage: localForage,
-  debug: true,
-  timeout: 30000,
-  blacklist: ['app'],
-};
-
-// --------------------------------------------------------------
-// Types
-// --------------------------------------------------------------
-
-export const actionTypes = {
-  CLEAN: 'sys::clean',
-};
-
-export const actions = {
-  clean: () => reduxAction(actionTypes.CLEAN),
-};
-
-// --------------------------------------------------------------
-// Root reducers
-// --------------------------------------------------------------
-
 export interface RootState {
   auth: AuthState;
   router: object;
@@ -87,109 +52,154 @@ export interface RootState {
   global: object;
 }
 
-const reducers: { [key in keyof RootState]: any } = {
-  auth: authReducer,
-  router: routerReducer,
-  panes: panesReducer,
-  menu: menuReducer,
-  models: modelsReducer,
-  content: contentReducer,
-  // mod_models   : modModelsReducer,
-  security: securityReducer,
-  app: appReducer,
-  // form         : formReducer,
-  global: (previousState = initialState, action) => ({ ...previousState, ...action }),
-};
+const logger = createLogger('store');
 
-const combinedReducers = combineReducers(reducers);
+export class AsunaStore {
+  private static serverRuntimeConfig;
+  private static storeConnectorMiddleware;
+  private static epicMiddleware;
+  private static sagaMiddleware;
+  private static loggerMiddleware;
 
-const crossSliceReducer = (state, action) => {
-  if (action.type === actionTypes.CLEAN) {
-    const cleanedState = R.compose(
-      modelsCleaner,
-      panesCleaner,
-    )(state);
-    logger.log('[crossSliceReducer]', { state, action, cleanedState });
-    return cleanedState;
-  }
-  return state;
-};
+  private initialState = {};
+  private persistConfig = {
+    key: 'root',
+    storage: localForage,
+    debug: true,
+    timeout: 1000,
+    blacklist: ['app'],
+  };
 
-const rootReducers = (state, action) => {
-  const intermediateState = combinedReducers(state, action);
-  return crossSliceReducer(intermediateState, action);
-};
-
-// const persistedReducer = persistReducer(persistConfig, rootReducers);
-
-// --------------------------------------------------------------
-// Root sagas
-// --------------------------------------------------------------
-
-function* rootSaga() {
-  yield all([
-    ...authSagas,
-    ...routerSagas,
-    ...panesSagas,
-    ...menuSagas,
-    ...modelsSagas,
-    ...contentSagas,
-    // ...modModelsSagas,
-    ...securitySagas,
-    ...appSagas,
-  ]);
-}
-
-// --------------------------------------------------------------
-// Root epics
-// --------------------------------------------------------------
-
-export const rootEpic = combineEpics(...appEpics);
-
-// --------------------------------------------------------------
-// Setup store with redux-saga
-// --------------------------------------------------------------
-
-const storeConnectorMiddleware = createStoreConnectorMiddleware(action =>
-  appContext.actionHandler(action),
-);
-const epicMiddleware = createEpicMiddleware();
-const sagaMiddleware = createSagaMiddleware();
-const loggerMiddleware = createReduxLogger({ collapsed: true });
-
-export const configureStore = (state = initialState) => {
-  let store;
-  if (serverRuntimeConfig.isServer) {
-    store = createStore(
-      rootReducers,
-      state,
-      applyMiddleware(sagaMiddleware, epicMiddleware, storeConnectorMiddleware),
-    );
-  } else {
-    // 在开发模式时开启日志
-    if (process.env.NODE_ENV === 'development') {
-      localStorage.setItem('debug', '*,-socket.io*,-engine.io*');
-    } else {
-      localStorage.removeItem('debug');
+  constructor(nextGetConfig?) {
+    if (!AsunaStore.serverRuntimeConfig) {
+      const { serverRuntimeConfig: serverConfig = {} } = nextGetConfig ? nextGetConfig() : {};
+      AsunaStore.serverRuntimeConfig = serverConfig;
     }
-    store = createStore(
-      rootReducers,
-      state,
-      composeWithDevTools(
-        applyMiddleware(sagaMiddleware, epicMiddleware, loggerMiddleware, storeConnectorMiddleware),
-        autoRehydrate(),
-      ),
-    );
-
-    persistStore(store, persistConfig);
+    if (!AsunaStore.storeConnectorMiddleware) {
+      const appContext = new AppContext(nextGetConfig);
+      AsunaStore.storeConnectorMiddleware = createStoreConnectorMiddleware(action =>
+        AppContext.actionHandler(action),
+      );
+    }
+    if (!AsunaStore.epicMiddleware) {
+      AsunaStore.epicMiddleware = createEpicMiddleware();
+    }
+    if (!AsunaStore.sagaMiddleware) {
+      AsunaStore.sagaMiddleware = createSagaMiddleware();
+    }
+    if (!AsunaStore.loggerMiddleware) {
+      AsunaStore.loggerMiddleware = createReduxLogger({ collapsed: true });
+    }
   }
 
-  store.sagaTask = sagaMiddleware.run(rootSaga);
-  epicMiddleware.run(rootEpic);
+  private *rootSagas() {
+    yield all([
+      ...authSagas,
+      ...routerSagas,
+      ...panesSagas,
+      ...menuSagas,
+      ...modelsSagas,
+      ...contentSagas,
+      // ...modModelsSagas,
+      ...securitySagas,
+      ...appSagas,
+    ]);
+  }
 
-  return store;
+  private rootReducers = (state, action) => {
+    const reducers: { [key in keyof RootState]: any } = {
+      auth: authReducer,
+      router: routerReducer,
+      panes: panesReducer,
+      menu: menuReducer,
+      models: modelsReducer,
+      content: contentReducer,
+      // mod_models   : modModelsReducer,
+      security: securityReducer,
+      app: appReducer,
+      // form         : formReducer,
+      global: (previousState = this.initialState, action) => ({ ...previousState, ...action }),
+    };
+
+    const combinedReducers = combineReducers(reducers);
+
+    const crossSliceReducer = (state, action) => {
+      if (action.type === actionTypes.CLEAN) {
+        const cleanedState = R.compose(
+          modelsCleaner,
+          panesCleaner,
+        )(state);
+        logger.log('[crossSliceReducer]', { state, action, cleanedState });
+        return cleanedState;
+      }
+      return state;
+    };
+
+    const intermediateState = combinedReducers(state, action);
+    return crossSliceReducer(intermediateState, action);
+  };
+
+  private rootEpics = combineEpics(...appEpics);
+
+  private configureStore = (state = this.initialState): Store => {
+    let store;
+    if (AsunaStore.serverRuntimeConfig.isServer) {
+      store = createStore(
+        this.rootReducers,
+        state,
+        applyMiddleware(
+          AsunaStore.sagaMiddleware,
+          AsunaStore.epicMiddleware,
+          AsunaStore.storeConnectorMiddleware,
+        ),
+      );
+    } else {
+      // 在开发模式时开启日志
+      if (process.env.NODE_ENV === 'development') {
+        if (typeof localStorage !== 'undefined') {
+          localStorage.setItem('debug', '*,-socket.io*,-engine.io*');
+        }
+      } else {
+        if (typeof localStorage !== 'undefined') {
+          localStorage.removeItem('debug');
+        }
+      }
+      store = createStore(
+        this.rootReducers,
+        state,
+        composeWithDevTools(
+          applyMiddleware(
+            AsunaStore.sagaMiddleware,
+            AsunaStore.epicMiddleware,
+            AsunaStore.loggerMiddleware,
+            AsunaStore.storeConnectorMiddleware,
+          ),
+          autoRehydrate(),
+        ),
+      );
+
+      persistStore(store, this.persistConfig);
+    }
+
+    store.sagaTask = AsunaStore.sagaMiddleware.run(this.rootSagas);
+    AsunaStore.epicMiddleware.run(this.rootEpics);
+
+    return store;
+  };
+
+  public withReduxSaga = (BaseComponent): NextReduxWrappedComponent<any> => {
+    return withRedux(this.configureStore)(nextReduxSaga(BaseComponent));
+  };
+}
+
+// --------------------------------------------------------------
+// Types
+// --------------------------------------------------------------
+
+export const actionTypes = {
+  CLEAN: 'sys::clean',
 };
 
-export function withReduxSaga(BaseComponent): NextReduxWrappedComponent<any> {
-  return withRedux(configureStore)(nextReduxSaga(BaseComponent));
-}
+export const actions = {
+  clean: () => reduxAction(actionTypes.CLEAN),
+};

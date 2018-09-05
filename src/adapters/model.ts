@@ -7,8 +7,12 @@ import { TablePagination } from './response';
 
 import { defaultColumns } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
-import { appContext } from '@asuna-admin/core';
+import { AppContext } from '@asuna-admin/core';
 import { Config } from '@asuna-admin/config';
+
+// --------------------------------------------------------------
+// Types
+// --------------------------------------------------------------
 
 export interface IModelBody {
   id?: number | string;
@@ -105,14 +109,14 @@ interface IModelProxy {
 
 export const modelProxy: IModelProxy = {
   getModelConfig: (name: string): Asuna.Schema.ModelConfig =>
-    appContext.ctx.models.getModelConfig(name),
+    AppContext.ctx.models.getModelConfig(name),
 
-  getAssociationConfigs: name => appContext.ctx.models.getAssociationConfigs(name),
+  getAssociationConfigs: name => AppContext.ctx.models.getAssociationConfigs(name),
 
   getFormSchema: (schemas, name, values) =>
-    appContext.ctx.models.getFormSchema(schemas, name, values),
+    AppContext.ctx.models.getFormSchema(schemas, name, values),
 
-  getFieldsOfAssociations: () => appContext.ctx.models.getFieldsOfAssociations(),
+  getFieldsOfAssociations: () => AppContext.ctx.models.getFieldsOfAssociations(),
 
   /**
    * load schema list
@@ -123,7 +127,7 @@ export const modelProxy: IModelProxy = {
    */
   loadModels: (auth, name, configs) => {
     logger.log('[modelProxy.loadModels]', { auth, name, configs });
-    return appContext.ctx.models.loadModels(auth, name, configs);
+    return AppContext.ctx.models.loadModels(auth, name, configs);
   },
 
   /**
@@ -132,21 +136,21 @@ export const modelProxy: IModelProxy = {
    * @param name
    * @returns {*}
    */
-  loadSchema: ({ token }, { name }) => appContext.ctx.models.loadSchema({ token }, { name }),
+  loadSchema: ({ token }, { name }) => AppContext.ctx.models.loadSchema({ token }, { name }),
 
   /**
    * load all schemas
    * @param token
    * @returns {*}
    */
-  listSchemasCallable: ({ token }) => appContext.ctx.models.listSchemasCallable({ token }),
+  listSchemasCallable: ({ token }) => AppContext.ctx.models.listSchemasCallable({ token }),
 
   listAssociationsCallable: ({ token }, associationNames) =>
-    appContext.ctx.models.listAssociationsCallable({ token }, associationNames),
+    AppContext.ctx.models.listAssociationsCallable({ token }, associationNames),
 
-  fetch: ({ token }, name, data) => appContext.ctx.models.fetch({ token }, name, data),
+  fetch: ({ token }, name, data) => AppContext.ctx.models.fetch({ token }, name, data),
 
-  remove: ({ token }, name, data) => appContext.ctx.models.remove({ token }, name, data),
+  remove: ({ token }, name, data) => AppContext.ctx.models.remove({ token }, name, data),
 
   /**
    * update model if id exists in body, insert new one or else.
@@ -159,7 +163,7 @@ export const modelProxy: IModelProxy = {
     { token, schemas }: { token: string; schemas? },
     name: string,
     data: { body: IModelBody },
-  ): Promise<AxiosResponse> => appContext.ctx.models.upsert({ token, schemas }, name, data),
+  ): Promise<AxiosResponse> => AppContext.ctx.models.upsert({ token, schemas }, name, data),
 };
 
 export class ModelAdapter implements IModelProxy {
@@ -267,7 +271,7 @@ export class ModelAdapter implements IModelProxy {
   ): Promise<AxiosResponse> => {
     logger.debug('[upsert]', 'upsert', { name, data });
 
-    const allSchemas = schemas || appContext.store.select(R.path(['models', 'schemas']));
+    const allSchemas = schemas || AppContext.store.select(R.path(['models', 'schemas']));
 
     const fields = this.getFormSchema(allSchemas, name);
     logger.debug('[upsert]', 'fields is', fields);

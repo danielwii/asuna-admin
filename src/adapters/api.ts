@@ -1,7 +1,7 @@
 import { AxiosResponse } from 'axios';
 
 import { createLogger } from '@asuna-admin/logger';
-import { appContext } from '@asuna-admin/core';
+import { AppContext } from '@asuna-admin/core';
 
 // --------------------------------------------------------------
 // Types
@@ -21,8 +21,8 @@ const logger = createLogger('adapters:api');
 
 export const apiProxy = {
   upload: ({ token }, file, options?): AxiosResponse<Asuna.Schema.UploadResponse[]> =>
-    appContext.ctx.api.upload({ token }, file, options),
-  getVersion: ({ token }): string => appContext.ctx.api.getVersion({ token }),
+    AppContext.ctx.api.upload({ token }, file, options),
+  getVersion: ({ token }): string => AppContext.ctx.api.getVersion({ token }),
 };
 
 export class ApiAdapter {

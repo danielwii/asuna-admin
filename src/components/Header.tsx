@@ -22,7 +22,7 @@ const StyledVersion = styled.span`
 export interface IProps {
   auth: AuthState;
   app: AppState;
-  env: string;
+  env?: string;
   version?: string;
   onSync: () => void;
   logout: () => void;

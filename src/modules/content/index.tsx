@@ -9,7 +9,7 @@ import { Subscription } from 'rxjs';
 import { contentActions, modelsActions, panesActions, RootState } from '@asuna-admin/store';
 import { castModelKey, diff } from '@asuna-admin/helpers';
 import { modelProxy, responseProxy, TablePagination } from '@asuna-admin/adapters';
-import { ActionEvent, appContext, bus, EventType } from '@asuna-admin/core';
+import { ActionEvent, AppContext, EventBus, EventType } from '@asuna-admin/core';
 import { createLogger } from '@asuna-admin/logger';
 
 const logger = createLogger('modules:content:index', 'warn');
@@ -23,6 +23,7 @@ interface IProps extends ReduxProps {
   activeKey: string;
   models: object;
   auth: object;
+  nextGetConfig: any;
 }
 
 interface IState {
@@ -45,10 +46,14 @@ interface IState {
 }
 
 class ContentIndex extends React.Component<IProps, IState> {
+  private bus: EventBus;
+
   constructor(props) {
     super(props);
 
-    const { basis, auth, activeKey } = this.props;
+    const { basis, auth, activeKey, nextGetConfig } = this.props;
+
+    this.bus = new EventBus(nextGetConfig);
 
     logger.debug('[constructor]', { basis });
 
@@ -99,12 +104,12 @@ class ContentIndex extends React.Component<IProps, IState> {
         field: 'id',
         order: 'descend',
       },
-      subscription: appContext.subject.subscribe({
+      subscription: AppContext.subject.subscribe({
         next: action => {
           // logger.log('[observer-content-index]', { modelName, activeKey, action });
         },
       }),
-      busSubscription: bus.subscribe({
+      busSubscription: EventBus.observable.subscribe({
         next: (action: ActionEvent) => {
           if (
             _.includes([EventType.MODEL_INSERT, EventType.MODEL_UPDATE], action.type) &&
