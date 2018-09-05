@@ -1,19 +1,21 @@
 {
   "name": "asuna-admin",
-  "version": "0.9.0-beta.11",
+  "version": "0.9.0-beta.25",
   "repository": "git@github.com:danielwii/asuna-admin.git",
   "author": "Daniel Wei <danielwii0326@gmail.com>",
   "license": "MIT",
   "bin": {
     "asuna": "bin/asuna.js"
   },
+  "files": [
+    "lib",
+    "bin"
+  ],
+  "main": "lib/esm/index.js",
+  "types": "lib/types/index.d.ts",
   "engines": {
     "node": ">=9 <10.2"
   },
-  "files": [
-    "bin",
-    "lib"
-  ],
   "jest": {
     "globals": {
       "ts-jest": {
@@ -54,8 +56,10 @@
   "scripts": {
     "autod": "autod",
     "dev": "NODE_ENV=dev node $NODE_DEBUG_OPTION server.js",
-    "prebuild": "rm -rf ./dist",
-    "build": "next build",
+    "prebuild": "rm -rf ./lib",
+    "compile:esm": "npx babel lib/esm --out-dir lib/build",
+    "compile:replace-path": "node replace-path.js",
+    "build": "tsc && yarn compile:replace-path",
     "start": "NODE_ENV=production node server.js",
     "storybook": "NODE_ENV=dev start-storybook -p 6006",
     "build-storybook": "NODE_ENV=dev build-storybook",

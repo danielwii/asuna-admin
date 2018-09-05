@@ -3,7 +3,7 @@ import { Provider } from 'react-redux';
 
 import { storiesOf } from '@storybook/react';
 
-import SideMenuContainer from '../containers/SideMenu';
+import SideMenuContainer from '../src/containers/SideMenu';
 
 import { configureStore } from '@asuna-admin/store';
 

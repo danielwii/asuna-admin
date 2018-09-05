@@ -3,7 +3,7 @@ import { Provider } from 'react-redux';
 
 import { storiesOf } from '@storybook/react';
 
-import { DynamicProperty } from '../components/DynamicProperty';
+import { DynamicProperty } from '../temp/DynamicProperty';
 
 import { configureStore } from '@asuna-admin/store';
 

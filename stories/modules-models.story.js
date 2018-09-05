@@ -3,8 +3,8 @@ import { Provider } from 'react-redux';
 
 import { storiesOf } from '@storybook/react';
 
-import ModelsIndex from '../modules/models';
-import ModelsSetup from '../modules/models/setup';
+import ModelsIndex from '../src/modules/models';
+import ModelsSetup from '../src/modules/models/setup';
 
 import { configureStore } from '@asuna-admin/store';
 

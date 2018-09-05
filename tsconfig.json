@@ -1,61 +1,28 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "target": "esnext",
+    "target": "es2015",
     "module": "esnext",
-    //    "lib": [ "es2015", "dom" ],
+    "esModuleInterop": true,
+    "lib": ["esnext", "dom"],
     "jsx": "react",
-    //    "jsxFactory": "React.createElement",
     "allowJs": false,
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
-    //    "noUnusedLocals": true,
-    //    "noUnusedParameters": true,
-    // 可选参数会被自动地加上 | undefined
     "strictNullChecks": true,
     "removeComments": false,
     "preserveConstEnums": true,
-    //    "sourceMap": true,
+    "sourceMap": true,
     "declaration": true,
-    //    "declarationDir": "types",
+    "declarationDir": "lib/types",
     "declarationMap": true,
     "skipLibCheck": true,
-    "outDir": "lib",
+    "outDir": "lib/esm",
     "baseUrl": "./",
     "paths": {
-      "@asuna-admin/*": ["./*"]
+      "@asuna-admin/*": ["src/*"]
     }
-    //    "typeRoots": [
-    //      "node_modules/@types"
-    //    ]
   },
-  //  "include": [
-  //    "adapters",
-  //    "common",
-  //    "components",
-  //    "containers",
-  //    "core",
-  //    "helpers",
-  //    "layout",
-  //    "modules",
-  //    "store",
-  //    "typings/global.d.ts",
-  //    "global.d.ts",
-  //    "index.d.ts"
-  //  ],
-  //  "awesomeTypescriptLoaderOptions": {
-  //    "useBabel": true,
-  //    "babelCore": "@babel/core",
-  //    "useCache": false
-  //  },
-  "exclude": [
-    ".storybook",
-    "stories",
-    ".next",
-    "examples",
-    "dist",
-    "node_modules",
-    // services is created by clients
-    "services"
-  ]
+  "include": ["./src", "global.d.ts", "index.d.ts"],
+  "exclude": ["**/*.spec.*"]
 }

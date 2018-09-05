@@ -6,8 +6,8 @@ import { storiesOf } from '@storybook/react';
 import styled from 'styled-components';
 import { Button } from 'antd';
 
-import Panes from '../components/Panes';
-import PanesContainer from '../containers/Panes';
+import Panes from '../src/components/Panes';
+import PanesContainer from '../src/containers/Panes';
 
 import { configureStore, panesReducer, panesActions, panesActionTypes } from '@asuna-admin/store';
 
