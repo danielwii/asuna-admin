@@ -1,6 +1,3 @@
-// init config
-require('./config');
-
 export * from './adapters';
 export * from './common';
 
@@ -12,3 +9,4 @@ export * from './helpers';
 export * from './layout';
 export * from './modules';
 export * from './store';
+export * from './logger';

@@ -122,13 +122,13 @@ class AppContext {
    * 提供全局的注册方法
    * @param {ILoginRegister & IIndexRegister} moduleRegister
    */
-  setup(moduleRegister: ILoginRegister & IIndexRegister): void;
+  public static setup(moduleRegister: ILoginRegister & IIndexRegister): void;
   /**
    * 提供基于模块的注册方法
    * @param {LoginModuleRegister | IndexModuleRegister} moduleRegister
    */
-  setup(moduleRegister: LoginModuleRegister | IndexModuleRegister): void;
-  setup(moduleRegister): void {
+  public static setup(moduleRegister: LoginModuleRegister | IndexModuleRegister): void;
+  public static setup(moduleRegister): void {
     if (moduleRegister.module) {
       const register = moduleRegister.register;
       if (moduleRegister.module === 'login') {

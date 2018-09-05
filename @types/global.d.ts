@@ -1,6 +1,12 @@
 import { Dispatch } from 'redux';
 
 declare global {
+  declare namespace NodeJS {
+    interface Global {
+      __asuna__: {};
+    }
+  }
+
   interface SagaParams {
     payload: object;
 

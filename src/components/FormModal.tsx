@@ -1,17 +1,24 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import _ from 'lodash';
 import * as R from 'ramda';
 
-import { Form, Modal, message } from 'antd';
+import { Form, message, Modal } from 'antd';
 
-import { createLogger, toFormErrors } from '@asuna-admin/helpers';
+import { toFormErrors } from '@asuna-admin/helpers';
+import { createLogger } from '@asuna-admin/logger';
 
-import { DynamicForm2 } from '../src/components/DynamicForm/index';
+import { DynamicForm2 } from './DynamicForm';
+import { WrappedFormUtils } from 'antd/es/form/Form';
 
 const logger = createLogger('components:form-modal', 'warn');
 
-const LightForm = Form.create({
+interface ILightForm {
+  fields;
+  onChange: (value) => void;
+  onSubmit: (fn: (e: Error) => void) => void;
+}
+
+const LightForm = Form.create<ILightForm>({
   mapPropsToFields({ fields }) {
     return _.mapValues(fields, field => Form.createFormField({ ...field }));
   },
@@ -21,16 +28,24 @@ const LightForm = Form.create({
   },
 })(DynamicForm2);
 
-// eslint-disable-next-line import/prefer-default-export
-export class FormModal extends React.Component {
-  static propTypes = {
-    title: PropTypes.string,
-    fields: PropTypes.shape({}),
-    openButton: PropTypes.func,
-    onSubmit: PropTypes.func,
-  };
+export interface IProps {
+  title: string;
+  openButton;
+  fields;
+  onChange: (value) => void;
+  onSubmit: (fn: (e: Error) => void) => void;
+}
 
-  state = {
+export interface IState {
+  fields?;
+  visible: boolean;
+  confirmLoading: boolean;
+}
+
+export class FormModal extends React.Component<IProps, IState> {
+  form: WrappedFormUtils;
+
+  state: IState = {
     visible: false,
     confirmLoading: false,
   };
@@ -98,6 +113,7 @@ export class FormModal extends React.Component {
     const { fields, visible, confirmLoading } = this.state;
 
     return (
+      // prettier-ignore
       <React.Fragment>
         {openButton(this.showModal)}
         <Modal
@@ -109,7 +125,7 @@ export class FormModal extends React.Component {
         >
           <LightForm
             ref={form => {
-              this.form = form;
+              this.form = form as any;
             }}
             delegate
             fields={fields}

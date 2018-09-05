@@ -164,7 +164,7 @@ export class ImagesUploader extends React.Component<IProps> {
   /**
    * set fileList for Uploader at first time
    */
-  UNSAFE_componentWillMount() {
+  componentWillMount() {
     logger.debug('[componentWillMount]', this.props);
     const { value: images } = this.props;
     if (images) {
@@ -177,7 +177,7 @@ export class ImagesUploader extends React.Component<IProps> {
    * @param nextProps
    * @param nextContext
    */
-  UNSAFE_componentWillReceiveProps(nextProps, nextContext) {
+  componentWillReceiveProps(nextProps, nextContext) {
     logger.debug('[componentWillReceiveProps]', nextProps, nextContext);
     const { value: images } = nextProps;
     this.wrapImagesToFileList(images);

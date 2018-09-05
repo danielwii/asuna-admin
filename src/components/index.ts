@@ -7,6 +7,8 @@ import ProgressBar from './ProgressBar';
 import SideMenu from './SideMenu';
 import Snow from './Snow';
 
+export * from './DynamicForm';
+export * from './FormModal';
 export * from './RichEditor';
 
 export { Snow, SideMenu, ProgressBar, Panes, Pane, LogoCanvas, LivingLoading, Login, Header };

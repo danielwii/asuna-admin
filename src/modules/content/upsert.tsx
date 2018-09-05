@@ -21,7 +21,13 @@ const logger = createLogger('modules:content:upsert', 'warn');
 // Build Form
 // --------------------------------------------------------------
 
-const ContentForm = Form.create({
+interface IContentForm {
+  fields;
+  onChange: (value) => void;
+  onSubmit: (fn: (e: Error) => void) => void;
+}
+
+const ContentForm = Form.create<IContentForm>({
   mapPropsToFields({ fields }) {
     const mappedFields = R.map(field => {
       // DatePicker for antd using moment instance
@@ -34,7 +40,7 @@ const ContentForm = Form.create({
     logger.debug('[ContentForm][mapPropsToFields]', { fields, mappedFields });
     return mappedFields;
   },
-  onFieldsChange(props: any, changedFields) {
+  onFieldsChange(props, changedFields) {
     logger.debug('[ContentForm][onFieldsChange]', { props, changedFields });
     const filteredChangedFields = R.compose(
       R.pickBy((field, key) => {

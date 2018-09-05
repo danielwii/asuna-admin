@@ -2,16 +2,11 @@ import React from 'react';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
 
-import Login from '../containers/Login';
-import Loading from '../components/LivingLoading';
-import Snow from '../components/Snow';
-import LogoCanvas from '../components/LogoCanvas';
-
-// import { register } from '../../services/register';
+import { Login, LivingLoading, Snow, LogoCanvas } from '@asuna-admin/components';
 
 import { RootState, AsunaStore, AppState } from '@asuna-admin/store';
 import { createLogger } from '@asuna-admin/logger';
-import { AppContext } from '@asuna-admin/core';
+import { AppContext, IIndexRegister, ILoginRegister } from '@asuna-admin/core';
 import { AntdLayout } from '@asuna-admin/layout';
 
 const logger = createLogger('pages:login');
@@ -43,13 +38,16 @@ const StyledLogoWrapper = styled.div`
 
 interface IProps extends ReduxProps {
   app: AppState;
+  register: ILoginRegister & IIndexRegister;
 }
 
 class LoginPage extends React.Component<IProps> {
   constructor(props) {
     super(props);
-    // appContext.setup(register);
-    AppContext.regDispatch(props.dispatch);
+
+    const { dispatch, register } = this.props;
+    AppContext.setup(register);
+    AppContext.regDispatch(dispatch);
   }
 
   componentDidCatch(error, info) {
@@ -60,6 +58,7 @@ class LoginPage extends React.Component<IProps> {
     const {
       app: { heartbeat },
     } = this.props;
+
     return (
       <AntdLayout>
         {heartbeat ? (
@@ -69,11 +68,11 @@ class LoginPage extends React.Component<IProps> {
               <LogoCanvas />
             </StyledLogoWrapper>
             <StyledLoginWrapper>
-              <Login {...this.props} />
+              <Login {...this.props as any} />
             </StyledLoginWrapper>
           </StyledFullFlexContainer>
         ) : (
-          <Loading heartbeat={heartbeat} />
+          <LivingLoading heartbeat={heartbeat} />
         )}
       </AntdLayout>
     );

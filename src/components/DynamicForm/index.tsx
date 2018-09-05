@@ -60,13 +60,13 @@ export const DynamicFormTypes = {
 };
 
 interface IProps {
-  anchor: boolean;
+  anchor?: boolean;
   /**
    * 隐藏提交按钮
    */
   delegate?: boolean;
   fields: FormField[];
-  auth: AuthState;
+  auth?: AuthState;
   onSubmit: (fn: (e: Error) => void) => void;
 }
 
