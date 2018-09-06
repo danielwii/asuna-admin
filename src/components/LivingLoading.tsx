@@ -46,7 +46,7 @@ interface IProps {
   heartbeat: boolean | null;
 }
 
-export default class extends React.Component<IProps> {
+export class LivingLoading extends React.Component<IProps> {
   private canvas;
 
   componentDidMount() {

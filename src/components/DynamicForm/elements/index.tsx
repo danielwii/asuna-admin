@@ -13,7 +13,7 @@ import { createLogger } from '@asuna-admin/logger';
 
 const logger = createLogger('components:dynamic-form:elements', 'warn');
 
-interface IFormItemLayout {
+export interface IFormItemLayout {
   labelCol?: { offset?: number; span?: number };
   wrapperCol?: { offset?: number; span?: number };
 }

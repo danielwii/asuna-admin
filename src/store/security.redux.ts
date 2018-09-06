@@ -27,7 +27,7 @@ const securityActionTypes = {
   UPDATE_PASSWORD: 'security::update-password',
 };
 
-export const isSecurityModule = action => action.type.startsWith('security::') && !action.transient;
+const isSecurityModule = action => action.type.startsWith('security::') && !action.transient;
 
 // --------------------------------------------------------------
 // Module actions

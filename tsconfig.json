@@ -1,7 +1,7 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "target": "es2015",
+    "target": "esnext",
     "module": "esnext",
     "esModuleInterop": true,
     "lib": ["esnext", "dom"],
@@ -14,15 +14,13 @@
     "preserveConstEnums": true,
     "sourceMap": true,
     "declaration": true,
-    "declarationDir": "lib/types",
-    "declarationMap": true,
     "skipLibCheck": true,
-    "outDir": "lib/esm",
+    "outDir": "lib",
     "baseUrl": "./",
     "paths": {
       "@asuna-admin/*": ["src/*"]
     }
   },
-  "include": ["./src", "@types/asuna.d.ts", "@types/global.d.ts"],
+  "include": ["./src"],
   "exclude": ["**/*.spec.*"]
 }

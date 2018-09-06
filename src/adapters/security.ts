@@ -5,7 +5,7 @@ import { AppContext } from '@asuna-admin/core';
 // Types
 // --------------------------------------------------------------
 
-interface IRequestConfig {
+export interface IRequestConfig {
   endpoint?: string;
 }
 

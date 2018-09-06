@@ -1,3 +1,7 @@
+declare module 'Asuna' {
+  export = Asuna;
+}
+
 declare namespace Asuna {
   interface Pageable {
     page: number;

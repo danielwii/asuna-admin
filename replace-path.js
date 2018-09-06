@@ -6,7 +6,7 @@ const Project = require('ts-simple-ast').default;
 const _ = require('lodash');
 
 const opts = {
-  roots: ['lib/esm', 'lib/types'],
+  roots: ['lib'],
   alias: { '@asuna-admin': './' },
 };
 

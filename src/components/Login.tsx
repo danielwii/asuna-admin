@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Button, Form, Icon, Input } from 'antd';
-import { WrappedFormUtils } from 'antd/lib/form/Form';
+import { WrappedFormUtils } from 'antd/es/form/Form';
 
 import { createLogger } from '@asuna-admin/logger';
 
@@ -22,16 +22,16 @@ function generateInput(form, name, type, required, message, placeholder, iconTyp
   return decorator(<Input placeholder={placeholder} />);
 }
 
-export interface IProps {
+export interface ILoginProps {
   form: WrappedFormUtils;
   login: (username: string, password: string, callback: (response) => void) => void;
 }
 
-export interface IState {
+interface IState {
   loading: true | false;
 }
 
-class NormalLoginForm extends React.Component<IProps, IState> {
+class NormalLoginForm extends React.Component<ILoginProps, IState> {
   state: IState = { loading: false };
 
   handleSubmit = e => {
@@ -99,4 +99,6 @@ class NormalLoginForm extends React.Component<IProps, IState> {
   }
 }
 
-export default Form.create()(NormalLoginForm);
+const Login = Form.create<ILoginProps>()(NormalLoginForm);
+
+export { Login };

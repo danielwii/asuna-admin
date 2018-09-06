@@ -2,7 +2,7 @@ import { AnyAction, Dispatch } from 'redux';
 
 import { Subject } from 'rxjs';
 
-import { RootState, IStoreConnector } from '@asuna-admin/store';
+import { IStoreConnector, RootState } from '@asuna-admin/store';
 import {
   ApiAdapter,
   AuthAdapter,
@@ -44,15 +44,20 @@ export interface IIndexRegister extends ILoginRegister {
   };
 }
 
-type LoginModuleRegister = {
+export type LoginModuleRegister = {
   module: 'login';
   register: ILoginRegister;
 };
 
-type IndexModuleRegister = {
+export type IndexModuleRegister = {
   module: 'index';
   register: IIndexRegister;
 };
+
+export interface INextConfig {
+  serverRuntimeConfig: { isServer: boolean };
+  publicRuntimeConfig: { env: string };
+}
 
 // --------------------------------------------------------------
 // Setup context
@@ -74,9 +79,13 @@ class AppContext {
   private static _subject;
   private static _storeConnector: IStoreConnector<RootState>;
 
-  constructor(nextGetConfig?) {
-    if (!AppContext.serverRuntimeConfig) {
-      const { serverRuntimeConfig: serverConfig = {} } = nextGetConfig ? nextGetConfig() : {};
+  constructor(nextConfig?: INextConfig) {
+    AppContext.init(nextConfig);
+  }
+
+  public static init(nextConfig?: INextConfig) {
+    if (!AppContext.serverRuntimeConfig && nextConfig) {
+      const { serverRuntimeConfig: serverConfig = {} } = nextConfig;
       AppContext.serverRuntimeConfig = serverConfig;
     }
     // this._context = { ...this._context, ws: new WsAdapter(this) };

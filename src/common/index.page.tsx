@@ -1,11 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import * as R from 'ramda';
 
 import 'moment/locale/zh-cn';
 
-import { RootState, AsunaStore, appActions, AuthState, AppState } from '@asuna-admin/store';
+import { appActions, AppState, AsunaStore, AuthState, RootState } from '@asuna-admin/store';
 import { createLogger } from '@asuna-admin/logger';
-import { AppContext, IIndexRegister, ILoginRegister } from '@asuna-admin/core';
+import { AppContext, IIndexRegister, ILoginRegister, INextConfig } from '@asuna-admin/core';
 import { MainLayout } from '@asuna-admin/layout';
 
 const logger = createLogger('pages:index', 'warn');
@@ -14,7 +15,7 @@ const logger = createLogger('pages:index', 'warn');
 // Index Component
 // --------------------------------------------------------------
 
-interface IProps extends ReduxProps {
+interface IIndexPageProps extends ReduxProps {
   auth: AuthState;
   app: AppState;
   register: ILoginRegister & IIndexRegister;
@@ -23,7 +24,7 @@ interface IProps extends ReduxProps {
   };
 }
 
-class IndexPage extends React.Component<IProps> {
+class IndexPage extends React.Component<IIndexPageProps> {
   constructor(props) {
     super(props);
 
@@ -57,7 +58,13 @@ const mapStateToProps = (state: RootState) => ({
   app: state.app,
 });
 
-export const renderIndexPage = nextGetConfig => {
-  const store = new AsunaStore(nextGetConfig);
-  return store.withReduxSaga(connect(mapStateToProps)(IndexPage));
+// prettier-ignore
+export const renderIndexPage = (props: Partial<IIndexPageProps>, nextConfig: INextConfig) => {
+  AppContext.init(nextConfig);
+  const store = new AsunaStore();
+  return store.withReduxSaga<IIndexPageProps>(
+    connect(
+      R.compose(R.merge(props), mapStateToProps),
+    )(IndexPage),
+  );
 };

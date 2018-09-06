@@ -75,7 +75,7 @@ export interface ModelListConfig {
   relations?: string[];
 }
 
-interface IModelProxy {
+export interface IModelProxy {
   getModelConfig(name: string): Asuna.Schema.ModelConfig;
 
   getAssociationConfigs(name: string): any;

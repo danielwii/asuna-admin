@@ -1,7 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
 
-export default class extends React.Component {
+export class LogoCanvas extends React.Component {
   private canvas;
 
   componentDidMount() {

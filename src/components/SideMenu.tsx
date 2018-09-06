@@ -6,7 +6,7 @@ import { Layout, Menu } from 'antd';
 const { SubMenu } = Menu;
 const { Sider } = Layout;
 
-export interface IProps {
+export interface ISideMenuProps {
   onOpen: (params: { key: string; title: string; linkTo: string }) => void;
   menus?: {
     key: string;
@@ -19,9 +19,9 @@ export interface IProps {
   }[];
 }
 
-export interface IState {}
+interface IState {}
 
-export default class extends React.Component<IProps, IState> {
+export class SideMenu extends React.Component<ISideMenuProps, IState> {
   /**
    * item's props contains all properties set in menu item
    * @param key

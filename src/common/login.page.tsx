@@ -1,12 +1,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import * as R from 'ramda';
 import styled from 'styled-components';
 
-import { Login, LivingLoading, Snow, LogoCanvas } from '@asuna-admin/components';
+import { LivingLoading, LogoCanvas, Snow } from '@asuna-admin/components';
+import { LoginContainer } from '@asuna-admin/containers';
 
-import { RootState, AsunaStore, AppState } from '@asuna-admin/store';
+import { AppState, AsunaStore, RootState } from '@asuna-admin/store';
 import { createLogger } from '@asuna-admin/logger';
-import { AppContext, IIndexRegister, ILoginRegister } from '@asuna-admin/core';
+import { AppContext, IIndexRegister, ILoginRegister, INextConfig } from '@asuna-admin/core';
 import { AntdLayout } from '@asuna-admin/layout';
 
 const logger = createLogger('pages:login');
@@ -36,12 +38,12 @@ const StyledLogoWrapper = styled.div`
   left: 1rem;
 `;
 
-interface IProps extends ReduxProps {
+export interface ILoginPageProps extends ReduxProps {
   app: AppState;
   register: ILoginRegister & IIndexRegister;
 }
 
-class LoginPage extends React.Component<IProps> {
+class LoginPage extends React.Component<ILoginPageProps> {
   constructor(props) {
     super(props);
 
@@ -68,7 +70,7 @@ class LoginPage extends React.Component<IProps> {
               <LogoCanvas />
             </StyledLogoWrapper>
             <StyledLoginWrapper>
-              <Login {...this.props as any} />
+              <LoginContainer {...this.props} />
             </StyledLoginWrapper>
           </StyledFullFlexContainer>
         ) : (
@@ -84,7 +86,11 @@ const mapStateToProps = (state: RootState) => ({
   app: state.app,
 });
 
-export const renderLoginPage = nextGetConfig => {
-  const store = new AsunaStore(nextGetConfig);
-  return store.withReduxSaga(connect(mapStateToProps)(LoginPage));
+// prettier-ignore
+export const renderLoginPage = (props: Partial<ILoginPageProps>, nextConfig: INextConfig) => {
+  AppContext.init(nextConfig);
+  const store = new AsunaStore();
+  return store.withReduxSaga<ILoginPageProps>(connect(
+    R.compose(R.merge(props), mapStateToProps),
+  )(LoginPage));
 };

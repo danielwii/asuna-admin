@@ -13,7 +13,7 @@ export interface IAuthService {
   extractToken(payload: string | object): string | undefined;
 }
 
-interface IAuthProxy {
+export interface IAuthProxy {
   login(username: string, password: string): Promise<any>;
 
   logout(): Promise<any>;

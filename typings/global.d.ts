@@ -1,7 +1,7 @@
 import { Dispatch } from 'redux';
 
 declare global {
-  declare namespace NodeJS {
+  namespace NodeJS {
     interface Global {
       __asuna__: {};
     }
@@ -28,10 +28,5 @@ declare global {
 
   interface IFormFix {
     onChange: (changedFields: any) => any;
-  }
-
-  declare module '*.json' {
-    const value: any;
-    export default value;
   }
 }

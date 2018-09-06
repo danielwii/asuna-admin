@@ -17,7 +17,7 @@ export interface TablePagination {
   pageSizeOptions: string[];
 }
 
-interface IResponseProxy {
+export interface IResponseProxy {
   extract: (apiResponse: object) => { items: object[]; pagination: TablePagination };
 }
 

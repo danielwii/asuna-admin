@@ -32,8 +32,8 @@ export interface IProps {
   title: string;
   openButton;
   fields;
-  onChange: (value) => void;
-  onSubmit: (fn: (e: Error) => void) => void;
+  onChange?: (value) => void;
+  onSubmit: (value: any) => void;
 }
 
 export interface IState {

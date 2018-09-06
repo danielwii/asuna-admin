@@ -5,7 +5,7 @@ import * as R from 'ramda';
 
 import { Anchor, Button, Col, Form, Row, Tag } from 'antd';
 
-import { FormComponentProps } from 'antd/lib/form';
+import { FormComponentProps } from 'antd/es/form';
 
 import {
   generateAuthorities,

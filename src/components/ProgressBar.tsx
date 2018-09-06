@@ -25,7 +25,7 @@ const FadeDiv = styled.div`
   top: -0.6rem;
 `;
 
-export default class extends React.Component {
+export class ProgressBar extends React.Component {
   state = {
     counter: 0,
     complete: 100,

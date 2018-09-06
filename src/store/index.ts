@@ -55,7 +55,6 @@ export interface RootState {
 const logger = createLogger('store');
 
 export class AsunaStore {
-  private static serverRuntimeConfig;
   private static storeConnectorMiddleware;
   private static epicMiddleware;
   private static sagaMiddleware;
@@ -70,13 +69,8 @@ export class AsunaStore {
     blacklist: ['app'],
   };
 
-  constructor(nextGetConfig?) {
-    if (!AsunaStore.serverRuntimeConfig) {
-      const { serverRuntimeConfig: serverConfig = {} } = nextGetConfig ? nextGetConfig() : {};
-      AsunaStore.serverRuntimeConfig = serverConfig;
-    }
+  constructor() {
     if (!AsunaStore.storeConnectorMiddleware) {
-      const appContext = new AppContext(nextGetConfig);
       AsunaStore.storeConnectorMiddleware = createStoreConnectorMiddleware(action =>
         AppContext.actionHandler(action),
       );
@@ -143,7 +137,7 @@ export class AsunaStore {
 
   private configureStore = (state = this.initialState): Store => {
     let store;
-    if (AsunaStore.serverRuntimeConfig.isServer) {
+    if (AppContext.serverRuntimeConfig.isServer) {
       store = createStore(
         this.rootReducers,
         state,
@@ -187,7 +181,7 @@ export class AsunaStore {
     return store;
   };
 
-  public withReduxSaga = (BaseComponent): NextReduxWrappedComponent<any> => {
+  public withReduxSaga = <T>(BaseComponent): NextReduxWrappedComponent<Partial<T>> => {
     return withRedux(this.configureStore)(nextReduxSaga(BaseComponent));
   };
 }
@@ -195,6 +189,8 @@ export class AsunaStore {
 // --------------------------------------------------------------
 // Types
 // --------------------------------------------------------------
+
+export { NextReduxWrappedComponent };
 
 export const actionTypes = {
   CLEAN: 'sys::clean',

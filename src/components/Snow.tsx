@@ -30,7 +30,7 @@ const randomCssCircle = key => {
   );
 };
 
-export default () => (
+export const Snow = () => (
   <svg className="svg-snow">
     {_.range(100).map((ele, index) => randomCssCircle(index))}
     {/* language=CSS */}

@@ -21,7 +21,7 @@ export type Pane = {
   // }
 };
 
-export interface IProps {
+export interface IPanesProps {
   panes?: {
     [key: string]: Pane;
   };
@@ -31,11 +31,11 @@ export interface IProps {
   onCloseWithout: (key?: string) => void;
 }
 
-export interface IState {
+interface IState {
   titles: object;
 }
 
-class Panes extends React.Component<IProps, IState> {
+export class Panes extends React.Component<IPanesProps, IState> {
   state: IState = {
     titles: {},
   };
@@ -104,5 +104,3 @@ class Panes extends React.Component<IProps, IState> {
     );
   }
 }
-
-export default Panes;
