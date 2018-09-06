@@ -193,10 +193,17 @@ class ContentIndex extends React.Component<IProps, IState> {
     const transformedSorter = !_.isEmpty(availableSorter)
       ? ({ [availableSorter.field]: availableSorter.order.slice(0, -3) } as Sorter)
       : null;
+
+    logger.debug('[handleTableChange]', { availableSorter, transformedSorter });
     dispatch(
       contentActions.loadModels(modelName, { relations, pagination, sorter: transformedSorter }),
     );
-    this.setState({ pagination, filters, sorter });
+    this.setState({
+      pagination,
+      filters,
+      // 在 sorter 为空时使用默认的 id desc 排序
+      sorter: _.isEmpty(sorter) ? availableSorter : sorter,
+    });
   };
 
   _refresh = () => {

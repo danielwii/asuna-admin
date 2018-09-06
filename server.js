@@ -5,14 +5,7 @@ const { createProxyServer } = require('http-proxy');
 const { parse } = require('url');
 const next = require('next');
 
-const configs = (() => {
-  try {
-    // eslint-disable-next-line global-require
-    return require('./config');
-  } catch (e) {
-    return null;
-  }
-})();
+const configs = require('./config');
 
 const dev = process.env.NODE_ENV !== 'production';
 const port = process.env.PORT || 3000;
