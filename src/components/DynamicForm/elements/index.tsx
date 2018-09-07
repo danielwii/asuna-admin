@@ -4,7 +4,7 @@ import { Checkbox, DatePicker, Form, Icon, Input, InputNumber, Switch, TimePicke
 
 import { BraftRichEditor } from '../../RichEditor';
 
-import { ImagesUploader, ImageUploader } from '../images';
+import { ImagesUploader } from '../images';
 import { VideoUploader } from '../videos';
 import { Authorities } from '../authorities';
 
@@ -266,7 +266,7 @@ export const generateImage = (
   return generateComponent(
     form,
     { fieldName, labelName, ...options },
-    <ImageUploader auth={auth} host={host} prefix={prefix} urlHandler={handler} />,
+    <ImagesUploader many={false} auth={auth} host={host} prefix={prefix} urlHandler={handler} />,
     formItemLayout,
   );
 };
