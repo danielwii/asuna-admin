@@ -79,10 +79,6 @@ class AppContext {
   private static _subject;
   private static _storeConnector: IStoreConnector<RootState>;
 
-  constructor(nextConfig?: INextConfig) {
-    AppContext.init(nextConfig);
-  }
-
   public static init(nextConfig?: INextConfig) {
     if (!AppContext.serverRuntimeConfig && nextConfig) {
       const { serverRuntimeConfig: serverConfig = {} } = nextConfig;

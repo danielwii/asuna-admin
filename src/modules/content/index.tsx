@@ -46,14 +46,10 @@ interface IState {
 }
 
 class ContentIndex extends React.Component<IProps, IState> {
-  private bus: EventBus;
-
   constructor(props) {
     super(props);
 
-    const { basis, auth, activeKey, nextGetConfig } = this.props;
-
-    this.bus = new EventBus(nextGetConfig);
+    const { basis, auth, activeKey } = this.props;
 
     logger.debug('[constructor]', { basis });
 

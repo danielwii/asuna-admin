@@ -5,10 +5,12 @@ import { join } from 'path';
 import { AuthState } from '@asuna-admin/store';
 import { createLogger } from '@asuna-admin/logger';
 import { apiProxy } from '@asuna-admin/adapters';
+import { AppContext } from '@asuna-admin/core';
 
 const logger = createLogger('components:rich-editor', 'warn');
 
 let BraftEditor;
+let EditorState;
 
 interface IProps {
   // FIXME 在调用 apiProxy 时需要使用 auth，但不应该在组件中感知到 auth
@@ -22,6 +24,7 @@ interface IProps {
 
 interface IState {
   loading: boolean;
+  editorState?: any;
 }
 
 export class BraftRichEditor extends React.Component<IProps, IState> {
@@ -30,22 +33,22 @@ export class BraftRichEditor extends React.Component<IProps, IState> {
   };
 
   componentDidMount() {
+    // to avoid ·window is not defined· issue
     BraftEditor = require('braft-editor').default;
+    EditorState = require('braft-editor').EditorState;
     logger.debug('[componentDidMount]', { state: this.state, props: this.props });
-    this.setState({ loading: false });
+    const { value } = this.props;
+    this.setState({ loading: false, editorState: EditorState.createFrom(value || '') });
   }
 
-  handleChange = content => {
-    logger.debug('[handleChange]', 'content is', content);
-  };
-
-  handleHTMLChange = html => {
-    logger.debug('[handleHTMLChange]', 'html is', html);
+  _handleEditorChange = editorState => {
+    logger.debug('[handleEditorChange]', { editorState });
     const { onChange } = this.props;
-    onChange!(html);
+    onChange!(editorState.toHTML());
+    this.setState({ editorState });
   };
 
-  beforeUpload = file => {
+  _beforeUpload = file => {
     const isImage = ['image/jpeg', 'image/png'].indexOf(file.type) > -1;
     logger.log('[beforeUpload]', file);
     if (!isImage) {
@@ -58,7 +61,7 @@ export class BraftRichEditor extends React.Component<IProps, IState> {
     return isImage && isLt2M;
   };
 
-  uploadFn = async param => {
+  _uploadFn = async param => {
     const { auth, prefix, urlHandler } = this.props;
     logger.debug('[uploadFn]', 'param is', param);
 
@@ -75,7 +78,7 @@ export class BraftRichEditor extends React.Component<IProps, IState> {
       const image = urlHandler ? urlHandler(response.data[0]) : response.data[0];
       param.success({
         image,
-        url: join(prefix || '', '' + image),
+        url: join(prefix || '', `${image}`),
       });
     } else {
       param.error({
@@ -85,30 +88,30 @@ export class BraftRichEditor extends React.Component<IProps, IState> {
   };
 
   render() {
-    const { loading } = this.state;
-    const { value } = this.props;
+    const { loading, editorState } = this.state;
 
     if (loading) return <p>loading editor...</p>;
 
-    const editorProps = {
-      height: 500,
-      contentFormat: 'html',
-      initialContent: value || '',
-      onChange: this.handleChange,
-      onHTMLChange: this.handleHTMLChange,
-      media: {
-        validateFn: this.beforeUpload, // 指定本地校验函数
-        uploadFn: this.uploadFn, // 指定上传函数
-        externalMedias: {
-          image: true,
-          audio: false,
-          video: false,
-          embed: true,
-        },
-      },
-      // extendControls,
-    };
+    if (AppContext.serverRuntimeConfig.isServer) {
+      return <div />;
+    }
 
-    return <BraftEditor {...editorProps} />;
+    return (
+      <BraftEditor
+        value={editorState}
+        defaultValue={editorState}
+        onChange={this._handleEditorChange}
+        media={{
+          validateFn: this._beforeUpload, // 指定本地校验函数
+          uploadFn: this._uploadFn, // 指定上传函数
+          externalMedias: {
+            image: true,
+            audio: false,
+            video: false,
+            embed: true,
+          },
+        }}
+      />
+    );
   }
 }

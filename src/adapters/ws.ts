@@ -9,7 +9,6 @@ import { AppContext } from '@asuna-admin/core';
 // --------------------------------------------------------------
 
 const logger = createLogger('adapters:ws', 'warn');
-const appContext = new AppContext();
 
 export class WsAdapter {
   private port?: number;
@@ -25,22 +24,22 @@ export class WsAdapter {
       WsAdapter.io = connect('/admin');
 
       WsAdapter.io.on('connect', () => {
-        logger.log('[connect]', { id: WsAdapter.io.id, appContext });
+        logger.log('[connect]', { id: WsAdapter.io.id, AppContext });
         AppContext.dispatch(appActions.heartbeat());
       });
       WsAdapter.io.on('reconnect', () => {
-        logger.log('[reconnect]', { id: WsAdapter.io.id, appContext });
+        logger.log('[reconnect]', { id: WsAdapter.io.id, AppContext });
         AppContext.dispatch(appActions.heartbeat());
       });
       WsAdapter.io.on('disconnect', () => {
-        logger.error('[disconnect]', { id: WsAdapter.io.id, appContext });
+        logger.error('[disconnect]', { id: WsAdapter.io.id, AppContext });
         const { heartbeat } = AppContext.store.select(state => state.app);
         if (heartbeat) {
           AppContext.dispatch(appActions.heartbeatStop());
         }
       });
       WsAdapter.io.on('error', error => {
-        logger.error('[error]', { id: WsAdapter.io.id, appContext, error });
+        logger.error('[error]', { id: WsAdapter.io.id, AppContext, error });
         const { heartbeat } = AppContext.store.select(state => state.app);
         if (heartbeat) {
           AppContext.dispatch(appActions.heartbeatStop());
