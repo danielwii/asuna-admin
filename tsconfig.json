@@ -3,19 +3,24 @@
   "compilerOptions": {
     "target": "esnext",
     "module": "esnext",
-    "jsx": "preserve",
-    "allowJs": true,
+    "esModuleInterop": true,
+    "lib": ["esnext", "dom"],
+    "jsx": "react",
+    "allowJs": false,
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
-    //    "noUnusedLocals": true,
-    //    "noUnusedParameters": true,
-    "strictNullChecks": true, // 可选参数会被自动地加上 | undefined
+    "strictNullChecks": true,
     "removeComments": false,
     "preserveConstEnums": true,
     "sourceMap": true,
+    "declaration": true,
     "skipLibCheck": true,
-    "outDir": "dist",
-    "baseUrl": "."
+    "outDir": "lib",
+    "baseUrl": "./",
+    "paths": {
+      "@asuna-admin/*": ["src/*"]
+    }
   },
-  "exclude": ["examples", "dist", ".next", "stories"]
+  "include": ["./src"],
+  "exclude": ["**/*.spec.*"]
 }

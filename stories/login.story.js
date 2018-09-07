@@ -1,8 +1,7 @@
 import React from 'react';
 
-import { storiesOf } from "@storybook/react";
+import { storiesOf } from '@storybook/react';
 
-import Login from '../components/Login';
+import Login from '../src/components/Login';
 
-storiesOf('Login', module)
-  .add('default', () => <Login />);
+storiesOf('Login', module).add('default', () => <Login />);

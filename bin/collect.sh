@@ -5,9 +5,11 @@ set +ex
 mkdir -p static/libs
 rm -f static/libs/*
 
-cp node_modules/antd/dist/antd.css static/libs/antd.css
-cp node_modules/draft-js/dist/Draft.css static/libs/draft.css
-cp node_modules/braft-editor/dist/braft.css static/libs/braft.css
-cp node_modules/video.js/dist/video-js.css static/libs/video-js.css
+root=$(yarn bin)/../..
+
+cp $root/node_modules/antd/dist/antd.css $root/static/libs/antd.css
+cp $root/node_modules/draft-js/dist/Draft.css $root/static/libs/draft.css
+cp $root/node_modules/braft-editor/dist/braft.css $root/static/libs/braft.css
+cp $root/node_modules/video.js/dist/video-js.css $root/static/libs/video-js.css
 
 exit 0

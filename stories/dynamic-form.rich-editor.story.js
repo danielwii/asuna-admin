@@ -1,8 +1,7 @@
 import React from 'react';
 
-import { storiesOf } from "@storybook/react";
+import { storiesOf } from '@storybook/react';
 
-import { LzRichEditor } from '../components/RichEditor/rich-editor';
+import { LzRichEditor } from '../src/components/RichEditor/rich-editor';
 
-storiesOf('DynamicForm', module)
-  .add('rich-editor', () => <LzRichEditor />);
+storiesOf('DynamicForm', module).add('rich-editor', () => <LzRichEditor />);

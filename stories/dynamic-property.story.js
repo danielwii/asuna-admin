@@ -1,19 +1,16 @@
-import React        from 'react';
+import React from 'react';
 import { Provider } from 'react-redux';
 
-import { storiesOf } from "@storybook/react";
+import { storiesOf } from '@storybook/react';
 
-import { configureStore }  from '../store/index';
-import { DynamicProperty } from '../components/DynamicProperty';
+import { DynamicProperty } from '../temp/DynamicProperty';
+
+import { configureStore } from '@asuna-admin/store';
 
 const initialState = {};
 
 storiesOf('DynamicProperty', module)
-  .addDecorator((getStory) => (
-    <Provider store={configureStore(initialState)}>
-      {getStory()}
-    </Provider>
-  ))
+  .addDecorator(getStory => <Provider store={configureStore(initialState)}>{getStory()}</Provider>)
   .add('default', () => {
     class Wrapper extends React.Component {
       constructor(props) {
@@ -24,7 +21,7 @@ storiesOf('DynamicProperty', module)
         };
       }
 
-      onAddProperty = (property) => {
+      onAddProperty = property => {
         this.setState({
           properties: [...this.state.properties, property],
         });
@@ -33,22 +30,24 @@ storiesOf('DynamicProperty', module)
       onRemoveProperty = ({ key }) => {
         console.warn('remove', key);
         console.warn('properties is', this.state.properties);
-        const [index]    = key.split(/-/);
+        const [index] = key.split(/-/);
         const properties = [...this.state.properties];
         properties.splice(index, 1);
-        this.setState({ properties })
+        this.setState({ properties });
       };
 
       render() {
         const { properties } = this.state;
 
         return (
-          <DynamicProperty onAddProperty={this.onAddProperty}
-                           onRemoveProperty={this.onRemoveProperty}
-                           properties={properties} />
-        )
+          <DynamicProperty
+            onAddProperty={this.onAddProperty}
+            onRemoveProperty={this.onRemoveProperty}
+            properties={properties}
+          />
+        );
       }
     }
 
-    return <Wrapper />
+    return <Wrapper />;
   });

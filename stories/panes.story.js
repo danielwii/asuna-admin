@@ -1,17 +1,15 @@
-import React                  from 'react';
-import { connect, Provider }  from 'react-redux';
+import React from 'react';
+import { connect, Provider } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { storiesOf } from "@storybook/react";
-import styled        from 'styled-components';
-import { Button }    from 'antd';
+import { storiesOf } from '@storybook/react';
+import styled from 'styled-components';
+import { Button } from 'antd';
 
-import { configureStore } from '../store/index';
-import Panes              from '../components/Panes';
-import PanesContainer     from '../containers/Panes';
+import Panes from '../src/components/Panes';
+import PanesContainer from '../src/containers/Panes';
 
-import { panesReducer }                   from '../store/panes.redux';
-import { panesActions, panesActionTypes } from '../store/panes.actions';
+import { configureStore, panesReducer, panesActions, panesActionTypes } from '@asuna-admin/store';
 
 const StyledButtonsDiv = styled.div`
   margin-bottom: 16px;
@@ -19,39 +17,37 @@ const StyledButtonsDiv = styled.div`
 
 const initialState = {
   activeKey: 'test-1',
-  panes    : {
+  panes: {
     'test-1': {
-      key     : 'test-1',
-      title   : 'test-title-1',
+      key: 'test-1',
+      title: 'test-title-1',
       composed: {
         component: <div>1 - ^_^</div>,
-        state    : { message: '~.~' }
-      }
+        state: { message: '~.~' },
+      },
     },
     'test-2': {
-      key     : 'test-2',
-      title   : 'test-title-2',
+      key: 'test-2',
+      title: 'test-title-2',
       composed: {
         component: <div>2 - 0.0</div>,
-        state    : { message: '>_<' }
-      }
+        state: { message: '>_<' },
+      },
     },
     'test-3': {
-      key     : 'test-3',
-      title   : 'test-title-3',
+      key: 'test-3',
+      title: 'test-title-3',
       composed: {
         component: <div>3 - *.*</div>,
-        state    : { message: 'o.o' }
-      }
+        state: { message: 'o.o' },
+      },
     },
-  }
+  },
 };
 
 storiesOf('Panes', module)
-  .addDecorator((getStory) => (
-    <Provider store={configureStore({ panes: initialState })}>
-      {getStory()}
-    </Provider>
+  .addDecorator(getStory => (
+    <Provider store={configureStore({ panes: initialState })}>{getStory()}</Provider>
   ))
   .add('container', () => {
     let counter = 4;
@@ -66,12 +62,12 @@ storiesOf('Panes', module)
       add() {
         const { add } = this.props;
         const current = counter++;
-        const key     = `t-${current}`;
+        const key = `t-${current}`;
 
         add({
           key,
-          title   : `t-title-${current}`,
-          composed: { component: current }
+          title: `t-title-${current}`,
+          composed: { component: current },
         });
       }
 
@@ -92,10 +88,9 @@ storiesOf('Panes', module)
       dispatch => bindActionCreators(panesActions, dispatch),
     )(PanesContainerWrapper);
 
-    return <PanesContainerWrapperConnector />
+    return <PanesContainerWrapperConnector />;
   })
   .add('component', () => {
-
     let counter = 4;
 
     class PanesWrapper extends React.Component {
@@ -104,35 +99,39 @@ storiesOf('Panes', module)
 
         this.state = initialState;
 
-        this.open  = this.open.bind(this);
+        this.open = this.open.bind(this);
         this.close = this.close.bind(this);
-        this.add   = this.add.bind(this);
+        this.add = this.add.bind(this);
       }
 
       open(activeKey) {
-        this.setState({ activeKey })
+        this.setState({ activeKey });
       }
 
       close(targetKey) {
-        this.setState(panesReducer(this.state, {
-          type   : panesActionTypes.CLOSE,
-          payload: { key: targetKey },
-        }));
+        this.setState(
+          panesReducer(this.state, {
+            type: panesActionTypes.CLOSE,
+            payload: { key: targetKey },
+          }),
+        );
       }
 
       add() {
         const index = counter++;
-        const key   = `t-${index}`;
-        this.setState(panesReducer(this.state, {
-          type   : panesActionTypes.OPEN,
-          payload: {
-            pane: {
-              key,
-              title   : `t-title-${index}`,
-              composed: { component: index },
+        const key = `t-${index}`;
+        this.setState(
+          panesReducer(this.state, {
+            type: panesActionTypes.OPEN,
+            payload: {
+              pane: {
+                key,
+                title: `t-title-${index}`,
+                composed: { component: index },
+              },
             },
-          },
-        }));
+          }),
+        );
         this.open(key);
       }
 
