@@ -136,6 +136,7 @@ class AppContext {
   public static setup(moduleRegister): void {
     if (moduleRegister.module) {
       const register = moduleRegister.register;
+
       if (moduleRegister.module === 'login') {
         AppContext._context = {
           ...AppContext._context,
@@ -143,43 +144,10 @@ class AppContext {
           ws: new WsAdapter(),
         };
       } else {
-        AppContext._context = {
-          ...AppContext._context,
-          auth: new AuthAdapter(register.createAuthService()),
-          response: new ResponseAdapter(),
-          menu: new MenuAdapter(
-            register.createMenuService(),
-            register.createDefinitions().registeredModels,
-          ),
-          api: new ApiAdapter(register.createApiService()),
-          security: new SecurityAdapter(register.createSecurityService()),
-          models: new ModelAdapter(
-            register.createModelService(),
-            register.createDefinitions().modelConfigs,
-            register.createDefinitions().associations,
-          ),
-          ws: new WsAdapter(),
-        };
+        this.registerIndex(register);
       }
     } else {
-      const register = moduleRegister;
-      AppContext._context = {
-        ...AppContext._context,
-        auth: new AuthAdapter(register.createAuthService()),
-        response: new ResponseAdapter(),
-        menu: new MenuAdapter(
-          register.createMenuService(),
-          register.createDefinitions().registeredModels,
-        ),
-        api: new ApiAdapter(register.createApiService()),
-        security: new SecurityAdapter(register.createSecurityService()),
-        models: new ModelAdapter(
-          register.createModelService(),
-          register.createDefinitions().modelConfigs,
-          register.createDefinitions().associations,
-        ),
-        ws: new WsAdapter(),
-      };
+      this.registerIndex(moduleRegister);
     }
   }
 
@@ -193,6 +161,26 @@ class AppContext {
 
   public static get subject() {
     return AppContext._subject;
+  }
+
+  private static registerIndex(register: IIndexRegister) {
+    AppContext._context = {
+      ...AppContext._context,
+      auth: new AuthAdapter(register.createAuthService()),
+      response: new ResponseAdapter(),
+      menu: new MenuAdapter(
+        register.createMenuService(),
+        register.createDefinitions().registeredModels,
+      ),
+      api: new ApiAdapter(register.createApiService()),
+      security: new SecurityAdapter(register.createSecurityService()),
+      models: new ModelAdapter(
+        register.createModelService(),
+        register.createDefinitions().modelConfigs,
+        register.createDefinitions().associations,
+      ),
+      ws: new WsAdapter(),
+    };
   }
 }
 

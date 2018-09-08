@@ -4,7 +4,6 @@ import _ from 'lodash';
 import * as R from 'ramda';
 
 import { Anchor, Button, Col, Form, Row, Tag } from 'antd';
-
 import { FormComponentProps } from 'antd/es/form';
 
 import {
@@ -59,7 +58,7 @@ export const DynamicFormTypes = {
   ManyToMany: 'ManyToMany',
 };
 
-interface IProps {
+type DynamicFormProps = {
   anchor?: boolean;
   /**
    * 隐藏提交按钮
@@ -68,7 +67,7 @@ interface IProps {
   fields: FormField[];
   auth?: AuthState;
   onSubmit: (fn: (e: Error) => void) => void;
-}
+};
 
 /**
  * delegate: hide submit button, using ref: form.
@@ -80,8 +79,10 @@ interface IProps {
  *   },
  * }
  */
-export class DynamicForm2 extends React.Component<IProps & IFormFix & FormComponentProps> {
-  buildField = (field, index) => {
+export class DynamicForm extends React.Component<
+  DynamicFormProps & AntdFormOnChangeListener & FormComponentProps
+> {
+  _buildField = (field, index) => {
     const { form, auth } = this.props;
 
     const options = {
@@ -97,7 +98,7 @@ export class DynamicForm2 extends React.Component<IProps & IFormFix & FormCompon
       fields: ['id', 'name'],
     };
 
-    logger.log('[DynamicForm2]', '[buildField]', { field, index, options });
+    logger.log('[DynamicForm]', '[buildField]', { field, index, options });
 
     // all readonly or hidden field will rendered as plain component
     if (['readonly', 'hidden'].indexOf(_.get(field, 'options.accessible')) > -1) {
@@ -140,7 +141,7 @@ export class DynamicForm2 extends React.Component<IProps & IFormFix & FormCompon
         // --------------------------------------------------------------
         // ManyToMany RelationShip
         // --------------------------------------------------------------
-        logger.debug('[DynamicForm2]', '[buildField][ManyToMany]', { field });
+        logger.debug('[DynamicForm]', '[buildField][ManyToMany]', { field });
         if (R.has('foreignOpts')(field)) {
           const { modelName, association = defaultAssociation } = R.path(['foreignOpts', 0])(field);
 
@@ -162,10 +163,10 @@ export class DynamicForm2 extends React.Component<IProps & IFormFix & FormCompon
         // --------------------------------------------------------------
         // EnumFilter / RelationShip
         // --------------------------------------------------------------
-        logger.log('[DynamicForm2]', '[buildField][EnumFilter]', { field });
+        logger.log('[DynamicForm]', '[buildField][EnumFilter]', { field });
         const items = R.path(['options', 'enumData'])(field);
         const type = R.path(['options', 'filterType'])(field);
-        logger.log('[DynamicForm2]', '[buildField][EnumFilter]', { type, items });
+        logger.log('[DynamicForm]', '[buildField][EnumFilter]', { type, items });
         return generateSelect(form, {
           ...options,
           items,
@@ -176,7 +177,7 @@ export class DynamicForm2 extends React.Component<IProps & IFormFix & FormCompon
         // --------------------------------------------------------------
         // Enum / RelationShip
         // --------------------------------------------------------------
-        logger.debug('[DynamicForm2]', '[buildField][Enum]', field);
+        logger.debug('[DynamicForm]', '[buildField][Enum]', field);
         const items = R.path(['options', 'enumData'])(field);
         return generateSelect(form, {
           ...options,
@@ -188,7 +189,7 @@ export class DynamicForm2 extends React.Component<IProps & IFormFix & FormCompon
         // --------------------------------------------------------------
         // OneToMany / OneToOne RelationShip
         // --------------------------------------------------------------
-        logger.debug('[DynamicForm2]', '[buildField][Association]', field);
+        logger.debug('[DynamicForm]', '[buildField][Association]', field);
         if (R.has('foreignOpts')(field)) {
           const { modelName, association = defaultAssociation } = R.path(['foreignOpts', 0])(field);
 
@@ -200,7 +201,7 @@ export class DynamicForm2 extends React.Component<IProps & IFormFix & FormCompon
             getValue: R.prop(association.value || defaultAssociation.value),
           });
         }
-        logger.warn('[DynamicForm2]', '[buildField]', 'foreignOpts is required in association.', {
+        logger.warn('[DynamicForm]', '[buildField]', 'foreignOpts is required in association.', {
           field,
         });
         return <div>association need foreignOpts.</div>;
@@ -215,14 +216,14 @@ export class DynamicForm2 extends React.Component<IProps & IFormFix & FormCompon
     }
   };
 
-  handleOnSubmit = e => {
-    logger.debug('[DynamicForm2]', '[handleOnSubmit]', 'onSubmit', e);
+  _handleOnSubmit = e => {
+    logger.debug('[DynamicForm]', '[handleOnSubmit]', 'onSubmit', e);
     e.preventDefault();
 
     const { form, onSubmit } = this.props;
     form.validateFields((err, values) => {
       if (err) {
-        logger.error('[DynamicForm2]', '[handleOnSubmit]', 'error occurred in form', values, err);
+        logger.error('[DynamicForm]', '[handleOnSubmit]', 'error occurred in form', values, err);
       } else {
         onSubmit(e);
       }
@@ -231,13 +232,13 @@ export class DynamicForm2 extends React.Component<IProps & IFormFix & FormCompon
 
   render() {
     const { fields, delegate, anchor } = this.props;
-    logger.log('[DynamicForm2]', '[render]', { props: this.props });
+    logger.log('[DynamicForm]', '[render]', { props: this.props });
 
     // remove fields which type is not included
     // pure component will not trigger error handler
 
     const renderFields = _.map(_.filter(fields, field => !!field.type), (field, index) => (
-      <EnhancedPureElement key={index} field={field} index={index} builder={this.buildField} />
+      <EnhancedPureElement key={index} field={field} index={index} builder={this._buildField} />
     ));
 
     return (
@@ -254,7 +255,7 @@ export class DynamicForm2 extends React.Component<IProps & IFormFix & FormCompon
                     <Button
                       type="primary"
                       htmlType="submit"
-                      onClick={this.handleOnSubmit}
+                      onClick={this._handleOnSubmit}
                       // disabled={hasErrors(getFieldsError())}
                     >
                       Submit
@@ -268,13 +269,12 @@ export class DynamicForm2 extends React.Component<IProps & IFormFix & FormCompon
             </Col>
           </Row>
         </div>
-        {/* TODO global may not working with webpack right now, throws Cannot read property 'indexOf' of undefined */}
         {/* language=CSS */}
-        {/*<style global jsx>{`*/}
-        {/*.dynamic-form .ant-form-item {*/}
-        {/*margin-bottom: 0;*/}
-        {/*}*/}
-        {/*`}</style>*/}
+        <style global jsx>{`
+          .dynamic-form .ant-form-item {
+            margin-bottom: 0;
+          }
+        `}</style>
       </React.Fragment>
     );
   }

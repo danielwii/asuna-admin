@@ -1,9 +1,7 @@
 import React from 'react';
 import * as R from 'ramda';
 import * as _ from 'lodash';
-
 import { Select } from 'antd';
-
 import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc';
 
 import { generateComponent } from '.';
@@ -17,8 +15,8 @@ interface IMixedSelectProps {
   onChange?: (selectedItems: number | string | any[]) => void;
 }
 
-interface IMixedSelectState {
-  selectedItems: any[];
+interface IMixedSelectState<T> {
+  selectedItems: T[];
 }
 
 type SelectOptions = {
@@ -36,7 +34,7 @@ type SelectOptions = {
 
 const defaultFormItemLayout = {};
 
-export const generateSelect = (
+export function generateSelect<T>(
   form,
   {
     key,
@@ -51,12 +49,12 @@ export const generateSelect = (
     enumSelector = {},
   }: SelectOptions,
   formItemLayout = defaultFormItemLayout,
-) => {
+) {
   const fieldName = key || name;
   const labelName = label || name || key;
   logger.debug('[generateSelect]', { items, enumSelector });
 
-  class MixedSelect extends React.Component<IMixedSelectProps, IMixedSelectState> {
+  class MixedSelect extends React.Component<IMixedSelectProps, IMixedSelectState<T>> {
     constructor(props) {
       super(props);
 
@@ -73,34 +71,24 @@ export const generateSelect = (
       this.setState({ selectedItems });
     };
 
+    // prettier-ignore
     extractName = item => {
       if (enumSelector.name) {
-        return R.compose(
-          enumSelector.name,
-          getValue,
-        )(item);
+        return R.compose(enumSelector.name, getValue)(item);
       }
       if (_.isArray((getValue as any)(item))) {
-        return R.compose(
-          R.prop(1),
-          getValue,
-        )(item);
+        return R.compose(R.prop(1), getValue)(item);
       }
       return (getName as any)(item);
     };
 
+    // prettier-ignore
     extractValue = item => {
       if (enumSelector.value) {
-        return R.compose(
-          enumSelector.value,
-          getValue,
-        )(item);
+        return R.compose(enumSelector.value, getValue)(item);
       }
       if (_.isArray((getValue as any)(item))) {
-        return R.compose(
-          R.prop(0),
-          getValue,
-        )(item);
+        return R.compose(R.prop(0), getValue)(item);
       }
       return (getValue as any)(item);
     };
@@ -116,12 +104,8 @@ export const generateSelect = (
             <React.Fragment>
               <li>
                 <span className="sort-index">No. {sortIndex}</span>
-                <span>
-                  {'#'}
-                  {optionValue}
-                  {': '}
-                  {optionName}
-                </span>
+                {/* prettier-ignore */}
+                <span>{'#'}{optionValue}{': '}{optionName}</span>
               </li>
               {/* language=CSS */}
               <style jsx>{`
@@ -217,6 +201,7 @@ export const generateSelect = (
               const optionValue = this.extractValue(item);
               return (
                 <Select.Option key={optionValue} value={optionValue}>
+                  {/* prettier-ignore */}
                   {'#'}
                   {optionValue}
                   {': '}
@@ -232,4 +217,4 @@ export const generateSelect = (
   }
 
   return generateComponent(form, { fieldName, labelName }, <MixedSelect />, formItemLayout);
-};
+}

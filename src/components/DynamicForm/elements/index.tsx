@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { Checkbox, DatePicker, Form, Icon, Input, InputNumber, Switch, TimePicker } from 'antd';
+import { GetFieldDecoratorOptions, WrappedFormUtils } from 'antd/es/form/Form';
 
 import { BraftRichEditor } from '../../RichEditor';
 
@@ -49,7 +50,12 @@ const horizontalFormItemLayout: IFormItemLayout = {
 // --------------------------------------------------------------
 
 export const generatePlain = (
-  options,
+  options: {
+    key: string;
+    label: string;
+    text: string;
+    help?: string;
+  },
   formItemLayout: IFormItemLayout = horizontalFormItemLayout,
 ) => {
   const { key, label, text, help } = options;
@@ -63,18 +69,28 @@ export const generatePlain = (
   );
 };
 
+type ComponentOptions = {
+  key?: string;
+  name?: string;
+  label?: string;
+  fieldName: string;
+  labelName: string;
+  opts?: GetFieldDecoratorOptions;
+  help?: string;
+};
+
 export const generateComponent = (
-  form,
-  options,
-  Component,
+  form: WrappedFormUtils,
+  options: ComponentOptions,
+  Component: React.ReactNode,
   formItemLayout: IFormItemLayout = {},
 ) => {
-  const { fieldName, labelName = fieldName, opts = {}, help } = options;
+  const { fieldName, labelName, opts, help } = options;
   if (fieldName) {
     logger.debug('[generateComponent]', options);
-    const decorator = form.getFieldDecorator(fieldName, opts);
+    const decorator = form.getFieldDecorator(fieldName, opts || {});
     return (
-      <Form.Item key={fieldName} {...formItemLayout} label={labelName} help={help}>
+      <Form.Item key={fieldName} {...formItemLayout} label={labelName || fieldName} help={help}>
         {decorator(Component)}
       </Form.Item>
     );
@@ -82,8 +98,9 @@ export const generateComponent = (
   return null;
 };
 
-export const generateHidden = (form, { key, name }) => {
-  logger.debug('generateHidden', key, name);
+export const generateHidden = (form: WrappedFormUtils, options: { key: string; name: string }) => {
+  logger.debug('generateHidden', options);
+  const { key, name } = options;
   const fieldName = key || name;
   if (name) {
     return (
@@ -96,7 +113,11 @@ export const generateHidden = (form, { key, name }) => {
   return null;
 };
 
-export const generateCheckbox = (form, options, formItemLayout?: IFormItemLayout) => {
+export const generateCheckbox = (
+  form: WrappedFormUtils,
+  options,
+  formItemLayout?: IFormItemLayout,
+) => {
   const { key, name, label } = options;
 
   const fieldName = key || name;
@@ -110,7 +131,7 @@ export const generateCheckbox = (form, options, formItemLayout?: IFormItemLayout
 };
 
 export const generateInputNumber = (
-  form,
+  form: WrappedFormUtils,
   options,
   formItemLayout: IFormItemLayout = defaultFormItemLayout,
 ) => {
@@ -127,7 +148,7 @@ export const generateInputNumber = (
 };
 
 export const generateInput = (
-  form,
+  form: WrappedFormUtils,
   { key, name, label, required = false, requiredMessage, placeholder = '', iconType, help, length },
   formItemLayout?: IFormItemLayout,
 ) => {
@@ -149,6 +170,9 @@ export const generateInput = (
   return generateComponent(
     form,
     {
+      key,
+      name,
+      label,
       fieldName,
       labelName,
       opts: {
@@ -161,7 +185,11 @@ export const generateInput = (
   );
 };
 
-export const generateTextArea = (form, options, formItemLayout?: IFormItemLayout) => {
+export const generateTextArea = (
+  form: WrappedFormUtils,
+  options,
+  formItemLayout?: IFormItemLayout,
+) => {
   const { key, name, label } = options;
 
   const fieldName = key || name;
@@ -181,7 +209,7 @@ export const generateTextArea = (form, options, formItemLayout?: IFormItemLayout
  * @returns {null}
  */
 export const generateDateTime = (
-  form,
+  form: WrappedFormUtils,
   options,
   formItemLayout: IFormItemLayout = defaultFormItemLayout,
 ) => {
@@ -215,7 +243,7 @@ export const generateDateTime = (
 };
 
 export const generateSwitch = (
-  form,
+  form: WrappedFormUtils,
   options,
   formItemLayout: IFormItemLayout = defaultFormItemLayout,
 ) => {
@@ -232,7 +260,7 @@ export const generateSwitch = (
 };
 
 export const generateImages = (
-  form,
+  form: WrappedFormUtils,
   options,
   formItemLayout: IFormItemLayout = defaultFormItemLayout,
 ) => {
@@ -252,7 +280,7 @@ export const generateImages = (
 };
 
 export const generateImage = (
-  form,
+  form: WrappedFormUtils,
   options,
   formItemLayout: IFormItemLayout = defaultFormItemLayout,
 ) => {
@@ -272,7 +300,7 @@ export const generateImage = (
 };
 
 export const generateVideo = (
-  form,
+  form: WrappedFormUtils,
   options,
   formItemLayout: IFormItemLayout = defaultFormItemLayout,
 ) => {
@@ -292,7 +320,7 @@ export const generateVideo = (
 };
 
 export const generateAuthorities = (
-  form,
+  form: WrappedFormUtils,
   options,
   formItemLayout: IFormItemLayout = defaultFormItemLayout,
 ) => {
@@ -309,7 +337,7 @@ export const generateAuthorities = (
 };
 
 export const generateRichTextEditor = (
-  form,
+  form: WrappedFormUtils,
   options,
   formItemLayout: IFormItemLayout = defaultFormItemLayout,
 ) => {

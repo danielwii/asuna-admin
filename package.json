@@ -23,7 +23,7 @@
     "globals": {
       "ts-jest": {
         "useBabelrc": true,
-        "tsConfigFile": "tsconfig.json"
+        "tsConfigFile": "tsconfig.jest.json"
       }
     },
     "moduleNameMapper": {

@@ -6,7 +6,7 @@ import moment from 'moment';
 
 import { Form, Icon, message } from 'antd';
 
-import { DynamicForm2, DynamicFormTypes } from '@asuna-admin/components/DynamicForm';
+import { DynamicForm, DynamicFormTypes } from '@asuna-admin/components/DynamicForm';
 import * as schemaHelper from '@asuna-admin/schema';
 import { Pane } from '@asuna-admin/components';
 import { AuthState, modelsActions } from '@asuna-admin/store';
@@ -70,7 +70,7 @@ const ContentForm = Form.create<IContentForm>({
       props.onChange(filteredChangedFields);
     }
   },
-})(DynamicForm2);
+})(DynamicForm);
 
 // --------------------------------------------------------------
 // Main

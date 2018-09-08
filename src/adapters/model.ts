@@ -6,9 +6,9 @@ import { DynamicFormTypes } from '../components/DynamicForm';
 import { TablePagination } from './response';
 
 import { defaultColumns } from '@asuna-admin/helpers';
-import { createLogger } from '@asuna-admin/logger';
 import { AppContext } from '@asuna-admin/core';
 import { Config } from '@asuna-admin/config';
+import { createLogger } from '@asuna-admin/logger';
 
 // --------------------------------------------------------------
 // Types
@@ -29,7 +29,7 @@ export interface IModelService {
       pagination?: Asuna.Pageable;
       filters?;
       sorter?;
-    } & Asuna.Schema.ModelOpt,
+    } & Asuna.Schema.ModelConfig,
   );
 
   loadSchema(authToken: { token: string }, payload: { name: string }, data);
@@ -57,7 +57,7 @@ export interface IModelService {
   loadAssociation(
     authToken: { token: string },
     associationName: string,
-    data: Asuna.Schema.ModelOpt & { fields: string[] },
+    data: Asuna.Schema.ModelConfig & { fields: string[] },
   );
 }
 
@@ -254,13 +254,13 @@ export class ModelAdapter implements IModelProxy {
   fetch = (config, name, data) =>
     this.service.fetch(config, name, {
       ...data,
-      ...(this.getModelConfig(name) as Asuna.Schema.ModelOpt),
+      ...this.getModelConfig(name),
     });
 
   remove = (config, name, data) =>
     this.service.remove(config, name, {
       ...data,
-      ...(this.getModelConfig(name) as Asuna.Schema.ModelOpt),
+      ...this.getModelConfig(name),
     });
 
   // FIXME schemas can be found by storeConnector now.
@@ -289,13 +289,13 @@ export class ModelAdapter implements IModelProxy {
         ...data,
         body: transformed,
         id,
-        ...(this.getModelConfig(name) as Asuna.Schema.ModelOpt),
+        ...this.getModelConfig(name),
       });
     }
     return this.service.insert({ token }, name, {
       ...data,
       body: transformed,
-      ...(this.getModelConfig(name) as Asuna.Schema.ModelOpt),
+      ...this.getModelConfig(name),
     });
   };
 
@@ -397,7 +397,7 @@ export class ModelAdapter implements IModelProxy {
       pagination: { page, size },
       sorter: configs && configs.sorter,
       relations: configs && configs.relations,
-      ...(this.getModelConfig(name) as Asuna.Schema.ModelOpt),
+      ...this.getModelConfig(name),
     });
   }
 
@@ -419,12 +419,12 @@ export class ModelAdapter implements IModelProxy {
     });
     return this.service.loadAssociation({ token }, associationName, {
       fields,
-      ...(this.getModelConfig(associationName) as Asuna.Schema.ModelOpt),
+      ...this.getModelConfig(associationName),
     });
   };
 
   loadSchema = ({ token }, name) =>
-    this.service.loadSchema({ token }, name, this.getModelConfig(name) as Asuna.Schema.ModelOpt);
+    this.service.loadSchema({ token }, name, this.getModelConfig(name));
 
   listAssociationsCallable = ({ token }, associationNames) =>
     Object.assign(

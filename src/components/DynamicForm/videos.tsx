@@ -149,7 +149,7 @@ export class VideoUploader extends React.Component<IProps> {
   }
 }
 
-export default class VideoPlayer extends React.Component {
+export class VideoPlayer extends React.Component {
   player: videojs.Player;
   videoNode: any;
 

@@ -26,7 +26,7 @@ declare global {
     includes: object;
   };
 
-  interface IFormFix {
+  type AntdFormOnChangeListener = {
     onChange: (changedFields: any) => any;
-  }
+  };
 }

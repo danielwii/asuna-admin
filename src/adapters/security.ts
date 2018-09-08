@@ -1,3 +1,5 @@
+import { AxiosResponse } from 'axios';
+
 import { createLogger } from '@asuna-admin/logger';
 import { AppContext } from '@asuna-admin/core';
 
@@ -10,15 +12,27 @@ export interface IRequestConfig {
 }
 
 export interface ISecurityService {
-  currentUser(opts: { token: string }, configs?: IRequestConfig): Promise<any>;
+  currentUser(opts: { token: string }, configs?: IRequestConfig): Promise<AxiosResponse>;
 
-  roles(opts: { token: string }, configs?: IRequestConfig): Promise<any>;
+  roles(opts: { token: string }, configs?: IRequestConfig): Promise<AxiosResponse>;
 
   updatePassword(
     opts: { token: string },
     data: { body: { email: string; password: string } },
     configs?: IRequestConfig,
-  ): Promise<any>;
+  ): Promise<AxiosResponse>;
+}
+
+interface ISecurityProxy {
+  currentUser(opts: { token: string }, configs?: IRequestConfig): Promise<AxiosResponse>;
+
+  roles(opts: { token: string }, configs?: IRequestConfig): Promise<AxiosResponse>;
+
+  updatePassword(
+    opts: { token: string },
+    data: { body: { email: string; password: string } },
+    configs?: IRequestConfig,
+  ): Promise<AxiosResponse>;
 }
 
 // --------------------------------------------------------------
@@ -27,7 +41,7 @@ export interface ISecurityService {
 
 const logger = createLogger('adapters:security');
 
-export const securityProxy = {
+export const securityProxy: ISecurityProxy = {
   currentUser: (opts: { token: string }, configs?: IRequestConfig) =>
     AppContext.ctx.security.currentUser(opts, configs),
 

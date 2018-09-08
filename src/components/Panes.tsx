@@ -42,14 +42,14 @@ export class Panes extends React.Component<IPanesProps, IState> {
 
   onEdit = (targetKey, action) => {
     const { onClose } = this.props;
-    logger.log('targetKey is', targetKey, 'action is', action);
+    logger.log('[onEdit]', { targetKey, action });
     if (action === 'remove') {
       onClose(targetKey);
     }
   };
 
   onTitleChange = (key, newTitle) => {
-    logger.log('onTitleChange', key, newTitle);
+    logger.log('[onTitleChange]', { key, newTitle });
     if (key && newTitle) {
       this.setState(R.mergeDeepRight(this.state, { titles: { [key]: newTitle } }));
     }
@@ -65,6 +65,7 @@ export class Panes extends React.Component<IPanesProps, IState> {
     }
 
     const title = titles[activeKey];
+    logger.log('[render]', { title });
 
     const operations = (
       <React.Fragment>
