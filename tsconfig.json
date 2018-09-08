@@ -5,7 +5,7 @@
     "module": "esnext",
     "esModuleInterop": true,
     "lib": ["esnext", "dom"],
-    "jsx": "react",
+    "jsx": "preserve",
     "allowJs": false,
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,

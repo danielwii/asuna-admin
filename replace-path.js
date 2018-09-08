@@ -1,6 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
 const nodePath = require('path');
-const paths = require('tsconfig-paths');
+// const paths = require('tsconfig-paths');
 const tsconfig = require('tsconfig-extends');
 const Project = require('ts-simple-ast').default;
 const _ = require('lodash');
@@ -36,8 +36,12 @@ const handleSourceFile = absoluteBaseUrl => async sourceFile => {
             opts.alias[prefix],
             value.slice(prefix.length + 1),
           );
-          // console.log({ prefix, sourceFileAbsolutePath, absolutePathToDepsModule:
-          // relativePathToDepsModule, value });
+          // console.log({
+          //   prefix,
+          //   sourceFileAbsolutePath,
+          //   absolutePathToDepsModule: relativePathToDepsModule,
+          //   value,
+          // });
 
           // and if relative module really exists
           if (relativePathToDepsModule) {
@@ -75,7 +79,7 @@ opts.roots.forEach(root => {
 
   // console.log({ opts, paths: compilerOptions.paths, absoluteBaseUrl });
 
-  project.addExistingSourceFiles(`./${root}/**/*.{js,ts,tsx}`);
+  project.addExistingSourceFiles(`./${root}/**/*.{js,jsx,ts,tsx}`);
   const sourceFiles = project.getSourceFiles();
 
   sourceFiles.forEach(handleSourceFile(absoluteBaseUrl));
