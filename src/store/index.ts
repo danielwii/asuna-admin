@@ -3,7 +3,14 @@ import nextReduxSaga from 'next-redux-saga';
 import * as R from 'ramda';
 import { reduxAction } from 'node-buffs';
 
-import { applyMiddleware, combineReducers, createStore, Store } from 'redux';
+import {
+  AnyAction,
+  applyMiddleware,
+  combineReducers,
+  createStore,
+  DeepPartial,
+  Store,
+} from 'redux';
 
 import createSagaMiddleware from 'redux-saga';
 import { all } from 'redux-saga/effects';
@@ -19,7 +26,7 @@ import { appEpics, appReducer, appSagas, AppState } from './app.redux';
 import { authReducer, authSagas, AuthState } from './auth.redux';
 import { routerReducer, routerSagas } from './router.redux';
 import { menuReducer, menuSagas } from './menu.redux';
-import { modelsCleaner, modelsReducer, modelsSagas } from './model.redux';
+import { modelsCleaner, modelsReducer, modelsSagas, ModelsState } from './models.redux';
 import { contentReducer, contentSagas } from './content.redux';
 import { securityReducer, securitySagas } from './security.redux';
 import { panesCleaner, panesReducer, panesSagas } from './panes.redux';
@@ -36,7 +43,7 @@ export * from './app.redux';
 export * from './app.actions';
 export * from './auth.redux';
 export * from './auth.actions';
-export * from './model.redux';
+export * from './models.redux';
 export * from './content.redux';
 export * from './middlewares';
 
@@ -45,7 +52,7 @@ export interface RootState {
   router: object;
   panes: object;
   menu: object;
-  models: object;
+  models: ModelsState;
   content: object;
   security: object;
   app: AppState;
@@ -60,7 +67,7 @@ export class AsunaStore {
   private static sagaMiddleware;
   private static loggerMiddleware;
 
-  private initialState = {};
+  private initialState: DeepPartial<RootState>;
   private persistConfig = {
     key: 'root',
     storage: localForage,
@@ -69,7 +76,7 @@ export class AsunaStore {
     blacklist: ['app'],
   };
 
-  constructor() {
+  constructor(defaultInitialState?: RootState) {
     if (!AsunaStore.storeConnectorMiddleware) {
       AsunaStore.storeConnectorMiddleware = createStoreConnectorMiddleware(action =>
         AppContext.actionHandler(action),
@@ -83,6 +90,9 @@ export class AsunaStore {
     }
     if (!AsunaStore.loggerMiddleware) {
       AsunaStore.loggerMiddleware = createReduxLogger({ collapsed: true });
+    }
+    if (this.initialState === null) {
+      this.initialState = defaultInitialState || {};
     }
   }
 
@@ -135,10 +145,10 @@ export class AsunaStore {
 
   private rootEpics = combineEpics(...appEpics);
 
-  private configureStore = (state = this.initialState): Store => {
+  public configureStore = (state = this.initialState): Store => {
     let store;
-    if (AppContext.serverRuntimeConfig.isServer) {
-      store = createStore(
+    if (AppContext.isServer) {
+      store = createStore<RootState, AnyAction, any, any>(
         this.rootReducers,
         state,
         applyMiddleware(
@@ -158,7 +168,7 @@ export class AsunaStore {
           localStorage.removeItem('debug');
         }
       }
-      store = createStore(
+      store = createStore<RootState, AnyAction, any, any>(
         this.rootReducers,
         state,
         composeWithDevTools(

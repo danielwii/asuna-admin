@@ -38,7 +38,7 @@ class EventBus {
     payload: { modelName: string; id: number | string },
   ): void;
   public static sendEvent(type: EventType, payload: object, extras?: object): void {
-    if (!AppContext.serverRuntimeConfig.isServer) {
+    if (!AppContext.isServer) {
       EventBus.subject.next({ type, payload, extras });
     }
   }

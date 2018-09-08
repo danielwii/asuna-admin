@@ -1,4 +1,4 @@
-import { AnyAction, Dispatch } from 'redux';
+import { AnyAction, DeepPartial, Dispatch } from 'redux';
 
 import { Subject } from 'rxjs';
 
@@ -55,8 +55,8 @@ export type IndexModuleRegister = {
 };
 
 export interface INextConfig {
-  serverRuntimeConfig: { isServer: boolean };
-  publicRuntimeConfig: { env: string };
+  serverRuntimeConfig: { isServer?: boolean };
+  publicRuntimeConfig: { env?: string };
 }
 
 // --------------------------------------------------------------
@@ -64,7 +64,10 @@ export interface INextConfig {
 // --------------------------------------------------------------
 
 class AppContext {
-  static serverRuntimeConfig;
+  static nextConfig: INextConfig = {
+    serverRuntimeConfig: { isServer: false },
+    publicRuntimeConfig: { env: 'canary' },
+  };
 
   private static _context: {
     auth: AuthAdapter;
@@ -75,16 +78,18 @@ class AppContext {
     models: ModelAdapter;
     ws: WsAdapter;
   };
+
+  /**
+   * 提供一种脱离 redux-connect 调用 dispatch 的方式
+   */
   private static _dispatch: Dispatch;
   private static _subject;
   private static _storeConnector: IStoreConnector<RootState>;
 
   public static init(nextConfig?: INextConfig) {
-    if (!AppContext.serverRuntimeConfig && nextConfig) {
-      const { serverRuntimeConfig: serverConfig = {} } = nextConfig;
-      AppContext.serverRuntimeConfig = serverConfig;
+    if (AppContext.nextConfig == null && nextConfig) {
+      AppContext.nextConfig = nextConfig;
     }
-    // this._context = { ...this._context, ws: new WsAdapter(this) };
     if (!AppContext._subject) {
       AppContext._subject = new Subject();
     }
@@ -92,10 +97,8 @@ class AppContext {
     //   next: (action) => console.log('observer: ', action)
     // });
     if (!AppContext._storeConnector) {
-      (async () => {
-        const { storeConnector } = await import('../store');
-        AppContext._storeConnector = storeConnector;
-      })();
+      const { storeConnector } = require('../store');
+      AppContext._storeConnector = storeConnector;
     }
   }
 
@@ -112,15 +115,11 @@ class AppContext {
   }
 
   public static dispatch(action: AnyAction) {
-    !AppContext.serverRuntimeConfig.isServer &&
-      AppContext._dispatch &&
-      AppContext._dispatch(action);
+    !AppContext.isServer && AppContext._dispatch && AppContext._dispatch(action);
   }
 
   public static actionHandler(action: AnyAction) {
-    !AppContext.serverRuntimeConfig.isServer &&
-      AppContext._subject &&
-      AppContext._subject.next(action);
+    !AppContext.isServer && AppContext._subject && AppContext._subject.next(action);
   }
 
   /**
@@ -151,6 +150,10 @@ class AppContext {
     }
   }
 
+  public static get isServer() {
+    return AppContext.nextConfig.serverRuntimeConfig.isServer;
+  }
+
   public static get ctx() {
     return AppContext._context;
   }
@@ -161,6 +164,14 @@ class AppContext {
 
   public static get subject() {
     return AppContext._subject;
+  }
+
+  /**
+   * 提供了直接通过 redux-store 获取数据的 api
+   * @param state
+   */
+  public static fromStore<K extends keyof RootState>(state: K): RootState[K] {
+    return this.store.getState(state);
   }
 
   private static registerIndex(register: IIndexRegister) {

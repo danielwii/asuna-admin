@@ -2,7 +2,6 @@ import _ from 'lodash';
 import * as R from 'ramda';
 
 import { DynamicFormTypes } from '@asuna-admin/components/DynamicForm';
-import { storeConnector } from '@asuna-admin/store';
 import { castModelKey, castModelName } from '@asuna-admin/helpers';
 import { modelProxy } from '@asuna-admin/adapters';
 import { createLogger } from '@asuna-admin/logger';
@@ -77,8 +76,6 @@ export const asyncLoadAssociationsDecorator = async fields => {
       return fields;
     }
 
-    const auth = storeConnector.getState('auth');
-
     const wrappedAssociations = await Promise.all(
       R.values(filteredAssociations).map(async field => {
         const selectable = R.pathOr([], ['options', 'selectable'])(field);
@@ -94,7 +91,7 @@ export const asyncLoadAssociationsDecorator = async fields => {
           ];
           logger.debug(TAG, 'foreignOpts is', foreignOpts);
 
-          const effects = modelProxy.listAssociationsCallable(auth, [selectable]);
+          const effects = modelProxy.listAssociationsCallable([selectable]);
           logger.debug(TAG, 'list associations callable', effects);
 
           let allResponse = {};

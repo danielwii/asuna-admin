@@ -2,10 +2,9 @@ import React from 'react';
 import { message } from 'antd';
 import { join } from 'path';
 
-import { AuthState } from '@asuna-admin/store';
-import { createLogger } from '@asuna-admin/logger';
 import { apiProxy } from '@asuna-admin/adapters';
 import { AppContext } from '@asuna-admin/core';
+import { createLogger } from '@asuna-admin/logger';
 
 const logger = createLogger('components:rich-editor', 'warn');
 
@@ -13,8 +12,6 @@ let BraftEditor;
 let EditorState;
 
 interface IProps {
-  // FIXME 在调用 apiProxy 时需要使用 auth，但不应该在组件中感知到 auth
-  auth: AuthState;
   host?: string;
   prefix?: string;
   urlHandler?: (res: Asuna.Schema.UploadResponse) => string;
@@ -62,10 +59,10 @@ export class BraftRichEditor extends React.Component<IProps, IState> {
   };
 
   _uploadFn = async param => {
-    const { auth, prefix, urlHandler } = this.props;
+    const { prefix, urlHandler } = this.props;
     logger.debug('[uploadFn]', 'param is', param);
 
-    const response = await apiProxy.upload(auth, param.file, {
+    const response = await apiProxy.upload(param.file, {
       onUploadProgress(progressEvent) {
         logger.debug('[uploadFn][progressFn]', 'event is', progressEvent);
         param.progress((progressEvent.loaded / progressEvent.total) * 100);
@@ -92,7 +89,7 @@ export class BraftRichEditor extends React.Component<IProps, IState> {
 
     if (loading) return <p>loading editor...</p>;
 
-    if (AppContext.serverRuntimeConfig.isServer) {
+    if (AppContext.isServer) {
       return <div />;
     }
 

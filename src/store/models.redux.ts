@@ -74,7 +74,7 @@ const modelsSagaFunctions = {
     if (token) {
       message.loading(`loading model '${modelName}'...`);
       try {
-        const response = yield call(modelProxy.fetch, { token }, modelName, data);
+        const response = yield call(modelProxy.fetch, modelName, data);
         message.success(`load model '${modelName}' success!`);
         logger.log('[fetch]', 'response of load model is', response);
         yield put(modelsActions.fetchSuccess(modelName, response.data));
@@ -89,11 +89,10 @@ const modelsSagaFunctions = {
    */
   *upsert({ payload: { modelName, data }, callback }) {
     const { token } = yield select<RootState>(state => state.auth);
-    const { schemas } = yield select<RootState>(state => state.models);
     if (token) {
       message.info(`upsert model '${modelName}'...`);
       try {
-        const response = yield call(modelProxy.upsert, { token, schemas }, modelName, data);
+        const response = yield call(modelProxy.upsert, modelName, data);
         message.success(`upsert model '${modelName}' success!`);
         logger.log('[upsert]', 'response of upsert model is', response);
         if (callback != null) callback({ response });
@@ -116,7 +115,7 @@ const modelsSagaFunctions = {
     if (token) {
       message.info(`remove model '${modelName}'...`);
       try {
-        const response = yield call(modelProxy.remove, { token }, modelName, data);
+        const response = yield call(modelProxy.remove, modelName, data);
         message.success(`remove model '${modelName}' success!`);
         logger.log('[remove]', 'response of remove model is', response);
         // save model data when remove is success
@@ -135,7 +134,7 @@ const modelsSagaFunctions = {
     if (token) {
       message.loading('loading all schemas...');
       try {
-        const effects = modelProxy.listSchemasCallable({ token });
+        const effects = modelProxy.listSchemasCallable();
         const allResponse = yield all(effects);
 
         logger.log('[loadAllSchemas]', 'allResponse is', allResponse);
@@ -168,7 +167,11 @@ const modelsSagas = [
 // action = { payload: any? }
 // --------------------------------------------------------------
 
-const initialState = {};
+export interface ModelsState {
+  schemas?;
+}
+
+const initialState: ModelsState = {};
 
 const modelsCleaner = rootState => ({ ...rootState, models: initialState });
 

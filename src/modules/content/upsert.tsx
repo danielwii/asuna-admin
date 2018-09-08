@@ -9,7 +9,7 @@ import { Form, Icon, message } from 'antd';
 import { DynamicForm, DynamicFormTypes } from '@asuna-admin/components/DynamicForm';
 import * as schemaHelper from '@asuna-admin/schema';
 import { Pane } from '@asuna-admin/components';
-import { AuthState, modelsActions } from '@asuna-admin/store';
+import { modelsActions, RootState } from '@asuna-admin/store';
 import { diff, isErrorResponse, toFormErrors } from '@asuna-admin/helpers';
 import { modelProxy } from '@asuna-admin/adapters';
 import { EventBus, EventType } from '@asuna-admin/core';
@@ -80,7 +80,6 @@ interface IProps extends ReduxProps {
   basis: { pane: Pane };
   schemas: object;
   models: object;
-  auth: AuthState;
   onClose: () => void;
 }
 
@@ -364,7 +363,6 @@ class ContentUpsert extends React.Component<IProps, IState> {
 
   render() {
     const { fields, loadings } = this.state;
-    const { auth } = this.props;
 
     logger.log('[render]', { props: this.props, state: this.state });
 
@@ -389,7 +387,6 @@ class ContentUpsert extends React.Component<IProps, IState> {
     return (
       <ContentForm
         anchor
-        auth={auth}
         fields={fields}
         onChange={this._handleFormChange}
         onSubmit={this._handleFormSubmit}
@@ -398,9 +395,8 @@ class ContentUpsert extends React.Component<IProps, IState> {
   }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state: RootState) => ({
   ...R.pick(['schemas', 'models'])(state.models),
-  auth: state.auth,
 });
 
 export default connect(mapStateToProps)(ContentUpsert);

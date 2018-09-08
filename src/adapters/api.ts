@@ -2,7 +2,6 @@ import { AxiosResponse } from 'axios';
 
 import { createLogger } from '@asuna-admin/logger';
 import { AppContext } from '@asuna-admin/core';
-import { AuthState } from '@asuna-admin/store';
 
 // --------------------------------------------------------------
 // Types
@@ -10,17 +9,12 @@ import { AuthState } from '@asuna-admin/store';
 
 export interface IApiService {
   upload(
-    param: { token: string },
+    param: { token: string | null },
     file: any,
     options: any,
   ): Promise<AxiosResponse<Asuna.Schema.UploadResponse[]>>;
 
-  getVersion(param: { token: string }): string;
-}
-
-interface IApiProxy {
-  upload(auth: AuthState, file, options?): Promise<AxiosResponse<Asuna.Schema.UploadResponse[]>>;
-  getVersion({ token }): string;
+  getVersion(param: { token: string | null }): string;
 }
 
 // --------------------------------------------------------------
@@ -29,9 +23,13 @@ interface IApiProxy {
 
 const logger = createLogger('adapters:api');
 
-export const apiProxy: IApiProxy = {
-  upload: (auth, file, options?) => AppContext.ctx.api.upload({ token: auth.token }, file, options),
-  getVersion: ({ token }) => AppContext.ctx.api.getVersion({ token }),
+export const apiProxy = {
+  upload(file, options?): Promise<AxiosResponse<Asuna.Schema.UploadResponse[]>> {
+    return AppContext.ctx.api.upload(file, options);
+  },
+  getVersion(): string {
+    return AppContext.ctx.api.getVersion();
+  },
 };
 
 export class ApiAdapter {
@@ -41,10 +39,14 @@ export class ApiAdapter {
     this.service = service;
   }
 
-  upload = ({ token }, file, options): Promise<AxiosResponse<Asuna.Schema.UploadResponse[]>> => {
+  upload = (file, options): Promise<AxiosResponse<Asuna.Schema.UploadResponse[]>> => {
     logger.log('[upload] file', file, options);
-    return this.service.upload({ token }, file, options);
+    const auth = AppContext.fromStore('auth');
+    return this.service.upload(auth, file, options);
   };
 
-  getVersion = ({ token }): string => this.service.getVersion({ token });
+  getVersion = (): string => {
+    const auth = AppContext.fromStore('auth');
+    return this.service.getVersion(auth);
+  };
 }

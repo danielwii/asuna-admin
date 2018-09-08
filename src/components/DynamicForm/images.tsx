@@ -73,7 +73,9 @@ interface IState {
   previewVisible?: boolean;
 }
 
-// @deprecated using ImagesUploader instead
+/**
+ * @deprecated using ImagesUploader instead
+ */
 export class ImageUploader extends React.Component<IProps> {
   state: {
     loading: boolean;

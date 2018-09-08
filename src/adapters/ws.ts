@@ -20,7 +20,7 @@ export class WsAdapter {
     this.port = opts.port;
     this.namespace = opts.namespace || 'admin';
 
-    if (!AppContext.serverRuntimeConfig.isServer && !WsAdapter.io) {
+    if (!AppContext.isServer && !WsAdapter.io) {
       WsAdapter.io = connect('/admin');
 
       WsAdapter.io.on('connect', () => {

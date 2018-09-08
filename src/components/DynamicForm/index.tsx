@@ -65,7 +65,6 @@ type DynamicFormProps = {
    */
   delegate?: boolean;
   fields: FormField[];
-  auth?: AuthState;
   onSubmit: (fn: (e: Error) => void) => void;
 };
 
@@ -83,11 +82,10 @@ export class DynamicForm extends React.Component<
   DynamicFormProps & AntdFormOnChangeListener & FormComponentProps
 > {
   _buildField = (field, index) => {
-    const { form, auth } = this.props;
+    const { form } = this.props;
 
     const options = {
       ...field.options,
-      auth,
       key: field.key || field.name,
       name: field.name,
       help: field.options.tooltip || field.options.help,

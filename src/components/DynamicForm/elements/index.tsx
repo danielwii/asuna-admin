@@ -341,7 +341,7 @@ export const generateRichTextEditor = (
   options,
   formItemLayout: IFormItemLayout = defaultFormItemLayout,
 ) => {
-  const { key, name, label, auth } = options;
+  const { key, name, label } = options;
 
   const fieldName = key || name;
   const labelName = label || name || key;
@@ -351,7 +351,7 @@ export const generateRichTextEditor = (
   return generateComponent(
     form,
     { fieldName, labelName, ...options },
-    <BraftRichEditor auth={auth} host={host} prefix={prefix} urlHandler={handler} />,
+    <BraftRichEditor host={host} prefix={prefix} urlHandler={handler} />,
     formItemLayout,
   );
 };

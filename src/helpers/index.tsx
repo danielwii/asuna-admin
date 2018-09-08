@@ -137,14 +137,12 @@ export const columnHelper = {
   /**
    * 生成动作按钮
    * @param actions 最终的渲染函数
-   * @param extras 需要接受 auth 参数传入
    * @returns {{key: string, title: string, render: function(*=, *=): *}}
    */
-  generateActions: (actions, extras?) => ({
+  generateActions: actions => ({
     key: 'action',
     title: 'Action',
-    render: (text, record) =>
-      actions(text, record, extras ? auth => extras(text, record, auth) : null),
+    render: actions,
   }),
   /**
    * 生成预览小图
@@ -183,12 +181,11 @@ export const columnHelper = {
    * 生成切换按钮
    * @param key
    * @param title
-   * @param {any} auth
    * @param {any} modelName
    * @param {any} callRefresh
    * @returns {{title: any; dataIndex: string | any; key: string | any; render: (isActive, record) => any}}
    */
-  generateBoolean: (key, title, { auth, modelName, callRefresh }) => ({
+  generateBoolean: (key, title, { modelName, callRefresh }) => ({
     title,
     dataIndex: castModelKey(key),
     key: castModelKey(key),
@@ -197,7 +194,7 @@ export const columnHelper = {
         title={isActive ? `是否注销: ${record.id}` : `是否激活: ${record.id}`}
         onConfirm={async () => {
           const { modelProxy } = require('../adapters');
-          await modelProxy.upsert(auth, modelName, {
+          await modelProxy.upsert(modelName, {
             body: {
               id: record.id,
               [key]: !isActive,
