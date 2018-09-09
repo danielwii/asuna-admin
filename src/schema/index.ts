@@ -174,23 +174,8 @@ export const asyncLoadAssociationsDecorator = async (
               onChange: value => {
                 logger.log(TAG, 'onChange', { value });
               },
-              onSearch: async (value, callback) => {
+              onSearch: _.debounce(async (value, callback) => {
                 logger.log(TAG, 'onSearch', { value });
-
-                // const results = await bluebird.props({
-                //   itemsResponse: AppContext.adapters.models.loadAssociation(selectable, {
-                //     keywords: value,
-                //   }),
-                //   existItemsResponse: AppContext.adapters.models.loadAssociationByIds(
-                //     selectable,
-                //     field.value,
-                //   ),
-                // });
-                //
-                // callback({
-                //   items: _.get(results.itemsResponse, 'data.items'),
-                //   existItems: _.get(results.existItemsResponse, 'data.items'),
-                // });
 
                 AppContext.adapters.models
                   .loadAssociation(selectable, { keywords: value })
@@ -201,7 +186,7 @@ export const asyncLoadAssociationsDecorator = async (
                   .catch(reason => {
                     logger.error(TAG, reason);
                   });
-              },
+              }, 500),
             },
           ];
           logger.debug(TAG, { foreignOpts });
