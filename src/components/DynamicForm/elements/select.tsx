@@ -2,9 +2,10 @@ import React from 'react';
 import * as R from 'ramda';
 import * as _ from 'lodash';
 import { Select } from 'antd';
+import { WrappedFormUtils } from 'antd/es/form/Form';
 import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc';
 
-import { generateComponent } from '.';
+import { generateComponent, IFormItemLayout } from '.';
 
 import { createLogger } from '@asuna-admin/logger';
 
@@ -12,67 +13,83 @@ const logger = createLogger('components:dynamic-form:elements', 'warn');
 
 interface IMixedSelectProps {
   value?: any[];
-  onChange?: (selectedItems: number | string | any[]) => void;
 }
 
 interface IMixedSelectState<T> {
   selectedItems: T[];
+  filterItems: T[];
+  existItems: T[];
 }
 
-type SelectOptions = {
+export type SelectOptions = {
   key: string;
   name: string;
   label: string;
   placeholder: string;
   items: (object & { id: string | number })[];
+  existItems?: (object & { id: string | number })[];
   mode: 'default' | 'multiple' | 'tags' | 'combobox';
   getName: () => string;
   getValue: () => string;
   withSortTree: boolean;
+  onChange?: (selectedItems: number | string | any[]) => void;
+  onSearch?: (value: string, cb: (response: object) => void) => any;
   enumSelector: { name?: string; value?: string };
 };
 
 const defaultFormItemLayout = {};
 
 export function generateSelect<T>(
-  form,
+  form: WrappedFormUtils,
   {
     key,
     name,
     label,
     placeholder,
     items,
+    existItems,
     mode,
     getName = R.prop('name'),
     getValue = R.prop('value'),
     withSortTree = false,
+    onChange,
+    onSearch,
     enumSelector = {},
   }: SelectOptions,
-  formItemLayout = defaultFormItemLayout,
+  formItemLayout: IFormItemLayout = defaultFormItemLayout,
 ) {
   const fieldName = key || name;
   const labelName = label || name || key;
   logger.debug('[generateSelect]', { items, enumSelector });
 
-  class MixedSelect extends React.Component<IMixedSelectProps, IMixedSelectState<T>> {
+  class MixedSelect extends React.Component<
+    IMixedSelectProps,
+    IMixedSelectState<object & { id: string | number }>
+  > {
     constructor(props) {
       super(props);
 
       logger.debug('[MixedSelect]', '[constructor]', this.props);
       this.state = {
         selectedItems: this.props.value || [],
+        filterItems: items || [],
+        existItems: existItems || [],
       };
     }
 
-    onSortEnd = ({ oldIndex, newIndex }) => {
-      const { onChange } = this.props;
+    _getAllItems = () => {
+      const { filterItems, existItems } = this.state;
+      return R.uniqBy(R.prop('id'), _.concat(filterItems, existItems));
+    };
+
+    _onSortEnd = ({ oldIndex, newIndex }) => {
       const selectedItems = arrayMove(this.state.selectedItems, oldIndex, newIndex);
       onChange!(selectedItems);
       this.setState({ selectedItems });
     };
 
     // prettier-ignore
-    extractName = item => {
+    _extractName = item => {
       if (enumSelector.name) {
         return R.compose(enumSelector.name, getValue)(item);
       }
@@ -83,7 +100,7 @@ export function generateSelect<T>(
     };
 
     // prettier-ignore
-    extractValue = item => {
+    _extractValue = item => {
       if (enumSelector.value) {
         return R.compose(enumSelector.value, getValue)(item);
       }
@@ -93,13 +110,14 @@ export function generateSelect<T>(
       return (getValue as any)(item);
     };
 
-    renderSortTree = () => {
+    _renderSortTree = () => {
       const { selectedItems } = this.state;
+
       const SortableItem = SortableElement<{ value: string; sortIndex: number }>(
         ({ value, sortIndex }) => {
-          const item = items.find(current => current.id === value);
-          const optionName = this.extractName(item);
-          const optionValue = this.extractValue(item);
+          const item = this._getAllItems().find(current => current.id === value);
+          const optionName = this._extractName(item);
+          const optionValue = this._extractValue(item);
           return (
             <React.Fragment>
               <li>
@@ -173,44 +191,65 @@ export function generateSelect<T>(
         ),
       );
 
-      return <SortableList selectedSortedItems={selectedItems} onSortEnd={this.onSortEnd} />;
+      return <SortableList selectedSortedItems={selectedItems} onSortEnd={this._onSortEnd} />;
+    };
+
+    _onChange = (value: any[]) => {
+      const allExists = R.filter(item => R.contains(R.prop('id')(item))(value))(
+        this._getAllItems(),
+      );
+      logger.log('[MixedSelect]', '[onChange]', { value, allExists });
+
+      this.setState({ selectedItems: value, existItems: allExists });
+    };
+
+    _onSearch = (value: string): any => {
+      if (onSearch) {
+        const { existItems } = this.state;
+        onSearch(value, items => {
+          this.setState({ filterItems: _.concat(items, existItems) });
+          logger.log('[MixedSelect]', '[onSearch]', { items });
+        });
+      }
     };
 
     render() {
+      const { selectedItems } = this.state;
+
       logger.debug('[MixedSelect]', '[render]', { state: this.state, props: this.props });
+
       return (
         <React.Fragment>
           <Select
-            {...this.props}
-            value={this.props.value || []} // value 为 null 时会显示一个空白框
+            {...this.props} // set extra properties from dynamic from here
+            value={selectedItems as any} // value 为 null 时会显示一个空白框
             key={fieldName}
             showSearch
             allowClear
             // style={{ width: 300 }}
             placeholder={placeholder}
-            optionFilterProp="items"
+            optionFilterProp="children"
             mode={mode}
+            onChange={this._onChange}
+            onSearch={this._onSearch}
             filterOption={(input, option) => {
-              logger.log('filter item is', { input, option });
+              // logger.log('filter item is', { input, option });
               const itemStr = R.join('', option.props.children).toLowerCase();
               return itemStr.indexOf(input.toLowerCase()) >= 0;
             }}
           >
-            {(items || []).map(item => {
-              const optionName = this.extractName(item);
-              const optionValue = this.extractValue(item);
+            {this._getAllItems().map(item => {
+              const optionName = this._extractName(item);
+              const optionValue = this._extractValue(item);
+              // prettier-ignore
               return (
                 <Select.Option key={optionValue} value={optionValue}>
-                  {/* prettier-ignore */}
-                  {'#'}
-                  {optionValue}
-                  {': '}
-                  {optionName}
+                  {'#'}{optionValue}{': '}{optionName}
                 </Select.Option>
               );
             })}
           </Select>
-          {withSortTree && this.renderSortTree()}
+          {withSortTree && this._renderSortTree()}
         </React.Fragment>
       );
     }

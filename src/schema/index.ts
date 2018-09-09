@@ -1,10 +1,11 @@
 import _ from 'lodash';
 import * as R from 'ramda';
+import bluebird from 'bluebird';
 
 import { DynamicFormTypes } from '@asuna-admin/components/DynamicForm';
 import { castModelKey, castModelName } from '@asuna-admin/helpers';
-import { modelProxy } from '@asuna-admin/adapters';
 import { createLogger } from '@asuna-admin/logger';
+import { AppContext } from '@asuna-admin/core';
 
 const logger = createLogger('helpers:schema', 'warn');
 
@@ -30,7 +31,35 @@ export const tables = {
   },
 };
 
-export const hiddenComponentDecorator = fields => {
+type Fields = {
+  [key: string]: {
+    name: string;
+    ref: string;
+    type: DynamicFormTypes;
+    value?: any;
+    options: {
+      label: string | null;
+      length: number | null;
+      required: boolean;
+      selectable?: string;
+    };
+  };
+};
+
+type WithHidden = {
+  options: { hidden?: boolean };
+};
+
+type PositionsField = Fields &
+  WithHidden & {
+    options: {
+      accessible: 'readonly';
+      json: 'str';
+      type: 'SortPosition';
+    };
+  };
+
+export const hiddenComponentDecorator = (fields: Fields): Fields & WithHidden => {
   const TAG = '[hiddenComponentDecorator]';
   logger.log(TAG, { fields });
 
@@ -49,15 +78,69 @@ export const hiddenComponentDecorator = fields => {
 
     wrappedFields = R.mergeDeepRight(wrappedFields, { ...hiddenPositions });
   }
+  logger.log(TAG, 'wrappedFields', { wrappedFields });
   return wrappedFields;
 };
+
+type WithAssociation = {
+  ifFilterField: boolean;
+  type: 'ManyToMany';
+  options: {
+    filterType: 'Sort';
+  };
+};
+
+type AssociationField = {
+  associations: {
+    [name: string]: {
+      items: any[];
+      /**
+       * 分页拉取的关联数据大部分情况下并不包含在当前以选择的数据列表中
+       * 该对象用于拉取这部分数据的补充信息，以用于界面填充
+       */
+      existItems: any[];
+      page: number;
+      size: number;
+      total: number;
+      query: {
+        where: any;
+        parsedFields: {
+          fields: string[];
+          relatedFieldsMap: object;
+        };
+        skip: number;
+        take: number;
+      };
+    };
+  };
+  foreignOpts: {
+    modelName: string;
+    association?: string;
+    onSearch: (value: string) => any;
+    onChange: (value: string) => any;
+  }[];
+  isFilterFields: boolean;
+  options: {
+    filterType: 'Sort';
+    selectable: string;
+  };
+};
+
+const extractItems = R.compose(
+  R.uniqBy(R.prop('id')),
+  R.flatten,
+  R.map(R.path(['data', 'items'])),
+  R.flatten,
+);
 
 /**
  * 异步加载所有的关联对象，用于下拉菜单提示
  * @param fields
  * @returns {Promise<*>}
  */
-export const asyncLoadAssociationsDecorator = async fields => {
+export const asyncLoadAssociationsDecorator = async (
+  fields: (Fields & WithHidden & WithAssociation) | PositionsField | EnumField,
+): Promise<(Fields & WithHidden) | PositionsField | EnumField | AssociationField> => {
   const TAG = '[asyncLoadAssociationsDecorator]';
   logger.log(TAG, { fields });
 
@@ -76,50 +159,82 @@ export const asyncLoadAssociationsDecorator = async fields => {
       return fields;
     }
 
+    // TODO add onSearch query in options
     const wrappedAssociations = await Promise.all(
       R.values(filteredAssociations).map(async field => {
         const selectable = R.pathOr([], ['options', 'selectable'])(field);
-        logger.debug(TAG, 'handle field', { field, selectable });
+        logger.debug(TAG, { field, selectable });
         if (selectable) {
-          const fieldsOfAssociations = modelProxy.getFieldsOfAssociations();
+          const fieldsOfAssociations = AppContext.adapters.models.getFieldsOfAssociations();
 
           const foreignOpts = [
             {
               modelName: selectable,
               association: fieldsOfAssociations[selectable],
+              onChange: value => {
+                logger.log(TAG, 'onChange', { value });
+              },
+              onSearch: async (value, callback) => {
+                logger.log(TAG, 'onSearch', { value });
+
+                // const results = await bluebird.props({
+                //   itemsResponse: AppContext.adapters.models.loadAssociation(selectable, {
+                //     keywords: value,
+                //   }),
+                //   existItemsResponse: AppContext.adapters.models.loadAssociationByIds(
+                //     selectable,
+                //     field.value,
+                //   ),
+                // });
+                //
+                // callback({
+                //   items: _.get(results.itemsResponse, 'data.items'),
+                //   existItems: _.get(results.existItemsResponse, 'data.items'),
+                // });
+
+                AppContext.adapters.models
+                  .loadAssociation(selectable, { keywords: value })
+                  .then(response => {
+                    const items = extractItems([response]);
+                    callback(items);
+                  })
+                  .catch(reason => {
+                    logger.error(TAG, reason);
+                  });
+              },
             },
           ];
-          logger.debug(TAG, 'foreignOpts is', foreignOpts);
+          logger.debug(TAG, { foreignOpts });
 
-          const effects = modelProxy.listAssociationsCallable([selectable]);
-          logger.debug(TAG, 'list associations callable', effects);
-
-          let allResponse = {};
           try {
-            allResponse = await Promise.all(R.values(effects));
-            logger.debug(TAG, 'allResponse is', allResponse);
+            const results = await bluebird.props({
+              itemsResponse: AppContext.adapters.models.loadAssociation(selectable),
+              existItemsResponse: AppContext.adapters.models.loadAssociationByIds(
+                selectable,
+                field.value,
+              ),
+            });
+
+            // 当前方法只处理了单个外键的情况，没有考虑如联合主键的处理
+            const foreignKeysResponse = {
+              [selectable]: {
+                items: extractItems([results.itemsResponse]),
+                existItems: extractItems([results.existItemsResponse]),
+              },
+            };
+            logger.debug(TAG, { foreignOpts, foreignKeysResponse });
+            return { ...field, foreignOpts, associations: foreignKeysResponse };
           } catch (e) {
             logger.error(TAG, e);
           }
-
-          const foreignKeysResponse = R.zipObj([selectable], R.map(R.prop('data'), allResponse));
-          logger.debug(
-            TAG,
-            'foreignOpts is',
-            foreignOpts,
-            'foreignKeysResponse is',
-            foreignKeysResponse,
-          );
-
-          return { ...field, foreignOpts, associations: foreignKeysResponse };
         }
-        logger.warn(TAG, 'no foreignKeys with association', field);
+        logger.warn(TAG, 'no foreignKeys with association', { field });
         return { ...field, type: DynamicFormTypes.Input };
       }),
     );
 
     const pairedWrappedAssociations = R.zipObj(R.keys(filteredAssociations), wrappedAssociations);
-    logger.debug(TAG, 'wrapped associations', { pairedWrappedAssociations });
+    logger.debug(TAG, { pairedWrappedAssociations });
 
     // FIXME 临时解决关联数据从 entities 到 ids 的转换
 
@@ -137,7 +252,7 @@ export const asyncLoadAssociationsDecorator = async fields => {
       return { ...association, value };
     })(pairedWrappedAssociations);
 
-    logger.debug(TAG, 'transformed associations', transformedAssociations);
+    logger.debug(TAG, { transformedAssociations });
 
     return R.mergeDeepRight(fields, transformedAssociations);
   }
@@ -162,7 +277,7 @@ export const associationDecorator = fields => {
     logger.debug(TAG, { associationFields });
     const wrapForeignOpt = R.map(opt => ({
       ...opt,
-      association: modelProxy.getAssociationConfigs(opt.modelName),
+      association: AppContext.adapters.models.getAssociationConfigs(opt.modelName),
     }));
     const withAssociations = R.mapObjIndexed(field => ({
       ...field,
@@ -179,7 +294,9 @@ export const associationDecorator = fields => {
   return fields;
 };
 
-export const jsonDecorator = fields => {
+export const jsonDecorator = (
+  fields: (Fields & WithHidden) | PositionsField,
+): (Fields & WithHidden) | PositionsField => {
   const TAG = '[jsonDecorator]';
   logger.log(TAG, { fields });
 
@@ -204,10 +321,22 @@ export const jsonDecorator = fields => {
 
     const transformValue = R.over(R.lens(R.prop('value'), R.assoc('value')), toJson);
     const transformedFields = R.map(transformValue)(jsonFields);
-    return R.mergeDeepRight(fields, transformedFields);
+    const wrappedFields = R.mergeDeepRight(fields, transformedFields);
+
+    logger.log(TAG, 'wrappedFields', { wrappedFields });
+    return wrappedFields;
   }
 
   return fields;
+};
+
+type EnumField = {
+  type: DynamicFormTypes.EnumFilter;
+  options: {
+    enumData: { key: string; value: any[] }[];
+    type: DynamicFormTypes.EnumFilter;
+    filterType: 'Sort';
+  };
 };
 
 /**
@@ -217,7 +346,9 @@ export const jsonDecorator = fields => {
  * @param fields
  * @returns {*}
  */
-export const enumDecorator = fields => {
+export const enumDecorator = (
+  fields: (Fields & WithHidden) | PositionsField | EnumField,
+): (Fields & WithHidden) | PositionsField | EnumField => {
   const TAG = '[enumDecorator]';
   logger.log(TAG, { fields });
 
@@ -264,7 +395,8 @@ export const enumDecorator = fields => {
           ...R.fromPairs(positionsFieldPair),
         })
       : filteredFields;
-    logger.debug(TAG, {
+
+    logger.debug(TAG, 'wrappedFields', {
       current,
       filteredNames,
       filteredFields,

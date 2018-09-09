@@ -20,43 +20,47 @@ import {
   generateSwitch,
   generateTextArea,
   generateVideo,
+  HiddenOptions,
+  InputOptions,
+  PlainOptions,
 } from './elements';
+import { generateSelect, SelectOptions } from './elements/select';
 
-import { generateSelect } from './elements/select';
-
-import { AuthState } from '@asuna-admin/store';
 import { diff } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 
 const logger = createLogger('components:dynamic-form', 'warn');
 
-export const DynamicFormTypes = {
+export enum DynamicFormTypes {
   // --------------------------------------------------------------
   // Basic Types
   // --------------------------------------------------------------
-  Checkbox: 'Checkbox',
-  Button: 'Button',
-  Hidden: 'Hidden',
-  Plain: 'Plain',
-  Input: 'Input',
-  InputNumber: 'InputNumber',
-  TextArea: 'TextArea',
-  DateTime: 'DateTime',
-  Date: 'Date',
-  Switch: 'Switch',
-  Authorities: 'Authorities',
-  Enum: 'Enum',
-  EnumFilter: 'EnumFilter',
+
+  Checkbox = 'Checkbox',
+  Button = 'Button',
+  Hidden = 'Hidden',
+  Plain = 'Plain',
+  Input = 'Input',
+  InputNumber = 'InputNumber',
+  TextArea = 'TextArea',
+  DateTime = 'DateTime',
+  Date = 'Date',
+  Switch = 'Switch',
+  Authorities = 'Authorities',
+  Enum = 'Enum',
+  EnumFilter = 'EnumFilter',
+
   // --------------------------------------------------------------
   // Advanced Types
   // --------------------------------------------------------------
-  Image: 'Image',
-  Images: 'Images',
-  Video: 'Video',
-  RichText: 'RichText',
-  Association: 'Association',
-  ManyToMany: 'ManyToMany',
-};
+
+  Image = 'Image',
+  Images = 'Images',
+  Video = 'Video',
+  RichText = 'RichText',
+  Association = 'Association',
+  ManyToMany = 'ManyToMany',
+}
 
 type DynamicFormProps = {
   anchor?: boolean;
@@ -66,6 +70,18 @@ type DynamicFormProps = {
   delegate?: boolean;
   fields: FormField[];
   onSubmit: (fn: (e: Error) => void) => void;
+};
+
+type DynamicFormField = {
+  options: Asuna.Schema.MetaInfoOptions & {
+    tooltip: string;
+  };
+  ref: string;
+  key: string;
+  name: string;
+  type: DynamicFormTypes;
+  raw: any[];
+  value: any | any[];
 };
 
 /**
@@ -81,12 +97,14 @@ type DynamicFormProps = {
 export class DynamicForm extends React.Component<
   DynamicFormProps & AntdFormOnChangeListener & FormComponentProps
 > {
-  _buildField = (field, index) => {
+  _buildField = (field: DynamicFormField, index: number) => {
     const { form } = this.props;
 
-    const options = {
+    const options: DeepPartial<
+      DynamicFormField['options'] & HiddenOptions & PlainOptions & InputOptions & SelectOptions
+    > = {
       ...field.options,
-      key: field.key || field.name,
+      // key: field.key || field.name,
       name: field.name,
       help: field.options.tooltip || field.options.help,
     };
@@ -100,21 +118,21 @@ export class DynamicForm extends React.Component<
 
     // all readonly or hidden field will rendered as plain component
     if (['readonly', 'hidden'].indexOf(_.get(field, 'options.accessible')) > -1) {
-      return generatePlain({ text: field.value, ...options });
+      return generatePlain({ text: field.value, ...options } as PlainOptions);
     }
     if (['hide-value'].indexOf(_.get(field, 'options.accessible')) > -1) {
-      return generatePlain({ text: null, ...options });
+      return generatePlain(options as PlainOptions);
     }
 
     switch (field.type) {
       case DynamicFormTypes.Plain:
-        return generatePlain({ text: field.value, ...options });
+        return generatePlain({ text: field.value, ...options } as PlainOptions);
       case DynamicFormTypes.Input:
-        return generateInput(form, options);
+        return generateInput(form, options as InputOptions);
       case DynamicFormTypes.Checkbox:
         return generateCheckbox(form, options);
       case DynamicFormTypes.Hidden:
-        return generateHidden(form, options);
+        return generateHidden(form, options as HiddenOptions);
       case DynamicFormTypes.InputNumber:
         return generateInputNumber(form, options);
       case DynamicFormTypes.TextArea:
@@ -141,18 +159,25 @@ export class DynamicForm extends React.Component<
         // --------------------------------------------------------------
         logger.debug('[DynamicForm]', '[buildField][ManyToMany]', { field });
         if (R.has('foreignOpts')(field)) {
-          const { modelName, association = defaultAssociation } = R.path(['foreignOpts', 0])(field);
+          const { modelName, association = defaultAssociation, onChange, onSearch } = R.path([
+            'foreignOpts',
+            0,
+          ])(field);
 
           const items = R.path(['associations', modelName, 'items'])(field);
+          const existItems = R.path(['associations', modelName, 'existItems'])(field);
           const type = R.path(['options', 'filterType'])(field);
           return generateSelect(form, {
             ...options,
             items,
+            existItems,
             mode: 'multiple',
             withSortTree: type === 'Sort',
+            onSearch,
+            onChange,
             getName: R.prop(association.name || defaultAssociation.name),
             getValue: R.prop(association.value || defaultAssociation.value),
-          });
+          } as SelectOptions);
         }
         logger.warn('[buildField]', 'foreignOpts is required in association.', { field });
         return <div>association need foreignOpts.</div>;
@@ -169,7 +194,7 @@ export class DynamicForm extends React.Component<
           ...options,
           items,
           getName: R.prop('key'),
-        });
+        } as SelectOptions);
       }
       case DynamicFormTypes.Enum: {
         // --------------------------------------------------------------
@@ -181,7 +206,7 @@ export class DynamicForm extends React.Component<
           ...options,
           items,
           getName: R.prop('key'),
-        });
+        } as SelectOptions);
       }
       case DynamicFormTypes.Association: {
         // --------------------------------------------------------------
@@ -189,28 +214,36 @@ export class DynamicForm extends React.Component<
         // --------------------------------------------------------------
         logger.debug('[DynamicForm]', '[buildField][Association]', field);
         if (R.has('foreignOpts')(field)) {
-          const { modelName, association = defaultAssociation } = R.path(['foreignOpts', 0])(field);
+          const { modelName, association = defaultAssociation, onChange, onSearch } = R.path([
+            'foreignOpts',
+            0,
+          ])(field);
 
           const items = R.path(['associations', modelName, 'items'])(field);
+          const existItems = R.path(['associations', modelName, 'existItems'])(field);
           return generateSelect(form, {
             ...options,
             items,
+            existItems,
+            onChange,
+            onSearch,
             getName: R.prop(association.name || defaultAssociation.name),
             getValue: R.prop(association.value || defaultAssociation.value),
-          });
+          } as SelectOptions);
         }
         logger.warn('[DynamicForm]', '[buildField]', 'foreignOpts is required in association.', {
           field,
         });
         return <div>association need foreignOpts.</div>;
       }
-      default:
+      default: {
         return (
           <div key={index}>
-            DynamicForm2 `{field.type}-{options.type}-{options.key}` not implemented.
+            DynamicForm `{field.type}-{options.type}-{options.key}` not implemented :P.
             <pre>{JSON.stringify(field)}</pre>
           </div>
         );
+      }
     }
   };
 
@@ -332,9 +365,9 @@ class FormAnchor extends React.Component<IFormAnchorProps> {
 }
 
 interface IPureElementProps {
-  field: FormField;
+  field: DynamicFormField;
   index: number;
-  builder: (field: FormField, index: number) => any;
+  builder: (field: DynamicFormField, index: number) => any;
 }
 
 class EnhancedPureElement extends React.Component<IPureElementProps> {

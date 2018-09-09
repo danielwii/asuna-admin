@@ -49,13 +49,15 @@ const horizontalFormItemLayout: IFormItemLayout = {
 // };
 // --------------------------------------------------------------
 
+export type PlainOptions = {
+  key: string;
+  label: string;
+  text?: string;
+  help?: string;
+};
+
 export const generatePlain = (
-  options: {
-    key: string;
-    label: string;
-    text: string;
-    help?: string;
-  },
+  options: PlainOptions,
   formItemLayout: IFormItemLayout = horizontalFormItemLayout,
 ) => {
   const { key, label, text, help } = options;
@@ -98,7 +100,9 @@ export const generateComponent = (
   return null;
 };
 
-export const generateHidden = (form: WrappedFormUtils, options: { key: string; name: string }) => {
+export type HiddenOptions = { key: string; name: string };
+
+export const generateHidden = (form: WrappedFormUtils, options: HiddenOptions) => {
   logger.debug('generateHidden', options);
   const { key, name } = options;
   const fieldName = key || name;
@@ -147,9 +151,31 @@ export const generateInputNumber = (
   );
 };
 
+export type InputOptions = {
+  key: string;
+  name: string;
+  label: string;
+  required: boolean;
+  requiredMessage: string;
+  placeholder: string;
+  iconType: string;
+  help: string;
+  length: number;
+};
+
 export const generateInput = (
   form: WrappedFormUtils,
-  { key, name, label, required = false, requiredMessage, placeholder = '', iconType, help, length },
+  {
+    key,
+    name,
+    label,
+    required = false,
+    requiredMessage,
+    placeholder = '',
+    iconType,
+    help,
+    length,
+  }: InputOptions,
   formItemLayout?: IFormItemLayout,
 ) => {
   const fieldName = key || name;

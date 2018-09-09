@@ -7,6 +7,8 @@ declare global {
     }
   }
 
+  type DeepPartial<T> = { [K in keyof T]?: DeepPartial<T[K]> };
+
   interface SagaParams {
     payload: object;
 

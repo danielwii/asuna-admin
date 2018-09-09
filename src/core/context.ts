@@ -1,5 +1,4 @@
-import { AnyAction, DeepPartial, Dispatch } from 'redux';
-
+import { AnyAction, Dispatch } from 'redux';
 import { Subject } from 'rxjs';
 
 import { IStoreConnector, RootState } from '@asuna-admin/store';
@@ -29,7 +28,12 @@ export interface ILoginRegister {
 export interface IIndexRegister extends ILoginRegister {
   createAuthService(): IAuthService;
 
+  /**
+   * @deprecated
+   */
   createModelService(): IModelService;
+
+  modelService: IModelService;
 
   createMenuService(): IMenuService;
 
@@ -87,7 +91,7 @@ class AppContext {
   private static _storeConnector: IStoreConnector<RootState>;
 
   public static init(nextConfig?: INextConfig) {
-    if (AppContext.nextConfig == null && nextConfig) {
+    if (nextConfig) {
       AppContext.nextConfig = nextConfig;
     }
     if (!AppContext._subject) {
@@ -164,6 +168,10 @@ class AppContext {
 
   public static get subject() {
     return AppContext._subject;
+  }
+
+  public static get adapters() {
+    return AppContext._context;
   }
 
   /**
