@@ -66,7 +66,7 @@ function* loadModels({ payload: { name, models } }: LoadModelsParams) {
       logger.debug('[loadModels]', 'loading content', { name, extras });
       message.loading(`loading content '${name}'...`);
 
-      const response = yield call(modelProxy.loadModels, { token }, name, extras);
+      const response = yield call(modelProxy.loadModels, name, extras);
       message.success(`load content '${name}' success`);
       logger.log('[loadModels]', 'loaded content', { name, response });
 

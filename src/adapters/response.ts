@@ -1,8 +1,8 @@
 import * as _ from 'lodash';
 
-import { createLogger } from '@asuna-admin/logger';
 import { AppContext } from '@asuna-admin/core';
 import { Config } from '@asuna-admin/config';
+import { createLogger } from '@asuna-admin/logger';
 
 // --------------------------------------------------------------
 // Types
@@ -17,21 +17,19 @@ export interface TablePagination {
   pageSizeOptions: string[];
 }
 
-export interface IResponseProxy {
-  extract: (apiResponse: object) => { items: object[]; pagination: TablePagination };
-}
-
 // --------------------------------------------------------------
 // Main
 // --------------------------------------------------------------
 
 const logger = createLogger('adapters::response', 'warn');
 
-export const responseProxy: IResponseProxy = {
-  extract: apiResponse => AppContext.ctx.response.extract(apiResponse),
+export const responseProxy = {
+  extract(apiResponse: object): { items: object[]; pagination: TablePagination } {
+    return AppContext.ctx.response.extract(apiResponse);
+  },
 };
 
-export class ResponseAdapter implements IResponseProxy {
+export class ResponseAdapter {
   extractPageable = (apiResponse): Asuna.Pageable & { total: number } => {
     switch (Config.get('API_RESPONSE_PAGE_MODE')) {
       case 'SpringJPA': {
@@ -76,7 +74,7 @@ export class ResponseAdapter implements IResponseProxy {
     };
   };
 
-  extract = apiResponse => {
+  extract = (apiResponse): { items: object[]; pagination: TablePagination } => {
     const { items } = apiResponse;
     return { items, pagination: this.extractPagination(apiResponse) };
   };

@@ -1,5 +1,4 @@
 import { AnyAction, Dispatch } from 'redux';
-
 import { Subject } from 'rxjs';
 
 import { IStoreConnector, RootState } from '@asuna-admin/store';
@@ -29,7 +28,12 @@ export interface ILoginRegister {
 export interface IIndexRegister extends ILoginRegister {
   createAuthService(): IAuthService;
 
+  /**
+   * @deprecated
+   */
   createModelService(): IModelService;
+
+  modelService: IModelService;
 
   createMenuService(): IMenuService;
 
@@ -55,8 +59,8 @@ export type IndexModuleRegister = {
 };
 
 export interface INextConfig {
-  serverRuntimeConfig: { isServer: boolean };
-  publicRuntimeConfig: { env: string };
+  serverRuntimeConfig: { isServer?: boolean };
+  publicRuntimeConfig: { env?: string };
 }
 
 // --------------------------------------------------------------
@@ -64,7 +68,10 @@ export interface INextConfig {
 // --------------------------------------------------------------
 
 class AppContext {
-  static serverRuntimeConfig;
+  static nextConfig: INextConfig = {
+    serverRuntimeConfig: { isServer: false },
+    publicRuntimeConfig: { env: 'canary' },
+  };
 
   private static _context: {
     auth: AuthAdapter;
@@ -75,20 +82,18 @@ class AppContext {
     models: ModelAdapter;
     ws: WsAdapter;
   };
+
+  /**
+   * 提供一种脱离 redux-connect 调用 dispatch 的方式
+   */
   private static _dispatch: Dispatch;
   private static _subject;
   private static _storeConnector: IStoreConnector<RootState>;
 
-  constructor(nextConfig?: INextConfig) {
-    AppContext.init(nextConfig);
-  }
-
   public static init(nextConfig?: INextConfig) {
-    if (!AppContext.serverRuntimeConfig && nextConfig) {
-      const { serverRuntimeConfig: serverConfig = {} } = nextConfig;
-      AppContext.serverRuntimeConfig = serverConfig;
+    if (nextConfig) {
+      AppContext.nextConfig = nextConfig;
     }
-    // this._context = { ...this._context, ws: new WsAdapter(this) };
     if (!AppContext._subject) {
       AppContext._subject = new Subject();
     }
@@ -96,10 +101,8 @@ class AppContext {
     //   next: (action) => console.log('observer: ', action)
     // });
     if (!AppContext._storeConnector) {
-      (async () => {
-        const { storeConnector } = await import('../store');
-        AppContext._storeConnector = storeConnector;
-      })();
+      const { storeConnector } = require('../store');
+      AppContext._storeConnector = storeConnector;
     }
   }
 
@@ -116,15 +119,11 @@ class AppContext {
   }
 
   public static dispatch(action: AnyAction) {
-    !AppContext.serverRuntimeConfig.isServer &&
-      AppContext._dispatch &&
-      AppContext._dispatch(action);
+    !AppContext.isServer && AppContext._dispatch && AppContext._dispatch(action);
   }
 
   public static actionHandler(action: AnyAction) {
-    !AppContext.serverRuntimeConfig.isServer &&
-      AppContext._subject &&
-      AppContext._subject.next(action);
+    !AppContext.isServer && AppContext._subject && AppContext._subject.next(action);
   }
 
   /**
@@ -140,6 +139,7 @@ class AppContext {
   public static setup(moduleRegister): void {
     if (moduleRegister.module) {
       const register = moduleRegister.register;
+
       if (moduleRegister.module === 'login') {
         AppContext._context = {
           ...AppContext._context,
@@ -147,44 +147,15 @@ class AppContext {
           ws: new WsAdapter(),
         };
       } else {
-        AppContext._context = {
-          ...AppContext._context,
-          auth: new AuthAdapter(register.createAuthService()),
-          response: new ResponseAdapter(),
-          menu: new MenuAdapter(
-            register.createMenuService(),
-            register.createDefinitions().registeredModels,
-          ),
-          api: new ApiAdapter(register.createApiService()),
-          security: new SecurityAdapter(register.createSecurityService()),
-          models: new ModelAdapter(
-            register.createModelService(),
-            register.createDefinitions().modelConfigs,
-            register.createDefinitions().associations,
-          ),
-          ws: new WsAdapter(),
-        };
+        this.registerIndex(register);
       }
     } else {
-      const register = moduleRegister;
-      AppContext._context = {
-        ...AppContext._context,
-        auth: new AuthAdapter(register.createAuthService()),
-        response: new ResponseAdapter(),
-        menu: new MenuAdapter(
-          register.createMenuService(),
-          register.createDefinitions().registeredModels,
-        ),
-        api: new ApiAdapter(register.createApiService()),
-        security: new SecurityAdapter(register.createSecurityService()),
-        models: new ModelAdapter(
-          register.createModelService(),
-          register.createDefinitions().modelConfigs,
-          register.createDefinitions().associations,
-        ),
-        ws: new WsAdapter(),
-      };
+      this.registerIndex(moduleRegister);
     }
+  }
+
+  public static get isServer() {
+    return AppContext.nextConfig.serverRuntimeConfig.isServer;
   }
 
   public static get ctx() {
@@ -197,6 +168,38 @@ class AppContext {
 
   public static get subject() {
     return AppContext._subject;
+  }
+
+  public static get adapters() {
+    return AppContext._context;
+  }
+
+  /**
+   * 提供了直接通过 redux-store 获取数据的 api
+   * @param state
+   */
+  public static fromStore<K extends keyof RootState>(state: K): RootState[K] {
+    return this.store.getState(state);
+  }
+
+  private static registerIndex(register: IIndexRegister) {
+    AppContext._context = {
+      ...AppContext._context,
+      auth: new AuthAdapter(register.createAuthService()),
+      response: new ResponseAdapter(),
+      menu: new MenuAdapter(
+        register.createMenuService(),
+        register.createDefinitions().registeredModels,
+      ),
+      api: new ApiAdapter(register.createApiService()),
+      security: new SecurityAdapter(register.createSecurityService()),
+      models: new ModelAdapter(
+        register.createModelService(),
+        register.createDefinitions().modelConfigs,
+        register.createDefinitions().associations,
+      ),
+      ws: new WsAdapter(),
+    };
   }
 }
 

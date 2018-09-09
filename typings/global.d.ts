@@ -7,6 +7,8 @@ declare global {
     }
   }
 
+  type DeepPartial<T> = { [K in keyof T]?: DeepPartial<T[K]> };
+
   interface SagaParams {
     payload: object;
 
@@ -26,7 +28,7 @@ declare global {
     includes: object;
   };
 
-  interface IFormFix {
+  type AntdFormOnChangeListener = {
     onChange: (changedFields: any) => any;
-  }
+  };
 }

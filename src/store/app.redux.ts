@@ -9,7 +9,7 @@ import { appActions, appActionTypes, isAppModule } from './app.actions';
 import { actions, RootState } from './';
 import { securitySagaFunctions } from './security.redux';
 import { menuSagaFunctions } from './menu.redux';
-import { modelsSagaFunctions } from './model.redux';
+import { modelsSagaFunctions } from './models.redux';
 import { routerActions } from './router.redux';
 import { authActions } from './auth.actions';
 

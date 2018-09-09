@@ -22,7 +22,6 @@ interface IProps extends ReduxProps {
   };
   activeKey: string;
   models: object;
-  auth: object;
   nextGetConfig: any;
 }
 
@@ -46,20 +45,16 @@ interface IState {
 }
 
 class ContentIndex extends React.Component<IProps, IState> {
-  private bus: EventBus;
-
   constructor(props) {
     super(props);
 
-    const { basis, auth, activeKey, nextGetConfig } = this.props;
-
-    this.bus = new EventBus(nextGetConfig);
+    const { basis, activeKey } = this.props;
 
     logger.debug('[constructor]', { basis });
 
     const actions = (text, record, extras) => (
       <span>
-        {extras && extras(auth)}
+        {/*{extras && extras(auth)}*/}
         <Button size="small" type="dashed" onClick={() => this._edit(text, record)}>
           Edit
         </Button>
@@ -81,7 +76,7 @@ class ContentIndex extends React.Component<IProps, IState> {
     logger.debug('[constructor]', { configs, modelName });
 
     const columns = R.prop('table', configs)(actions, {
-      auth,
+      // auth,
       modelName,
       callRefresh: this._refresh,
     });
@@ -256,6 +251,8 @@ class ContentIndex extends React.Component<IProps, IState> {
   }
 }
 
-const mapStateToProps = (state: RootState) => ({ ...state.content, auth: state.auth });
+const mapStateToProps = (state: RootState) => ({
+  ...state.content,
+});
 
 export default connect(mapStateToProps)(ContentIndex);

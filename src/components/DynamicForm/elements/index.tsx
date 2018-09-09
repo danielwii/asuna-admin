@@ -1,10 +1,11 @@
 import React from 'react';
 
 import { Checkbox, DatePicker, Form, Icon, Input, InputNumber, Switch, TimePicker } from 'antd';
+import { GetFieldDecoratorOptions, WrappedFormUtils } from 'antd/es/form/Form';
 
 import { BraftRichEditor } from '../../RichEditor';
 
-import { ImagesUploader, ImageUploader } from '../images';
+import { ImagesUploader } from '../images';
 import { VideoUploader } from '../videos';
 import { Authorities } from '../authorities';
 
@@ -48,8 +49,15 @@ const horizontalFormItemLayout: IFormItemLayout = {
 // };
 // --------------------------------------------------------------
 
+export type PlainOptions = {
+  key: string;
+  label: string;
+  text?: string;
+  help?: string;
+};
+
 export const generatePlain = (
-  options,
+  options: PlainOptions,
   formItemLayout: IFormItemLayout = horizontalFormItemLayout,
 ) => {
   const { key, label, text, help } = options;
@@ -63,18 +71,28 @@ export const generatePlain = (
   );
 };
 
+type ComponentOptions = {
+  key?: string;
+  name?: string;
+  label?: string;
+  fieldName: string;
+  labelName: string;
+  opts?: GetFieldDecoratorOptions;
+  help?: string;
+};
+
 export const generateComponent = (
-  form,
-  options,
-  Component,
+  form: WrappedFormUtils,
+  options: ComponentOptions,
+  Component: React.ReactNode,
   formItemLayout: IFormItemLayout = {},
 ) => {
-  const { fieldName, labelName = fieldName, opts = {}, help } = options;
+  const { fieldName, labelName, opts, help } = options;
   if (fieldName) {
     logger.debug('[generateComponent]', options);
-    const decorator = form.getFieldDecorator(fieldName, opts);
+    const decorator = form.getFieldDecorator(fieldName, opts || {});
     return (
-      <Form.Item key={fieldName} {...formItemLayout} label={labelName} help={help}>
+      <Form.Item key={fieldName} {...formItemLayout} label={labelName || fieldName} help={help}>
         {decorator(Component)}
       </Form.Item>
     );
@@ -82,8 +100,11 @@ export const generateComponent = (
   return null;
 };
 
-export const generateHidden = (form, { key, name }) => {
-  logger.debug('generateHidden', key, name);
+export type HiddenOptions = { key: string; name: string };
+
+export const generateHidden = (form: WrappedFormUtils, options: HiddenOptions) => {
+  logger.debug('generateHidden', options);
+  const { key, name } = options;
   const fieldName = key || name;
   if (name) {
     return (
@@ -96,7 +117,11 @@ export const generateHidden = (form, { key, name }) => {
   return null;
 };
 
-export const generateCheckbox = (form, options, formItemLayout?: IFormItemLayout) => {
+export const generateCheckbox = (
+  form: WrappedFormUtils,
+  options,
+  formItemLayout?: IFormItemLayout,
+) => {
   const { key, name, label } = options;
 
   const fieldName = key || name;
@@ -110,7 +135,7 @@ export const generateCheckbox = (form, options, formItemLayout?: IFormItemLayout
 };
 
 export const generateInputNumber = (
-  form,
+  form: WrappedFormUtils,
   options,
   formItemLayout: IFormItemLayout = defaultFormItemLayout,
 ) => {
@@ -126,9 +151,31 @@ export const generateInputNumber = (
   );
 };
 
+export type InputOptions = {
+  key: string;
+  name: string;
+  label: string;
+  required: boolean;
+  requiredMessage: string;
+  placeholder: string;
+  iconType: string;
+  help: string;
+  length: number;
+};
+
 export const generateInput = (
-  form,
-  { key, name, label, required = false, requiredMessage, placeholder = '', iconType, help, length },
+  form: WrappedFormUtils,
+  {
+    key,
+    name,
+    label,
+    required = false,
+    requiredMessage,
+    placeholder = '',
+    iconType,
+    help,
+    length,
+  }: InputOptions,
   formItemLayout?: IFormItemLayout,
 ) => {
   const fieldName = key || name;
@@ -149,6 +196,9 @@ export const generateInput = (
   return generateComponent(
     form,
     {
+      key,
+      name,
+      label,
       fieldName,
       labelName,
       opts: {
@@ -161,7 +211,11 @@ export const generateInput = (
   );
 };
 
-export const generateTextArea = (form, options, formItemLayout?: IFormItemLayout) => {
+export const generateTextArea = (
+  form: WrappedFormUtils,
+  options,
+  formItemLayout?: IFormItemLayout,
+) => {
   const { key, name, label } = options;
 
   const fieldName = key || name;
@@ -181,7 +235,7 @@ export const generateTextArea = (form, options, formItemLayout?: IFormItemLayout
  * @returns {null}
  */
 export const generateDateTime = (
-  form,
+  form: WrappedFormUtils,
   options,
   formItemLayout: IFormItemLayout = defaultFormItemLayout,
 ) => {
@@ -215,7 +269,7 @@ export const generateDateTime = (
 };
 
 export const generateSwitch = (
-  form,
+  form: WrappedFormUtils,
   options,
   formItemLayout: IFormItemLayout = defaultFormItemLayout,
 ) => {
@@ -232,7 +286,7 @@ export const generateSwitch = (
 };
 
 export const generateImages = (
-  form,
+  form: WrappedFormUtils,
   options,
   formItemLayout: IFormItemLayout = defaultFormItemLayout,
 ) => {
@@ -252,7 +306,7 @@ export const generateImages = (
 };
 
 export const generateImage = (
-  form,
+  form: WrappedFormUtils,
   options,
   formItemLayout: IFormItemLayout = defaultFormItemLayout,
 ) => {
@@ -266,13 +320,13 @@ export const generateImage = (
   return generateComponent(
     form,
     { fieldName, labelName, ...options },
-    <ImageUploader auth={auth} host={host} prefix={prefix} urlHandler={handler} />,
+    <ImagesUploader many={false} auth={auth} host={host} prefix={prefix} urlHandler={handler} />,
     formItemLayout,
   );
 };
 
 export const generateVideo = (
-  form,
+  form: WrappedFormUtils,
   options,
   formItemLayout: IFormItemLayout = defaultFormItemLayout,
 ) => {
@@ -292,7 +346,7 @@ export const generateVideo = (
 };
 
 export const generateAuthorities = (
-  form,
+  form: WrappedFormUtils,
   options,
   formItemLayout: IFormItemLayout = defaultFormItemLayout,
 ) => {
@@ -309,11 +363,11 @@ export const generateAuthorities = (
 };
 
 export const generateRichTextEditor = (
-  form,
+  form: WrappedFormUtils,
   options,
   formItemLayout: IFormItemLayout = defaultFormItemLayout,
 ) => {
-  const { key, name, label, auth } = options;
+  const { key, name, label } = options;
 
   const fieldName = key || name;
   const labelName = label || name || key;
@@ -323,7 +377,7 @@ export const generateRichTextEditor = (
   return generateComponent(
     form,
     { fieldName, labelName, ...options },
-    <BraftRichEditor auth={auth} host={host} prefix={prefix} urlHandler={handler} />,
+    <BraftRichEditor host={host} prefix={prefix} urlHandler={handler} />,
     formItemLayout,
   );
 };

@@ -61,8 +61,21 @@ interface IProps {
   urlHandler?: (res: Asuna.Schema.UploadResponse) => string;
   value?: string;
   onChange?: (value: any) => void;
+  many?: boolean;
+  fileSize?: number;
 }
 
+interface IState {
+  fileList: UploadFile[];
+  many: boolean;
+  fileSize: number;
+  previewImage?: string;
+  previewVisible?: boolean;
+}
+
+/**
+ * @deprecated using ImagesUploader instead
+ */
 export class ImageUploader extends React.Component<IProps> {
   state: {
     loading: boolean;
@@ -102,7 +115,7 @@ export class ImageUploader extends React.Component<IProps> {
     const { auth, onChange, prefix, urlHandler } = this.props;
     const uploaded = await upload(auth, option);
     if (uploaded) {
-      const image = join(prefix || '', urlHandler ? urlHandler(uploaded[0]) : '' + uploaded[0]);
+      const image = join(prefix || '', urlHandler ? urlHandler(uploaded[0]) : `${uploaded[0]}`);
       logger.log('[ImageUploader][render]', { uploaded, image });
       onChange!(image);
     }
@@ -132,32 +145,22 @@ export class ImageUploader extends React.Component<IProps> {
           beforeUpload={beforeUpload}
           onChange={this.handleChange}
         >
-          {image ? (
-            <img style={{ width: '100%' }} src={join(host || '', image)} alt="" />
-          ) : (
-            uploadButton
-          )}
+          {image ? <img style={{ width: '100%' }} src={join(host || '', image)} /> : uploadButton}
         </Upload>
       </div>
     );
   }
 }
 
-export class ImagesUploader extends React.Component<IProps> {
-  state: {
-    previewVisible: boolean;
-    previewImage: string;
-    fileList: UploadFile[];
-    // images: Asuna.Schema.UploadResponse[];
-  };
-
+export class ImagesUploader extends React.Component<IProps, IState> {
   constructor(props) {
     super(props);
     this.state = {
       previewVisible: false,
       previewImage: '',
       fileList: [],
-      // images: props.value,
+      many: props.many,
+      fileSize: props.many ? props.fileSize || 3 : 1,
     };
   }
 
@@ -232,7 +235,7 @@ export class ImagesUploader extends React.Component<IProps> {
     const uploaded = await upload(auth, option);
     if (uploaded) {
       logger.log('[ImagesUploader][customRequest]', { props: this.props, state: this.state });
-      const image = join(prefix || '', urlHandler ? urlHandler(uploaded[0]) : '' + uploaded[0]);
+      const image = join(prefix || '', urlHandler ? urlHandler(uploaded[0]) : `${uploaded[0]}`);
       const uploadedImages = value;
       const images = _.compact([uploadedImages, image]).join(',');
       logger.log('[ImagesUploader][customRequest]', { uploaded, image, images, uploadedImages });
@@ -241,7 +244,7 @@ export class ImagesUploader extends React.Component<IProps> {
   };
 
   render() {
-    const { previewVisible, previewImage, fileList } = this.state;
+    const { previewVisible, previewImage, fileList, fileSize } = this.state;
 
     logger.debug('[render]', { fileList });
 
@@ -263,7 +266,7 @@ export class ImagesUploader extends React.Component<IProps> {
           onPreview={this.handlePreview}
           onChange={this.handleChange}
         >
-          {fileList && fileList.length >= 3 ? null : uploadButton}
+          {fileList && fileList.length >= fileSize ? null : uploadButton}
         </Upload>
         <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>
           <img style={{ width: '100%' }} src={previewImage} alt="" />

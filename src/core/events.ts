@@ -1,4 +1,5 @@
 import { Observable, Subject } from 'rxjs';
+import { AppContext } from '@asuna-admin/core';
 
 /**
  * the accept type for event-bus
@@ -19,16 +20,11 @@ interface ActionEvent {
 }
 
 class EventBus {
-  private static serverRuntimeConfig;
   private static subject: Subject<any>;
 
-  constructor(nextGetConfig) {
+  public static init() {
     if (!EventBus.subject) {
       EventBus.subject = new Subject<any>();
-    }
-    if (!EventBus.serverRuntimeConfig) {
-      const { serverRuntimeConfig: serverConfig = {} } = nextGetConfig ? nextGetConfig() : {};
-      EventBus.serverRuntimeConfig = serverConfig;
     }
   }
 
@@ -42,7 +38,7 @@ class EventBus {
     payload: { modelName: string; id: number | string },
   ): void;
   public static sendEvent(type: EventType, payload: object, extras?: object): void {
-    if (!EventBus.serverRuntimeConfig.isServer) {
+    if (!AppContext.isServer) {
       EventBus.subject.next({ type, payload, extras });
     }
   }
@@ -55,6 +51,8 @@ class EventBus {
     return EventBus.subject;
   }
 }
+
+EventBus.init();
 
 // core event bus, the events will received both from client side and server side.
 // const bus = new Subject();

@@ -54,9 +54,6 @@ const defaultConfiguration: ConfigOpts = {
   AUTH_HEADER: 'AuthHeaderAsBearerToken',
   API_RESPONSE_PAGE_MODE: 'Default',
 
-  /**
-   * 配置关联数据返回的是 id 还是 entity，默认是 ID 模式
-   */
   API_RESPONSE_ASSOCIATION_MODE: 'ids',
   DEFAULT_PAGE_SIZE: 25,
   IMAGE_HOST: '/',

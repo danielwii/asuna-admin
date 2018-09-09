@@ -2,13 +2,14 @@ import React from 'react';
 import _ from 'lodash';
 import * as R from 'ramda';
 
+import { AxiosResponse } from 'axios';
 import { Form, message, Modal } from 'antd';
+import { WrappedFormUtils } from 'antd/es/form/Form';
+
+import { DynamicForm } from './DynamicForm';
 
 import { toFormErrors } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
-
-import { DynamicForm2 } from './DynamicForm';
-import { WrappedFormUtils } from 'antd/es/form/Form';
 
 const logger = createLogger('components:form-modal', 'warn');
 
@@ -26,14 +27,14 @@ const LightForm = Form.create<ILightForm>({
     const { onChange } = props;
     onChange(changedFields);
   },
-})(DynamicForm2);
+})(DynamicForm);
 
 export interface IProps {
   title: string;
   openButton;
   fields;
   onChange?: (value) => void;
-  onSubmit: (value: any) => void;
+  onSubmit: (value: any) => Promise<AxiosResponse>;
 }
 
 export interface IState {

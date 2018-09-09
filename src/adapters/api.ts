@@ -8,9 +8,13 @@ import { AppContext } from '@asuna-admin/core';
 // --------------------------------------------------------------
 
 export interface IApiService {
-  upload(param: { token: string }, file: any, options: any): any;
+  upload(
+    param: { token: string | null },
+    file: any,
+    options: any,
+  ): Promise<AxiosResponse<Asuna.Schema.UploadResponse[]>>;
 
-  getVersion(param: { token: string }): any;
+  getVersion(param: { token: string | null }): string;
 }
 
 // --------------------------------------------------------------
@@ -20,9 +24,12 @@ export interface IApiService {
 const logger = createLogger('adapters:api');
 
 export const apiProxy = {
-  upload: ({ token }, file, options?): AxiosResponse<Asuna.Schema.UploadResponse[]> =>
-    AppContext.ctx.api.upload({ token }, file, options),
-  getVersion: ({ token }): string => AppContext.ctx.api.getVersion({ token }),
+  upload(file, options?): Promise<AxiosResponse<Asuna.Schema.UploadResponse[]>> {
+    return AppContext.ctx.api.upload(file, options);
+  },
+  getVersion(): string {
+    return AppContext.ctx.api.getVersion();
+  },
 };
 
 export class ApiAdapter {
@@ -32,10 +39,14 @@ export class ApiAdapter {
     this.service = service;
   }
 
-  upload = ({ token }, file, options): AxiosResponse<Asuna.Schema.UploadResponse[]> => {
+  upload = (file, options): Promise<AxiosResponse<Asuna.Schema.UploadResponse[]>> => {
     logger.log('[upload] file', file, options);
-    return this.service.upload({ token }, file, options);
+    const auth = AppContext.fromStore('auth');
+    return this.service.upload(auth, file, options);
   };
 
-  getVersion = ({ token }): string => this.service.getVersion({ token });
+  getVersion = (): string => {
+    const auth = AppContext.fromStore('auth');
+    return this.service.getVersion(auth);
+  };
 }

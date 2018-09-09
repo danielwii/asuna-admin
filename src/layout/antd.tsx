@@ -9,12 +9,12 @@ export default ({ children }) => (
 
       <link rel="preload" as="style" href="/static/libs/antd.css" />
       <link rel="preload" as="style" href="/static/libs/draft.css" />
-      <link rel="preload" as="style" href="/static/libs/braft.css" />
+      <link rel="preload" as="style" href="/static/libs/index.css" />
       <link rel="preload" as="style" href="/static/libs/video-js.css" />
 
       <link rel="stylesheet" href="/static/libs/antd.css" />
       <link rel="stylesheet" href="/static/libs/draft.css" />
-      <link rel="stylesheet" href="/static/libs/braft.css" />
+      <link rel="stylesheet" href="/static/libs/index.css" />
       <link rel="stylesheet" href="/static/libs/video-js.css" />
     </NextHead>
     {children}

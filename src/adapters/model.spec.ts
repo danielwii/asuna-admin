@@ -1,5 +1,7 @@
 import { IModelService, ModelAdapter } from './model';
-import { DynamicFormTypes } from '../components/DynamicForm/index';
+import { DynamicFormTypes } from '../components/DynamicForm';
+import { AppContext } from '../core';
+import { AsunaStore, storeConnector } from '../store';
 
 describe('identify types', () => {
   const adapter = new ModelAdapter({} as IModelService);
@@ -333,6 +335,8 @@ describe('getFormSchema', () => {
 
 describe('listSchemasCallable', () => {
   it('should return future callable functions', () => {
+    storeConnector.connect({ auth: { token: 'temp-token' } });
+    AppContext.init();
     const adapter = new ModelAdapter(
       {
         loadSchema: ({ token }, name, config) => ({ token, name, config }),
@@ -352,7 +356,7 @@ describe('listSchemasCallable', () => {
         },
       },
     );
-    const schemasCallable = adapter.listSchemasCallable({ token: 'test-token' });
+    const schemasCallable = adapter.listSchemasCallable();
     expect(Object.keys(schemasCallable)).toEqual([
       'abouts',
       'about_categories',

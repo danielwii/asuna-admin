@@ -4,7 +4,6 @@ import _ from 'lodash';
 import * as R from 'ramda';
 
 import { Anchor, Button, Col, Form, Row, Tag } from 'antd';
-
 import { FormComponentProps } from 'antd/es/form';
 
 import {
@@ -21,54 +20,69 @@ import {
   generateSwitch,
   generateTextArea,
   generateVideo,
+  HiddenOptions,
+  InputOptions,
+  PlainOptions,
 } from './elements';
+import { generateSelect, SelectOptions } from './elements/select';
 
-import { generateSelect } from './elements/select';
-
-import { AuthState } from '@asuna-admin/store';
 import { diff } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 
 const logger = createLogger('components:dynamic-form', 'warn');
 
-export const DynamicFormTypes = {
+export enum DynamicFormTypes {
   // --------------------------------------------------------------
   // Basic Types
   // --------------------------------------------------------------
-  Checkbox: 'Checkbox',
-  Button: 'Button',
-  Hidden: 'Hidden',
-  Plain: 'Plain',
-  Input: 'Input',
-  InputNumber: 'InputNumber',
-  TextArea: 'TextArea',
-  DateTime: 'DateTime',
-  Date: 'Date',
-  Switch: 'Switch',
-  Authorities: 'Authorities',
-  Enum: 'Enum',
-  EnumFilter: 'EnumFilter',
+
+  Checkbox = 'Checkbox',
+  Button = 'Button',
+  Hidden = 'Hidden',
+  Plain = 'Plain',
+  Input = 'Input',
+  InputNumber = 'InputNumber',
+  TextArea = 'TextArea',
+  DateTime = 'DateTime',
+  Date = 'Date',
+  Switch = 'Switch',
+  Authorities = 'Authorities',
+  Enum = 'Enum',
+  EnumFilter = 'EnumFilter',
+
   // --------------------------------------------------------------
   // Advanced Types
   // --------------------------------------------------------------
-  Image: 'Image',
-  Images: 'Images',
-  Video: 'Video',
-  RichText: 'RichText',
-  Association: 'Association',
-  ManyToMany: 'ManyToMany',
-};
 
-interface IProps {
+  Image = 'Image',
+  Images = 'Images',
+  Video = 'Video',
+  RichText = 'RichText',
+  Association = 'Association',
+  ManyToMany = 'ManyToMany',
+}
+
+type DynamicFormProps = {
   anchor?: boolean;
   /**
    * 隐藏提交按钮
    */
   delegate?: boolean;
   fields: FormField[];
-  auth?: AuthState;
   onSubmit: (fn: (e: Error) => void) => void;
-}
+};
+
+type DynamicFormField = {
+  options: Asuna.Schema.MetaInfoOptions & {
+    tooltip: string;
+  };
+  ref: string;
+  key: string;
+  name: string;
+  type: DynamicFormTypes;
+  raw: any[];
+  value: any | any[];
+};
 
 /**
  * delegate: hide submit button, using ref: form.
@@ -80,14 +94,17 @@ interface IProps {
  *   },
  * }
  */
-export class DynamicForm2 extends React.Component<IProps & IFormFix & FormComponentProps> {
-  buildField = (field, index) => {
-    const { form, auth } = this.props;
+export class DynamicForm extends React.Component<
+  DynamicFormProps & AntdFormOnChangeListener & FormComponentProps
+> {
+  _buildField = (field: DynamicFormField, index: number) => {
+    const { form } = this.props;
 
-    const options = {
+    const options: DeepPartial<
+      DynamicFormField['options'] & HiddenOptions & PlainOptions & InputOptions & SelectOptions
+    > = {
       ...field.options,
-      auth,
-      key: field.key || field.name,
+      // key: field.key || field.name,
       name: field.name,
       help: field.options.tooltip || field.options.help,
     };
@@ -97,25 +114,25 @@ export class DynamicForm2 extends React.Component<IProps & IFormFix & FormCompon
       fields: ['id', 'name'],
     };
 
-    logger.log('[DynamicForm2]', '[buildField]', { field, index, options });
+    logger.log('[DynamicForm]', '[buildField]', { field, index, options });
 
     // all readonly or hidden field will rendered as plain component
     if (['readonly', 'hidden'].indexOf(_.get(field, 'options.accessible')) > -1) {
-      return generatePlain({ text: field.value, ...options });
+      return generatePlain({ text: field.value, ...options } as PlainOptions);
     }
     if (['hide-value'].indexOf(_.get(field, 'options.accessible')) > -1) {
-      return generatePlain({ text: null, ...options });
+      return generatePlain(options as PlainOptions);
     }
 
     switch (field.type) {
       case DynamicFormTypes.Plain:
-        return generatePlain({ text: field.value, ...options });
+        return generatePlain({ text: field.value, ...options } as PlainOptions);
       case DynamicFormTypes.Input:
-        return generateInput(form, options);
+        return generateInput(form, options as InputOptions);
       case DynamicFormTypes.Checkbox:
         return generateCheckbox(form, options);
       case DynamicFormTypes.Hidden:
-        return generateHidden(form, options);
+        return generateHidden(form, options as HiddenOptions);
       case DynamicFormTypes.InputNumber:
         return generateInputNumber(form, options);
       case DynamicFormTypes.TextArea:
@@ -140,20 +157,27 @@ export class DynamicForm2 extends React.Component<IProps & IFormFix & FormCompon
         // --------------------------------------------------------------
         // ManyToMany RelationShip
         // --------------------------------------------------------------
-        logger.debug('[DynamicForm2]', '[buildField][ManyToMany]', { field });
+        logger.debug('[DynamicForm]', '[buildField][ManyToMany]', { field });
         if (R.has('foreignOpts')(field)) {
-          const { modelName, association = defaultAssociation } = R.path(['foreignOpts', 0])(field);
+          const { modelName, association = defaultAssociation, onChange, onSearch } = R.path([
+            'foreignOpts',
+            0,
+          ])(field);
 
           const items = R.path(['associations', modelName, 'items'])(field);
+          const existItems = R.path(['associations', modelName, 'existItems'])(field);
           const type = R.path(['options', 'filterType'])(field);
           return generateSelect(form, {
             ...options,
             items,
+            existItems,
             mode: 'multiple',
             withSortTree: type === 'Sort',
+            onSearch,
+            onChange,
             getName: R.prop(association.name || defaultAssociation.name),
             getValue: R.prop(association.value || defaultAssociation.value),
-          });
+          } as SelectOptions);
         }
         logger.warn('[buildField]', 'foreignOpts is required in association.', { field });
         return <div>association need foreignOpts.</div>;
@@ -162,67 +186,75 @@ export class DynamicForm2 extends React.Component<IProps & IFormFix & FormCompon
         // --------------------------------------------------------------
         // EnumFilter / RelationShip
         // --------------------------------------------------------------
-        logger.log('[DynamicForm2]', '[buildField][EnumFilter]', { field });
+        logger.log('[DynamicForm]', '[buildField][EnumFilter]', { field });
         const items = R.path(['options', 'enumData'])(field);
         const type = R.path(['options', 'filterType'])(field);
-        logger.log('[DynamicForm2]', '[buildField][EnumFilter]', { type, items });
+        logger.log('[DynamicForm]', '[buildField][EnumFilter]', { type, items });
         return generateSelect(form, {
           ...options,
           items,
           getName: R.prop('key'),
-        });
+        } as SelectOptions);
       }
       case DynamicFormTypes.Enum: {
         // --------------------------------------------------------------
         // Enum / RelationShip
         // --------------------------------------------------------------
-        logger.debug('[DynamicForm2]', '[buildField][Enum]', field);
+        logger.debug('[DynamicForm]', '[buildField][Enum]', field);
         const items = R.path(['options', 'enumData'])(field);
         return generateSelect(form, {
           ...options,
           items,
           getName: R.prop('key'),
-        });
+        } as SelectOptions);
       }
       case DynamicFormTypes.Association: {
         // --------------------------------------------------------------
         // OneToMany / OneToOne RelationShip
         // --------------------------------------------------------------
-        logger.debug('[DynamicForm2]', '[buildField][Association]', field);
+        logger.debug('[DynamicForm]', '[buildField][Association]', field);
         if (R.has('foreignOpts')(field)) {
-          const { modelName, association = defaultAssociation } = R.path(['foreignOpts', 0])(field);
+          const { modelName, association = defaultAssociation, onChange, onSearch } = R.path([
+            'foreignOpts',
+            0,
+          ])(field);
 
           const items = R.path(['associations', modelName, 'items'])(field);
+          const existItems = R.path(['associations', modelName, 'existItems'])(field);
           return generateSelect(form, {
             ...options,
             items,
+            existItems,
+            onChange,
+            onSearch,
             getName: R.prop(association.name || defaultAssociation.name),
             getValue: R.prop(association.value || defaultAssociation.value),
-          });
+          } as SelectOptions);
         }
-        logger.warn('[DynamicForm2]', '[buildField]', 'foreignOpts is required in association.', {
+        logger.warn('[DynamicForm]', '[buildField]', 'foreignOpts is required in association.', {
           field,
         });
         return <div>association need foreignOpts.</div>;
       }
-      default:
+      default: {
         return (
           <div key={index}>
-            DynamicForm2 `{field.type}-{options.type}-{options.key}` not implemented.
+            DynamicForm `{field.type}-{options.type}-{options.key}` not implemented :P.
             <pre>{JSON.stringify(field)}</pre>
           </div>
         );
+      }
     }
   };
 
-  handleOnSubmit = e => {
-    logger.debug('[DynamicForm2]', '[handleOnSubmit]', 'onSubmit', e);
+  _handleOnSubmit = e => {
+    logger.debug('[DynamicForm]', '[handleOnSubmit]', 'onSubmit', e);
     e.preventDefault();
 
     const { form, onSubmit } = this.props;
     form.validateFields((err, values) => {
       if (err) {
-        logger.error('[DynamicForm2]', '[handleOnSubmit]', 'error occurred in form', values, err);
+        logger.error('[DynamicForm]', '[handleOnSubmit]', 'error occurred in form', values, err);
       } else {
         onSubmit(e);
       }
@@ -231,13 +263,13 @@ export class DynamicForm2 extends React.Component<IProps & IFormFix & FormCompon
 
   render() {
     const { fields, delegate, anchor } = this.props;
-    logger.log('[DynamicForm2]', '[render]', { props: this.props });
+    logger.log('[DynamicForm]', '[render]', { props: this.props });
 
     // remove fields which type is not included
     // pure component will not trigger error handler
 
     const renderFields = _.map(_.filter(fields, field => !!field.type), (field, index) => (
-      <EnhancedPureElement key={index} field={field} index={index} builder={this.buildField} />
+      <EnhancedPureElement key={index} field={field} index={index} builder={this._buildField} />
     ));
 
     return (
@@ -254,7 +286,7 @@ export class DynamicForm2 extends React.Component<IProps & IFormFix & FormCompon
                     <Button
                       type="primary"
                       htmlType="submit"
-                      onClick={this.handleOnSubmit}
+                      onClick={this._handleOnSubmit}
                       // disabled={hasErrors(getFieldsError())}
                     >
                       Submit
@@ -268,13 +300,12 @@ export class DynamicForm2 extends React.Component<IProps & IFormFix & FormCompon
             </Col>
           </Row>
         </div>
-        {/* TODO global may not working with webpack right now, throws Cannot read property 'indexOf' of undefined */}
         {/* language=CSS */}
-        {/*<style global jsx>{`*/}
-        {/*.dynamic-form .ant-form-item {*/}
-        {/*margin-bottom: 0;*/}
-        {/*}*/}
-        {/*`}</style>*/}
+        <style global jsx>{`
+          .dynamic-form .ant-form-item {
+            margin-bottom: 0;
+          }
+        `}</style>
       </React.Fragment>
     );
   }
@@ -334,9 +365,9 @@ class FormAnchor extends React.Component<IFormAnchorProps> {
 }
 
 interface IPureElementProps {
-  field: FormField;
+  field: DynamicFormField;
   index: number;
-  builder: (field: FormField, index: number) => any;
+  builder: (field: DynamicFormField, index: number) => any;
 }
 
 class EnhancedPureElement extends React.Component<IPureElementProps> {
