@@ -79,7 +79,8 @@ export function generateSelect<T>(
 
     _getAllItems = () => {
       const { filterItems, existItems } = this.state;
-      return R.uniqBy(R.prop('id'), _.concat(filterItems, existItems));
+      // prettier-ignore
+      return R.filter(R.compose(R.not, R.isNil))(R.uniqBy(R.prop('id'), _.concat(filterItems, existItems)));
     };
 
     _onSortEnd = ({ oldIndex, newIndex }) => {
