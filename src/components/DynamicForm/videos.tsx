@@ -7,7 +7,6 @@ import { Button, Icon, message, Upload } from 'antd';
 
 import { createLogger } from '@asuna-admin/logger';
 import { apiProxy } from '@asuna-admin/adapters';
-import { AuthState } from '@asuna-admin/store';
 
 const logger = createLogger('components:dynamic-form:video', 'warn');
 
@@ -28,9 +27,9 @@ function beforeUpload(file) {
   return isMP4 && isLt100M;
 }
 
-async function upload(auth, onChange, files, args?) {
+async function upload(onChange, files, args?) {
   logger.log('[upload]', args);
-  const response = await apiProxy.upload(auth, args.file);
+  const response = await apiProxy.upload(args.file);
   logger.log('[upload]', 'response is', response);
 
   if (/^20\d$/.test(response.status as any)) {
@@ -49,7 +48,6 @@ async function upload(auth, onChange, files, args?) {
 // --------------------------------------------------------------
 
 export interface IProps {
-  auth: AuthState;
   host?: string;
   prefix?: string;
   value?: string;
@@ -125,13 +123,13 @@ export class VideoUploader extends React.Component<IProps> {
   };
 
   render() {
-    const { auth, onChange, value: videos } = this.props;
+    const { onChange, value: videos } = this.props;
     const { fileList } = this.state;
 
     const props = {
       onChange: this.handleChange,
       multiple: false,
-      customRequest: (...args) => upload(auth, onChange, [], ...args),
+      customRequest: (...args) => upload(onChange, [], ...args),
       supportServerRender: true,
       beforeUpload,
     };

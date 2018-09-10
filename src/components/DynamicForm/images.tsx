@@ -37,7 +37,7 @@ function beforeUpload(file: RcFile, FileList: RcFile[]) {
 
 async function upload(auth, option: any): Promise<Asuna.Schema.UploadResponse[] | undefined> {
   logger.log('[upload]', { option });
-  const response = await apiProxy.upload(auth, option.file);
+  const response = await apiProxy.upload(option.file);
   logger.log('[upload]', { response });
 
   if (/^20\d$/.test(response.status as any)) {

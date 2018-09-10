@@ -330,7 +330,7 @@ export const generateVideo = (
   options,
   formItemLayout: IFormItemLayout = defaultFormItemLayout,
 ) => {
-  const { key, name, label, auth } = options;
+  const { key, name, label } = options;
 
   const fieldName = key || name;
   const labelName = label || name || key;
@@ -340,7 +340,7 @@ export const generateVideo = (
   return generateComponent(
     form,
     { fieldName, labelName, ...options },
-    <VideoUploader auth={auth} host={host} prefix={prefix} urlHandler={handler} />,
+    <VideoUploader host={host} prefix={prefix} urlHandler={handler} />,
     formItemLayout,
   );
 };
