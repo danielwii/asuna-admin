@@ -14,7 +14,7 @@ export interface IApiService {
     options: any,
   ): Promise<AxiosResponse<Asuna.Schema.UploadResponse[]>>;
 
-  getVersion(param: { token: string | null }): string;
+  getVersion(param: { token: string | null }): Promise<AxiosResponse>;
 }
 
 // --------------------------------------------------------------
@@ -27,7 +27,7 @@ export const apiProxy = {
   upload(file, options?): Promise<AxiosResponse<Asuna.Schema.UploadResponse[]>> {
     return AppContext.ctx.api.upload(file, options);
   },
-  getVersion(): string {
+  getVersion(): Promise<AxiosResponse> {
     return AppContext.ctx.api.getVersion();
   },
 };
@@ -45,7 +45,7 @@ export class ApiAdapter {
     return this.service.upload(auth, file, options);
   };
 
-  getVersion = (): string => {
+  getVersion = (): Promise<AxiosResponse> => {
     const auth = AppContext.fromStore('auth');
     return this.service.getVersion(auth);
   };
