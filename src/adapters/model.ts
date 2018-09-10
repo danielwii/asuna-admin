@@ -415,7 +415,7 @@ export class ModelAdapter {
   public loadAssociationByIds = (
     associationName: string,
     ids: string[] | number[],
-  ): Promise<AxiosResponse> => {
+  ): Promise<AxiosResponse | void> => {
     if (_.trim(associationName) && !_.isEmpty(ids)) {
       logger.debug('[loadAssociationByIds]', { associationName, ids });
 
@@ -427,16 +427,16 @@ export class ModelAdapter {
         ...this.getModelConfig(associationName),
       });
     }
-    return Promise.reject();
+    return Promise.resolve();
   };
 
   public loadAssociation = (
     associationName,
     configs: { keywords: string | null; page?: number } = { keywords: '' },
-  ): Promise<AxiosResponse | AxiosResponse[]> => {
+  ): Promise<AxiosResponse | AxiosResponse[] | void> => {
     if (!associationName) {
       logger.warn('[loadAssociation]', 'associationName is required.');
-      return Promise.reject();
+      return Promise.resolve();
     }
 
     const fields = this.getFieldsOfAssociation(associationName);
