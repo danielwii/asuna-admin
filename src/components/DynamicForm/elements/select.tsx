@@ -13,6 +13,7 @@ const logger = createLogger('components:dynamic-form:elements', 'warn');
 
 interface IMixedSelectProps {
   value?: any[];
+  onChange?: (value) => void;
 }
 
 interface IMixedSelectState<T> {
@@ -195,13 +196,12 @@ export function generateSelect<T>(
       return <SortableList selectedSortedItems={selectedItems} onSortEnd={this._onSortEnd} />;
     };
 
-    _onChange = (value: any[]) => {
-      const allExists = R.filter(item => R.contains(R.prop('id')(item))(value))(
-        this._getAllItems(),
-      );
-      logger.log('[MixedSelect]', '[onChange]', { value, allExists });
+    _onChange = (value: any | any[]) => {
+      const exists = R.filter(item => R.contains(R.prop('id')(item))(value))(this._getAllItems());
+      logger.log('[MixedSelect]', '[onChange]', { value, exists });
 
-      this.setState({ selectedItems: value, existItems: allExists });
+      this.setState({ existItems: exists });
+      this.props.onChange!(value);
     };
 
     _onSearch = (value: string): any => {
@@ -215,15 +215,13 @@ export function generateSelect<T>(
     };
 
     render() {
-      const { selectedItems } = this.state;
-
       logger.debug('[MixedSelect]', '[render]', { state: this.state, props: this.props });
 
       return (
         <React.Fragment>
           <Select
             {...this.props} // set extra properties from dynamic from here
-            value={selectedItems as any} // value 为 null 时会显示一个空白框
+            value={this.props.value} // value 为 null 时会显示一个空白框
             key={fieldName}
             showSearch
             allowClear
