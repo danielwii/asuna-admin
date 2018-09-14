@@ -9,11 +9,11 @@ module.exports = api => {
       '@babel/plugin-transform-runtime',
       ['styled-components', { ssr: true, displayName: true, preprocess: false }],
       ['import', { libraryName: 'antd', style: false }, 'import-antd'],
-      [
-        'import',
-        { libraryName: 'lodash', libraryDirectory: '', camel2DashComponentName: false },
-        'import-lodash',
-      ],
+      // [
+      //   'import',
+      //   { libraryName: 'lodash', libraryDirectory: '', camel2DashComponentName: false },
+      //   'import-lodash',
+      // ],
       [
         'module-resolver',
         {

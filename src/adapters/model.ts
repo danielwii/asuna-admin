@@ -33,16 +33,12 @@ export interface IModelService {
     } & Asuna.Schema.ModelConfig,
   ): Promise<AxiosResponse>;
 
-  loadSchema(
-    auth: { token: string | null },
-    payload: { name: string },
-    data,
-  ): Promise<AxiosResponse>;
+  loadSchema(auth: { token: string | null }, modelName: string, data): Promise<AxiosResponse>;
 
   fetch(
     auth: { token: string | null },
     modelName: string,
-    data: { endpoint?: string; id: number; profile?: Asuna.Profile },
+    data: { endpoint?: string; id: number; profile?: Asuna.Profile } & Asuna.Schema.ModelConfig,
   ): Promise<AxiosResponse>;
 
   remove(
@@ -94,78 +90,6 @@ export interface ModelListConfig {
   relations?: string[];
 }
 
-/**
- * @deprecated use AppContext.adapters.models instead
- */
-export const modelProxy = {
-  getModelConfig(modelName: string): Asuna.Schema.ModelConfig {
-    return AppContext.ctx.models.getModelConfig(modelName);
-  },
-
-  getAssociationConfigs(modelName: string): any {
-    return AppContext.ctx.models.getAssociationConfigs(modelName);
-  },
-
-  getFormSchema(schemas, modelName: string, values?): any {
-    return AppContext.ctx.models.getFormSchema(schemas, modelName, values);
-  },
-
-  getFieldsOfAssociations(): any {
-    return AppContext.ctx.models.getFieldsOfAssociations();
-  },
-
-  /**
-   * load schema list
-   * @param modelName
-   * @param configs
-   * @returns {*}
-   */
-  loadModels(modelName: string, configs?: ModelListConfig): any {
-    logger.log('[modelProxy.loadModels]', { modelName, configs });
-    return AppContext.ctx.models.loadModels(modelName, configs);
-  },
-
-  /**
-   * load definition of schema
-   * @param data
-   * @returns {*}
-   */
-  loadSchema(data: { name }): any {
-    return AppContext.ctx.models.loadSchema(data);
-  },
-
-  /**
-   * load all schemas
-   * @returns {*}
-   */
-  listSchemasCallable(): any {
-    return AppContext.ctx.models.listSchemasCallable();
-  },
-
-  listAssociationsCallable(associationNames: string[]): any {
-    return AppContext.ctx.models.listAssociationsCallable(associationNames);
-  },
-
-  fetch(modelName, data: { endpoint?: string; id: number; profile?: Asuna.Profile }): any {
-    return AppContext.ctx.models.fetch(modelName, data);
-  },
-
-  remove(modelName, data): any {
-    return AppContext.ctx.models.remove(modelName, data);
-  },
-
-  /**
-   * update model if id exists in body, insert new one or else.
-   * @param modelName - model name
-   * @param data - model body
-   * @returns {*}
-   */
-
-  upsert: (modelName: string, data: { body: IModelBody }): Promise<AxiosResponse> => {
-    return AppContext.ctx.models.upsert(modelName, data);
-  },
-};
-
 export class ModelAdapter {
   private service: IModelService;
   private allModels: string[];
@@ -207,7 +131,7 @@ export class ModelAdapter {
     })(modelConfigs);
   }
 
-  identifyType = field => {
+  public identifyType = field => {
     if (['id', 'created_at', 'updated_at'].indexOf(field.name) > -1) {
       return DynamicFormTypes.Plain;
     }
@@ -251,7 +175,10 @@ export class ModelAdapter {
     return type;
   };
 
-  fetch = (modelName: string, data) => {
+  public fetch = (
+    modelName: string,
+    data: { endpoint?: string; id: number; profile?: Asuna.Profile },
+  ) => {
     const auth = AppContext.fromStore('auth');
     return this.service.fetch(auth, modelName, {
       ...data,
@@ -259,7 +186,7 @@ export class ModelAdapter {
     });
   };
 
-  remove = (modelName: string, data) => {
+  public remove = (modelName: string, data) => {
     const auth = AppContext.fromStore('auth');
     return this.service.remove(auth, modelName, {
       ...data,
@@ -267,7 +194,7 @@ export class ModelAdapter {
     });
   };
 
-  upsert = (modelName: string, data: { body: IModelBody }): Promise<AxiosResponse> => {
+  public upsert = (modelName: string, data: { body: IModelBody }): Promise<AxiosResponse> => {
     const auth = AppContext.fromStore('auth');
     const { schemas } = AppContext.fromStore('models');
     logger.debug('[upsert]', 'upsert', { modelName, data });
@@ -280,7 +207,7 @@ export class ModelAdapter {
     const fixKeys = _.mapKeys(data.body, (value, key) => _.get(fields, `${key}.ref`, key));
     const transformed = _.mapValues(fixKeys, (value, key) => {
       // json 用于描述该字段需要通过字符串转换处理，目前用于服务器端不支持 JSON 数据格式的情况
-      return _.get(fields, `${key}.options.json`) === 'str' ? JSON.stringify(value) : value;
+      return _.eq(_.get(fields, `${key}.options.json`), 'str') ? JSON.stringify(value) : value;
     });
     logger.debug('[upsert]', 'transformed is', transformed);
 
@@ -300,9 +227,9 @@ export class ModelAdapter {
     });
   };
 
-  getAssociationConfigs = modelName => R.prop(modelName)(this.associations);
+  public getAssociationConfigs = (modelName: string) => R.prop(modelName)(this.associations);
 
-  getModelConfig = (modelName): Asuna.Schema.ModelConfig => {
+  public getModelConfig = (modelName: string): Asuna.Schema.ModelConfig => {
     const config = R.prop(modelName)(this.modelConfigs);
     if (config) {
       logger.debug('[getModelConfig]', modelName, 'config is', config);
@@ -326,7 +253,7 @@ export class ModelAdapter {
     return { model: {}, table: defaultColumns };
   };
 
-  getFormSchema = (
+  public getFormSchema = (
     schemas: Asuna.Schema.ModelSchemas,
     name: string,
     values?: { [member: string]: any },
@@ -449,12 +376,12 @@ export class ModelAdapter {
     });
   };
 
-  public loadSchema = modelName => {
+  public loadSchema = (modelName: string) => {
     const auth = AppContext.fromStore('auth');
     return this.service.loadSchema(auth, modelName, this.getModelConfig(modelName));
   };
 
-  public listAssociationsCallable = associationNames =>
+  public listAssociationsCallable = (associationNames: string[]) =>
     Object.assign({}, ...associationNames.map(name => ({ [name]: this.loadAssociation(name) })));
 
   public listSchemasCallable = () =>

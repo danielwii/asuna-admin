@@ -13,6 +13,7 @@ import { castModelKey } from './cast';
 
 import { Config } from '@asuna-admin/config';
 import { createLogger } from '@asuna-admin/logger';
+import { AppContext } from '@asuna-admin/core';
 
 const logger = createLogger('helpers', 'warn');
 
@@ -61,7 +62,7 @@ export const columnHelper = {
     relation: key,
     dataIndex: key,
     render: text => {
-      if (_.isString(render)) {
+      if (typeof render === 'string') {
         return text ? text[render] : null;
       }
       return render ? render(text) : text;
@@ -74,8 +75,8 @@ export const columnHelper = {
     sorter: true,
     render: text => {
       const value = render ? render(text) : text;
-      if (_.isString(value) && value.length > 20) {
-        return <Tooltip title={value}>{value.slice(0, 20) + '...'}</Tooltip>;
+      if (typeof value === 'string' && value.length > 20) {
+        return <Tooltip title={value}>{`${value.slice(0, 20)}...`}</Tooltip>;
       }
       return value;
     },
@@ -88,12 +89,12 @@ export const columnHelper = {
     render: text => {
       if (text) {
         const value = render ? render(text) : text;
-        if (_.isString(value) && value.length > 30) {
+        if (typeof value === 'string' && value.length > 30) {
           return (
             <React.Fragment>
               <Tooltip title={value}>
                 <Button href={value} size="small" type="dashed" target="_blank">
-                  {value.slice(0, 30) + '...'}
+                  {`${value.slice(0, 30)}...`}
                   <Icon type="link" />
                 </Button>
               </Tooltip>
@@ -193,8 +194,8 @@ export const columnHelper = {
       <Popconfirm
         title={isActive ? `是否注销: ${record.id}` : `是否激活: ${record.id}`}
         onConfirm={async () => {
-          const { modelProxy } = require('../adapters');
-          await modelProxy.upsert(modelName, {
+          // const { modelProxy } = require('../adapters');
+          await AppContext.adapters.models.upsert(modelName, {
             body: {
               id: record.id,
               [key]: !isActive,

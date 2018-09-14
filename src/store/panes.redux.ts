@@ -59,10 +59,11 @@ const panesReducer = (previousState = initialState, action) => {
         const nextPanes = _.omit(panes, key);
 
         const nextKeys = _.keys(nextPanes);
-        const nextKey = _.has(nextPanes, activeKey)
-          ? activeKey
-          : // 关闭当前 tab 时定位到后面一个 tab
-            nextKeys[_.min([index, nextKeys.length - 1])];
+        const nextKey =
+          activeKey && _.has(nextPanes, activeKey)
+            ? activeKey
+            : // 关闭当前 tab 时定位到后面一个 tab
+              nextKeys[_.min([index, nextKeys.length - 1])];
         return { activeKey: nextKey, panes: nextPanes };
       }
       case panesActionTypes.CLOSE_ALL: {

@@ -6,7 +6,8 @@ import { message } from 'antd';
 
 import { RootState } from '@asuna-admin/store';
 import { createLogger } from '@asuna-admin/logger';
-import { ModelListConfig, modelProxy } from '@asuna-admin/adapters';
+import { ModelListConfig } from '@asuna-admin/adapters';
+import { AppContext } from '@asuna-admin/core';
 
 const logger = createLogger('store:content', 'warn');
 
@@ -66,7 +67,7 @@ function* loadModels({ payload: { name, models } }: LoadModelsParams) {
       logger.debug('[loadModels]', 'loading content', { name, extras });
       message.loading(`loading content '${name}'...`);
 
-      const response = yield call(modelProxy.loadModels, name, extras);
+      const response = yield call(AppContext.adapters.models.loadModels, name, extras);
       message.success(`load content '${name}' success`);
       logger.log('[loadModels]', 'loaded content', { name, response });
 

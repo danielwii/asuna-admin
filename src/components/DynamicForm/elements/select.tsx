@@ -22,23 +22,55 @@ interface IMixedSelectState<T> {
   existItems: T[];
 }
 
+type ObjectItem = { [key: string]: any } & { id?: string | number; key?: string | number };
+type ArrayItem = [any, any];
+type Item = ObjectItem | ArrayItem;
+
 export type SelectOptions = {
   key: string;
   name: string;
   label: string;
   placeholder: string;
-  items: (object & { id: string | number })[];
-  existItems?: (object & { id: string | number })[];
+  items: Item[];
+  existItems?: Item[];
   mode: 'default' | 'multiple' | 'tags' | 'combobox';
   getName: () => string;
   getValue: () => string;
   withSortTree: boolean;
-  onChange?: (selectedItems: number | string | any[]) => void;
-  onSearch?: (value: string, cb: (response: object) => void) => any;
+  filterType?: Asuna.Schema.MetaInfoFilterType | 'Sort';
+  onChange?: (selectedItems: number | string | Item[] | any[]) => void;
+  onSearch?: (value: string, cb: (items: Item[]) => void) => any;
   enumSelector: { name?: string; value?: string };
 };
 
 const defaultFormItemLayout = {};
+
+// prettier-ignore
+const rNotNil = R.compose(R.not, R.isNil);
+
+/**
+ * if item is an Array - check the first value is unique
+ * if item is an Object - check the value for first key is unique, there is embed order: id/key/else
+ * @param items
+ */
+export const uniqueItems = (...items: Item[][]): Item[] => {
+  const allItems = _.concat([], ...items);
+  let result = [];
+  if (allItems && _.isArray(allItems)) {
+    const first = _.head(allItems);
+    if (_.isArray(first)) {
+      result = R.filter(rNotNil)(R.uniqBy(R.prop(0), allItems));
+    } else if (_.isObject(first)) {
+      const uniqBy = R.uniqBy(item => {
+        return R.prop('id', item) || R.prop('key', item) || R.prop(_.head(R.keys(item)), item);
+      }, allItems);
+      result = R.filter(rNotNil)(uniqBy);
+    } else {
+      logger.warn('[uniqueItems]', 'items type not recognised', { allItems, first });
+    }
+  }
+  return result;
+};
 
 export function generateSelect<T>(
   form: WrappedFormUtils,
@@ -63,10 +95,7 @@ export function generateSelect<T>(
   const labelName = label || name || key;
   logger.debug('[generateSelect]', { items, enumSelector });
 
-  class MixedSelect extends React.Component<
-    IMixedSelectProps,
-    IMixedSelectState<object & { id: string | number }>
-  > {
+  class MixedSelect extends React.Component<IMixedSelectProps, IMixedSelectState<Item>> {
     constructor(props) {
       super(props);
 
@@ -80,8 +109,7 @@ export function generateSelect<T>(
 
     _getAllItems = () => {
       const { filterItems, existItems } = this.state;
-      // prettier-ignore
-      return R.filter(R.compose(R.not, R.isNil))(R.uniqBy(R.prop('id'), _.concat(filterItems, existItems)));
+      return uniqueItems(filterItems, existItems);
     };
 
     _onSortEnd = ({ oldIndex, newIndex }) => {
@@ -117,7 +145,8 @@ export function generateSelect<T>(
 
       const SortableItem = SortableElement<{ value: string; sortIndex: number }>(
         ({ value, sortIndex }) => {
-          const item = this._getAllItems().find(current => current.id === value);
+          // TODO 目前只支持 ObjectItem 且通过 id 判断排序组件，理论上，该排序也可能应用在非 EnumFilter 下且不通过 id 判断的情况
+          const item = this._getAllItems().find((current: ObjectItem) => current.id === value);
           const optionName = this._extractName(item);
           const optionValue = this._extractValue(item);
           return (
@@ -213,6 +242,10 @@ export function generateSelect<T>(
         });
       }
     };
+
+    public componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
+      logger.error(error, errorInfo);
+    }
 
     render() {
       logger.debug('[MixedSelect]', '[render]', { state: this.state, props: this.props });

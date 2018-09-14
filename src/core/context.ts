@@ -28,11 +28,6 @@ export interface ILoginRegister {
 export interface IIndexRegister extends ILoginRegister {
   createAuthService(): IAuthService;
 
-  /**
-   * @deprecated
-   */
-  createModelService(): IModelService;
-
   modelService: IModelService;
 
   createMenuService(): IMenuService;
@@ -194,7 +189,7 @@ class AppContext {
       api: new ApiAdapter(register.createApiService()),
       security: new SecurityAdapter(register.createSecurityService()),
       models: new ModelAdapter(
-        register.createModelService(),
+        register.modelService,
         register.createDefinitions().modelConfigs,
         register.createDefinitions().associations,
       ),

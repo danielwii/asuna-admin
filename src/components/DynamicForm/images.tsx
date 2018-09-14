@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { join } from 'path';
 
 import { Icon, message, Modal, Upload } from 'antd';
-import { RcFile, UploadChangeParam, UploadFile } from 'antd/es/upload/interface';
+import { RcFile, UploadChangeParam, UploadFile, UploadFileStatus } from 'antd/es/upload/interface';
 
 import { AuthState } from '@asuna-admin/store';
 import { diff } from '@asuna-admin/helpers';
@@ -66,7 +66,7 @@ interface IProps {
 }
 
 interface IState {
-  fileList: UploadFile[];
+  fileList: Partial<UploadFile>[];
   many: boolean;
   fileSize: number;
   previewImage?: string;
@@ -202,8 +202,8 @@ export class ImagesUploader extends React.Component<IProps, IState> {
     const images = imagesStr ? _.compact(imagesStr.split(',')) : [];
     logger.debug('[wrapImagesToFileList]', { images });
     const fileList = _.map(images, (image, index) => ({
-      uid: index,
-      status: 'done',
+      uid: `${index}`,
+      status: 'done' as UploadFileStatus,
       url: join(host || '', image),
     }));
     logger.debug('[wrapImagesToFileList]', 'fileList is', fileList);
@@ -259,7 +259,7 @@ export class ImagesUploader extends React.Component<IProps, IState> {
       <div className="clearfix">
         <Upload
           listType="picture-card"
-          fileList={fileList}
+          fileList={fileList as UploadFile[]}
           supportServerRender
           customRequest={this.customRequest}
           beforeUpload={beforeUpload}

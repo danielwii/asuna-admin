@@ -9,7 +9,7 @@ import { contentActions } from './content.redux';
 
 import { RootState } from '@asuna-admin/store';
 import { createLogger } from '@asuna-admin/logger';
-import { modelProxy } from '@asuna-admin/adapters';
+import { AppContext } from '@asuna-admin/core';
 
 const logger = createLogger('store:models', 'warn');
 
@@ -74,7 +74,7 @@ const modelsSagaFunctions = {
     if (token) {
       message.loading(`loading model '${modelName}'...`);
       try {
-        const response = yield call(modelProxy.fetch, modelName, data);
+        const response = yield call(AppContext.adapters.models.fetch, modelName, data);
         message.success(`load model '${modelName}' success!`);
         logger.log('[fetch]', 'response of load model is', response);
         yield put(modelsActions.fetchSuccess(modelName, response.data));
@@ -92,7 +92,7 @@ const modelsSagaFunctions = {
     if (token) {
       message.info(`upsert model '${modelName}'...`);
       try {
-        const response = yield call(modelProxy.upsert, modelName, data);
+        const response = yield call(AppContext.adapters.models.upsert, modelName, data);
         message.success(`upsert model '${modelName}' success!`);
         logger.log('[upsert]', 'response of upsert model is', response);
         if (callback != null) callback({ response });
@@ -115,7 +115,7 @@ const modelsSagaFunctions = {
     if (token) {
       message.info(`remove model '${modelName}'...`);
       try {
-        const response = yield call(modelProxy.remove, modelName, data);
+        const response = yield call(AppContext.adapters.models.remove, modelName, data);
         message.success(`remove model '${modelName}' success!`);
         logger.log('[remove]', 'response of remove model is', response);
         // save model data when remove is success
@@ -134,7 +134,7 @@ const modelsSagaFunctions = {
     if (token) {
       message.loading('loading all schemas...');
       try {
-        const effects = modelProxy.listSchemasCallable();
+        const effects = AppContext.adapters.models.listSchemasCallable();
         const allResponse = yield all(effects);
 
         logger.log('[loadAllSchemas]', 'allResponse is', allResponse);

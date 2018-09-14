@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import * as R from 'ramda';
-import _ from 'lodash';
 import moment from 'moment';
 
 import { Form, Icon, message } from 'antd';
@@ -11,8 +10,7 @@ import * as schemaHelper from '@asuna-admin/schema';
 import { Pane } from '@asuna-admin/components';
 import { modelsActions, RootState } from '@asuna-admin/store';
 import { diff, isErrorResponse, toFormErrors } from '@asuna-admin/helpers';
-import { modelProxy } from '@asuna-admin/adapters';
-import { EventBus, EventType } from '@asuna-admin/core';
+import { AppContext, EventBus, EventType } from '@asuna-admin/core';
 import { createLogger } from '@asuna-admin/logger';
 
 const logger = createLogger('modules:content:upsert', 'warn');
@@ -78,7 +76,7 @@ const ContentForm = Form.create<IContentForm>({
 
 interface IProps extends ReduxProps {
   basis: { pane: Pane };
-  schemas: object;
+  schemas: Asuna.Schema.ModelSchemas;
   models: object;
   onClose: () => void;
 }
@@ -160,7 +158,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
     // Build form fields with all needed data
     // --------------------------------------------------------------
 
-    const formSchema = modelProxy.getFormSchema(schemas, modelName);
+    const formSchema = AppContext.adapters.models.getFormSchema(schemas, modelName);
 
     // if (modelName === 'colleges') {
     //   formSchema = R.pick(['id', 'name', 'name_en', 'sequences'], formSchema);
@@ -341,7 +339,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
         if (isErrorResponse(error)) {
           const errors = toFormErrors(error.response);
           logger.warn('[upsert callback]', { response, error, errors });
-          if (_.isString(errors)) {
+          if (typeof errors === 'string') {
             message.error(errors);
           } else {
             this._handleFormChange(errors);

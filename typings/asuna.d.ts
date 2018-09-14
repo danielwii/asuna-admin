@@ -62,6 +62,7 @@ declare namespace Asuna {
       DELETABLE = 'Deletable',
       SORT_POSITION = 'SortPosition',
       ENUM_FILTER = 'EnumFilter',
+      ENUM = 'Enum',
     }
 
     /**
@@ -141,6 +142,7 @@ declare namespace Asuna {
         | 'Deletable'
         | 'SortPosition'
         | 'EnumFilter'
+        | 'Enum'
         | 'Tree';
       json?: MetaInfoJsonType | 'str';
       /**

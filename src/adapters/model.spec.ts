@@ -1,7 +1,7 @@
 import { IModelService, ModelAdapter } from './model';
 import { DynamicFormTypes } from '../components/DynamicForm';
 import { AppContext } from '../core';
-import { AsunaStore, storeConnector } from '../store';
+import { storeConnector } from '../store';
 
 describe('identify types', () => {
   const adapter = new ModelAdapter({} as IModelService);
@@ -338,9 +338,9 @@ describe('listSchemasCallable', () => {
     storeConnector.connect({ auth: { token: 'temp-token' } });
     AppContext.init();
     const adapter = new ModelAdapter(
-      {
+      ({
         loadSchema: ({ token }, name, config) => ({ token, name, config }),
-      } as IModelService,
+      } as any) as IModelService,
       {
         // tableColumns,
         // modelColumns,

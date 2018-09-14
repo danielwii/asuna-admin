@@ -8,7 +8,7 @@ import { Subscription } from 'rxjs';
 
 import { contentActions, modelsActions, panesActions, RootState } from '@asuna-admin/store';
 import { castModelKey, diff } from '@asuna-admin/helpers';
-import { modelProxy, responseProxy, TablePagination } from '@asuna-admin/adapters';
+import { responseProxy, TablePagination } from '@asuna-admin/adapters';
 import { ActionEvent, AppContext, EventBus, EventType } from '@asuna-admin/core';
 import { createLogger } from '@asuna-admin/logger';
 
@@ -72,7 +72,7 @@ class ContentIndex extends React.Component<IProps, IState> {
     // content::name => name
     // prettier-ignore
     const modelName = R.compose(R.nth(1), R.split(/::/), R.path(['pane', 'key']))(basis);
-    const configs = modelProxy.getModelConfig(modelName);
+    const configs = AppContext.adapters.models.getModelConfig(modelName);
     logger.debug('[constructor]', { configs, modelName });
 
     const columns = R.prop('table', configs)(actions, {
