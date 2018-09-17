@@ -251,7 +251,7 @@ class ContentIndex extends React.Component<IProps, IState> {
   }
 }
 
-const mapStateToProps = (state: RootState) => ({
+const mapStateToProps = (state: RootState): any => ({
   ...state.content,
 });
 

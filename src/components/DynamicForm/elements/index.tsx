@@ -300,7 +300,7 @@ export const generateImages = (
   return generateComponent(
     form,
     { fieldName, labelName, ...options },
-    <ImagesUploader auth={auth} host={host} prefix={prefix} urlHandler={handler} />,
+    <ImagesUploader many={true} auth={auth} host={host} prefix={prefix} urlHandler={handler} />,
     formItemLayout,
   );
 };

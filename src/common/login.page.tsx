@@ -7,9 +7,9 @@ import { LivingLoading, LogoCanvas, Snow } from '@asuna-admin/components';
 import { LoginContainer } from '@asuna-admin/containers';
 
 import { AppState, AsunaStore, RootState } from '@asuna-admin/store';
-import { createLogger } from '@asuna-admin/logger';
 import { AppContext, IIndexRegister, ILoginRegister, INextConfig } from '@asuna-admin/core';
 import { AntdLayout } from '@asuna-admin/layout';
+import { createLogger } from '@asuna-admin/logger';
 
 const logger = createLogger('pages:login');
 
@@ -90,7 +90,7 @@ const mapStateToProps = (state: RootState) => ({
 export const renderLoginPage = (props: Partial<ILoginPageProps>, nextConfig: INextConfig) => {
   AppContext.init(nextConfig);
   const store = new AsunaStore();
-  return store.withReduxSaga<ILoginPageProps>(connect(
-    R.compose(R.merge(props), mapStateToProps),
-  )(LoginPage));
+  return store.withReduxSaga<ILoginPageProps>(
+    connect(R.compose(R.merge(props), mapStateToProps))(LoginPage as any)
+  );
 };
