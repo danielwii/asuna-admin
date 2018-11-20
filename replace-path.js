@@ -1,4 +1,4 @@
-/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable import/no-extraneous-dependencies,no-console */
 const nodePath = require('path');
 // const paths = require('tsconfig-paths');
 const tsconfig = require('tsconfig-extends');

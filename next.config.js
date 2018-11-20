@@ -1,6 +1,7 @@
+/* eslint-disable import/no-extraneous-dependencies,no-console,no-param-reassign,no-unused-vars */
 const webpack = require('webpack');
 const Jarvis = require('webpack-jarvis');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const R = require('ramda');
@@ -10,7 +11,7 @@ const withCss = require('@zeit/next-css');
 
 const jarvis = new Jarvis({ port: 1337 });
 const bundleAnalyzerPlugin = new BundleAnalyzerPlugin({ openAnalyzer: false });
-const contextReplacementPlugin = new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /zh/);
+const contextReplacementPlugin = new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /zh/);
 const tsconfigPathsPlugin = new TsconfigPathsPlugin();
 
 // fix: prevents error when .css files are required by node
@@ -46,9 +47,9 @@ module.exports = R.compose(
         // config.devtool = 'source-map';
 
         // https://github.com/zeit/next.js/issues/1582
-        config.plugins = config.plugins.filter(plugin => {
-          return plugin.constructor.name !== 'UglifyJsPlugin';
-        });
+        config.plugins = config.plugins.filter(
+          plugin => plugin.constructor.name !== 'UglifyJsPlugin',
+        );
       }
 
       // Fixes npm packages that depend on `fs` module
