@@ -32,7 +32,7 @@ export const tables = {
 };
 
 type Fields = {
-  [key: string]: {
+  [key: string]: DeepPartial<{
     name: string;
     ref: string;
     type: DynamicFormTypes;
@@ -43,7 +43,7 @@ type Fields = {
       required: boolean;
       selectable?: string;
     };
-  };
+  }>;
 };
 
 type WithHidden = {
@@ -51,13 +51,14 @@ type WithHidden = {
 };
 
 type PositionsField = Fields &
-  WithHidden & {
+  WithHidden &
+  DeepPartial<{
     options: {
       accessible: 'readonly';
       json: 'str';
       type: 'SortPosition';
     };
-  };
+  }>;
 
 export const hiddenComponentDecorator = (fields: Fields): Fields & WithHidden => {
   const TAG = '[hiddenComponentDecorator]';
