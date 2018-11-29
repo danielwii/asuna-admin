@@ -62,8 +62,7 @@
     "test": "ENV=test jest --no-cache",
     "changelog": "conventional-changelog -p asuna-admin -i CHANGELOG.md",
     "init-changelog": "conventional-changelog -p asuna-admin -i CHANGELOG.md -r 0",
-    "postinstall": "yarn collect",
-    "precommit": "pretty-quick --staged"
+    "postinstall": "yarn collect"
   },
   "peerDependencies": {},
   "dependencies": {
@@ -184,6 +183,11 @@
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged"
     }
   }
 }
