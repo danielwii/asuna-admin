@@ -191,7 +191,7 @@ export class AsunaStore {
     return store;
   };
 
-  public withReduxSaga = <T>(BaseComponent): NextReduxWrappedComponent<Partial<T>> => {
+  public withReduxSaga = <T>(BaseComponent): NextReduxWrappedComponent => {
     return withRedux(this.configureStore)(nextReduxSaga(BaseComponent));
   };
 }

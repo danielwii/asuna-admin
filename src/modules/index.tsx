@@ -31,4 +31,4 @@ export default dynamic({
     return { Component: components.default };
   },
   render: (props, { Component }) => <Component {...props} />,
-});
+} as any) as any;
