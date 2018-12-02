@@ -3,10 +3,20 @@ module.exports = api => {
   api.cache.never();
 
   return {
-    presets: ['@babel/preset-typescript', '@babel/preset-env'],
+    presets: [
+      [
+        'next/babel',
+        {
+          'preset-env': {},
+          'transform-runtime': {},
+          'styled-jsx': {},
+          'class-properties': {},
+        },
+      ],
+      '@zeit/next-typescript/babel',
+    ],
     plugins: [
       '@babel/plugin-syntax-dynamic-import',
-      '@babel/plugin-transform-runtime',
       ['styled-components', { ssr: true, displayName: true, preprocess: false }],
       ['import', { libraryName: 'antd', style: false }, 'import-antd'],
       // [
