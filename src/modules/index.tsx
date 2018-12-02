@@ -6,29 +6,35 @@ import { createLogger } from '@asuna-admin/logger';
 
 const logger = createLogger('modules:index');
 
+function getModule(components, module) {
+  logger.debug('looking for module', module);
+
+  if (_.has(components, module)) {
+    logger.debug('module includes in components', components);
+    return components[module];
+  }
+
+  const found = _.find(components, (component, key) => module.startsWith(key));
+  if (found) {
+    logger.log('found', found);
+    return found;
+  }
+  logger.log('return no module defined component');
+
+  return components.default;
+}
+
 export default dynamic({
-  modules: ({ module }) => {
-    const components = {
-      'content::index': import('./content/index'),
-      'content::upsert': import('./content/upsert'),
-      default: import('./undefined'),
-    };
-
-    logger.debug('looking for module', module);
-
-    if (_.has(components, module)) {
-      logger.debug('module includes in components', components);
-      return { Component: components[module] };
-    }
-
-    const found = _.find(components, (component, key) => module.startsWith(key));
-    if (found) {
-      logger.log('found', found);
-      return { Component: found };
-    }
-    logger.log('return no module defined component');
-
-    return { Component: components.default };
+  modules: () =>
+    ({
+      'content::index': () => import('./content/index'),
+      'content::upsert': () => import('./content/upsert'),
+      default: () => import('./undefined'),
+    } as any),
+  render: (props, components) => {
+    const { module } = props as any;
+    const Component = getModule(components, module).default;
+    logger.log('found component', Component);
+    return <Component {...props} />;
   },
-  render: (props, { Component }) => <Component {...props} />,
-} as any) as any;
+}) as any;
