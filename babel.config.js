@@ -17,7 +17,8 @@ module.exports = api => {
     ],
     plugins: [
       '@babel/plugin-syntax-dynamic-import',
-      ['styled-components', { ssr: true, displayName: true, preprocess: false }],
+      // fix Error: StyleSheet: `insertRule` accepts only strings
+      // ['styled-components', { ssr: true, displayName: true, preprocess: false }],
       ['import', { libraryName: 'antd', style: false }, 'import-antd'],
       // [
       //   'import',

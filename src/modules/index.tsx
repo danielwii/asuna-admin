@@ -32,9 +32,9 @@ export default dynamic({
       default: () => import('./undefined'),
     } as any),
   render: (props, components) => {
+    logger.log({ props });
     const { module } = props as any;
     const Component = getModule(components, module).default;
-    logger.log('found component', Component);
     return <Component {...props} />;
   },
 }) as any;

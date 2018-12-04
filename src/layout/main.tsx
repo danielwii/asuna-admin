@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import { Layout } from 'antd';
 
-import AntdLayout from './antd';
+import WithStyles from './with-styles';
 
 import { HeaderContainer, PanesContainer, SideMenuContainer } from '@asuna-admin/containers';
 import { LivingLoading, ProgressBar } from '@asuna-admin/components';
@@ -16,7 +16,7 @@ const StyledContentDiv = styled.div`
 `;
 
 export default ({ loading, heartbeat, auth, appInfo }) => (
-  <AntdLayout>
+  <WithStyles>
     <Layout>
       {loading && <LivingLoading heartbeat={heartbeat} />}
       <ProgressBar />
@@ -30,5 +30,5 @@ export default ({ loading, heartbeat, auth, appInfo }) => (
         </Layout>
       </Layout>
     </Layout>
-  </AntdLayout>
+  </WithStyles>
 );

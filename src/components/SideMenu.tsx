@@ -2,8 +2,13 @@ import React from 'react';
 import _ from 'lodash';
 
 import { Layout, Menu } from 'antd';
+import { createLogger } from '@asuna-admin/logger';
+
+const logger = createLogger('components:side-menu');
 
 const { SubMenu } = Menu;
+// no link exists in item any more
+const MenuItem: any | { link: string } = Menu.Item;
 const { Sider } = Layout;
 
 export interface ISideMenuProps {
@@ -34,6 +39,7 @@ export class SideMenu extends React.Component<ISideMenuProps, IState> {
       props: { title, link },
     },
   }) => {
+    logger.log('open', { key, title, link });
     const { onOpen } = this.props;
     onOpen({ key, title, linkTo: link });
   };
@@ -42,13 +48,9 @@ export class SideMenu extends React.Component<ISideMenuProps, IState> {
     return (
       <SubMenu key={menu.key} title={menu.title}>
         {_.map(menu.subMenus, subMenu => (
-          <Menu.Item
-            key={`${menu.key}::${subMenu.key}`}
-            title={subMenu.title}
-            link={subMenu.linkTo}
-          >
+          <MenuItem key={`${menu.key}::${subMenu.key}`} title={subMenu.title} link={subMenu.linkTo}>
             {subMenu.title}
-          </Menu.Item>
+          </MenuItem>
         ))}
       </SubMenu>
     );

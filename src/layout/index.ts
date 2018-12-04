@@ -1,4 +1,4 @@
-import AntdLayout from './antd';
+import WithStyles from './with-styles';
 import MainLayout from './main';
 
-export { AntdLayout, MainLayout };
+export { WithStyles, MainLayout };

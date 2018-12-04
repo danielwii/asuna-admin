@@ -8,7 +8,7 @@ import { LoginContainer } from '@asuna-admin/containers';
 
 import { AppState, AsunaStore, RootState } from '@asuna-admin/store';
 import { AppContext, IIndexRegister, ILoginRegister, INextConfig } from '@asuna-admin/core';
-import { AntdLayout } from '@asuna-admin/layout';
+import { WithStyles } from '@asuna-admin/layout';
 import { createLogger } from '@asuna-admin/logger';
 
 const logger = createLogger('pages:login');
@@ -62,7 +62,7 @@ class LoginPage extends React.Component<ILoginPageProps> {
     } = this.props;
 
     return (
-      <AntdLayout>
+      <WithStyles>
         {heartbeat ? (
           <StyledFullFlexContainer>
             <Snow />
@@ -76,7 +76,7 @@ class LoginPage extends React.Component<ILoginPageProps> {
         ) : (
           <LivingLoading heartbeat={heartbeat} />
         )}
-      </AntdLayout>
+      </WithStyles>
     );
   }
 }

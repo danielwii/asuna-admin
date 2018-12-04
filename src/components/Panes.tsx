@@ -70,13 +70,12 @@ export class Panes extends React.Component<IPanesProps, IState> {
     const operations = (
       <React.Fragment>
         {panes && <Button icon="close-square" onClick={() => onCloseWithout()} />}
-        {panes &&
-          R.keys(panes).length > 1 && (
-            <React.Fragment>
-              <Divider type="vertical" />
-              <Button icon="minus-square" onClick={() => onCloseWithout(activeKey)} />
-            </React.Fragment>
-          )}
+        {panes && R.keys(panes).length > 1 && (
+          <React.Fragment>
+            <Divider type="vertical" />
+            <Button icon="minus-square" onClick={() => onCloseWithout(activeKey)} />
+          </React.Fragment>
+        )}
       </React.Fragment>
     );
 
@@ -91,7 +90,8 @@ export class Panes extends React.Component<IPanesProps, IState> {
       >
         {_.map(panes, (pane: Pane) => (
           <TabPane tab={pane.title} key={pane.key}>
-            {/* {activeKey} - {pane.key} - {title} */}
+            {/*{activeKey} - {pane.key} - {title}*/}
+            {/*<pre>{JSON.stringify(pane)}</pre>*/}
             <ModulesLoader
               module={pane.linkTo || pane.key}
               activeKey={activeKey}

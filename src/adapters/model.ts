@@ -2,9 +2,9 @@ import * as R from 'ramda';
 import * as _ from 'lodash';
 import { AxiosResponse } from 'axios';
 
-import { DynamicFormTypes } from '../components/DynamicForm';
 import { TablePagination } from './response';
 
+import { DynamicFormTypes } from '@asuna-admin/components';
 import { defaultColumns } from '@asuna-admin/helpers';
 import { AppContext } from '@asuna-admin/core';
 import { Config } from '@asuna-admin/config';
@@ -25,11 +25,11 @@ export interface IModelService {
   loadModels(
     auth: { token: string | null },
     modelName: string,
-    configs?: {
+    configs: {
       relations?: string[];
       pagination?: Asuna.Pageable;
-      filters?;
-      sorter?;
+      filters?: any;
+      sorter?: any;
     } & Asuna.Schema.ModelConfig,
   ): Promise<AxiosResponse>;
 

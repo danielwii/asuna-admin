@@ -302,7 +302,7 @@ export class DynamicForm extends React.Component<
           </Row>
         </div>
         {/* language=CSS */}
-        <style global jsx>{`
+        <style jsx global>{`
           .dynamic-form .ant-form-item {
             margin-bottom: 0;
           }
