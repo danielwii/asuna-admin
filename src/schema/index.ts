@@ -2,7 +2,7 @@ import _ from 'lodash';
 import * as R from 'ramda';
 import bluebird from 'bluebird';
 
-import { DynamicFormTypes } from '@asuna-admin/components/DynamicForm';
+import { DynamicFormTypes } from '@asuna-admin/components';
 import { castModelKey, castModelName } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 import { AppContext } from '@asuna-admin/core';

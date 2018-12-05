@@ -125,7 +125,7 @@ export class FormModal extends React.Component<IProps, IState> {
           onCancel={this.handleCancel}
         >
           <LightForm
-            ref={form => {
+            wrappedComponentRef={form => {
               this.form = form as any;
             }}
             delegate
