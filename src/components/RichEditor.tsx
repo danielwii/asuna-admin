@@ -41,7 +41,7 @@ export class BraftRichEditor extends React.Component<IProps, IState> {
   _handleEditorChange = editorState => {
     logger.debug('[handleEditorChange]', { editorState });
     const { onChange } = this.props;
-    onChange!(editorState.toHTML());
+    if (onChange) onChange(editorState.toHTML());
     this.setState({ editorState });
   };
 

@@ -1,22 +1,13 @@
-module.exports = {
-  node  : {
-    fs: "empty"
-  },
-  module: {
-    rules: [
-      {
-        test: /\.css$/, use: [{
-          loader : 'postcss-loader',
-          options: {
-            plugins: function () {
-              return [
-                require('postcss-import')(),
-                require("autoprefixer")()
-              ]
-            }
-          }
-        }]
-      }
-    ]
-  }
+// const TSDocgenPlugin = require('react-docgen-typescript-webpack-plugin');
+module.exports = (baseConfig, env, config) => {
+  config.module.rules.push({
+    test: /\.(ts|tsx)$/,
+    loader: require.resolve('babel-loader'),
+  });
+  // config.plugins.push(new TSDocgenPlugin()); // optional
+  config.resolve.extensions.push('.ts', '.tsx');
+
+  config.node = { fs: 'empty' };
+
+  return config;
 };
