@@ -1,6 +1,6 @@
 // import * as _ from 'lodash';
 // import _ from 'lodash';
-import { uniqueItems } from './select';
+import { uniqueItems } from './Select';
 import { Config } from '@asuna-admin/config';
 
 describe('uniqueItems', () => {

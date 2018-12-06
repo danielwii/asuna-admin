@@ -1,8 +1,8 @@
 import React from 'react';
 
 import { storiesOf } from '@storybook/react';
-import { action }    from '@storybook/addon-actions';
-import { linkTo }    from '@storybook/addon-links';
+import { action } from '@storybook/addon-actions';
+import { linkTo } from '@storybook/addon-links';
 
 import 'antd/dist/antd.css';
 
@@ -18,6 +18,7 @@ import './dynamic-form.select.story';
 // import './dynamic-property.story';
 // import './modules-models.story';
 import './rich-text.story';
+import './image-crop.story';
 
 storiesOf('Welcome', module).add('to Storybook', () => <Welcome showApp={linkTo('Button')} />);
 

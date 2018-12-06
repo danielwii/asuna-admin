@@ -5,9 +5,9 @@ import { GetFieldDecoratorOptions, WrappedFormUtils } from 'antd/es/form/Form';
 
 import { BraftRichEditor } from '../../RichEditor';
 
-import { ImagesUploader } from '../images';
-import { VideoUploader } from '../videos';
-import { Authorities } from '../authorities';
+import { ImagesUploader } from '../Images';
+import { VideoUploader } from '../Videos';
+import { Authorities } from '../Authorities';
 
 import { Config } from '@asuna-admin/config';
 import { createLogger } from '@asuna-admin/logger';
