@@ -55,7 +55,7 @@ export type IndexModuleRegister = {
 
 export interface INextConfig {
   serverRuntimeConfig: { isServer?: boolean };
-  publicRuntimeConfig: { env?: string };
+  publicRuntimeConfig?: { env?: string };
 }
 
 // --------------------------------------------------------------
