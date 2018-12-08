@@ -3,7 +3,7 @@ import { call, put, select, take, takeEvery, takeLatest } from 'redux-saga/effec
 import _ from 'lodash';
 import * as R from 'ramda';
 import { message } from 'antd';
-import { REHYDRATE } from 'redux-persist/constants';
+import { REHYDRATE } from 'redux-persist';
 
 import { authActions, authActionTypes, isAuthModule } from './auth.actions';
 

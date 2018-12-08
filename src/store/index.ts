@@ -15,7 +15,6 @@ import { all } from 'redux-saga/effects';
 
 import { composeWithDevTools } from 'redux-devtools-extension';
 import { createLogger as createReduxLogger } from 'redux-logger';
-import { autoRehydrate, persistStore } from 'redux-persist';
 import { combineEpics, createEpicMiddleware } from 'redux-observable';
 
 import localForage from 'localforage';
@@ -32,6 +31,7 @@ import { createStoreConnectorMiddleware, storeConnector } from './middlewares';
 
 import { AppContext } from '@asuna-admin/core';
 import { createLogger } from '@asuna-admin/logger';
+import { persistReducer, persistStore } from 'redux-persist';
 
 export { storeConnector };
 
@@ -162,6 +162,9 @@ export class AsunaStore {
         applyMiddleware(this.sagaMiddleware, this.epicMiddleware, this.storeConnectorMiddleware),
       );
     } else {
+      // enable persistence in client side
+      const persistedReducer = persistReducer(this.persistConfig, this.rootReducers);
+
       // 在开发模式时开启日志
       if (process.env.NODE_ENV === 'development') {
         if (typeof localStorage !== 'undefined') {
@@ -173,7 +176,7 @@ export class AsunaStore {
         }
       }
       store = createStore<RootState, AnyAction, any, any>(
-        this.rootReducers,
+        persistedReducer,
         preloadedState,
         composeWithDevTools(
           applyMiddleware(
@@ -182,11 +185,10 @@ export class AsunaStore {
             this.loggerMiddleware,
             this.storeConnectorMiddleware,
           ),
-          autoRehydrate(),
         ),
       );
 
-      persistStore(store, this.persistConfig);
+      store.__persistor = persistStore(store);
     }
 
     /**
