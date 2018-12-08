@@ -24,7 +24,7 @@ import {
   InputOptions,
   PlainOptions,
 } from './elements';
-import { generateSelect, SelectOptions } from './elements/select';
+import { generateSelect, SelectOptions } from './elements/Select';
 
 import { diff } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';

@@ -4,7 +4,7 @@ import * as R from 'ramda';
 import { storiesOf } from '@storybook/react';
 import { Form } from 'antd/lib/index';
 
-import { generateSelect } from '../src/components/DynamicForm/elements/select';
+import { generateSelect } from '../src/components/DynamicForm/elements/Select';
 
 storiesOf('DynamicForm', module).add('select', () => {
   const Selector = Form.create()(({ form }) =>
