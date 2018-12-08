@@ -114,7 +114,7 @@ export class AsunaStore {
     ]);
   }
 
-  private rootReducers = (state, action) => {
+  private rootReducers = (preloadedState, action) => {
     const reducers: { [key in keyof RootState]: any } = {
       auth: authReducer,
       router: routerReducer,
@@ -131,34 +131,34 @@ export class AsunaStore {
 
     const combinedReducers = combineReducers(reducers);
 
-    const crossSliceReducer = (state, action) => {
+    const crossSliceReducer = (preloadedState, action) => {
       if (action.type === actionTypes.CLEAN) {
         const cleanedState = R.compose(
           modelsCleaner,
           panesCleaner,
-        )(state);
-        logger.log('[crossSliceReducer]', { state, action, cleanedState });
+        )(preloadedState);
+        logger.log('[crossSliceReducer]', { preloadedState, action, cleanedState });
         return cleanedState;
       }
-      return state;
+      return preloadedState;
     };
 
-    const intermediateState = combinedReducers(state, action);
+    const intermediateState = combinedReducers(preloadedState, action);
     return crossSliceReducer(intermediateState, action);
   };
 
   private rootEpics = combineEpics(...appEpics);
 
   public configureStore = (
-    state = this.initialState,
+    preloadedState = this.initialState,
     { isServer, req, debug, storeKey },
   ): Store => {
-    logger.log('configureStore', { state, isServer, req, debug, storeKey });
+    logger.log('configureStore', { preloadedState, isServer, req, debug, storeKey });
     let store;
     if (isServer) {
       store = createStore<RootState, AnyAction, any, any>(
         this.rootReducers,
-        state,
+        preloadedState,
         applyMiddleware(this.sagaMiddleware, this.epicMiddleware, this.storeConnectorMiddleware),
       );
     } else {
@@ -174,7 +174,7 @@ export class AsunaStore {
       }
       store = createStore<RootState, AnyAction, any, any>(
         this.rootReducers,
-        state,
+        preloadedState,
         composeWithDevTools(
           applyMiddleware(
             this.sagaMiddleware,
@@ -189,7 +189,19 @@ export class AsunaStore {
       persistStore(store, this.persistConfig);
     }
 
-    store.sagaTask = this.sagaMiddleware.run(this.rootSagas);
+    /**
+     * next-redux-saga depends on `runSagaTask` and `sagaTask` being attached to the store.
+     *
+     *   `runSagaTask` is used to rerun the rootSaga on the client when in sync mode (default)
+     *   `sagaTask` is used to await the rootSaga task before sending results to the client
+     *
+     */
+    store.runSagaTask = () => {
+      store.sagaTask = this.sagaMiddleware.run(this.rootSagas);
+    };
+
+    // run the rootSaga initially
+    store.runSagaTask();
     this.epicMiddleware.run(this.rootEpics);
 
     return store;

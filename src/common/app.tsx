@@ -1,14 +1,14 @@
 import App, { Container } from 'next/app';
-import nextReduxSaga from 'next-redux-saga';
 import { Provider } from 'react-redux';
-import { Layout } from 'antd';
 import withRedux from 'next-redux-wrapper';
+import withReduxSaga from 'next-redux-saga';
+import { Layout } from 'antd';
 import { AsunaStore } from '@asuna-admin/store';
 
 const asunaStore = AsunaStore.instance;
 
 export const ReduxApp = withRedux(asunaStore.configureStore as any, { debug: false })(
-  nextReduxSaga(
+  withReduxSaga({ async: true })(
     class extends App {
       props: any;
 
