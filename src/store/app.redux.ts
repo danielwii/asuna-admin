@@ -1,6 +1,6 @@
 import { call, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 
-import { REHYDRATE } from 'redux-persist/constants';
+import { REHYDRATE } from 'redux-persist';
 import _ from 'lodash';
 import * as R from 'ramda';
 
