@@ -54,7 +54,12 @@ export type IndexModuleRegister = {
 };
 
 export interface INextConfig {
-  serverRuntimeConfig: { isServer?: boolean };
+  serverRuntimeConfig: {
+    /**
+     * @deprecated
+     */
+    isServer?: boolean;
+  };
   publicRuntimeConfig?: { env?: string };
 }
 
@@ -149,8 +154,15 @@ class AppContext {
     }
   }
 
+  /**
+   * @deprecated
+   */
   public static get isServer() {
     return AppContext.nextConfig.serverRuntimeConfig.isServer;
+  }
+
+  public static set isServer(isServer: boolean | undefined) {
+    AppContext.nextConfig.serverRuntimeConfig.isServer = isServer;
   }
 
   public static get ctx() {

@@ -4,7 +4,7 @@ import * as R from 'ramda';
 
 import 'moment/locale/zh-cn';
 
-import { appActions, AppState, AsunaStore, AuthState, RootState } from '@asuna-admin/store';
+import { appActions, AppState, AuthState, RootState } from '@asuna-admin/store';
 import { AppContext, IIndexRegister, ILoginRegister, INextConfig } from '@asuna-admin/core';
 import { MainLayout } from '@asuna-admin/layout';
 import { createLogger } from '@asuna-admin/logger';
@@ -61,8 +61,5 @@ const mapStateToProps = (state: RootState) => ({
 // prettier-ignore
 export const renderIndexPage = (props: Partial<IIndexPageProps>, nextConfig: INextConfig) => {
   AppContext.init(nextConfig);
-  const store = new AsunaStore();
-  return store.withReduxSaga<IIndexPageProps>(
-    connect(R.compose(R.merge(props), mapStateToProps))(IndexPage as any),
-  );
+  return connect(R.compose(R.merge(props), mapStateToProps))(IndexPage);
 };

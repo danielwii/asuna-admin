@@ -7,37 +7,55 @@
 
 [![Daniel Wei](https://img.shields.io/badge/%3C%2F%3E%20with%20%E2%99%A5%20by-Daniel%20Wei-ff0000.svg)](https://github.com/danielwii)
 
-[changelog](https://github.com/danielwii/asuna-admin/blob/master/CHANGELOG.md)
-
 ## Develop
 
-0.9.0 版本开始整个项目已经完成了组件化改造，不再需要通过 clone/subtree 的方式进行开发。
+0.9.0 版本开始整个项目已经完成了组件化改造，不再需要通过 clone/subtree 的方式进行开发，当然，继续使用也可以。
 
 ## Quick Start
 
-## Config
+- add service/register.ts
 
-## Test
+```typescript
+import { AuthService } from './auth';
+import { ModelService } from './model';
+import { MenuService } from './menu';
+import { ApiService } from './api';
+import { SecurityService } from './security';
+import { definitions } from './definitions';
 
-### typescript & babel 7 support
+import { Config, IIndexRegister, ILoginRegister } from '@asuna-admin';
 
-#### plugins:
+Config.update({});
 
-- https://github.com/bernardmcmanus/babel-plugin-async-import
+export const register: ILoginRegister & IIndexRegister = {
+  authService: new AuthService(),
+  modelService: new ModelService(),
+  menuService: new MenuService(),
+  apiService: new ApiService(),
+  securityService: new SecurityService(),
+  definitions: definitions,
+};
+```
 
-#### issues
+- add pages/index.ts
 
-- You can't use {"jsx": "preserve"} in tsconfig for now.
+```typescript
+import { renderIndexPage } from '@asuna-admin';
+import getConfig from 'next/config';
+import { register } from '../services/register';
 
-  ```json
-  // tsconfig.jest.json
-  {
-    "extends": "./tsconfig",
-    "compilerOptions": {
-      "jsx": "react"
-    }
-  }
-  ```
+export default renderIndexPage({ register }, getConfig());
+```
+
+- add pages/login.ts
+
+```typescript
+import { renderLoginPage } from '@asuna-admin';
+import getConfig from 'next/config';
+import { register } from '../services/register';
+
+export default renderLoginPage({ register }, getConfig());
+```
 
 ## License
 
