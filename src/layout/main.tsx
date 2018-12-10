@@ -7,6 +7,9 @@ import WithStyles from './with-styles';
 
 import { HeaderContainer, PanesContainer, SideMenuContainer } from '@asuna-admin/containers';
 import { LivingLoading, ProgressBar } from '@asuna-admin/components';
+import { createLogger } from '@asuna-admin/logger';
+
+const logger = createLogger('layout:main', 'info');
 
 const StyledContentDiv = styled.div`
   background: #fff;
@@ -15,20 +18,23 @@ const StyledContentDiv = styled.div`
   min-height: 280px;
 `;
 
-export default ({ loading, heartbeat, auth, appInfo }) => (
-  <WithStyles>
-    <Layout>
-      {loading && <LivingLoading heartbeat={heartbeat} />}
-      <ProgressBar />
-      <HeaderContainer />
+export default ({ loading, heartbeat, auth, appInfo }) => {
+  logger.log('status', { loading, heartbeat, auth, appInfo });
+  return (
+    <WithStyles>
       <Layout>
-        <SideMenuContainer />
-        <Layout style={{ padding: '1rem' }}>
-          <StyledContentDiv>
-            <PanesContainer />
-          </StyledContentDiv>
+        {(loading || !heartbeat) && <LivingLoading heartbeat={heartbeat} />}
+        <ProgressBar />
+        <HeaderContainer />
+        <Layout>
+          <SideMenuContainer />
+          <Layout style={{ padding: '1rem' }}>
+            <StyledContentDiv>
+              <PanesContainer />
+            </StyledContentDiv>
+          </Layout>
         </Layout>
       </Layout>
-    </Layout>
-  </WithStyles>
-);
+    </WithStyles>
+  );
+};

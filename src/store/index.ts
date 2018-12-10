@@ -154,6 +154,7 @@ export class AsunaStore {
     { isServer, req, debug, storeKey },
   ): Store => {
     logger.log('configureStore', { preloadedState, isServer, req, debug, storeKey });
+    AppContext.isServer = isServer;
     let store;
     if (isServer) {
       store = createStore<RootState, AnyAction, any, any>(
