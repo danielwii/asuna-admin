@@ -68,7 +68,7 @@ export interface INextConfig {
 // --------------------------------------------------------------
 
 class AppContext {
-  static nextConfig: INextConfig = {
+  private static nextConfig: INextConfig = {
     serverRuntimeConfig: { isServer: false },
     publicRuntimeConfig: { env: 'canary' },
   };

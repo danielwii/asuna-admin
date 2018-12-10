@@ -32,15 +32,15 @@ export class WsAdapter {
         AppContext.dispatch(appActions.heartbeat());
       });
       WsAdapter.io.on('disconnect', () => {
-        logger.error('[disconnect]', { id: WsAdapter.io.id, AppContext });
         const { heartbeat } = AppContext.store.select(state => state.app);
+        logger.error('[disconnect]', { id: WsAdapter.io.id, heartbeat });
         if (heartbeat) {
           AppContext.dispatch(appActions.heartbeatStop());
         }
       });
       WsAdapter.io.on('error', error => {
-        logger.error('[error]', { id: WsAdapter.io.id, AppContext, error });
         const { heartbeat } = AppContext.store.select(state => state.app);
+        logger.error('[error]', { id: WsAdapter.io.id, heartbeat, error });
         if (heartbeat) {
           AppContext.dispatch(appActions.heartbeatStop());
         }
