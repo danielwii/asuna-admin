@@ -1,10 +1,10 @@
 import { IModelService, ModelAdapter } from './model';
 import { DynamicFormTypes } from '../components/DynamicForm';
-import { AppContext } from '../core';
+import { AppContext, AsunaDefinitions } from '../core';
 import { storeConnector } from '../store';
 
 describe('identify types', () => {
-  const adapter = new ModelAdapter({} as IModelService);
+  const adapter = new ModelAdapter({} as IModelService, new AsunaDefinitions());
 
   it('return right type', () => {
     expect(
@@ -76,28 +76,25 @@ describe('identify types', () => {
 
 describe('getFormSchema', () => {
   it('should return settings and associations', () => {
-    const adapter = new ModelAdapter({} as IModelService, {
-      tableColumns: {},
-      modelColumns: {
-        users: {
-          associations: {
-            roles: {
-              fields: ['id', 'name'],
-              name: 'name',
-            },
+    const definitions = new AsunaDefinitions();
+    definitions.addModelOpts({ users: {} });
+    definitions.addModelColumns({
+      users: {
+        associations: {
+          roles: {
+            fields: ['id', 'name'],
+            name: 'name',
           },
-          settings: {
-            password: {
-              help: '新建用户后在列表页面设置密码',
-              accessible: 'readonly',
-            },
+        },
+        settings: {
+          password: {
+            help: '新建用户后在列表页面设置密码',
+            accessible: 'readonly',
           },
         },
       },
-      models: {
-        users: {},
-      },
     });
+    const adapter = new ModelAdapter({} as IModelService, definitions);
     const fields = adapter.getFormSchema({ users: [{ name: 'password' }] } as any, 'users', {});
     expect(fields).toEqual({
       password: {
@@ -118,7 +115,7 @@ describe('getFormSchema', () => {
   });
 
   it('should return undefined when value not exists', () => {
-    const adapter = new ModelAdapter({} as IModelService);
+    const adapter = new ModelAdapter({} as IModelService, new AsunaDefinitions());
     const fields = adapter.getFormSchema(
       {
         test_schema: [
@@ -142,7 +139,7 @@ describe('getFormSchema', () => {
   });
 
   it('should matched related fields', () => {
-    const adapter = new ModelAdapter({} as IModelService);
+    const adapter = new ModelAdapter({} as IModelService, new AsunaDefinitions());
     const fields = adapter.getFormSchema(
       {
         test_schema: [
@@ -186,7 +183,7 @@ describe('getFormSchema', () => {
   });
 
   it('should handle nullable fields', () => {
-    const adapter = new ModelAdapter({} as IModelService);
+    const adapter = new ModelAdapter({} as IModelService, new AsunaDefinitions());
     const fieldsWithNullable = adapter.getFormSchema(
       {
         test_schema: [
@@ -337,24 +334,39 @@ describe('listSchemasCallable', () => {
   it('should return future callable functions', () => {
     storeConnector.connect({ auth: { token: 'temp-token' } });
     AppContext.init();
+
+    const definitions = new AsunaDefinitions();
+    definitions.addModelOpts({
+      abouts: {},
+      about_categories: {},
+      admin__users: {
+        endpoint: 'admin/auth/users',
+      },
+      admin__roles: {
+        endpoint: 'admin/auth/roles',
+      },
+    });
+    definitions.addModelColumns({
+      users: {
+        associations: {
+          roles: {
+            fields: ['id', 'name'],
+            name: 'name',
+          },
+        },
+        settings: {
+          password: {
+            help: '新建用户后在列表页面设置密码',
+            accessible: 'readonly',
+          },
+        },
+      },
+    });
     const adapter = new ModelAdapter(
       ({
         loadSchema: ({ token }, name, config) => ({ token, name, config }),
       } as any) as IModelService,
-      {
-        // tableColumns,
-        // modelColumns,
-        models: {
-          abouts: {},
-          about_categories: {},
-          admin__users: {
-            endpoint: 'admin/auth/users',
-          },
-          admin__roles: {
-            endpoint: 'admin/auth/roles',
-          },
-        },
-      },
+      definitions,
     );
     const schemasCallable = adapter.listSchemasCallable();
     expect(Object.keys(schemasCallable)).toEqual([

@@ -6,7 +6,7 @@ import { TablePagination } from './response';
 
 import { DynamicFormTypes } from '@asuna-admin/components';
 import { defaultColumns } from '@asuna-admin/helpers';
-import { AppContext } from '@asuna-admin/core';
+import { AppContext, AsunaDefinitions } from '@asuna-admin/core';
 import { Config } from '@asuna-admin/config';
 import { createLogger } from '@asuna-admin/logger';
 import { AuthState } from '@asuna-admin/store';
@@ -80,7 +80,7 @@ export interface IModelService {
 // Main
 // --------------------------------------------------------------
 
-const logger = createLogger('adapters:models', 'warn');
+const logger = createLogger('adapters:models');
 
 export interface ModelListConfig {
   endpoint?: string;
@@ -98,32 +98,27 @@ export class ModelAdapter {
 
   /**
    * @param service
-   * @param configs      - models: 模型定义; tableColumns: 模型列表定义; modelColumns: 模型表单定义
-   *                       模型定义中出现的的元素才会作为最终元素
-   * @param associations
+   * @param definitions - models: 模型定义; tableColumns: 模型列表定义; modelColumns: 模型表单定义
+   *                      模型定义中出现的的元素才会作为最终元素
    */
-  constructor(
-    service: IModelService,
-    configs: Asuna.Schema.ModelOpts = {},
-    associations: Asuna.Schema.Associations = {},
-  ) {
-    logger.log('[ModelAdapter][constructor]', { service, configs, associations });
+  constructor(service: IModelService, definitions: AsunaDefinitions) {
+    logger.log('[ModelAdapter][constructor]', { service, definitions });
     if (!service) {
       throw new Error('service must defined');
     }
 
     const modelConfigs = R.mapObjIndexed((config, name) => ({
       ...config,
-      table: R.path(['tableColumns', name])(configs),
-      model: R.path(['modelColumns', name])(configs),
-    }))(R.prop('models', configs));
+      table: R.path(['tableColumns', name])(definitions),
+      model: R.path(['modelColumns', name])(definitions),
+    }))(definitions.modelOpts);
 
     this.service = service;
     this.allModels = Object.keys(modelConfigs);
     this.modelConfigs = modelConfigs;
-    this.associations = associations;
+    this.associations = definitions.associations;
 
-    logger.log('[ModelAdapter]', '[constructor]', { configs, modelConfigs });
+    logger.log('[ModelAdapter]', '[constructor]', { modelConfigs });
     R.forEachObjIndexed((config, name) => {
       logger.debug('[ModelAdapter][constructor]', 'check', name, config);
       if (!config.table) logger.debug('[ModelAdapter]', '[constructor]', name, 'should set table');

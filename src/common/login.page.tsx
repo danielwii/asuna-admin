@@ -43,7 +43,7 @@ export interface ILoginPageProps extends ReduxProps {
   register: ILoginRegister & IIndexRegister;
 }
 
-class LoginPage extends React.Component<ILoginPageProps> {
+export class LoginPage extends React.Component<ILoginPageProps> {
   constructor(props) {
     super(props);
 
