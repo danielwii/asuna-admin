@@ -1,8 +1,8 @@
 import { call, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 
 import { REHYDRATE } from 'redux-persist';
-import _ from 'lodash';
 import * as R from 'ramda';
+import idx from 'idx';
 
 import { appActions, appActionTypes, isAppModule } from './app.actions';
 
@@ -87,8 +87,8 @@ function* sync() {
 function* rehydrateWatcher(action) {
   logger.log('[rehydrateWatcher]', action);
   yield put(appActions.restored());
-  const token = _.get(action, 'payload.auth.token');
-  const path = _.get(action, 'payload.router.path');
+  const token = idx(action, _ => _.payload.auth.token);
+  const path = idx(action, _ => _.payload.router.path);
   logger.log('[rehydrateWatcher]', !!token, path);
   if (token) {
     yield put(routerActions.toIndex());

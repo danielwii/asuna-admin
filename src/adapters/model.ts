@@ -1,6 +1,7 @@
 import * as R from 'ramda';
 import * as _ from 'lodash';
 import { AxiosResponse } from 'axios';
+import idx from 'idx';
 
 import { TablePagination } from './response';
 
@@ -137,7 +138,7 @@ export class ModelAdapter {
         : DynamicFormTypes.ManyToMany;
     }
 
-    const advancedType = _.get(field, 'config.info.type') as typeof field.config.info.type;
+    const advancedType = idx(field, _ => _.config.info.type);
 
     if (advancedType === 'RichText') return DynamicFormTypes.RichText;
     if (advancedType === 'Image') return DynamicFormTypes.Image;
@@ -151,17 +152,19 @@ export class ModelAdapter {
     // identify basic types
     // --------------------------------------------------------------
 
-    const type = _.get(field, 'config.type') as typeof field.config.type;
+    const type = idx(field, _ => _.config.type);
 
-    if (/^(VARCHAR.*|String)$/i.test(type)) return DynamicFormTypes.Input;
-    if (/^(INTEGER|FLOAT|Number)$/i.test(type)) return DynamicFormTypes.InputNumber;
-    if (/^TEXT$/i.test(type)) return DynamicFormTypes.TextArea;
-    if (/^DATETIME$/i.test(type)) return DynamicFormTypes.DateTime;
-    if (/^DATE$/i.test(type)) return DynamicFormTypes.Date;
-    if (/^BOOLEAN$/i.test(type)) return DynamicFormTypes.Switch;
+    if (type) {
+      if (/^(VARCHAR.*|String)$/i.test(type)) return DynamicFormTypes.Input;
+      if (/^(INTEGER|FLOAT|Number)$/i.test(type)) return DynamicFormTypes.InputNumber;
+      if (/^TEXT$/i.test(type)) return DynamicFormTypes.TextArea;
+      if (/^DATETIME$/i.test(type)) return DynamicFormTypes.DateTime;
+      if (/^DATE$/i.test(type)) return DynamicFormTypes.Date;
+      if (/^BOOLEAN$/i.test(type)) return DynamicFormTypes.Switch;
+    }
 
     logger.warn('[identifyType]', 'type', type, 'cannot identified.');
-    return type;
+    return type || null;
   };
 
   public fetch = (
@@ -193,10 +196,10 @@ export class ModelAdapter {
     const fields = this.getFormSchema(allSchemas, modelName);
     logger.debug('[upsert]', 'fields is', fields);
 
-    const fixKeys = _.mapKeys(data.body, (value, key) => _.get(fields, `${key}.ref`, key));
+    const fixKeys = _.mapKeys(data.body, (value, key) => idx(fields, _ => _[key].ref) || key);
     const transformed = _.mapValues(fixKeys, (value, key) => {
       // json 用于描述该字段需要通过字符串转换处理，目前用于服务器端不支持 JSON 数据格式的情况
-      return _.eq(_.get(fields, `${key}.options.json`), 'str') ? JSON.stringify(value) : value;
+      return _.eq(idx(fields, _ => _[key].options.json), 'str') ? JSON.stringify(value) : value;
     });
     logger.debug('[upsert]', 'transformed is', transformed);
 

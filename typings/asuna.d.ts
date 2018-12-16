@@ -195,7 +195,7 @@ declare namespace Asuna {
     interface FormSchema {
       name: string;
       ref?: string;
-      type: string;
+      type: string | null;
       value: any;
       options: MetaInfoOptions & {
         length: number | null;

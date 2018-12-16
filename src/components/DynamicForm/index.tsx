@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import * as R from 'ramda';
+import idx from 'idx';
 
 import { Anchor, Button, Col, Form, Row, Tag } from 'antd';
 import { FormComponentProps } from 'antd/es/form';
@@ -117,10 +118,10 @@ export class DynamicForm extends React.Component<
     logger.log('[DynamicForm]', '[buildField]', { field, index, options });
 
     // all readonly or hidden field will rendered as plain component
-    if (['readonly', 'hidden'].indexOf(_.get(field, 'options.accessible')) > -1) {
+    if (_.includes(['readonly', 'hidden'], idx(field, _ => _.options.accessible))) {
       return generatePlain({ text: field.value, ...options } as PlainOptions);
     }
-    if (['hide-value'].indexOf(_.get(field, 'options.accessible')) > -1) {
+    if (_.includes(['hide-value'], idx(field, _ => _.options.accessible))) {
       return generatePlain(options as PlainOptions);
     }
 
