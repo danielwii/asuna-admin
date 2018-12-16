@@ -108,7 +108,7 @@ describe('getFormSchema', () => {
           required: false,
           help: '新建用户后在列表页面设置密码',
           accessible: 'readonly',
-          selectable: undefined,
+          selectable: null,
         },
         value: undefined,
       },
@@ -133,7 +133,7 @@ describe('getFormSchema', () => {
         name: 'test_name',
         type: null,
         ref: 'test_name',
-        options: { selectable: undefined, label: null, required: false, length: null },
+        options: { selectable: null, label: null, required: false, length: null },
         value: undefined,
       },
     });
@@ -209,7 +209,7 @@ describe('getFormSchema', () => {
       'test-nullable': {
         name: 'test-nullable',
         options: {
-          selectable: undefined,
+          selectable: null,
           required: false,
           length: 50,
           label: null,
@@ -244,7 +244,7 @@ describe('getFormSchema', () => {
       'test-nullable': {
         name: 'test-nullable',
         options: {
-          selectable: undefined,
+          selectable: null,
           required: true,
           label: null,
           length: 50,
@@ -281,7 +281,7 @@ describe('getFormSchema', () => {
       'test-nullable': {
         name: 'test-nullable',
         options: {
-          selectable: undefined,
+          selectable: null,
           required: true,
           label: null,
           length: 50,
@@ -318,7 +318,7 @@ describe('getFormSchema', () => {
       'test-nullable': {
         name: 'test-nullable',
         options: {
-          selectable: undefined,
+          selectable: null,
           required: true,
           length: 50,
           label: null,

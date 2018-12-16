@@ -167,7 +167,7 @@ export class DynamicForm extends React.Component<
 
           const items = R.path(['associations', modelName, 'items'])(field);
           const existItems = R.path(['associations', modelName, 'existItems'])(field);
-          const type = R.path(['options', 'filterType'])(field);
+          const type = idx(field, _ => _.options.filterType);
           return generateSelect(form, {
             ...options,
             items,
@@ -190,7 +190,7 @@ export class DynamicForm extends React.Component<
         // --------------------------------------------------------------
         logger.log('[DynamicForm]', '[buildField][EnumFilter|Enum]', { field });
         const items = R.path(['options', 'enumData'])(field);
-        const type = R.path(['options', 'filterType'])(field);
+        const type = idx(field, _ => _.options.filterType);
         logger.log('[DynamicForm]', '[buildField][EnumFilter|Enum]', { type, items });
         return generateSelect(form, {
           ...options,

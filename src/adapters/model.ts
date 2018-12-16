@@ -130,12 +130,11 @@ export class ModelAdapter {
     // identify advanced types
     // --------------------------------------------------------------
 
-    const hasForeignKeys = R.path(['config', 'selectable'], field);
-
-    if (hasForeignKeys) {
-      return R.not(R.path(['config', 'many'])(field))
-        ? DynamicFormTypes.Association
-        : DynamicFormTypes.ManyToMany;
+    // has foreign keys
+    if (idx(field, _ => _.config.selectable)) {
+      return idx(field, _ => _.config.many)
+        ? DynamicFormTypes.ManyToMany
+        : DynamicFormTypes.Association;
     }
 
     const advancedType = idx(field, _ => _.config.info.type);
@@ -203,12 +202,12 @@ export class ModelAdapter {
     });
     logger.debug('[upsert]', 'transformed is', transformed);
 
-    const id = R.path(['body', 'id'])(data);
+    const id = idx(data, _ => _.body.id);
     if (id) {
       return this.service.update(auth, modelName, {
-        ...data,
-        body: transformed,
         id,
+        body: transformed,
+        ...data,
         ...this.getModelConfig(modelName),
       });
     }
@@ -268,20 +267,21 @@ export class ModelAdapter {
       R.map(
         (field: Asuna.Schema.ModelSchema): Asuna.Schema.FormSchema => {
           const ref = R.pathOr(field.name, ['config', 'info', 'ref'])(field);
-          const length = R.path(['config', 'length'])(field);
-          const required = R.not(R.pathOr(true, ['config', 'nullable'])(field));
+          const length = _.defaultTo(_.toNumber(idx(field, _ => _.config.length)), null);
+          const isNullable = _.defaultTo(idx(field, _ => _.config.nullable), true);
+          const isRequired = _.defaultTo(idx(field, _ => _.config.info.required), false);
           return {
             name: ref || field.name,
             ref,
             type: this.identifyType(field),
             options: {
-              ...R.path(['config', 'info'])(field),
-              length: length ? +length : null,
-              label: R.pathOr(null, ['config', 'info', 'name'])(field),
-              // foreignKeys: R.path(['config', 'foreignKeys'])(field), // @deprecated
-              selectable: R.path<string>(['config', 'selectable'])(field),
-              required: required || R.pathOr(false, ['config', 'info', 'required'])(field),
-              ...R.path(['model', 'settings', field.name], this.getModelConfig(name)),
+              length,
+              label: _.defaultTo(idx(field, _ => _.config.info.name), null),
+              // foreignKeys: idx(field, _ => _..config.foreignKeys), // @deprecated
+              selectable: _.defaultTo(idx(field, _ => _.config.selectable), null),
+              required: !isNullable || isRequired,
+              ...idx(field, _ => _.config.info),
+              ...idx(this.getModelConfig(name), _ => _.model.settings[field.name]),
             },
             // 不存在时返回 undefined，而不能返回 null
             // null 会被当作值在更新时被传递
@@ -315,8 +315,11 @@ export class ModelAdapter {
       configs,
       modelConfig: this.getModelConfig(modelName),
     });
-    const page = R.pathOr(1, ['pagination', 'current'], configs);
-    const size = R.pathOr(Config.get('DEFAULT_PAGE_SIZE'), ['pagination', 'pageSize'], configs);
+    const page = _.defaultTo(idx(configs, _ => _.pagination.current), 1);
+    const size = _.defaultTo(
+      idx(configs, _ => _.pagination.pageSize),
+      Config.get('DEFAULT_PAGE_SIZE') || 25,
+    );
     const auth = AppContext.fromStore('auth');
     return this.service.loadModels(auth, modelName, {
       pagination: { page, size },
