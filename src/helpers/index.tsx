@@ -19,6 +19,7 @@ const logger = createLogger('helpers', 'warn');
 
 export * from './cast';
 export * from './error';
+export * from './func';
 
 const FluxCenterBox = styled.div`
   display: flex;

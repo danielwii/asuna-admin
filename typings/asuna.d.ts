@@ -250,21 +250,12 @@ declare namespace Asuna {
       };
     }
 
-    type ModelColumns = { [key: string]: ModelColumn };
-
-    type TableColumns = { [key: string]: FRecordRender };
+    // 单个模型设置，用于定义非 app 模块外的模型的访问端点
+    type ModelOpts = { [key: string]: ModelOpt };
 
     interface ModelOpt {
       creatable?: boolean;
       endpoint?: string;
-    }
-
-    interface ModelOpts {
-      models?: {
-        [key: string]: ModelOpt;
-      };
-      tableColumns?: TableColumns;
-      modelColumns?: ModelColumns;
     }
 
     interface SubMenu {

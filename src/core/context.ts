@@ -16,6 +16,7 @@ import {
   SecurityAdapter,
   WsAdapter,
 } from '@asuna-admin/adapters';
+import { AsunaDefinitions } from '@asuna-admin/core/definitions';
 
 // --------------------------------------------------------------
 // Types
@@ -36,11 +37,7 @@ export interface IIndexRegister extends ILoginRegister {
 
   createSecurityService(): ISecurityService;
 
-  createDefinitions(): {
-    associations: Asuna.Schema.Associations;
-    modelConfigs: Asuna.Schema.ModelOpts;
-    registeredModels: Asuna.Schema.Menus;
-  };
+  definitions: AsunaDefinitions;
 }
 
 export type LoginModuleRegister = {
@@ -154,9 +151,6 @@ class AppContext {
     }
   }
 
-  /**
-   * @deprecated
-   */
   public static get isServer() {
     return AppContext.nextConfig.serverRuntimeConfig.isServer;
   }
@@ -194,17 +188,10 @@ class AppContext {
       ...AppContext._context,
       auth: new AuthAdapter(register.createAuthService()),
       response: new ResponseAdapter(),
-      menu: new MenuAdapter(
-        register.createMenuService(),
-        register.createDefinitions().registeredModels,
-      ),
+      menu: new MenuAdapter(register.createMenuService(), register.definitions.sideMenus),
       api: new ApiAdapter(register.createApiService()),
       security: new SecurityAdapter(register.createSecurityService()),
-      models: new ModelAdapter(
-        register.modelService,
-        register.createDefinitions().modelConfigs,
-        register.createDefinitions().associations,
-      ),
+      models: new ModelAdapter(register.modelService, register.definitions),
       ws: new WsAdapter(),
     };
   }

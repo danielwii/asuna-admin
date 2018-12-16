@@ -15,7 +15,7 @@ const logger = createLogger('pages:index', 'warn');
 // Index Component
 // --------------------------------------------------------------
 
-interface IIndexPageProps extends ReduxProps {
+export interface IIndexPageProps extends ReduxProps {
   auth: AuthState;
   app: AppState;
   register: ILoginRegister & IIndexRegister;
@@ -24,7 +24,7 @@ interface IIndexPageProps extends ReduxProps {
   };
 }
 
-class IndexPage extends React.Component<IIndexPageProps> {
+export class IndexPage extends React.Component<IIndexPageProps> {
   constructor(props) {
     super(props);
 
