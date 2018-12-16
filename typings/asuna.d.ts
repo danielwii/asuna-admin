@@ -196,11 +196,11 @@ declare namespace Asuna {
       name: string;
       ref?: string;
       type: string | null;
-      value: any;
+      value: any | null | undefined;
       options: MetaInfoOptions & {
         length: number | null;
-        label?: string;
-        selectable?: string;
+        label?: string | null;
+        selectable?: string | null;
         required?: boolean;
         json?: string;
       };
