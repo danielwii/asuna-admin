@@ -1,6 +1,4 @@
 import { call, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
-
-import _ from 'lodash';
 import * as R from 'ramda';
 import { message } from 'antd';
 import { REHYDRATE } from 'redux-persist';
@@ -13,6 +11,7 @@ import { routerActions } from './router.redux';
 
 import { createLogger } from '@asuna-admin/logger';
 import { authProxy } from '@asuna-admin/adapters';
+import idx from 'idx';
 
 const logger = createLogger('store:auth', 'warn');
 
@@ -74,7 +73,7 @@ function* tokenWatcher(action) {
   } else if (!token && path !== '/login') {
     const rehydrateAction = yield take(REHYDRATE);
     logger.log('[tokenWatcher]', 'waiting for rehydrateAction', rehydrateAction);
-    if (!_.get(rehydrateAction, 'payload.auth.token')) {
+    if (!idx(rehydrateAction, _ => _.payload.auth.token)) {
       yield put(routerActions.toLogin());
     }
   }

@@ -16,6 +16,7 @@ module.exports = api => {
       '@zeit/next-typescript/babel',
     ],
     plugins: [
+      'babel-plugin-idx',
       '@babel/plugin-syntax-dynamic-import',
       // fix Error: StyleSheet: `insertRule` accepts only strings
       // ['styled-components', { ssr: true, displayName: true, preprocess: false }],
