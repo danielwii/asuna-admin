@@ -52,10 +52,8 @@ const panesReducer = (previousState = initialState, action) => {
           payload: { key },
         } = action;
 
-        const index = R.compose(
-          R.indexOf(activeKey),
-          R.keys,
-        )(panes);
+        // prettier-ignore
+        const index = R.compose(R.indexOf(activeKey), R.keys)(panes);
         const nextPanes = _.omit(panes, key);
 
         const nextKeys = _.keys(nextPanes);
@@ -63,7 +61,7 @@ const panesReducer = (previousState = initialState, action) => {
           activeKey && _.has(nextPanes, activeKey)
             ? activeKey
             : // 关闭当前 tab 时定位到后面一个 tab
-              nextKeys[_.min([index, nextKeys.length - 1])];
+              nextKeys[_.min([index, nextKeys.length - 1]) as number];
         return { activeKey: nextKey, panes: nextPanes };
       }
       case panesActionTypes.CLOSE_ALL: {

@@ -38,6 +38,7 @@ describe('identify types', () => {
     expect(
       adapter.identifyType({
         config: {
+          type: '', // TODO add selectable schema maybe?
           // foreignKeys: ['t_models.id'],
           info: {},
           many: true,

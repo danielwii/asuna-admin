@@ -152,7 +152,7 @@ declare namespace Asuna {
       ref?: string;
       help?: string;
       accessible?: MetaInfoAccessible | 'readonly' | 'hidden';
-      enumData?: { key: string; value: string[] }[];
+      enumData?: { key: string; value: string }[];
       filterType?: MetaInfoFilterType | 'Sort';
       /**
        * slash - 根据 / 设定层级结构
@@ -184,9 +184,12 @@ declare namespace Asuna {
 
     interface ModelConfig extends ModelOpt {
       table?: FRecordRender;
-      model?: {};
+      model?: ModelColumn;
     }
 
+    /**
+     * @deprecated
+     */
     type ModelConfigs = { [key: string]: ModelConfig };
 
     interface FormSchema {
@@ -211,8 +214,8 @@ declare namespace Asuna {
         selectable?: string;
         type: string;
         primaryKey?: boolean;
-        nullable: boolean;
-        length: string | number;
+        nullable?: boolean;
+        length?: string | number;
         info: MetaInfoOptions & {
           label?: string;
           selectable?: string;
