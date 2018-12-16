@@ -93,8 +93,8 @@ export interface ModelListConfig {
 export class ModelAdapter {
   private service: IModelService;
   private allModels: string[];
-  private modelConfigs: Asuna.Schema.ModelConfigs;
-  private associations: {};
+  private modelConfigs;
+  private associations;
 
   /**
    * @param service
@@ -107,26 +107,20 @@ export class ModelAdapter {
       throw new Error('service must defined');
     }
 
-    const modelConfigs = R.mapObjIndexed((config, name) => ({
-      ...config,
-      table: R.path(['tableColumns', name])(definitions),
-      model: R.path(['modelColumns', name])(definitions),
-    }))(definitions.modelOpts);
-
     this.service = service;
-    this.allModels = Object.keys(modelConfigs);
-    this.modelConfigs = modelConfigs;
+    this.allModels = Object.keys(definitions.modelOpts);
+    this.modelConfigs = definitions.modelConfigs;
     this.associations = definitions.associations;
 
-    logger.log('[ModelAdapter]', '[constructor]', { modelConfigs });
-    R.forEachObjIndexed((config, name) => {
+    logger.log('[ModelAdapter]', '[constructor]', this.modelConfigs);
+    _.map(this.modelConfigs, (config, name) => {
       logger.debug('[ModelAdapter][constructor]', 'check', name, config);
       if (!config.table) logger.debug('[ModelAdapter]', '[constructor]', name, 'should set table');
       if (!config.model) logger.debug('[ModelAdapter]', '[constructor]', name, 'should set model');
-    })(modelConfigs);
+    });
   }
 
-  public identifyType = field => {
+  public identifyType = (field: Asuna.Schema.ModelSchema) => {
     if (['id', 'created_at', 'updated_at'].indexOf(field.name) > -1) {
       return DynamicFormTypes.Plain;
     }
@@ -143,21 +137,21 @@ export class ModelAdapter {
         : DynamicFormTypes.ManyToMany;
     }
 
-    const advancedType = R.path(['config', 'info', 'type'])(field);
+    const advancedType = _.get(field, 'config.info.type') as typeof field.config.info.type;
 
-    if (/^RichText$/i.test(advancedType)) return DynamicFormTypes.RichText;
-    if (/^Image$/i.test(advancedType)) return DynamicFormTypes.Image;
-    if (/^Images$/i.test(advancedType)) return DynamicFormTypes.Images;
-    if (/^Video$/i.test(advancedType)) return DynamicFormTypes.Video;
-    if (/^Authorities$/i.test(advancedType)) return DynamicFormTypes.Authorities;
-    if (/^EnumFilter$/i.test(advancedType)) return DynamicFormTypes.EnumFilter;
-    if (/^Enum$/i.test(advancedType)) return DynamicFormTypes.Enum;
+    if (advancedType === 'RichText') return DynamicFormTypes.RichText;
+    if (advancedType === 'Image') return DynamicFormTypes.Image;
+    if (advancedType === 'Images') return DynamicFormTypes.Images;
+    if (advancedType === 'Video') return DynamicFormTypes.Video;
+    if (advancedType === 'Authorities') return DynamicFormTypes.Authorities;
+    if (advancedType === 'Enum') return DynamicFormTypes.Enum;
+    if (advancedType === 'EnumFilter') return DynamicFormTypes.EnumFilter;
 
     // --------------------------------------------------------------
     // identify basic types
     // --------------------------------------------------------------
 
-    const type = R.path(['config', 'type'])(field);
+    const type = _.get(field, 'config.type') as typeof field.config.type;
 
     if (/^(VARCHAR.*|String)$/i.test(type)) return DynamicFormTypes.Input;
     if (/^(INTEGER|FLOAT|Number)$/i.test(type)) return DynamicFormTypes.InputNumber;

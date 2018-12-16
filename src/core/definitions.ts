@@ -1,4 +1,7 @@
 import { extend } from '@asuna-admin/helpers';
+import { createLogger } from '@asuna-admin/logger';
+
+const logger = createLogger('core:definition');
 
 export class AsunaDefinitions<T extends Asuna.Schema.ModelOpts = {}> {
   /**
@@ -22,7 +25,7 @@ export class AsunaDefinitions<T extends Asuna.Schema.ModelOpts = {}> {
    *         ref: 'association-ref-name',
    *         fields: ['id', 'name'],
    */
-  private _modelsColumns: { [key in keyof T]?: Asuna.Schema.ModelColumn } = {};
+  private _modelColumns: { [key in keyof T]?: Asuna.Schema.ModelColumn } = {};
   /**
    * 描述关联下拉菜单的查询可显示字段
    */
@@ -48,15 +51,11 @@ export class AsunaDefinitions<T extends Asuna.Schema.ModelOpts = {}> {
   }
 
   addTableColumns(tableColumns: { [key in keyof T]?: Asuna.Schema.FRecordRender }) {
-    this._tableColumns = { ...this._tableColumns, ...tableColumns };
+    this._tableColumns = extend(this._tableColumns, tableColumns);
   }
 
   addModelColumns(modelsColumns: { [key in keyof T]?: Asuna.Schema.ModelColumn }) {
-    // const columns = modelsColumns
-    //   .map(modelColumns => ({ [modelColumns.key]: modelColumns.opts }))
-    //   .reduce((previous, current) => ({ ...previous, ...current }), {});
-    // this.modelsColumns = { ...this.modelsColumns, ...modelsColumns };
-    this._modelsColumns = extend(this._modelsColumns, modelsColumns);
+    this._modelColumns = extend(this._modelColumns, modelsColumns);
   }
 
   addAssociations(associations: { [key in keyof T]?: Asuna.Schema.Association }) {
@@ -79,6 +78,22 @@ export class AsunaDefinitions<T extends Asuna.Schema.ModelOpts = {}> {
     this._sideMenus = [...this._sideMenus, ...menus];
   }
 
+  getModelConfig(key: keyof T): Asuna.Schema.ModelConfig {
+    const table = this._tableColumns[key];
+    const model = this._modelColumns[key];
+    if (!table) logger.warn('[getModelConfig]', key, 'should set table');
+    if (!model) logger.warn('[getModelConfig]', key, 'should set model');
+    return { ...this._modelOpts[key], table, model };
+  }
+
+  get modelConfigs(): { [K: string]: Asuna.Schema.ModelConfig } {
+    return Object.keys(this.modelOpts)
+      .map(key => {
+        return { [key]: this.getModelConfig(key) };
+      })
+      .reduce((previous, current) => ({ ...previous, ...current }), {});
+  }
+
   get modelOpts() {
     return this._modelOpts;
   }
@@ -88,7 +103,7 @@ export class AsunaDefinitions<T extends Asuna.Schema.ModelOpts = {}> {
   }
 
   get modelColumns() {
-    return this._modelsColumns;
+    return this._modelColumns;
   }
 
   get associations() {

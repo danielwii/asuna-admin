@@ -9,7 +9,7 @@ import { HeaderContainer, PanesContainer, SideMenuContainer } from '@asuna-admin
 import { LivingLoading, ProgressBar } from '@asuna-admin/components';
 import { createLogger } from '@asuna-admin/logger';
 
-const logger = createLogger('layout:main', 'info');
+const logger = createLogger('layout:main');
 
 const StyledContentDiv = styled.div`
   background: #fff;

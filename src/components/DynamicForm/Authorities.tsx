@@ -57,14 +57,8 @@ export class Authorities extends React.Component<IProps, IState> {
     R.is(String, authorities) ? JSON.parse(authorities) : authorities;
 
   static updateDataSource = authorities => {
-    const registeredModels = menuProxy.getRegisteredModels();
-    logger.debug(
-      '[updateDataSource]',
-      'all registeredModels is',
-      registeredModels,
-      'authorities is',
-      authorities,
-    );
+    const sideMenus = menuProxy.getSideMenus();
+    logger.debug('[updateDataSource]', { sideMenus, authorities });
 
     const dataSource = R.compose(
       R.flatten,
@@ -79,7 +73,7 @@ export class Authorities extends React.Component<IProps, IState> {
           };
         })(obj.subMenus),
       ),
-    )(registeredModels);
+    )(sideMenus);
 
     logger.debug('[updateDataSource]', 'dataSource is', dataSource);
     return dataSource;
