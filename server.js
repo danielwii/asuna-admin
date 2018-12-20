@@ -36,6 +36,7 @@ app.prepare().then(() => {
 
     if (configs && configs.proxy) {
       const proxyConfig = configs.proxy.find(config => pathname.startsWith(config.pathname));
+      console.log(req.url, proxyConfig);
       if (proxyConfig) {
         if (proxyConfig.dest) {
           req.url = proxyConfig.dest(req);
