@@ -267,7 +267,7 @@ export class ModelAdapter {
       R.map(
         (field: Asuna.Schema.ModelSchema): Asuna.Schema.FormSchema => {
           const ref = R.pathOr(field.name, ['config', 'info', 'ref'])(field);
-          const length = _.defaultTo(_.toNumber(idx(field, _ => _.config.length)), null);
+          const length = _.toNumber(idx(field, _ => _.config.length)) || null; // 0 || null is null
           const isNullable = _.defaultTo(idx(field, _ => _.config.nullable), true);
           const isRequired = _.defaultTo(idx(field, _ => _.config.info.required), false);
           return {

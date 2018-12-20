@@ -187,7 +187,7 @@ export const columnHelper = {
    * @param {any} callRefresh
    * @returns {{title: any; dataIndex: string | any; key: string | any; render: (isActive, record) => any}}
    */
-  generateBoolean: (key, title, { modelName, callRefresh }) => ({
+  generateSwitch: (key, title, { modelName, callRefresh }) => ({
     title,
     dataIndex: castModelKey(key),
     key: castModelKey(key),
@@ -218,6 +218,7 @@ export const commonColumns = {
   any: (key, title?) => columnHelper.generate(key, title || key.toUpperCase()),
   id: columnHelper.generateID(),
   name: columnHelper.generate('name', '名称'),
+  ordinal: columnHelper.generate('ordinal', '序号'),
   description: columnHelper.generate('description', '描述'),
   title: columnHelper.generate('title', '标题'),
   nameEn: columnHelper.generate('nameEn', '英文名称'),

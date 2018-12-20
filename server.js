@@ -1,10 +1,13 @@
-/* eslint-disable no-console */
 require('colors');
+const util = require('util');
+const debug = require('debug');
 const { createServer } = require('http');
 const { createProxyServer } = require('http-proxy');
 const { parse } = require('url');
 const next = require('next');
 
+debug.enable('http,error');
+const logger = { log: debug('http'), error: debug('error') };
 const configs = require('./config');
 
 const dev = process.env.NODE_ENV !== 'production';
@@ -14,7 +17,7 @@ const handle = app.getRequestHandler();
 const proxy = createProxyServer({});
 
 proxy.on('error', (error, request, response) => {
-  console.error('proxy error', error);
+  logger.error('proxy error', error);
   if (!response.headersSent) {
     response.writeHead(500, { 'content-type': 'application/json' });
   }
@@ -36,7 +39,7 @@ app.prepare().then(() => {
 
     if (configs && configs.proxy) {
       const proxyConfig = configs.proxy.find(config => pathname.startsWith(config.pathname));
-      console.log(req.url, proxyConfig);
+      logger.log(`${req.method} ${req.url}`, util.inspect(proxyConfig || ''));
       if (proxyConfig) {
         if (proxyConfig.dest) {
           req.url = proxyConfig.dest(req);
@@ -50,8 +53,8 @@ app.prepare().then(() => {
     }
   }).listen(port, err => {
     if (err) throw err;
-    console.log(`> Ready on http://localhost:${port}`.bgCyan.black.bold);
-    console.log(`> NODE_ENV: ${process.env.NODE_ENV}`.bgCyan.black.bold);
-    console.log(`> ENV: ${process.env.ENV}`.bgCyan.black.bold);
+    logger.log(`> Ready on http://localhost:${port}`.bgRed.black.bold);
+    logger.log(`> NODE_ENV: ${process.env.NODE_ENV}`.bgRed.black.bold);
+    logger.log(`> ENV: ${process.env.ENV}`.bgRed.black.bold);
   });
 });
