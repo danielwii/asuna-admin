@@ -255,6 +255,41 @@ describe('getFormSchema', () => {
       },
     });
 
+    const fieldsWithNoLength = adapter.getFormSchema(
+      {
+        test_schema: [
+          {
+            config: {
+              // foreignKeys: [],
+              info: {},
+              length: '',
+              nullable: false,
+              primaryKey: false,
+              type: 'INTEGER',
+            },
+            name: 'test-nullable',
+          },
+        ],
+      },
+      'test_schema',
+      { 'test-nullable': 1 },
+    );
+
+    expect(fieldsWithNoLength).toEqual({
+      'test-nullable': {
+        name: 'test-nullable',
+        options: {
+          selectable: null,
+          required: true,
+          label: null,
+          length: null,
+        },
+        ref: 'test-nullable',
+        type: 'InputNumber',
+        value: 1,
+      },
+    });
+
     const fieldsWithRequiredInInfo = adapter.getFormSchema(
       {
         test_schema: [

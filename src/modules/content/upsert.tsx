@@ -13,7 +13,7 @@ import { diff, isErrorResponse, toFormErrors } from '@asuna-admin/helpers';
 import { AppContext, EventBus, EventType } from '@asuna-admin/core';
 import { createLogger } from '@asuna-admin/logger';
 
-const logger = createLogger('modules:content:upsert', 'warn');
+const logger = createLogger('modules:content:upsert');
 
 // --------------------------------------------------------------
 // Build Form
