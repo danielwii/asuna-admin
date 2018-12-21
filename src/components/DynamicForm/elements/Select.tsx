@@ -37,7 +37,7 @@ export type SelectOptions = {
   getName: () => string;
   getValue: () => string;
   withSortTree: boolean;
-  filterType?: Asuna.Schema.MetaInfoFilterType | 'Sort';
+  filterType?: 'Sort';
   onChange?: (selectedItems: number | string | Item[] | any[]) => void;
   onSearch?: (value: string, cb: (items: Item[]) => void) => any;
   enumSelector: { name?: string; value?: string };

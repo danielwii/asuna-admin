@@ -1,6 +1,7 @@
 /// <reference path="../typings/index.d.ts" />
 /// <reference path="../typings/global.d.ts" />
 /// <reference path="../typings/asuna.d.ts" />
+/// <reference path="../typings/meta.d.ts" />
 
 export * from './adapters';
 export * from './common';

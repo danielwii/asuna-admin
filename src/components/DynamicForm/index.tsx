@@ -29,6 +29,7 @@ import { generateSelect, SelectOptions } from './elements/Select';
 
 import { diff } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
+import { MetaInfo } from 'typings/meta';
 
 const logger = createLogger('components:dynamic-form', 'warn');
 
@@ -74,7 +75,7 @@ type DynamicFormProps = {
 };
 
 type DynamicFormField = {
-  options: Asuna.Schema.MetaInfoOptions & {
+  options: MetaInfo.MetaInfoOptions & {
     tooltip: string;
   };
   ref: string;
