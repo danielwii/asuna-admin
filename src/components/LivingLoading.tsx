@@ -38,8 +38,8 @@ const StyledHeartbeat = styled.div`
     props.heartbeat === null
       ? 'inset 0 0.1rem 0.1rem rgba(0,0,0,.075), 0 0 0.75rem rgba(204, 153, 0, 0.6)'
       : props.heartbeat
-        ? 'inset 0 0.1rem 0.1rem rgba(0,0,0,.075), 0 0 0.75rem rgba(76, 174, 76, 0.6)'
-        : 'inset 0 0.1rem 0.1rem rgba(0,0,0,.075), 0 0 0.75rem rgba(212, 63, 58, 0.6)'};
+      ? 'inset 0 0.1rem 0.1rem rgba(0,0,0,.075), 0 0 0.75rem rgba(76, 174, 76, 0.6)'
+      : 'inset 0 0.1rem 0.1rem rgba(0,0,0,.075), 0 0 0.75rem rgba(212, 63, 58, 0.6)'};
 `;
 
 interface IProps {
@@ -90,10 +90,10 @@ export class LivingLoading extends React.Component<IProps> {
       <StyledLoading>
         <StyledHeartbeat heartbeat={heartbeat}>
           {heartbeat === null
-            ? 'Waiting for connecting...'
+            ? 'Waiting for connection...'
             : heartbeat
-              ? 'Loading from backend...'
-              : 'Backend server unavailable.'}
+            ? 'Loading from backend...'
+            : 'Backend server unavailable.'}
         </StyledHeartbeat>
         <canvas
           ref={canvas => {
