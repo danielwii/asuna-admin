@@ -17,7 +17,7 @@ const handle = app.getRequestHandler();
 const proxy = createProxyServer({});
 
 proxy.on('error', (error, request, response) => {
-  logger.error('proxy error', error);
+  logger.error('proxy error', { error });
   if (!response.headersSent) {
     response.writeHead(500, { 'content-type': 'application/json' });
   }
@@ -39,7 +39,7 @@ app.prepare().then(() => {
 
     if (configs && configs.proxy) {
       const proxyConfig = configs.proxy.find(config => pathname.startsWith(config.pathname));
-      logger.log(`${req.method} ${req.url}`, util.inspect(proxyConfig || ''));
+      logger.log(`${req.method} ${req.url}`, proxyConfig ? util.inspect(proxyConfig) : 'direct');
       if (proxyConfig) {
         if (proxyConfig.dest) {
           req.url = proxyConfig.dest(req);

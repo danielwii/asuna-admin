@@ -226,6 +226,7 @@ export const commonColumns = {
   type: columnHelper.generate('type', '类型'),
   createdAt: columnHelper.generateCalendar('createdAt', '创建时间'),
   updatedAt: columnHelper.generateCalendar('updatedAt', '更新时间'),
+  isPublished: _.curry(columnHelper.generateSwitch)('isPublished', '发布'),
   actions: columnHelper.generateActions,
 };
 
