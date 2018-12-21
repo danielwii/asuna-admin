@@ -2,9 +2,7 @@ import { Dispatch } from 'redux';
 
 declare global {
   namespace NodeJS {
-    interface Global {
-      __asuna__: {};
-    }
+    interface Global {}
   }
 
   type DeepPartial<T> = { [K in keyof T]?: DeepPartial<T[K]> };

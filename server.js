@@ -39,7 +39,10 @@ app.prepare().then(() => {
 
     if (configs && configs.proxy) {
       const proxyConfig = configs.proxy.find(config => pathname.startsWith(config.pathname));
-      logger.log(`${req.method} ${req.url}`, proxyConfig ? util.inspect(proxyConfig) : 'direct');
+      logger.log(
+        `${req.method} ${req.url}`,
+        proxyConfig ? util.inspect(proxyConfig, { colors: true }) : 'direct'.cyan,
+      );
       if (proxyConfig) {
         if (proxyConfig.dest) {
           req.url = proxyConfig.dest(req);
