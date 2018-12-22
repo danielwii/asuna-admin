@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { Header, IHeaderProps } from '@asuna-admin/components';
-import { RootState, appActions, authActions } from '@asuna-admin/store';
+import { Header } from '@asuna-admin/components';
+import { appActions, authActions, RootState } from '@asuna-admin/store';
 
 const mapStateToProps = (state: RootState) => ({
   auth: state.auth,
@@ -13,8 +13,6 @@ const mapDispatchToProps = dispatch => ({
   onSync: () => dispatch(appActions.heartbeat(true)),
   logout: () => dispatch(authActions.logout()),
 });
-
-export { IHeaderProps };
 
 export default connect(
   mapStateToProps,
