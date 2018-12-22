@@ -17,6 +17,7 @@ import {
   WsAdapter,
 } from '@asuna-admin/adapters';
 import { AsunaDefinitions } from '@asuna-admin/core/definitions';
+import idx from 'idx';
 
 // --------------------------------------------------------------
 // Types
@@ -151,12 +152,16 @@ class AppContext {
     }
   }
 
+  public static set isServer(isServer: boolean | undefined) {
+    AppContext.nextConfig.serverRuntimeConfig.isServer = isServer;
+  }
+
   public static get isServer() {
     return AppContext.nextConfig.serverRuntimeConfig.isServer;
   }
 
-  public static set isServer(isServer: boolean | undefined) {
-    AppContext.nextConfig.serverRuntimeConfig.isServer = isServer;
+  public static get isDevMode() {
+    return idx(AppContext.nextConfig.publicRuntimeConfig, _ => _.env) === 'dev';
   }
 
   public static get ctx() {

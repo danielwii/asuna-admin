@@ -56,20 +56,6 @@ module.exports = R.compose(
       config.node = { fs: 'empty' };
     }
 
-    // config.module.rules.push({
-    //   test: /\.css$/, use: [{
-    //     loader : 'postcss-loader',
-    //     options: {
-    //       plugins: function() {
-    //         return [
-    //           require('postcss-import')(),
-    //           require('autoprefixer')(),
-    //         ];
-    //       },
-    //     },
-    //   }],
-    // });
-
     config.resolve.plugins.push(tsconfigPathsPlugin);
 
     // https://github.com/moment/moment/issues/2517

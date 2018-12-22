@@ -205,8 +205,8 @@ export const asyncLoadAssociationsDecorator = async (
             // 当前方法只处理了单个外键的情况，没有考虑如联合主键的处理
             const foreignKeysResponse = {
               [selectable]: {
-                items: extractItems([results.itemsResponse]),
-                existItems: extractItems([results.existItemsResponse]),
+                items: _.compact(extractItems([results.itemsResponse])),
+                existItems: _.compact(extractItems([results.existItemsResponse])),
               },
             };
             logger.debug(TAG, { foreignOpts, foreignKeysResponse });

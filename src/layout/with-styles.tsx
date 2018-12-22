@@ -13,5 +13,11 @@ export default ({ children }) => (
       {/*<link rel="icon" type="image/png" sizes="16x16" href="/static/icons/favicon-16x16.png" />*/}
     </NextHead>
     {children}
+    {/* language=CSS */}
+    <style jsx global>{`
+      pre {
+        font-size: 0.65rem;
+      }
+    `}</style>
   </div>
 );

@@ -102,8 +102,8 @@ export function generateSelect<T>(
       logger.debug('[MixedSelect]', '[constructor]', this.props);
       this.state = {
         selectedItems: this.props.value || [],
-        filterItems: items || [],
-        existItems: existItems || [],
+        filterItems: _.compact(items) || [],
+        existItems: _.compact(existItems) || [],
       };
     }
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import moment from 'moment';
+import util from 'util';
 import * as R from 'ramda';
 import _ from 'lodash';
 import deepDiff from 'deep-diff';
@@ -7,13 +8,14 @@ import Truncate from 'react-truncate';
 import { join } from 'path';
 import styled from 'styled-components';
 
-import { Button, Checkbox, Icon, Popconfirm, Tooltip } from 'antd';
+import { Button, Checkbox, Icon, Popconfirm, Popover, Tooltip } from 'antd';
 
 import { castModelKey } from './cast';
 
 import { Config } from '@asuna-admin/config';
 import { createLogger } from '@asuna-admin/logger';
 import { AppContext } from '@asuna-admin/core';
+import { WithDebugInfo } from '@asuna-admin/helpers/debug';
 
 const logger = createLogger('helpers', 'warn');
 
@@ -63,10 +65,9 @@ export const columnHelper = {
     relation: key,
     dataIndex: key,
     render: text => {
-      if (typeof render === 'string') {
-        return text ? text[render] : null;
-      }
-      return render ? render(text) : text;
+      const content =
+        typeof render === 'string' ? (text ? text[render] : null) : render ? render(text) : text;
+      return <WithDebugInfo content={content} info={{ key, title, text }} />;
     },
   }),
   generate: (key, title, render?) => ({
@@ -148,7 +149,7 @@ export const columnHelper = {
   }),
   /**
    * 生成预览小图
-   * TODO 增加预览大图功能
+   * TODO feat 增加预览大图功能
    * @param key
    * @param title
    * @param render
