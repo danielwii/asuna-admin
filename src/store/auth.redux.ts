@@ -5,7 +5,7 @@ import { REHYDRATE } from 'redux-persist';
 
 import { authActions, authActionTypes, isAuthModule } from './auth.actions';
 
-import { RootState } from './';
+import { appActionTypes, RootState } from './';
 import { panesActions } from './panes.actions';
 import { routerActions } from './router.redux';
 
@@ -67,15 +67,19 @@ function* tokenWatcher(action) {
   const {
     auth: { token },
     router: { path },
-  } = yield select();
+  } = yield select<RootState>(state => ({ auth: state.auth, router: state.router }));
   if (action.type === authActionTypes.LOGOUT) {
     yield put(routerActions.toLogin());
   } else if (!token && path !== '/login') {
-    const rehydrateAction = yield take(REHYDRATE);
-    logger.log('[tokenWatcher]', 'waiting for rehydrateAction', rehydrateAction);
-    if (!idx(rehydrateAction, _ => _.payload.auth.token)) {
+    logger.warn('[tokenWatcher]', 'no token found, current path is not login...');
+    const restoredAction = yield take(appActionTypes.RESTORED);
+    logger.log('[tokenWatcher]', 'waiting for app restored', restoredAction);
+    if (!idx(restoredAction, _ => _.payload.auth.token)) {
       yield put(routerActions.toLogin());
     }
+  } else if (!path) {
+    logger.warn('[tokenWatcher]', 'no path found, redirect to login...');
+    yield put(routerActions.toLogin());
   }
 }
 
