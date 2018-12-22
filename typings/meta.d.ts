@@ -31,10 +31,10 @@ export type MetaInfoOptions = {
    * EnumFilter - 目前有两个用途，根据 `enumData` 获的要筛选数据
    *   1 - 用于筛选不同类型的数据关联时使用
    *     e.g @MetaInfo({
-   *           name: '类型',
-   *           type: MetaInfoColumnType.ENUM_FILTER,
+   *           name      : '类型',
+   *           type      : 'EnumFilter',
    *           filterType: 'sort',
-   *           enumData: _.map(SortType, (value, key) => ({ key, value })),
+   *           enumData  : SortType,
    *         })
    *         @IsIn(_.keys(SortType))
    *   2 - 用于下拉菜单
@@ -76,13 +76,13 @@ export type MetaInfoOptions = {
  * @returns {Function}
  * @constructor
  */
-export function ColumnMetaInfo(options: MetaInfo.MetaInfoOptions): Function {
+export function MetaInfo(options: MetaInfoOptions): Function {
   return function(target, propertyKey: string, descriptor: PropertyDescriptor) {
     target.info = { ...target.info, [propertyKey]: options };
   };
 }
 
-export function EntityMetaInfo(options: MetaInfo.EntityMetaInfoOptions): Function {
+export function EntityMetaInfo(options: EntityMetaInfoOptions): Function {
   return function(target, propertyKey: string, descriptor: PropertyDescriptor) {
     target.entityInfo = options;
   };
