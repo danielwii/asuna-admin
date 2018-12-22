@@ -60,7 +60,3 @@ import { register } from '../services/register';
 
 export default renderLoginPage({ register }, getConfig());
 ```
-
-## License
-
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fdanielwii%2Fasuna-admin.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fdanielwii%2Fasuna-admin?ref=badge_large)
