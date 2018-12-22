@@ -24,7 +24,7 @@ interface IMixedSelectState<T> {
 
 type ObjectItem = { [key: string]: any } & { id?: string | number; key?: string | number };
 type ArrayItem = [any, any];
-type Item = ObjectItem | ArrayItem;
+export type Item = ObjectItem | ArrayItem;
 
 export type SelectOptions = {
   key: string;

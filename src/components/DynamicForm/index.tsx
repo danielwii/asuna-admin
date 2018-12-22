@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 import * as R from 'ramda';
 import idx from 'idx';
+import util from 'util';
 
 import { Anchor, Button, Col, Form, Row, Tag } from 'antd';
 import { FormComponentProps } from 'antd/es/form';
@@ -25,7 +26,7 @@ import {
   InputOptions,
   PlainOptions,
 } from './elements';
-import { generateSelect, SelectOptions } from './elements/Select';
+import { generateSelect, Item, SelectOptions } from './elements/Select';
 
 import { diff } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
@@ -190,7 +191,11 @@ export class DynamicForm extends React.Component<
         // EnumFilter|Enum / RelationShip
         // --------------------------------------------------------------
         logger.log('[DynamicForm]', '[buildField][EnumFilter|Enum]', { field });
-        const items = R.path(['options', 'enumData'])(field);
+        const items: Item[] = _.map(idx(field, _ => _.options.enumData) || {}, (value, key) => ({
+          key,
+          value: [key, value],
+        }));
+
         const type = idx(field, _ => _.options.filterType);
         logger.log('[DynamicForm]', '[buildField][EnumFilter|Enum]', { type, items });
         return generateSelect(form, {
@@ -242,8 +247,10 @@ export class DynamicForm extends React.Component<
       default: {
         return (
           <div key={index}>
-            DynamicForm `{field.type}-{options.type}-{options.key}` not implemented :P.
-            <pre>{JSON.stringify(field)}</pre>
+            DynamicForm `
+            {util.inspect({ field_type: field.type, option_type: options.type, key: options.key })}`
+            not implemented. :P
+            <pre>{util.inspect(field)}</pre>
           </div>
         );
       }

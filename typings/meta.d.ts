@@ -61,7 +61,7 @@ export type MetaInfoOptions = {
    * hidden - 标记该列隐藏
    */
   accessible?: 'readonly' | 'hidden';
-  enumData?: { key: string; value: string[] }[];
+  enumData?: { [key: string]: string | object };
   filterType?: 'Sort';
   /**
    * slash - 根据 / 设定层级结构

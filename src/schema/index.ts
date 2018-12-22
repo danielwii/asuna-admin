@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import * as R from 'ramda';
 import bluebird from 'bluebird';
+import idx from 'idx';
 
 import { DynamicFormTypes } from '@asuna-admin/components';
 import { castModelKey, castModelName } from '@asuna-admin/helpers';
@@ -341,14 +342,12 @@ export const enumDecorator = (
   const enumFilterFields = R.filter(R.propEq('type', DynamicFormTypes.EnumFilter))(fields);
   if (R.not(R.isEmpty(enumFilterFields))) {
     const [, enumFilterField] = R.toPairs(enumFilterFields)[0];
-    // console.log(enumFilterField);
     logger.debug(TAG, { enumFilterField });
 
-    const enums = R.compose(
-      R.map(castModelName), // 默认情况下需要调整枚举名称用于找到相应的关联
-      R.map(R.prop('key')),
-      R.path(['options', 'enumData']),
-    )(enumFilterField);
+    const enums = _.map(
+      _.keys(idx(enumFilterField as EnumField, _ => _.options.enumData)),
+      castModelName,
+    );
     const current = castModelName(R.pathOr('', ['value'])(enumFilterField));
     logger.debug(TAG, { enums, current });
 

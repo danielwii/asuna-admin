@@ -17,7 +17,7 @@ const handle = app.getRequestHandler();
 const proxy = createProxyServer({});
 
 proxy.on('error', (error, request, response) => {
-  logger.error('proxy error', { error });
+  logger.error(`${new Date().toISOString().dim} proxy error`, { error });
   if (!response.headersSent) {
     response.writeHead(500, { 'content-type': 'application/json' });
   }
@@ -40,7 +40,7 @@ app.prepare().then(() => {
     if (configs && configs.proxy) {
       const proxyConfig = configs.proxy.find(config => pathname.startsWith(config.pathname));
       logger.log(
-        `${req.method} ${req.url}`,
+        `${new Date().toISOString().dim} ${req.method.bold} ${req.url}`,
         proxyConfig ? util.inspect(proxyConfig, { colors: true }) : 'direct'.cyan,
       );
       if (proxyConfig) {

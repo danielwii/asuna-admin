@@ -12,7 +12,7 @@ import { createLogger } from '@asuna-admin/logger';
 import { authProxy } from '@asuna-admin/adapters';
 import idx from 'idx';
 
-const logger = createLogger('store:auth', 'warn');
+const logger = createLogger('store:auth');
 
 // --------------------------------------------------------------
 // Login sagas
