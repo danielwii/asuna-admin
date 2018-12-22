@@ -1,7 +1,6 @@
 import { call, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 import * as R from 'ramda';
 import { message } from 'antd';
-import { REHYDRATE } from 'redux-persist';
 
 import { authActions, authActionTypes, isAuthModule } from './auth.actions';
 

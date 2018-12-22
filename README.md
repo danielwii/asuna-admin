@@ -7,11 +7,15 @@
 
 [![Daniel Wei](https://img.shields.io/badge/%3C%2F%3E%20with%20%E2%99%A5%20by-Daniel%20Wei-ff0000.svg)](https://github.com/danielwii)
 
+## Why Asuna-Admin
+
+A contract-first admin for developers is necessary for any different server languages.
+
 ## Develop
 
 0.9.0 版本开始整个项目已经完成了组件化改造，不再需要通过 clone/subtree 的方式进行开发，当然，继续使用也可以。
 
-## Quick Start
+## Not Really Quick Start
 
 - add service/register.ts
 
@@ -28,12 +32,12 @@ import { Config, IIndexRegister, ILoginRegister } from '@asuna-admin';
 Config.update({});
 
 export const register: ILoginRegister & IIndexRegister = {
+  definitions,
   authService: new AuthService(),
   modelService: new ModelService(),
   menuService: new MenuService(),
   apiService: new ApiService(),
   securityService: new SecurityService(),
-  definitions: definitions,
 };
 ```
 
