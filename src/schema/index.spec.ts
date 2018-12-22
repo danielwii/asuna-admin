@@ -11,10 +11,10 @@ describe('schemaHelper.enumDecorator', () => {
         type: 'EnumFilter',
         options: {
           filterType: 'Sort',
-          enumData: [
-            { key: 'refInclude', value: 'refValue1' },
-            { key: 'refNotInclude', value: 'refValue2' },
-          ],
+          enumData: {
+            refInclude: 'refValue1',
+            refNotInclude: 'refValue2',
+          },
         },
         value: 'refInclude',
       },
@@ -33,16 +33,10 @@ describe('schemaHelper.enumDecorator', () => {
         type: 'EnumFilter',
         options: {
           filterType: 'Sort',
-          enumData: [
-            {
-              key: 'refInclude',
-              value: 'refValue1',
-            },
-            {
-              key: 'refNotInclude',
-              value: 'refValue2',
-            },
-          ],
+          enumData: {
+            refInclude: 'refValue1',
+            refNotInclude: 'refValue2',
+          },
         },
         value: 'refInclude',
       },
@@ -65,12 +59,9 @@ describe('schemaHelper.enumDecorator', () => {
         value: 'refInclude',
         options: {
           filterType: 'Sort',
-          enumData: [
-            {
-              key: 'refInclude',
-              value: 'refValue1',
-            },
-          ],
+          enumData: {
+            refInclude: 'refValue1',
+          },
         },
       },
       positions: { options: { type: 'SortPosition' } },
@@ -90,12 +81,9 @@ describe('schemaHelper.enumDecorator', () => {
         value: 'refInclude',
         options: {
           filterType: 'Sort',
-          enumData: [
-            {
-              key: 'refInclude',
-              value: 'refValue1',
-            },
-          ],
+          enumData: {
+            refInclude: 'refValue1',
+          },
         },
       },
       positions: { options: { type: 'SortPosition' }, value: [1, 2, 3] },
@@ -110,12 +98,9 @@ describe('schemaHelper.enumDecorator', () => {
         value: 'refInclude',
         options: {
           filterType: 'Sort',
-          enumData: [
-            {
-              key: 'refInclude',
-              value: 'refValue1',
-            },
-          ],
+          enumData: {
+            refInclude: 'refValue1',
+          },
         },
       },
       positions: {
@@ -138,12 +123,9 @@ describe('schemaHelper.enumDecorator', () => {
         value: 'refInclude',
         options: {
           filterType: 'Sort',
-          enumData: [
-            {
-              key: 'refInclude',
-              value: 'refValue1',
-            },
-          ],
+          enumData: {
+            refInclude: 'refValue1',
+          },
         },
       },
       positions: {
@@ -162,12 +144,9 @@ describe('schemaHelper.enumDecorator', () => {
         value: 'refInclude',
         options: {
           filterType: 'Sort',
-          enumData: [
-            {
-              key: 'refInclude',
-              value: 'refValue1',
-            },
-          ],
+          enumData: {
+            refInclude: 'refValue1',
+          },
         },
       },
       positions: {
@@ -190,12 +169,9 @@ describe('schemaHelper.enumDecorator', () => {
         value: 'refInclude',
         options: {
           filterType: 'Sort',
-          enumData: [
-            {
-              key: 'refInclude',
-              value: 'refValue1',
-            },
-          ],
+          enumData: {
+            refInclude: 'refValue1',
+          },
         },
       },
       positions: {
@@ -214,12 +190,9 @@ describe('schemaHelper.enumDecorator', () => {
         value: 'refInclude',
         options: {
           filterType: 'Sort',
-          enumData: [
-            {
-              key: 'refInclude',
-              value: 'refValue1',
-            },
-          ],
+          enumData: {
+            refInclude: 'refValue1',
+          },
         },
       },
       positions: {
@@ -243,12 +216,9 @@ describe('schemaHelper.enumDecorator', () => {
         value: 'refInclude',
         options: {
           filterType: 'Sort',
-          enumData: [
-            {
-              key: 'refInclude',
-              value: 'refValue1',
-            },
-          ],
+          enumData: {
+            refInclude: 'refValue1',
+          },
         },
       },
       positions: {
