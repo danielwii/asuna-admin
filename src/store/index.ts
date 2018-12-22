@@ -10,6 +10,7 @@ import {
   Store,
 } from 'redux';
 
+import { persistReducer, persistStore } from 'redux-persist';
 import createSagaMiddleware from 'redux-saga';
 import { all } from 'redux-saga/effects';
 
@@ -31,7 +32,6 @@ import { createStoreConnectorMiddleware, storeConnector } from './middlewares';
 
 import { AppContext } from '@asuna-admin/core';
 import { createLogger } from '@asuna-admin/logger';
-import { persistReducer, persistStore } from 'redux-persist';
 
 export { storeConnector };
 
@@ -77,7 +77,7 @@ export class AsunaStore {
     storage: localForage,
     debug: true,
     timeout: 1000,
-    blacklist: ['app'],
+    blacklist: ['app', 'router'],
   };
 
   private constructor() {
