@@ -8,7 +8,7 @@ import { castModelKey, castModelName } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 import { AppContext } from '@asuna-admin/core';
 
-const logger = createLogger('helpers:schema', 'warn');
+const logger = createLogger('helpers:schema');
 
 export const peek = (message, callback?) => fields => {
   if (callback) callback();
@@ -33,18 +33,21 @@ export const tables = {
 };
 
 type Fields = {
-  [key: string]: DeepPartial<{
+  [key: string]: {
     name: string;
     ref: string;
-    type: DynamicFormTypes;
+    type: string;
     value?: any;
     options: {
+      name: string;
+      type: DynamicFormTypes;
       label: string | null;
       length: number | null;
       required: boolean;
       selectable?: string;
+      jsonType?: string;
     };
-  }>;
+  };
 };
 
 type WithHidden = {

@@ -27,12 +27,14 @@ import {
   PlainOptions,
 } from './elements';
 import { generateSelect, Item, SelectOptions } from './elements/Select';
+import { generateStringArray, StringArrayOptions } from './elements/StringArray';
 
 import { diff } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
-import { MetaInfoOptions } from 'typings/meta';
+import { EnumFilterMetaInfoOptions, MetaInfoOptions } from 'typings/meta';
+import { WithDebugInfo } from '@asuna-admin/helpers/debug';
 
-const logger = createLogger('components:dynamic-form', 'warn');
+const logger = createLogger('components:dynamic-form');
 
 export enum DynamicFormTypes {
   // --------------------------------------------------------------
@@ -52,6 +54,8 @@ export enum DynamicFormTypes {
   Authorities = 'Authorities',
   Enum = 'Enum',
   EnumFilter = 'EnumFilter',
+  SimpleJSON = 'SimpleJSON',
+  SortPosition = 'SortPosition',
 
   // --------------------------------------------------------------
   // Advanced Types
@@ -104,7 +108,12 @@ export class DynamicForm extends React.Component<
     const { form } = this.props;
 
     const options: DeepPartial<
-      DynamicFormField['options'] & HiddenOptions & PlainOptions & InputOptions & SelectOptions
+      DynamicFormField['options'] &
+        HiddenOptions &
+        PlainOptions &
+        InputOptions &
+        SelectOptions &
+        StringArrayOptions
     > = {
       ...field.options,
       // key: field.key || field.name,
@@ -169,9 +178,9 @@ export class DynamicForm extends React.Component<
 
           const items = R.path(['associations', modelName, 'items'])(field);
           const existItems = R.path(['associations', modelName, 'existItems'])(field);
-          const type = idx(field, _ => _.options.filterType);
+          const type = idx(field.options as EnumFilterMetaInfoOptions, _ => _.filterType);
           return generateSelect(form, {
-            ...options,
+            ...(options as any),
             items,
             existItems,
             mode: 'multiple',
@@ -180,31 +189,12 @@ export class DynamicForm extends React.Component<
             onChange,
             getName: R.prop(association.name || defaultAssociation.name),
             getValue: R.prop(association.value || defaultAssociation.value),
-          } as SelectOptions);
+          });
         }
         logger.warn('[buildField]', 'foreignOpts is required in association.', { field });
         return <div>association need foreignOpts.</div>;
       }
       case DynamicFormTypes.Enum:
-      case DynamicFormTypes.EnumFilter: {
-        // --------------------------------------------------------------
-        // EnumFilter|Enum / RelationShip
-        // --------------------------------------------------------------
-        logger.log('[DynamicForm]', '[buildField][EnumFilter|Enum]', { field });
-        const items: Item[] = _.map(idx(field, _ => _.options.enumData) || {}, (value, key) => ({
-          key,
-          value: [key, value],
-        }));
-
-        const type = idx(field, _ => _.options.filterType);
-        logger.log('[DynamicForm]', '[buildField][EnumFilter|Enum]', { type, items });
-        return generateSelect(form, {
-          ...options,
-          items,
-          getName: R.prop('key'),
-        } as SelectOptions);
-      }
-      // case DynamicFormTypes.Enum: {
       //   // --------------------------------------------------------------
       //   // Enum / RelationShip
       //   // --------------------------------------------------------------
@@ -216,6 +206,21 @@ export class DynamicForm extends React.Component<
       //     getName: R.prop('key'),
       //   } as SelectOptions);
       // }
+      case DynamicFormTypes.EnumFilter: {
+        // --------------------------------------------------------------
+        // EnumFilter|Enum / RelationShip
+        // --------------------------------------------------------------
+        logger.log('[DynamicForm]', '[buildField][EnumFilter|Enum]', { field });
+        const enumData = idx(field.options as EnumFilterMetaInfoOptions, _ => _.enumData) || {};
+        const items: Item[] = _.map(enumData, (value, key) => ({ key, value: [key, value] }));
+        const type = idx(field.options as EnumFilterMetaInfoOptions, _ => _.filterType);
+        logger.log('[DynamicForm]', '[buildField][EnumFilter|Enum]', { type, items });
+        return generateSelect(form, {
+          ...(options as any),
+          items,
+          getName: R.prop('key'),
+        });
+      }
       case DynamicFormTypes.Association: {
         // --------------------------------------------------------------
         // OneToMany / OneToOne RelationShip
@@ -230,28 +235,34 @@ export class DynamicForm extends React.Component<
           const items = R.path(['associations', modelName, 'items'])(field);
           const existItems = R.path(['associations', modelName, 'existItems'])(field);
           return generateSelect(form, {
-            ...options,
+            ...(options as any),
             items,
             existItems,
             onChange,
             onSearch,
             getName: R.prop(association.name || defaultAssociation.name),
             getValue: R.prop(association.value || defaultAssociation.value),
-          } as SelectOptions);
+          });
         }
         logger.warn('[DynamicForm]', '[buildField]', 'foreignOpts is required in association.', {
           field,
         });
         return <div>association need foreignOpts.</div>;
       }
+      case DynamicFormTypes.SimpleJSON:
+        logger.debug('[DynamicForm]', '[buildField][SimpleJSON]', field, options);
+        return generateStringArray(form, { ...(options as any), items: field.value });
       default: {
         return (
-          <div key={index}>
-            DynamicForm `
-            {util.inspect({ field_type: field.type, option_type: options.type, key: options.key })}`
-            not implemented. :P
-            <pre>{util.inspect(field)}</pre>
-          </div>
+          <WithDebugInfo
+            key={index}
+            content={`DynamicForm ${util.inspect({
+              type: field.type,
+              metaType: options.type,
+              key: options.key,
+            })} not implemented. :P`}
+            info={field}
+          />
         );
       }
     }
@@ -421,8 +432,9 @@ class EnhancedPureElement extends React.Component<IPureElementProps> {
         <style jsx>{`
           div hr {
             border-style: none;
-            border-bottom: 0.05rem solid #bfbfbf;
-            box-shadow: #bfbfbf 0 0 0.3rem;
+            border-top: 1px dashed #8c8b8b;
+            border-bottom: 1px dashed #fff;
+            /*box-shadow: #bfbfbf 0 0 1px;*/
           }
         `}</style>
       </React.Fragment>

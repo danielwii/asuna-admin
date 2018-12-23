@@ -6,7 +6,7 @@ import idx from 'idx';
 import { TablePagination } from './response';
 
 import { DynamicFormTypes } from '@asuna-admin/components';
-import { defaultColumns } from '@asuna-admin/helpers';
+import { castModelKey, defaultColumns } from '@asuna-admin/helpers';
 import { AppContext, AsunaDefinitions } from '@asuna-admin/core';
 import { Config } from '@asuna-admin/config';
 import { createLogger } from '@asuna-admin/logger';
@@ -121,49 +121,52 @@ export class ModelAdapter {
     });
   }
 
-  public identifyType = (field: Asuna.Schema.ModelSchema) => {
-    if (['id', 'created_at', 'updated_at'].indexOf(field.name) > -1) {
-      return DynamicFormTypes.Plain;
-    }
-
-    // --------------------------------------------------------------
-    // identify advanced types
-    // --------------------------------------------------------------
-
-    // has foreign keys
-    if (idx(field, _ => _.config.selectable)) {
-      return idx(field, _ => _.config.many)
-        ? DynamicFormTypes.ManyToMany
-        : DynamicFormTypes.Association;
-    }
-
-    const advancedType = idx(field, _ => _.config.info.type);
-
-    if (advancedType === 'RichText') return DynamicFormTypes.RichText;
-    if (advancedType === 'Image') return DynamicFormTypes.Image;
-    if (advancedType === 'Images') return DynamicFormTypes.Images;
-    if (advancedType === 'Video') return DynamicFormTypes.Video;
-    if (advancedType === 'Authorities') return DynamicFormTypes.Authorities;
-    if (advancedType === 'Enum') return DynamicFormTypes.Enum;
-    if (advancedType === 'EnumFilter') return DynamicFormTypes.EnumFilter;
-
-    // --------------------------------------------------------------
-    // identify basic types
-    // --------------------------------------------------------------
-
-    const type = idx(field, _ => _.config.type);
-
-    if (type) {
-      if (/^(VARCHAR.*|String)$/i.test(type)) return DynamicFormTypes.Input;
-      if (/^(INTEGER|FLOAT|Number)$/i.test(type)) return DynamicFormTypes.InputNumber;
-      if (/^TEXT$/i.test(type)) return DynamicFormTypes.TextArea;
-      if (/^DATETIME$/i.test(type)) return DynamicFormTypes.DateTime;
-      if (/^DATE$/i.test(type)) return DynamicFormTypes.Date;
-      if (/^BOOLEAN$/i.test(type)) return DynamicFormTypes.Switch;
-    }
-
-    logger.warn('[identifyType]', 'type', type, 'cannot identified.');
-    return type || null;
+  public identifyType = (field: Asuna.Schema.ModelSchema): string | null => {
+    const plainKeys = _.map(['id', 'created_at', 'updated_at'], castModelKey);
+    const basicType = idx(field, _ => _.config.type) || '';
+    const advanceType = DynamicFormTypes[idx(field, _ => _.config.info.type)];
+    const notFound = () => {
+      const info = { field, plainKeys, basicType, advanceType };
+      logger.warn('[identifyType]', 'type cannot identified.', info);
+      return null;
+    };
+    return _.cond<Asuna.Schema.ModelSchema, string | null>([
+      // --------------------------------------------------------------
+      // plain types
+      // --------------------------------------------------------------
+      [_.conforms({ name: R.contains(R.__, plainKeys) }), _.constant(DynamicFormTypes.Plain)],
+      // --------------------------------------------------------------
+      // association types
+      // --------------------------------------------------------------
+      [
+        () => !!idx(field, _ => _.config.selectable),
+        () =>
+          idx(field, _ => _.config.many)
+            ? DynamicFormTypes.ManyToMany
+            : DynamicFormTypes.Association,
+      ],
+      // --------------------------------------------------------------
+      // identify advanced types
+      // --------------------------------------------------------------
+      [() => !!advanceType, () => advanceType],
+      // --------------------------------------------------------------
+      // basic types
+      // --------------------------------------------------------------
+      [
+        () => !!basicType,
+        () =>
+          _.cond([
+            [() => /^(VARCHAR.*|String)$/i.test(basicType), () => DynamicFormTypes.Input],
+            [() => /^(INTEGER|FLOAT|Number)$/i.test(basicType), () => DynamicFormTypes.InputNumber],
+            [() => /^TEXT$/i.test(basicType), () => DynamicFormTypes.TextArea],
+            [() => /^DATETIME$/i.test(basicType), () => DynamicFormTypes.DateTime],
+            [() => /^DATE$/i.test(basicType), () => DynamicFormTypes.Date],
+            [() => /^BOOLEAN$/i.test(basicType), () => DynamicFormTypes.Switch],
+            [_.stubTrue, notFound],
+          ])(basicType),
+      ],
+      [_.stubTrue, notFound],
+    ])(field);
   };
 
   public fetch = (

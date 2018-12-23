@@ -9,7 +9,7 @@ import { generateComponent, IFormItemLayout } from '.';
 
 import { createLogger } from '@asuna-admin/logger';
 
-const logger = createLogger('components:dynamic-form:elements', 'warn');
+const logger = createLogger('components:dynamic-form:select');
 
 interface IMixedSelectProps {
   value?: any[];

@@ -12,7 +12,7 @@ import { Authorities } from '../Authorities';
 import { Config } from '@asuna-admin/config';
 import { createLogger } from '@asuna-admin/logger';
 
-const logger = createLogger('components:dynamic-form:elements', 'warn');
+const logger = createLogger('components:dynamic-form:elements');
 
 export interface IFormItemLayout {
   labelCol?: { offset?: number; span?: number };

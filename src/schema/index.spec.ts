@@ -300,7 +300,7 @@ describe('schemaHelper.hiddenComponentDecorator', () => {
       id: { value: null },
       createdAt: { value: null },
       updatedAt: { value: null },
-    });
+    } as any);
 
     expect(decorated).toEqual({
       id: { options: { hidden: true }, value: null },
@@ -312,7 +312,7 @@ describe('schemaHelper.hiddenComponentDecorator', () => {
       id: { value: 1 },
       createdAt: { value: null },
       updatedAt: { value: null },
-    });
+    } as any);
 
     expect(decorated).toEqual({
       id: { value: 1, options: { hidden: false } },
@@ -322,7 +322,7 @@ describe('schemaHelper.hiddenComponentDecorator', () => {
   it('should hidden SortPosition', () => {
     const decorated = schemaHelper.hiddenComponentDecorator({
       positions: { options: { type: 'SortPosition' } },
-    });
+    } as any);
 
     expect(decorated).toEqual({
       positions: { options: { type: 'SortPosition', hidden: true } },
@@ -333,7 +333,7 @@ describe('schemaHelper.hiddenComponentDecorator', () => {
     const decorated = schemaHelper.hiddenComponentDecorator({
       createdAt: { value: null },
       updatedAt: { value: null },
-    });
+    } as any);
 
     expect(decorated).toEqual({});
   });
