@@ -376,10 +376,10 @@ describe('listSchemasCallable', () => {
       abouts: {},
       about_categories: {},
       admin__users: {
-        endpoint: 'admin/auth/users',
+        endpoint: 'admin/auth/auth__users',
       },
       admin__roles: {
-        endpoint: 'admin/auth/roles',
+        endpoint: 'admin/auth/auth__roles',
       },
     });
     definitions.addModelColumns({

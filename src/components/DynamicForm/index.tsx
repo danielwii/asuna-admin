@@ -130,7 +130,10 @@ export class DynamicForm extends React.Component<
 
     // all readonly or hidden field will rendered as plain component
     if (_.includes(['readonly', 'hidden'], idx(field, _ => _.options.accessible))) {
-      return generatePlain({ text: field.value, ...options } as PlainOptions);
+      return generatePlain({
+        text: _.defaultTo(field.value, options.defaultValue),
+        ...options,
+      } as PlainOptions);
     }
     if (_.includes(['hide-value'], idx(field, _ => _.options.accessible))) {
       return generatePlain(options as PlainOptions);

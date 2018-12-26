@@ -1,8 +1,22 @@
+type AnyJson = boolean | number | string | null | JsonArray | JsonMap;
+interface JsonMap {
+  [key: string]: AnyJson;
+}
+interface JsonArray extends Array<AnyJson> {}
+export type Json = JsonMap | JsonArray;
+
 export type EntityMetaInfoOptions = {
   /**
    * ServerSide: 用于外键关联的识别名称
    */
   name: string;
+  /**
+   * 用于声明 STI 的类型信息
+   */
+  sti?: {
+    name: 'type';
+    info: STIMetaInfoOptions;
+  };
 };
 
 export interface MetaInfoBaseOptions {
@@ -32,6 +46,10 @@ export interface MetaInfoBaseOptions {
    * 标记该字段是一个 json，但是返回的是 string，需要 client 自行处理
    */
   json?: 'str';
+  /**
+   * 默认值
+   */
+  defaultValue?: any;
 }
 
 export interface NormalMetaInfoOptions extends MetaInfoBaseOptions {
@@ -81,6 +99,16 @@ export interface EnumFilterMetaInfoOptions extends MetaInfoBaseOptions {
 export interface JSONMetaInfoOptions extends MetaInfoBaseOptions {
   type: 'SimpleJSON';
   jsonType: 'string-array';
+}
+
+export interface STIMetaInfoOptions extends MetaInfoBaseOptions {
+  type: 'EnumFilter';
+  /**
+   * 使用继承类时该字段应该是只读的
+   */
+  accessible?: 'readonly';
+  enumData?: { [key: string]: string | object };
+  defaultValue?: string;
 }
 
 export type MetaInfoOptions =
