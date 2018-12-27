@@ -6,7 +6,7 @@ import { Checkbox, Table } from 'antd';
 import { createLogger } from '@asuna-admin/logger';
 import { menuProxy } from '@asuna-admin/adapters';
 
-const logger = createLogger('components:authorities', 'warn');
+const logger = createLogger('components:authorities');
 
 interface IProps {
   value?: string | {};
@@ -19,7 +19,7 @@ interface IState {
 }
 
 export class Authorities extends React.Component<IProps, IState> {
-  state = {
+  state: IState = {
     dataSource: [],
     columns: [
       {

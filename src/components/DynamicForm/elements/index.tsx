@@ -223,7 +223,7 @@ export const generateTextArea = (
   return generateComponent(
     form,
     { fieldName, labelName, ...options },
-    <Input.TextArea />,
+    <Input.TextArea autosize />,
     formItemLayout,
   );
 };

@@ -65,6 +65,8 @@ export const uniqueItems = (...items: Item[][]): Item[] => {
         return R.prop('id', item) || R.prop('key', item) || R.prop(_.head(R.keys(item)), item);
       }, allItems);
       result = R.filter(rNotNil)(uniqBy);
+    } else if (_.isNil(first)) {
+      // skip
     } else {
       logger.warn('[uniqueItems]', 'items type not recognised', { allItems, first });
     }
