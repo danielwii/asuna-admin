@@ -13,13 +13,14 @@ export class WithDebugInfo extends React.PureComponent<IWithDebugInfoProps> {
     const { content, info } = this.props;
     if (AppContext.isDevMode) {
       return (
-        <div>
+        <>
           {content}
           <Popover content={<pre>{util.inspect(info)}</pre>} trigger={'click'}>
             <Icon type="info-circle" style={{ margin: '0 0.2rem' }} />
           </Popover>
-        </div>
+        </>
       );
     }
+    return content;
   }
 }
