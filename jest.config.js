@@ -8,6 +8,7 @@ module.exports = {
   },
   moduleNameMapper: {
     '^@asuna-admin/(.*)$': '<rootDir>/src/$1',
+    '\\.(css|less)$': '<rootDir>/__mocks__/styleMock.js',
   },
   moduleFileExtensions: ['js', 'json', 'ts', 'tsx'],
   moduleDirectories: ['node_modules', 'src'],
