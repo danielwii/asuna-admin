@@ -44,52 +44,51 @@ export const authHeader = token => {
 };
 
 export const columnHelper = {
-  generateOriginal: (key, title, render?) => ({
+  generateOriginal: (key, title, transformer?) => ({
     key,
     title,
     dataIndex: key,
     sorter: true,
-    render: text => (render ? render(text) : text),
+    render: text => (transformer ? transformer(text) : text),
   }),
-  generateID: (key = 'id', title = 'ID', render?) => ({
+  generateID: (key = 'id', title = 'ID', transformer?) => ({
     key,
     title,
     dataIndex: key,
     sorter: true,
-    render: text => (render ? render(text) : text),
+    render: text => (transformer ? transformer(text) : text),
   }),
-  generateRelation: (key, title, render?) => ({
+  generateRelation: (key, title, transformer?) => ({
     key,
     title,
     relation: key,
     dataIndex: key,
     render: text => {
-      const content =
-        typeof render === 'string' ? (text ? text[render] : null) : render ? render(text) : text;
-      return <WithDebugInfo content={content} info={{ key, title, text }} />;
+      const content = transformer ? transformer(text) : text;
+      return <WithDebugInfo info={{ key, title, text }}>content</WithDebugInfo>;
     },
   }),
-  generate: (key, title, render?) => ({
+  generate: (key, title, transformer?) => ({
     key,
     title,
     dataIndex: key,
     sorter: true,
     render: text => {
-      const value = render ? render(text) : text;
+      const value = transformer ? transformer(text) : text;
       if (typeof value === 'string' && value.length > 20) {
         return <Tooltip title={value}>{`${value.slice(0, 20)}...`}</Tooltip>;
       }
       return value;
     },
   }),
-  generateLink: (key, title, render?) => ({
+  generateLink: (key, title, transformer?) => ({
     key,
     title,
     dataIndex: key,
     sorter: true,
     render: text => {
       if (text) {
-        const value = render ? render(text) : text;
+        const value = transformer ? transformer(text) : text;
         if (typeof value === 'string' && value.length > 30) {
           return (
             <React.Fragment>
@@ -119,17 +118,18 @@ export const columnHelper = {
       return 'n/a';
     },
   }),
-  generateCalendar: (key, title, render?) => ({
+  generateCalendar: (key, title, transformer?) => ({
     key: castModelKey(key),
     title,
     dataIndex: castModelKey(key),
     sorter: true,
     render: text => {
       if (text) {
-        const value = render ? render(text) : moment(text).calendar();
+        const value = transformer ? transformer(text) : text;
+        const content = moment(text).calendar();
         return (
           <Truncate trimWhitespace lines={1} ellipsis={<Tooltip title={value}>...</Tooltip>}>
-            {value}
+            {content}
           </Truncate>
         );
       }
@@ -151,9 +151,9 @@ export const columnHelper = {
    * TODO feat 增加预览大图功能
    * @param key
    * @param title
-   * @param render
+   * @param transformer
    */
-  generateImage: (key, title, render?) => ({
+  generateImage: (key, title, transformer?) => ({
     key,
     title,
     dataIndex: key,
@@ -161,7 +161,7 @@ export const columnHelper = {
     render: text => {
       if (text) {
         try {
-          const value = render ? render(text) : text;
+          const value = transformer ? transformer(text) : text;
           if (value) {
             const images = value.split(',');
             const host = Config.get('IMAGE_HOST');

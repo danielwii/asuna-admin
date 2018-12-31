@@ -14,7 +14,7 @@ export type EntityMetaInfoOptions = {
    * 用于声明 STI 的类型信息
    */
   sti?: {
-    name: 'type';
+    name: string;
     info: STIMetaInfoOptions;
   };
 };
@@ -63,7 +63,11 @@ export interface NormalMetaInfoOptions extends MetaInfoBaseOptions {
     | 'Deletable'
     | 'SortPosition'
     | 'Enum'
-    | 'Tree';
+    | 'Tree'
+    /**
+     * 包含浮动标签信息的图片
+     */
+    | 'RichImage';
 }
 
 /**

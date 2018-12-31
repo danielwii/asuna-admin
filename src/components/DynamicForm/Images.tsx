@@ -2,60 +2,19 @@ import React from 'react';
 import _ from 'lodash';
 import { join } from 'path';
 
-import { Icon, message, Modal, Upload } from 'antd';
+import { Icon, Modal, Upload } from 'antd';
 import { RcFile, UploadChangeParam, UploadFile, UploadFileStatus } from 'antd/es/upload/interface';
-
-import { AuthState } from '@asuna-admin/store';
 import { diff } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
-import { apiProxy } from '@asuna-admin/adapters';
+import { upload, validateFile } from '@asuna-admin/helpers/upload';
 
 const logger = createLogger('components:dynamic-form:images', 'warn');
-
-// --------------------------------------------------------------
-// Functions
-// --------------------------------------------------------------
-
-function getBase64(img, callback) {
-  const reader = new FileReader();
-  reader.addEventListener('load', () => callback(reader.result));
-  reader.readAsDataURL(img);
-}
-
-function beforeUpload(file: RcFile, FileList: RcFile[]) {
-  const isImage = ['image/jpeg', 'image/png'].indexOf(file.type) > -1;
-  logger.log('[beforeUpload]', file);
-  if (!isImage) {
-    message.error('You can only upload JPG/PNG file!');
-  }
-  const isLt2M = file.size / 1024 / 1024 < 2;
-  if (!isLt2M) {
-    message.error('Image must smaller than 2MB!');
-  }
-  return isImage && isLt2M;
-}
-
-async function upload(auth, option: any): Promise<Asuna.Schema.UploadResponse[] | undefined> {
-  logger.log('[upload]', { option });
-  const response = await apiProxy.upload(option.file);
-  logger.log('[upload]', { response });
-
-  if (/^20\d$/.test(response.status as any)) {
-    message.success('upload successfully.');
-
-    option.onSuccess();
-    return response.data;
-  }
-  message.error('upload failed.');
-  option.onError();
-}
 
 // --------------------------------------------------------------
 // Uploader
 // --------------------------------------------------------------
 
 interface IProps {
-  auth: AuthState;
   host?: string;
   prefix?: string;
   urlHandler?: (res: Asuna.Schema.UploadResponse) => string;
@@ -71,85 +30,6 @@ interface IState {
   fileSize: number;
   previewImage?: string;
   previewVisible?: boolean;
-}
-
-/**
- * @deprecated using ImagesUploader instead
- */
-export class ImageUploader extends React.Component<IProps> {
-  state: {
-    loading: boolean;
-  } = { loading: false };
-
-  shouldComponentUpdate(nextProps, nextState) {
-    const propsDiff = diff(this.props, nextProps);
-    const stateDiff = diff(this.state, nextState);
-    const shouldUpdate = propsDiff.isDifferent || stateDiff.isDifferent;
-    if (shouldUpdate) {
-      logger.debug(
-        '[ImageUploader][shouldComponentUpdate]',
-        {
-          nextProps,
-          nextState,
-          propsDiff,
-          stateDiff,
-        },
-        shouldUpdate,
-      );
-    }
-    return shouldUpdate;
-  }
-
-  handleChange = (info: UploadChangeParam): void => {
-    logger.log('[ImageUploader][handleChange]', info);
-    if (info.file.status === 'uploading') {
-      this.setState({ loading: true });
-      return;
-    }
-    if (info.file.status === 'done') {
-      getBase64(info.file.originFileObj, () => this.setState({ loading: false }));
-    }
-  };
-
-  customRequest = async (option: any): Promise<void> => {
-    const { auth, onChange, prefix, urlHandler } = this.props;
-    const uploaded = await upload(auth, option);
-    if (uploaded) {
-      const image = join(prefix || '', urlHandler ? urlHandler(uploaded[0]) : `${uploaded[0]}`);
-      logger.log('[ImageUploader][render]', { uploaded, image });
-      onChange!(image);
-    }
-  };
-
-  render() {
-    const { value: image, host } = this.props;
-
-    logger.log('[ImageUploader][render]', { image });
-
-    const uploadButton = (
-      <div>
-        <Icon type={this.state.loading ? 'loading' : 'plus'} />
-        <div className="ant-upload-text">Upload</div>
-      </div>
-    );
-
-    return (
-      <div className="clearfix">
-        <Upload
-          name="avatar"
-          listType="picture-card"
-          className="avatar-uploader"
-          showUploadList={false}
-          supportServerRender
-          customRequest={this.customRequest}
-          beforeUpload={beforeUpload}
-          onChange={this.handleChange}
-        >
-          {image ? <img style={{ width: '100%' }} src={join(host || '', image)} /> : uploadButton}
-        </Upload>
-      </div>
-    );
-  }
 }
 
 export class ImagesUploader extends React.Component<IProps, IState> {
@@ -231,8 +111,8 @@ export class ImagesUploader extends React.Component<IProps, IState> {
   };
 
   customRequest = async (option: any): Promise<void> => {
-    const { auth, onChange, urlHandler, prefix, value } = this.props;
-    const uploaded = await upload(auth, option);
+    const { onChange, urlHandler, prefix, value } = this.props;
+    const uploaded = await upload(option.file);
     if (uploaded) {
       logger.log('[ImagesUploader][customRequest]', { props: this.props, state: this.state });
       const image = join(prefix || '', urlHandler ? urlHandler(uploaded[0]) : `${uploaded[0]}`);
@@ -262,7 +142,7 @@ export class ImagesUploader extends React.Component<IProps, IState> {
           fileList={fileList as UploadFile[]}
           supportServerRender
           customRequest={this.customRequest}
-          beforeUpload={beforeUpload}
+          beforeUpload={(file: RcFile, rcFiles: RcFile[]) => validateFile(file)}
           onPreview={this.handlePreview}
           onChange={this.handleChange}
         >

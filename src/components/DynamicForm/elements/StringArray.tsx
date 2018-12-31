@@ -1,13 +1,11 @@
 import React from 'react';
-
-import { WrappedFormUtils } from 'antd/es/form/Form';
-import { generateComponent, IFormItemLayout } from '.';
 import { Button, Input } from 'antd';
+import { WrappedFormUtils } from 'antd/es/form/Form';
+
+import { defaultFormItemLayout, generateComponent, IFormItemLayout } from '.';
 import { createLogger } from '@asuna-admin/logger';
 
 const logger = createLogger('components:dynamic-form:string-array');
-
-const defaultFormItemLayout = {};
 
 export type StringArrayOptions = {
   key: string;

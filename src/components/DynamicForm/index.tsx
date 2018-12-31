@@ -13,8 +13,6 @@ import {
   generateCheckbox,
   generateDateTime,
   generateHidden,
-  generateImage,
-  generateImages,
   generateInput,
   generateInputNumber,
   generatePlain,
@@ -28,6 +26,7 @@ import {
 } from './elements';
 import { generateSelect, Item, SelectOptions } from './elements/Select';
 import { generateStringArray, StringArrayOptions } from './elements/StringArray';
+import { generateImage, generateImages, generateRichImage } from './elements/Image';
 
 import { diff } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
@@ -50,12 +49,6 @@ export enum DynamicFormTypes {
   TextArea = 'TextArea',
   DateTime = 'DateTime',
   Date = 'Date',
-  Switch = 'Switch',
-  Authorities = 'Authorities',
-  Enum = 'Enum',
-  EnumFilter = 'EnumFilter',
-  SimpleJSON = 'SimpleJSON',
-  SortPosition = 'SortPosition',
 
   // --------------------------------------------------------------
   // Advanced Types
@@ -64,6 +57,13 @@ export enum DynamicFormTypes {
   Image = 'Image',
   Images = 'Images',
   Video = 'Video',
+  Switch = 'Switch',
+  Authorities = 'Authorities',
+  Enum = 'Enum',
+  EnumFilter = 'EnumFilter',
+  SimpleJSON = 'SimpleJSON',
+  SortPosition = 'SortPosition',
+  RichImage = 'RichImage',
   RichText = 'RichText',
   Association = 'Association',
   ManyToMany = 'ManyToMany',
@@ -104,7 +104,7 @@ type DynamicFormField = {
 export class DynamicForm extends React.Component<
   DynamicFormProps & AntdFormOnChangeListener & FormComponentProps
 > {
-  _buildField = (field: DynamicFormField, index: number) => {
+  _buildField = (fields: FormField[], field: DynamicFormField, index: number) => {
     const { form } = this.props;
 
     const options: DeepPartial<
@@ -160,6 +160,8 @@ export class DynamicForm extends React.Component<
         return generateVideo(form, options);
       case DynamicFormTypes.Authorities:
         return generateAuthorities(form, options);
+      case DynamicFormTypes.RichImage:
+        return generateRichImage(form, fields, options);
       case DynamicFormTypes.Image:
         return generateImage(form, options);
       case DynamicFormTypes.Images:
@@ -257,15 +259,13 @@ export class DynamicForm extends React.Component<
         return generateStringArray(form, { ...(options as any), items: field.value });
       default: {
         return (
-          <WithDebugInfo
-            key={index}
-            content={`DynamicForm ${util.inspect({
+          <WithDebugInfo key={index} info={field}>
+            {`DynamicForm ${util.inspect({
               type: field.type,
               metaType: options.type,
               key: options.key,
             })} not implemented. :P`}
-            info={field}
-          />
+          </WithDebugInfo>
         );
       }
     }
@@ -293,7 +293,12 @@ export class DynamicForm extends React.Component<
     // pure component will not trigger error handler
 
     const renderFields = _.map(_.filter(fields, field => _.has(field, 'type')), (field, index) => (
-      <EnhancedPureElement key={index} field={field} index={index} builder={this._buildField} />
+      <EnhancedPureElement
+        key={index}
+        field={field}
+        index={index}
+        builder={_.curry(this._buildField)(fields)}
+      />
     ));
 
     return (

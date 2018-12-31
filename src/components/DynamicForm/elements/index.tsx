@@ -4,8 +4,6 @@ import { Checkbox, DatePicker, Form, Icon, Input, InputNumber, Switch, TimePicke
 import { GetFieldDecoratorOptions, WrappedFormUtils } from 'antd/es/form/Form';
 
 import { BraftRichEditor } from '../../RichEditor';
-
-import { ImagesUploader } from '../Images';
 import { VideoUploader } from '../Videos';
 import { Authorities } from '../Authorities';
 
@@ -19,9 +17,9 @@ export interface IFormItemLayout {
   wrapperCol?: { offset?: number; span?: number };
 }
 
-const defaultFormItemLayout: IFormItemLayout = {};
+export const defaultFormItemLayout: IFormItemLayout = {};
 
-const horizontalFormItemLayout: IFormItemLayout = {
+export const horizontalFormItemLayout: IFormItemLayout = {
   labelCol: { offset: 0, span: 5 },
   wrapperCol: { offset: 0, span: 19 },
 };
@@ -281,46 +279,6 @@ export const generateSwitch = (
     form,
     { fieldName, labelName, opts: { valuePropName: 'checked' }, ...options },
     <Switch />,
-    formItemLayout,
-  );
-};
-
-export const generateImages = (
-  form: WrappedFormUtils,
-  options,
-  formItemLayout: IFormItemLayout = defaultFormItemLayout,
-) => {
-  const { key, name, label, auth } = options;
-
-  const fieldName = key || name;
-  const labelName = label || name || key;
-  const host = Config.get('IMAGE_HOST');
-  const prefix = Config.get('IMAGE_PREFIX');
-  const handler = Config.get('IMAGE_RES_HANDLER');
-  return generateComponent(
-    form,
-    { fieldName, labelName, ...options },
-    <ImagesUploader many={true} auth={auth} host={host} prefix={prefix} urlHandler={handler} />,
-    formItemLayout,
-  );
-};
-
-export const generateImage = (
-  form: WrappedFormUtils,
-  options,
-  formItemLayout: IFormItemLayout = defaultFormItemLayout,
-) => {
-  const { key, name, label, auth } = options;
-
-  const fieldName = key || name;
-  const labelName = label || name || key;
-  const host = Config.get('IMAGE_HOST');
-  const prefix = Config.get('IMAGE_PREFIX');
-  const handler = Config.get('IMAGE_RES_HANDLER');
-  return generateComponent(
-    form,
-    { fieldName, labelName, ...options },
-    <ImagesUploader many={false} auth={auth} host={host} prefix={prefix} urlHandler={handler} />,
     formItemLayout,
   );
 };

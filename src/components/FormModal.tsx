@@ -57,9 +57,7 @@ export class FormModal extends React.Component<IProps, IState> {
   }
 
   showModal = () => {
-    this.setState({
-      visible: true,
-    });
+    this.setState({ visible: true });
   };
 
   handleOk = () => {
@@ -114,7 +112,6 @@ export class FormModal extends React.Component<IProps, IState> {
     const { fields, visible, confirmLoading } = this.state;
 
     return (
-      // prettier-ignore
       <React.Fragment>
         {openButton(this.showModal)}
         <Modal

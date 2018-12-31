@@ -3,6 +3,7 @@ import ReactCrop, { Crop } from 'react-image-crop';
 import styled from 'styled-components';
 
 import 'react-image-crop/dist/ReactCrop.css';
+import { getBase64 } from '@asuna-admin/helpers/upload';
 
 const CroppedImage = styled.img`
   border-radius: 5px;
@@ -44,11 +45,9 @@ export class ImageCrop extends React.PureComponent<IProps, IState> {
   private fileUrl: string;
   private imageRef: HTMLImageElement;
 
-  onSelectFile = e => {
+  onSelectFile = async e => {
     if (e.target.files && e.target.files.length > 0) {
-      const reader = new FileReader();
-      reader.addEventListener('load', () => this.setState({ src: reader.result }));
-      reader.readAsDataURL(e.target.files[0]);
+      this.setState({ src: await getBase64(e.target.files[0]) });
     }
   };
 

@@ -57,7 +57,7 @@ export interface RootState {
   global: object;
 }
 
-const logger = createLogger('store', 'info');
+const logger = createLogger('store');
 
 export class AsunaStore {
   private static INSTANCE = new AsunaStore();
