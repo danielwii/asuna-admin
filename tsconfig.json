@@ -18,7 +18,7 @@
     "outDir": "lib",
     "baseUrl": "./",
     "paths": {
-      "@asuna-admin": ["src/index.ts"],
+      "asuna-admin": ["src/index.ts"],
       "@asuna-admin/*": ["src/*"]
     }
   },

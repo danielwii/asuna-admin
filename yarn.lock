@@ -11203,9 +11203,9 @@ react-fuzzy@^0.5.2:
     prop-types "^15.5.9"
 
 react-image-crop@^6.0.9:
-  version "6.0.9"
-  resolved "https://registry.yarnpkg.com/react-image-crop/-/react-image-crop-6.0.9.tgz#5e949cf6503f65819afe44fc5c7ffb3d617ba499"
-  integrity sha512-9O31Eb55Ss/XvJkYxK0XD7HYW2UUAen+GmljBtLSCRGwNHcfbeLL3naLHTKH80bBl+KK+pYaf0aTpoa11CN2SQ==
+  version "6.0.10"
+  resolved "https://registry.yarnpkg.com/react-image-crop/-/react-image-crop-6.0.10.tgz#77e73c88d3f77d707e53a790578e4be81d781ad4"
+  integrity sha512-mQVBSdu9rSY7EqMbJwGwvTtPIoQSiVGuNIQrAEfv+O/qiPM0r9qHlQ5Sue2dptnYWBkVxRhrUGt11SY3mjuJxg==
   dependencies:
     "@types/react-image-crop" "^3.0.1"
 
