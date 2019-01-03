@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import * as R from 'ramda';
 import styled from 'styled-components';
 
-import { LivingLoading, LogoCanvas, Snow } from '@asuna-admin/components';
+import { LivingLoading, LogoCanvas, Snow, Sun } from '@asuna-admin/components';
 import { LoginContainer } from '@asuna-admin/containers';
 
 import { AppState, RootState } from '@asuna-admin/store';
@@ -66,6 +66,7 @@ export class LoginPage extends React.Component<ILoginPageProps> {
         {heartbeat ? (
           <StyledFullFlexContainer>
             <Snow />
+            <Sun />
             <StyledLogoWrapper>
               <LogoCanvas />
             </StyledLogoWrapper>
