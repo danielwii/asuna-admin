@@ -31,7 +31,7 @@ export interface ImageWithTags {
 }
 
 type Tag = {
-  positionInfo: CropInfo;
+  positionInfo?: CropInfo;
   name?: string;
   summary?: string;
   url?: string;
@@ -53,23 +53,17 @@ interface IProps {
 }
 
 interface IState {
-  src: string | ArrayBuffer | null;
   updateIndex: number | null; // 当前正在更新的 trivia
-  pixelCrops: Tag[];
   crop: Crop;
 }
 
+const DEFAULT_CROP = { width: 50, x: 0, y: 0 };
+
 export class ImageTrivia extends React.Component<IProps, IState> {
   state: IState = {
-    src: null,
     updateIndex: null,
-    pixelCrops: [],
-    crop: { width: 50, x: 0, y: 0 },
+    crop: DEFAULT_CROP,
   };
-
-  static getDerivedStateFromProps(nextProps: IProps, prevState: IState) {
-    return nextProps.value ? { src: nextProps.value.url, pixelCrops: nextProps.value.tags } : null;
-  }
 
   private imageRef: HTMLImageElement;
 
@@ -81,7 +75,7 @@ export class ImageTrivia extends React.Component<IProps, IState> {
         logger.log('[onSelectFile]', { props: this.props, state: this.state });
         const image = join(prefix || '', urlHandler ? urlHandler(uploaded[0]) : `${uploaded[0]}`);
         logger.log('[onSelectFile]', { uploaded, image });
-        onChange!(R.mergeDeepRight(this.props.value, { url: image }));
+        onChange!(R.mergeDeepRight(value, { url: image }));
       }
     }
   };
@@ -94,25 +88,25 @@ export class ImageTrivia extends React.Component<IProps, IState> {
     const { crop } = this.state;
 
     if (crop.aspect && crop.height && crop.width) {
-      this.setState({ crop: { ...crop, height: null as any } });
+      this.setState({ crop: { ...crop, height: null as any } }, () => {
+        logger.log('[onImageLoaded] done', this.state);
+      });
     }
   };
 
   onCropComplete = (crop: Crop, pixelCrop: PixelCrop) => {
-    const { updateIndex, pixelCrops } = this.state;
+    const { value } = this.props;
+    const { updateIndex } = this.state;
+    const tags = idx(value, _ => _.tags) || [];
     if (_.isNil(updateIndex)) {
-      const latest = pixelCrops.length;
-      this.setState({
-        updateIndex: latest,
-        pixelCrops: [...pixelCrops, { positionInfo: { crop, pixelCrop } }],
-      });
-      this._updateTagInfo(latest, pixelCrops[latest]);
+      const latest = tags.length;
+      this.setState({ updateIndex: latest });
+      this._updateTagInfo(latest, { positionInfo: { crop, pixelCrop } });
     } else {
-      pixelCrops[updateIndex] = { ...pixelCrops[updateIndex], positionInfo: { crop, pixelCrop } };
-      this.setState({});
-      this._updateTagInfo(updateIndex, pixelCrops[updateIndex]);
+      //   this.setState({});
+      this._updateTagInfo(updateIndex, { positionInfo: { crop, pixelCrop } });
     }
-    logger.log('[onCropComplete]', { crop, pixelCrop, pixelCrops: this.state.pixelCrops });
+    logger.log('[onCropComplete]', { crop, pixelCrop, tags });
   };
 
   onCropChange = (crop: Crop) => {
@@ -120,44 +114,53 @@ export class ImageTrivia extends React.Component<IProps, IState> {
   };
 
   _add = () => {
-    this.setState({
-      updateIndex: this.state.pixelCrops.length,
-      pixelCrops: this.state.pixelCrops.concat({} as Tag),
-    });
+    logger.log('_add', this.state);
+    const { value, onChange } = this.props;
+    const tags = idx(value, _ => _.tags) || [];
+    onChange!(R.mergeDeepRight(value, { tags: tags.concat({} as any) }));
+    this.setState({ updateIndex: tags.length, crop: DEFAULT_CROP });
   };
 
   _edit = (index: number) => {
-    this.setState({ updateIndex: index, crop: this.state.pixelCrops[index].positionInfo.crop });
+    const { value } = this.props;
+    logger.log('_edit', { index });
+    this.setState({
+      updateIndex: index,
+      crop: idx(value, _ => _.tags[index].positionInfo.crop) || DEFAULT_CROP,
+    });
   };
 
   _updateTagInfo = (index: number, tag: Partial<Tag>) => {
-    logger.log({ index, info: tag });
-    const { onChange } = this.props;
-    const tags = idx(this.props.value, _ => _.tags);
-    if (tags) {
-      if (tags[index]) {
-        tags[index] = tags[index] ? R.mergeDeepRight(tags[index], { ...tag }) : null;
-        logger.log(this.props, this.state, tags);
-        onChange!(R.mergeDeepRight(this.props.value, { tags }));
-      }
+    logger.log('_updateTagInfo', { index, info: tag });
+    const { onChange, value } = this.props;
+    if (value && value.tags) {
+      const tags = _.get(value, 'tags') || [];
+      tags[index] = tags[index] ? { ...tags[index], ...tag } : ((tag as any) as Tag);
+      onChange!({ ...value, tags });
     } else {
-      logger.log(this.props, this.state, tag);
-      onChange!(R.mergeDeepRight(this.props.value, { tags: [tag] }));
+      onChange!(R.mergeDeepRight(value, { tags: [tag] }));
     }
   };
 
   _remove = (index: number) => {
-    const { pixelCrops } = this.state;
-    pixelCrops.splice(index, 1);
-    this.setState({ updateIndex: null });
-    logger.log('[_remove]', { index, pixelCrops: this.state.pixelCrops });
+    const { value, onChange } = this.props;
+    const { updateIndex } = this.state;
+    if (value && value.tags) {
+      value.tags.splice(index, 1);
+      onChange!(value);
+      logger.log('[_remove]', { index, value });
+      // remove focus when old index is out of bounds
+      if (_.gt(updateIndex, value.tags.length - 1)) {
+        this.setState({ updateIndex: null, crop: DEFAULT_CROP });
+      }
+    }
   };
 
   render() {
     const { maxHeight, maxWidth, value } = this.props;
-    const { crop, pixelCrops, src, updateIndex } = this.state;
+    const { crop, updateIndex } = this.state;
 
-    logger.log('[render]', { value, crop, pixelCrops: this.state.pixelCrops });
+    logger.log('[render]', { value, crop });
 
     return (
       <WithDebugInfo info={this.state}>
@@ -165,7 +168,7 @@ export class ImageTrivia extends React.Component<IProps, IState> {
           <input type="file" onChange={this.onSelectFile} />
         </div>
         <div className="asuna-image-crop">
-          {src && (
+          {value && (
             <ReactCrop
               style={{
                 borderRadius: '5px',
@@ -173,7 +176,7 @@ export class ImageTrivia extends React.Component<IProps, IState> {
                 maxHeight: maxHeight || DEFAULT_MAX_HEIGHT,
                 maxWidth: maxWidth || DEFAULT_MAX_WEIGHT,
               }}
-              src={src as string}
+              src={value.url}
               crop={crop}
               onImageLoaded={this.onImageLoaded as any}
               onComplete={this.onCropComplete}
@@ -188,42 +191,44 @@ export class ImageTrivia extends React.Component<IProps, IState> {
             }
           `}</style>
         </div>
-        <List
-          dataSource={pixelCrops}
-          loadMore={<a onClick={() => this._add()}>add tag</a>}
-          renderItem={(item: Tag, index) => (
-            <List.Item
-              actions={[
-                <a onClick={() => this._edit(index)}>edit</a>,
-                <a onClick={() => this._remove(index)}>remove</a>,
-              ]}
-            >
-              <List.Item.Meta
-                title={
-                  <Title highlight={updateIndex === index}>
-                    <pre>{util.inspect(idx(item, _ => _.positionInfo))}</pre>
-                  </Title>
-                }
-              />
-              <Input.Group>
-                <Input
-                  type="text"
-                  addonBefore="Name: "
-                  onChange={e => this._updateTagInfo(index, { name: e.target.value })}
-                  value={item.name}
-                  required
+        {value && (
+          <List
+            dataSource={value.tags}
+            loadMore={<a onClick={() => this._add()}>add tag</a>}
+            renderItem={(item: Tag, index) => (
+              <List.Item
+                actions={[
+                  <a onClick={() => this._edit(index)}>edit</a>,
+                  <a onClick={() => this._remove(index)}>remove</a>,
+                ]}
+              >
+                <List.Item.Meta
+                  title={
+                    <Title highlight={updateIndex === index}>
+                      <pre>
+                        {index}::{util.inspect(idx(item, _ => _.positionInfo))}
+                      </pre>
+                    </Title>
+                  }
                 />
-                <Input
-                  type="text"
-                  addonBefore="Url: "
-                  onChange={e => this._updateTagInfo(index, { url: e.target.value })}
-                  value={item.url}
-                  required
-                />
-              </Input.Group>
-            </List.Item>
-          )}
-        />
+                <Input.Group>
+                  <Input
+                    type="text"
+                    addonBefore="Name: "
+                    onChange={e => this._updateTagInfo(index, { name: e.target.value })}
+                    value={item.name}
+                  />
+                  <Input
+                    type="text"
+                    addonBefore="Url: "
+                    onChange={e => this._updateTagInfo(index, { url: e.target.value })}
+                    value={item.url}
+                  />
+                </Input.Group>
+              </List.Item>
+            )}
+          />
+        )}
       </WithDebugInfo>
     );
   }

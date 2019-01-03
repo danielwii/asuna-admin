@@ -28,5 +28,7 @@ yarn-error.log*
 static/libs
 .asuna
 
-# services/*.js # set in .git/info/exclude
+# will implemented by users
 pages/*
+services/*
+/config.js
