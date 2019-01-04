@@ -104,9 +104,16 @@ class AppContext {
     }
   }
 
-  public static regStore(storeConnector: IStoreConnector<RootState>) {
-    if (!AppContext._storeConnector) {
+  public static regStore(
+    storeConnector: IStoreConnector<RootState>,
+    initialState?: object,
+    force?: boolean,
+  ) {
+    if (!AppContext._storeConnector || force) {
       AppContext._storeConnector = storeConnector;
+      if (initialState) {
+        storeConnector.connect(initialState);
+      }
     }
   }
 

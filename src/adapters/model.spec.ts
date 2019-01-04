@@ -96,7 +96,12 @@ describe('getFormSchema', () => {
       },
     });
     const adapter = new ModelAdapter({} as IModelService, definitions);
-    const fields = adapter.getFormSchema({ users: [{ name: 'password' }] } as any, 'users', {});
+    AppContext.regStore(
+      storeConnector,
+      { models: { schemas: { users: [{ name: 'password' }] } } },
+      true,
+    );
+    const fields = adapter.getFormSchema('users', {});
     expect(fields).toEqual({
       password: {
         name: 'password',
@@ -117,17 +122,14 @@ describe('getFormSchema', () => {
 
   it('should return undefined when value not exists', () => {
     const adapter = new ModelAdapter({} as IModelService, new AsunaDefinitions());
-    const fields = adapter.getFormSchema(
+    AppContext.regStore(
+      storeConnector,
       {
-        test_schema: [
-          {
-            name: 'test_name',
-          },
-        ],
-      } as any,
-      'test_schema',
-      { test_related_id: 1 },
+        models: { schemas: { test_schema: [{ name: 'test_name' }] } },
+      },
+      true,
     );
+    const fields = adapter.getFormSchema('test_schema', { test_related_id: 1 });
     expect(fields).toEqual({
       test_name: {
         name: 'test_name',
@@ -141,29 +143,34 @@ describe('getFormSchema', () => {
 
   it('should matched related fields', () => {
     const adapter = new ModelAdapter({} as IModelService, new AsunaDefinitions());
-    const fields = adapter.getFormSchema(
+    AppContext.regStore(
+      storeConnector,
       {
-        test_schema: [
-          {
-            config: {
-              info: {
-                name: 'TEST_NAME',
-                ref: 'test_related',
-                help: 'tooltip-info',
+        models: {
+          schemas: {
+            test_schema: [
+              {
+                config: {
+                  info: {
+                    name: 'TEST_NAME',
+                    ref: 'test_related',
+                    help: 'tooltip-info',
+                  },
+                  length: '50',
+                  nullable: true,
+                  primaryKey: false,
+                  type: 'INTEGER',
+                  selectable: 'other-relation',
+                },
+                name: 'test_related_id',
               },
-              length: '50',
-              nullable: true,
-              primaryKey: false,
-              type: 'INTEGER',
-              selectable: 'other-relation',
-            },
-            name: 'test_related_id',
+            ],
           },
-        ],
+        },
       },
-      'test_schema',
-      { test_related_id: 1 },
+      true,
     );
+    const fields = adapter.getFormSchema('test_schema', { test_related_id: 1 });
     expect(fields).toEqual({
       test_related: {
         name: 'test_related',
@@ -185,25 +192,30 @@ describe('getFormSchema', () => {
 
   it('should handle nullable fields', () => {
     const adapter = new ModelAdapter({} as IModelService, new AsunaDefinitions());
-    const fieldsWithNullable = adapter.getFormSchema(
+    AppContext.regStore(
+      storeConnector,
       {
-        test_schema: [
-          {
-            config: {
-              // foreignKeys: [],
-              info: {},
-              length: '50',
-              nullable: true,
-              primaryKey: false,
-              type: 'INTEGER',
-            },
-            name: 'test-nullable',
+        models: {
+          schemas: {
+            test_schema: [
+              {
+                config: {
+                  // foreignKeys: [],
+                  info: {},
+                  length: '50',
+                  nullable: true,
+                  primaryKey: false,
+                  type: 'INTEGER',
+                },
+                name: 'test-nullable',
+              },
+            ],
           },
-        ],
+        },
       },
-      'test_schema',
-      { 'test-nullable': 1 },
+      true,
     );
+    const fieldsWithNullable = adapter.getFormSchema('test_schema', { 'test-nullable': 1 });
 
     expect(fieldsWithNullable).toEqual({
       'test-nullable': {
@@ -220,25 +232,30 @@ describe('getFormSchema', () => {
       },
     });
 
-    const fieldsWithRequired = adapter.getFormSchema(
+    AppContext.regStore(
+      storeConnector,
       {
-        test_schema: [
-          {
-            config: {
-              // foreignKeys: [],
-              info: {},
-              length: '50',
-              nullable: false,
-              primaryKey: false,
-              type: 'INTEGER',
-            },
-            name: 'test-nullable',
+        models: {
+          schemas: {
+            test_schema: [
+              {
+                config: {
+                  // foreignKeys: [],
+                  info: {},
+                  length: '50',
+                  nullable: false,
+                  primaryKey: false,
+                  type: 'INTEGER',
+                },
+                name: 'test-nullable',
+              },
+            ],
           },
-        ],
+        },
       },
-      'test_schema',
-      { 'test-nullable': 1 },
+      true,
     );
+    const fieldsWithRequired = adapter.getFormSchema('test_schema', { 'test-nullable': 1 });
 
     expect(fieldsWithRequired).toEqual({
       'test-nullable': {
@@ -255,25 +272,30 @@ describe('getFormSchema', () => {
       },
     });
 
-    const fieldsWithNoLength = adapter.getFormSchema(
+    AppContext.regStore(
+      storeConnector,
       {
-        test_schema: [
-          {
-            config: {
-              // foreignKeys: [],
-              info: {},
-              length: '',
-              nullable: false,
-              primaryKey: false,
-              type: 'INTEGER',
-            },
-            name: 'test-nullable',
+        models: {
+          schemas: {
+            test_schema: [
+              {
+                config: {
+                  // foreignKeys: [],
+                  info: {},
+                  length: '',
+                  nullable: false,
+                  primaryKey: false,
+                  type: 'INTEGER',
+                },
+                name: 'test-nullable',
+              },
+            ],
           },
-        ],
+        },
       },
-      'test_schema',
-      { 'test-nullable': 1 },
+      true,
     );
+    const fieldsWithNoLength = adapter.getFormSchema('test_schema', { 'test-nullable': 1 });
 
     expect(fieldsWithNoLength).toEqual({
       'test-nullable': {
@@ -290,27 +312,32 @@ describe('getFormSchema', () => {
       },
     });
 
-    const fieldsWithRequiredInInfo = adapter.getFormSchema(
+    AppContext.regStore(
+      storeConnector,
       {
-        test_schema: [
-          {
-            config: {
-              // foreignKeys: [],
-              info: {
-                required: true,
+        models: {
+          schemas: {
+            test_schema: [
+              {
+                config: {
+                  // foreignKeys: [],
+                  info: {
+                    required: true,
+                  },
+                  length: '50',
+                  nullable: true,
+                  primaryKey: false,
+                  type: 'INTEGER',
+                },
+                name: 'test-nullable',
               },
-              length: '50',
-              nullable: true,
-              primaryKey: false,
-              type: 'INTEGER',
-            },
-            name: 'test-nullable',
+            ],
           },
-        ],
+        },
       },
-      'test_schema',
-      { 'test-nullable': 1 },
+      true,
     );
+    const fieldsWithRequiredInInfo = adapter.getFormSchema('test_schema', { 'test-nullable': 1 });
 
     expect(fieldsWithRequiredInInfo).toEqual({
       'test-nullable': {
@@ -327,27 +354,34 @@ describe('getFormSchema', () => {
       },
     });
 
-    const fieldsWithRequiredInInfoConflict = adapter.getFormSchema(
+    AppContext.regStore(
+      storeConnector,
       {
-        test_schema: [
-          {
-            config: {
-              // foreignKeys: [],
-              info: {
-                required: true,
+        models: {
+          schemas: {
+            test_schema: [
+              {
+                config: {
+                  // foreignKeys: [],
+                  info: {
+                    required: true,
+                  },
+                  length: '50',
+                  nullable: false,
+                  primaryKey: false,
+                  type: 'INTEGER',
+                },
+                name: 'test-nullable',
               },
-              length: '50',
-              nullable: false,
-              primaryKey: false,
-              type: 'INTEGER',
-            },
-            name: 'test-nullable',
+            ],
           },
-        ],
+        },
       },
-      'test_schema',
-      { 'test-nullable': 1 },
+      true,
     );
+    const fieldsWithRequiredInInfoConflict = adapter.getFormSchema('test_schema', {
+      'test-nullable': 1,
+    });
 
     expect(fieldsWithRequiredInInfoConflict).toEqual({
       'test-nullable': {
