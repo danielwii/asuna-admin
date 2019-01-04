@@ -50,7 +50,7 @@ export const horizontalFormItemLayout: IFormItemLayout = {
 export type PlainOptions = {
   key: string;
   label: string;
-  text?: string;
+  text?: string | React.ReactNode;
   help?: string;
 };
 

@@ -4,6 +4,11 @@ type StringCase = 'None' | 'Snake' | 'Camel';
 
 type ApiResponsePageMode = 'SQLAlchemy' | 'SpringJPA' | 'Default';
 
+/**
+ * 定义服务端 API 返回的对应格式
+ * - ids 返回 id 列表
+ * - entity 返回实体信息，尽量不应该使用该模式，会产生过多的加载数据
+ */
 type ApiResponseAssociationMode = 'ids' | 'entity';
 
 type AuthHeader =

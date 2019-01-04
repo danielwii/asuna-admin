@@ -76,7 +76,7 @@ const ContentForm = Form.create<IContentForm>({
 
 interface IProps extends ReduxProps {
   basis: { pane: Pane };
-  schemas: Asuna.Schema.ModelSchemas;
+  // schemas: Asuna.Schema.ModelSchemas;
   models: object;
   onClose: () => void;
 }
@@ -143,7 +143,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
 
   async componentWillMount() {
     logger.log('[componentWillMount]', { props: this.props, state: this.state });
-    const { basis, schemas } = this.props;
+    const { basis } = this.props;
     const { isInsertMode } = this.state;
 
     // content::create::name::timestamp => name
@@ -158,7 +158,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
     // Build form fields with all needed data
     // --------------------------------------------------------------
 
-    const formSchema = AppContext.adapters.models.getFormSchema(schemas, modelName);
+    const formSchema = AppContext.adapters.models.getFormSchema(modelName);
 
     // if (modelName === 'colleges') {
     //   formSchema = R.pick(['id', 'name', 'name_en', 'sequences'], formSchema);
@@ -393,8 +393,6 @@ class ContentUpsert extends React.Component<IProps, IState> {
   }
 }
 
-const mapStateToProps = (state: RootState) => ({
-  ...R.pick(['schemas', 'models'])(state.models),
-});
+const mapStateToProps = (state: RootState) => R.pick(['models'])(state.models);
 
 export default connect(mapStateToProps)(ContentUpsert);
