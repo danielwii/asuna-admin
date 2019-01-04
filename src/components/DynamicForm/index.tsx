@@ -57,6 +57,7 @@ export enum DynamicFormTypes {
   Image = 'Image',
   Images = 'Images',
   Video = 'Video',
+  Deletable = 'Deletable',
   Switch = 'Switch',
   Authorities = 'Authorities',
   Enum = 'Enum',
@@ -129,14 +130,15 @@ export class DynamicForm extends React.Component<
     logger.log('[DynamicForm]', '[buildField]', { field, index, options });
 
     // all readonly or hidden field will rendered as plain component
-    if (_.includes(['readonly', 'hidden'], idx(field, _ => _.options.accessible))) {
+    if (_.includes(['readonly'], idx(field, _ => _.options.accessible))) {
       return generatePlain({
         text: _.defaultTo(field.value, options.defaultValue),
         ...options,
       } as PlainOptions);
     }
-    if (_.includes(['hide-value'], idx(field, _ => _.options.accessible))) {
-      return generatePlain(options as PlainOptions);
+    if (_.includes(['hidden'], idx(field, _ => _.options.accessible))) {
+      // return generatePlain({ text: <i>hidden</i>, ...(options as PlainOptions) });
+      return null;
     }
 
     switch (field.type) {
@@ -166,6 +168,7 @@ export class DynamicForm extends React.Component<
         return generateImage(form, options);
       case DynamicFormTypes.Images:
         return generateImages(form, options);
+      case DynamicFormTypes.Deletable:
       case DynamicFormTypes.Switch:
         return generateSwitch(form, options);
       case DynamicFormTypes.RichText:
@@ -430,22 +433,27 @@ class EnhancedPureElement extends React.Component<IPureElementProps> {
 
     // options.hidden = true 时需要隐藏该元素
     const hidden = R.pathOr(false, ['options', 'hidden'])(field);
-    return (
-      <React.Fragment>
-        <div key={index} id={`dynamic-form-${field.name}`} hidden={hidden}>
-          {builder(field as DynamicFormField, index)}
-          <hr />
-        </div>
-        {/* language=CSS */}
-        <style jsx>{`
-          div hr {
-            border-style: none;
-            border-top: 1px dashed #8c8b8b;
-            border-bottom: 1px dashed #fff;
-            /*box-shadow: #bfbfbf 0 0 1px;*/
-          }
-        `}</style>
-      </React.Fragment>
-    );
+    const children = builder(field as DynamicFormField, index);
+
+    if (children) {
+      return (
+        <React.Fragment>
+          <div key={index} id={`dynamic-form-${field.name}`} hidden={hidden}>
+            {children}
+            <hr />
+          </div>
+          {/* language=CSS */}
+          <style jsx>{`
+            div hr {
+              border-style: none;
+              border-top: 1px dashed #8c8b8b;
+              border-bottom: 1px dashed #fff;
+              /*box-shadow: #bfbfbf 0 0 1px;*/
+            }
+          `}</style>
+        </React.Fragment>
+      );
+    }
+    return null;
   }
 }

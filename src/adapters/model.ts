@@ -1,5 +1,6 @@
 import * as R from 'ramda';
 import * as _ from 'lodash';
+import * as fp from 'lodash/fp';
 import { AxiosResponse } from 'axios';
 import idx from 'idx';
 
@@ -39,7 +40,15 @@ export interface IModelService {
   fetch(
     auth: { token: string | null },
     modelName: string,
-    data: { endpoint?: string; id: number; profile?: Asuna.Profile } & Asuna.Schema.ModelConfig,
+    data: {
+      endpoint?: string;
+      id: number;
+      profile?: Asuna.Profile;
+      /**
+       * 包含关联字符串列表，该列表中不包含 schema 中 accessible 未 hidden 的关联
+       */
+      relations?: string;
+    } & Asuna.Schema.ModelConfig,
   ): Promise<AxiosResponse>;
 
   remove(
@@ -176,15 +185,33 @@ export class ModelAdapter {
     ])(field);
   };
 
+  /**
+   * 加载 model 信息，profile 定义了要加载的模型形式
+   * 同时，由于实际上关联模型会产生过多的附加信息，这里考虑了两种优化模式
+   * 1. 依据 schema 中定义的 accessible 信息，只加载有限的关联
+   * 2. 采用更加丰富的关联数据加载组件，已应对大数据库量的加载需求
+   * @param modelName
+   * @param data
+   */
   public fetch = (
     modelName: string,
     data: { endpoint?: string; id: number; profile?: Asuna.Profile },
   ) => {
     const auth = AppContext.fromStore('auth');
-    return this.service.fetch(auth, modelName, {
-      ...data,
-      ...this.getModelConfig(modelName),
-    });
+    const modelConfig = this.getModelConfig(modelName);
+    const schema = this.getFormSchema(modelName);
+    const relations = _.chain(schema)
+      .pickBy(fp.get('options.selectable'))
+      // .pickBy(_.flow([fp.get('options.accessible'), fp.negate(fp.eq('hidden'))]))
+      .pickBy(opts => !_.includes(opts.options.accessible, ['hidden']))
+      .keys()
+      .value();
+    console.log('[fetch]', modelConfig, schema, relations);
+    return this.service.fetch(
+      auth,
+      modelName,
+      Object.assign(data, modelConfig, { relations: (relations || []).join(',') }),
+    );
   };
 
   public remove = (modelName: string, data) => {
@@ -197,12 +224,12 @@ export class ModelAdapter {
 
   public upsert = (modelName: string, data: { body: IModelBody }): Promise<AxiosResponse> => {
     const auth = AppContext.fromStore('auth');
-    const { schemas } = AppContext.fromStore('models');
+    // const { schemas } = AppContext.fromStore('models');
     logger.debug('[upsert]', 'upsert', { modelName, data });
 
-    const allSchemas = schemas || AppContext.store.select(R.path(['models', 'schemas']));
+    // const allSchemas = schemas || AppContext.store.select(R.path(['models', 'schemas']));
 
-    const fields = this.getFormSchema(allSchemas, modelName);
+    const fields = this.getFormSchema(modelName);
     logger.debug('[upsert]', 'fields is', fields);
 
     const fixKeys = _.mapKeys(data.body, (value, key) => idx(fields, _ => _[key].ref) || key);
@@ -231,39 +258,32 @@ export class ModelAdapter {
   public getAssociationConfigs = (modelName: string) => R.prop(modelName)(this.associations);
 
   public getModelConfig = (modelName: string): Asuna.Schema.ModelConfig => {
+    const TAG = '[getModelConfig]';
     const config = R.prop(modelName)(this.modelConfigs);
     if (config) {
-      logger.debug('[getModelConfig]', modelName, 'config is', config);
+      logger.debug(TAG, modelName, 'config is', config);
 
       // 未定义具体模型时，使用默认定义
-      if (!config.model) {
-        config.model = {};
-      }
-      if (!config.table) {
-        config.table = defaultColumns;
-      }
+      config.model = config.model || {};
+      config.table = config.table || defaultColumns;
 
       return config;
     }
-    logger.warn(
-      '[getModelConfig]',
-      `'${modelName}' not found in`,
-      this.modelConfigs,
-      'generate a default one.',
-    );
+    logger.warn(TAG, `'${modelName}' not found in`, this.modelConfigs, 'generate a default one.');
     return { model: {}, table: defaultColumns };
   };
 
   public getFormSchema = (
-    schemas: Asuna.Schema.ModelSchemas,
     name: string,
     values?: { [member: string]: any },
   ): Asuna.Schema.FormSchemas => {
+    const { schemas } = AppContext.fromStore('models');
     if (!schemas || !name) {
       logger.error('[getFormSchema]', 'schemas or name is required.', { schemas, name });
       return {};
     }
     const schema = R.prop(name)(schemas);
+    logger.log('[getFormSchema]', name, schemas, schema);
 
     if (!schema) {
       logger.error('[getFormSchema]', 'schema is required.', { schemas, name });

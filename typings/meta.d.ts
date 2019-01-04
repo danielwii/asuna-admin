@@ -39,7 +39,7 @@ export interface MetaInfoBaseOptions {
   help?: string;
   /**
    * readonly - 标记该列只读
-   * hidden - 标记该列隐藏
+   * hidden - 标记该列隐藏，作用于关联字段时同时也不应拉取该列对应的关联数据
    */
   accessible?: 'readonly' | 'hidden';
   /**
