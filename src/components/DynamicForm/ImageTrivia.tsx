@@ -7,7 +7,6 @@ import styled from 'styled-components';
 
 import 'react-image-crop/dist/ReactCrop.css';
 import { Input, List } from 'antd';
-import { WithDebugInfo } from '@asuna-admin/helpers/debug';
 import { upload } from '@asuna-admin/helpers/upload';
 import { join } from 'path';
 import { createLogger } from '@asuna-admin/logger';
@@ -18,6 +17,7 @@ const logger = createLogger('components:dynamic-form:image-trivia');
 interface IHighlightTitle {
   highlight: boolean;
 }
+
 const Title = styled.span`
   font-weight: ${(props: IHighlightTitle) => (props.highlight ? 'bold' : 'inherit')};
 `;
@@ -67,16 +67,17 @@ export class ImageTrivia extends React.Component<IProps, IState> {
 
   private imageRef: HTMLImageElement;
 
-  onSelectFile = async e => {
+  onSelectFile = e => {
     if (e.target.files && e.target.files.length > 0) {
       const { onChange, urlHandler, prefix, value } = this.props;
-      const uploaded = await upload(e.target.files[0]);
-      if (uploaded) {
-        logger.log('[onSelectFile]', { props: this.props, state: this.state });
-        const image = join(prefix || '', urlHandler ? urlHandler(uploaded[0]) : `${uploaded[0]}`);
-        logger.log('[onSelectFile]', { uploaded, image });
-        onChange!(R.mergeDeepRight(value, { url: image }));
-      }
+      upload(e.target.files[0]).then(uploaded => {
+        if (uploaded) {
+          logger.log('[onSelectFile]', { props: this.props, state: this.state });
+          const image = join(prefix || '', urlHandler ? urlHandler(uploaded[0]) : `${uploaded[0]}`);
+          logger.log('[onSelectFile]', { uploaded, image });
+          onChange!(R.mergeDeepRight(value, { url: image }));
+        }
+      });
     }
   };
 
@@ -163,7 +164,7 @@ export class ImageTrivia extends React.Component<IProps, IState> {
     logger.log('[render]', { value, crop });
 
     return (
-      <WithDebugInfo info={this.state}>
+      <div>
         <div>
           <input type="file" onChange={this.onSelectFile} />
         </div>
@@ -229,7 +230,7 @@ export class ImageTrivia extends React.Component<IProps, IState> {
             )}
           />
         )}
-      </WithDebugInfo>
+      </div>
     );
   }
 }

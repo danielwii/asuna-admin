@@ -289,13 +289,20 @@ export class DynamicForm extends React.Component<
   };
 
   render() {
-    const { fields, delegate, anchor } = this.props;
+    const {
+      fields,
+      delegate,
+      anchor,
+      form: { validateFields },
+    } = this.props;
     logger.log('[DynamicForm]', '[render]', { props: this.props });
 
+    // validateFields((errors, values) => console.log({ errors, values }));
     // remove fields which type is not included
     // pure component will not trigger error handler
 
-    const renderFields = _.map(_.filter(fields, field => _.has(field, 'type')), (field, index) => (
+    const typedFields = _.filter(fields, field => _.has(field, 'type'));
+    const renderFields = _.map(typedFields, (field, index) => (
       <EnhancedPureElement
         key={index}
         field={field}
@@ -380,12 +387,7 @@ class FormAnchor extends React.Component<IFormAnchorProps> {
         return <Anchor.Link key={field.name} title={title} href={`#dynamic-form-${field.name}`} />;
       }),
       R.filter(field => field.type),
-      R.filter(
-        R.compose(
-          R.not,
-          R.pathOr(false, ['options', 'hidden']),
-        ),
-      ),
+      R.filter(field => idx(field as DynamicFormField, _ => _.options.accessible) !== 'hidden'),
     )(fields);
 
     if (R.anyPass([R.isNil, R.isEmpty])(fields)) {
@@ -405,7 +407,7 @@ interface IPureElementProps {
 class EnhancedPureElement extends React.Component<IPureElementProps> {
   shouldComponentUpdate(nextProps, nextState) {
     const isRequired = R.path(['options', 'required'])(nextProps.field);
-    const propsDiff = diff(this.props, nextProps);
+    const propsDiff = diff(this.props, nextProps, { exclude: ['builder'] });
     const stateDiff = diff(this.state, nextState);
     const shouldUpdate = isRequired || propsDiff.isDifferent || stateDiff.isDifferent;
     if (shouldUpdate) {
@@ -431,29 +433,29 @@ class EnhancedPureElement extends React.Component<IPureElementProps> {
     const { field, index, builder } = this.props;
     logger.debug('[EnhancedPureElement]', '[render]', { props: this.props, state: this.state });
 
-    // options.hidden = true 时需要隐藏该元素
-    const hidden = R.pathOr(false, ['options', 'hidden'])(field);
-    const children = builder(field as DynamicFormField, index);
+    // options.accessible = 'hidden' 时需要隐藏该元素
+    const hidden = idx(field as DynamicFormField, _ => _.options.accessible) === 'hidden';
 
-    if (children) {
-      return (
-        <React.Fragment>
-          <div key={index} id={`dynamic-form-${field.name}`} hidden={hidden}>
-            {children}
-            <hr />
-          </div>
-          {/* language=CSS */}
-          <style jsx>{`
-            div hr {
-              border-style: none;
-              border-top: 1px dashed #8c8b8b;
-              border-bottom: 1px dashed #fff;
-              /*box-shadow: #bfbfbf 0 0 1px;*/
-            }
-          `}</style>
-        </React.Fragment>
-      );
+    if (hidden) {
+      return null;
     }
-    return null;
+
+    return (
+      <React.Fragment>
+        <div key={index} id={`dynamic-form-${field.name}`}>
+          <WithDebugInfo info={field}>{builder(field as DynamicFormField, index)}</WithDebugInfo>
+          <hr />
+        </div>
+        {/* language=CSS */}
+        <style jsx>{`
+          div hr {
+            border-style: none;
+            border-top: 1px dashed #8c8b8b;
+            border-bottom: 1px dashed #fff;
+            /*box-shadow: #bfbfbf 0 0 1px;*/
+          }
+        `}</style>
+      </React.Fragment>
+    );
   }
 }

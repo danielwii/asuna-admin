@@ -110,17 +110,18 @@ export class ImagesUploader extends React.Component<IProps, IState> {
     onChange!(images);
   };
 
-  customRequest = async (option: any): Promise<void> => {
+  customRequest = (option: any): void => {
     const { onChange, urlHandler, prefix, value } = this.props;
-    const uploaded = await upload(option.file);
-    if (uploaded) {
-      logger.log('[ImagesUploader][customRequest]', { props: this.props, state: this.state });
-      const image = join(prefix || '', urlHandler ? urlHandler(uploaded[0]) : `${uploaded[0]}`);
-      const uploadedImages = value;
-      const images = _.compact([uploadedImages, image]).join(',');
-      logger.log('[ImagesUploader][customRequest]', { uploaded, image, images, uploadedImages });
-      onChange!(images);
-    }
+    upload(option.file).then(uploaded => {
+      if (uploaded) {
+        logger.log('[ImagesUploader][customRequest]', { props: this.props, state: this.state });
+        const image = join(prefix || '', urlHandler ? urlHandler(uploaded[0]) : `${uploaded[0]}`);
+        const uploadedImages = value;
+        const images = _.compact([uploadedImages, image]).join(',');
+        logger.log('[ImagesUploader][customRequest]', { uploaded, image, images, uploadedImages });
+        onChange!(images);
+      }
+    });
   };
 
   render() {
