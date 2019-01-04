@@ -255,7 +255,7 @@ export const diff = (first, second, opts: { include?; exclude? } = {}) => {
   if (R.not(R.anyPass([R.isEmpty, R.isNil])(opts.include))) {
     verbose = deepDiff(R.pickAll(opts.include)(first), R.pickAll(opts.include)(second));
   } else if (R.not(R.anyPass([R.isEmpty, R.isNil])(opts.exclude))) {
-    verbose = deepDiff(R.omit(opts.include)(first), R.omit(opts.include)(second));
+    verbose = deepDiff(R.omit(opts.exclude)(first), R.omit(opts.exclude)(second));
   } else {
     verbose = deepDiff(first, second);
   }

@@ -206,7 +206,6 @@ export class ModelAdapter {
       .pickBy(opts => !_.includes(opts.options.accessible, ['hidden']))
       .keys()
       .value();
-    console.log('[fetch]', modelConfig, schema, relations);
     return this.service.fetch(
       auth,
       modelName,
