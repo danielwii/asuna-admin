@@ -110,9 +110,8 @@ declare module Asuna {
         /**
          * 用于渲染额外的功能按钮
          */
-        actions: () => any,
+        actions: (text, record, extras) => any,
         opts: {
-          auth: { token: string };
           modelName: string;
           /**
            * 用于处理完毕后的的页面刷新
