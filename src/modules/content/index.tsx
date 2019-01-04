@@ -12,7 +12,7 @@ import { responseProxy, TablePagination } from '@asuna-admin/adapters';
 import { ActionEvent, AppContext, EventBus, EventType } from '@asuna-admin/core';
 import { createLogger } from '@asuna-admin/logger';
 
-const logger = createLogger('modules:content:index', 'warn');
+const logger = createLogger('modules:content:index');
 
 interface IProps extends ReduxProps {
   basis: {
@@ -75,11 +75,7 @@ class ContentIndex extends React.Component<IProps, IState> {
     const configs = AppContext.adapters.models.getModelConfig(modelName);
     logger.debug('[constructor]', { configs, modelName });
 
-    const columns = R.prop('table', configs)(actions, {
-      // auth,
-      modelName,
-      callRefresh: this._refresh,
-    });
+    const columns = configs.table(actions, { modelName, callRefresh: this._refresh });
 
     // prettier-ignore
     const relations = R.compose(
