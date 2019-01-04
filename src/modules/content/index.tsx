@@ -75,7 +75,8 @@ class ContentIndex extends React.Component<IProps, IState> {
     const configs = AppContext.adapters.models.getModelConfig(modelName);
     logger.debug('[constructor]', { configs, modelName });
 
-    const columns = configs.table(actions, { modelName, callRefresh: this._refresh });
+    const columns =
+      configs.table && configs.table(actions, { modelName, callRefresh: this._refresh });
 
     // prettier-ignore
     const relations = R.compose(
