@@ -256,6 +256,20 @@ export class ModelAdapter {
 
   public getAssociationConfigs = (modelName: string) => R.prop(modelName)(this.associations);
 
+  public getColumns = (
+    modelName: string,
+    opts: { callRefresh: () => void; actions: (text, record, extras) => any },
+  ) => {
+    const formSchema = this.getFormSchema(modelName);
+    const { table: columnsRender } = this.getModelConfig(modelName);
+    const columns = columnsRender
+      ? columnsRender(opts.actions, { modelName, callRefresh: opts.callRefresh })
+      : [];
+    return _.map(columns, column =>
+      !formSchema[column.key] ? Object.assign(column, { title: `${column.title}(miss)` }) : column,
+    );
+  };
+
   public getModelConfig = (modelName: string): Asuna.Schema.ModelConfig => {
     const TAG = '[getModelConfig]';
     const config = R.prop(modelName)(this.modelConfigs);

@@ -45,6 +45,8 @@ interface IState {
 }
 
 class ContentIndex extends React.Component<IProps, IState> {
+  private modelsAdapter = AppContext.adapters.models;
+
   constructor(props) {
     super(props);
 
@@ -72,11 +74,13 @@ class ContentIndex extends React.Component<IProps, IState> {
     // content::name => name
     // prettier-ignore
     const modelName = R.compose(R.nth(1), R.split(/::/), R.path(['pane', 'key']))(basis);
-    const configs = AppContext.adapters.models.getModelConfig(modelName);
-    logger.debug('[constructor]', { configs, modelName });
+    const modelConfig = this.modelsAdapter.getModelConfig(modelName);
+    logger.debug('[constructor]', { modelConfig, modelName });
 
-    const columns =
-      configs.table && configs.table(actions, { modelName, callRefresh: this._refresh });
+    const columns = this.modelsAdapter.getColumns(modelName, {
+      callRefresh: this._refresh,
+      actions,
+    });
 
     // prettier-ignore
     const relations = R.compose(
@@ -89,7 +93,7 @@ class ContentIndex extends React.Component<IProps, IState> {
       modelName,
       columns,
       relations,
-      creatable: configs.creatable !== false,
+      creatable: modelConfig.creatable !== false,
       key: activeKey,
       sorter: {
         columnKey: 'id',
