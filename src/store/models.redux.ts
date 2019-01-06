@@ -54,7 +54,11 @@ const modelsActions = {
     callback,
   }),
   // upsert: (modelName, data) => reduxAction(modelsActionTypes.UPSERT, { modelName, data }),
-  remove: (modelName: string, data) => reduxAction(modelsActionTypes.REMOVE, { modelName, data }),
+  remove: (modelName: string, data: object, callback?: (response) => void) => ({
+    type: modelsActionTypes.REMOVE,
+    payload: { modelName, data },
+    callback,
+  }),
 
   loadAllSchemas: () => reduxAction(modelsActionTypes.LOAD_ALL_SCHEMAS),
   loadAllSchemasSuccess: schemas =>
@@ -110,7 +114,7 @@ const modelsSagaFunctions = {
       }
     }
   },
-  *remove({ payload: { modelName, data } }) {
+  *remove({ payload: { modelName, data }, callback }) {
     const { token } = yield select<RootState>(state => state.auth);
     if (token) {
       message.info(`remove model '${modelName}'...`);
@@ -118,13 +122,21 @@ const modelsSagaFunctions = {
         const response = yield call(AppContext.adapters.models.remove, modelName, data);
         message.success(`remove model '${modelName}' success!`);
         logger.log('[remove]', 'response of remove model is', response);
+        if (callback != null) callback({ response });
+
         // save model data when remove is success
         yield put(modelsActions.fetchSuccess(modelName, response.data));
         // refresh models in content index
-        yield put(contentActions.loadModels(modelName));
-      } catch (e) {
-        logger.warn('[remove]', e, { e });
-        message.error(e.message);
+        const { models } = yield select<RootState>(state => state.content);
+        yield put(contentActions.loadModels(modelName, _.get(models, `${modelName}.extras`)));
+      } catch (error) {
+        logger.warn('[remove]', error, { error });
+        try {
+          if (callback != null) callback({ error });
+        } catch (e) {
+          logger.warn('[upsert] callback error', e, { e });
+        }
+        message.error(error.message);
       }
     }
   },
