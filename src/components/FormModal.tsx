@@ -10,6 +10,7 @@ import { DynamicForm } from './DynamicForm';
 
 import { toFormErrors } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
+import idx from 'idx';
 
 const logger = createLogger('components:form-modal', 'warn');
 
@@ -122,9 +123,7 @@ export class FormModal extends React.Component<IProps, IState> {
           onCancel={this.handleCancel}
         >
           <LightForm
-            wrappedComponentRef={form => {
-              this.form = form as any;
-            }}
+            wrappedComponentRef={inst => (this.form = idx(inst, _ => _.props.form))}
             delegate
             fields={fields}
             onSubmit={this.handleOk}
