@@ -46,8 +46,7 @@ const contentActions = {
     }),
   loadModelsSuccess: data =>
     reduxAction(contentActionTypes.CONTENT_LOAD_MODELS_SUCCESS, { models: data }),
-  // loadModelsFailed : error => reduxAction(contentActionTypes.CONTENT_LOAD_MODELS_FAILED, {},
-  // error),
+  // loadModelsFailed : error => reduxAction(contentActionTypes.CONTENT_LOAD_MODELS_FAILED, {}, error),
 };
 
 // --------------------------------------------------------------

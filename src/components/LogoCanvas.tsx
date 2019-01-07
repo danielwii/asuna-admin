@@ -38,14 +38,6 @@ export class LogoCanvas extends React.Component {
   }
 
   render() {
-    return (
-      <canvas
-        ref={canvas => {
-          this.canvas = canvas;
-        }}
-      >
-        Canvas Not Support?!
-      </canvas>
-    );
+    return <canvas ref={canvas => (this.canvas = canvas)}>Canvas Not Support?!</canvas>;
   }
 }

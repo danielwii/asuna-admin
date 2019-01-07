@@ -3,15 +3,15 @@ import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
 import { AxiosResponse } from 'axios';
 import idx from 'idx';
-
-import { TablePagination } from './response';
+import { PaginationConfig } from 'antd/es/pagination';
 
 import { DynamicFormTypes } from '@asuna-admin/components';
-import { castModelKey, defaultColumns } from '@asuna-admin/helpers';
+import { castModelKey, defaultColumns, parseJSONIfCould } from '@asuna-admin/helpers';
 import { AppContext, AsunaDefinitions } from '@asuna-admin/core';
 import { Config } from '@asuna-admin/config';
 import { createLogger } from '@asuna-admin/logger';
 import { AuthState } from '@asuna-admin/store';
+import { Condition, WhereConditions } from 'typings/meta';
 
 // --------------------------------------------------------------
 // Types
@@ -30,7 +30,7 @@ export interface IModelService {
     configs: {
       relations?: string[];
       pagination?: Asuna.Pageable;
-      filters?: any;
+      filters?: WhereConditions;
       sorter?: any;
     } & Asuna.Schema.ModelConfig,
   ): Promise<AxiosResponse>;
@@ -94,8 +94,8 @@ const logger = createLogger('adapters:models');
 
 export interface ModelListConfig {
   endpoint?: string;
-  pagination?: TablePagination;
-  filters?;
+  pagination?: PaginationConfig;
+  filters?: Record<string, [Partial<Condition>]>;
   sorter?: Sorter | null;
   relations?: string[];
 }
@@ -266,7 +266,10 @@ export class ModelAdapter {
       ? columnsRender(opts.actions, { modelName, callRefresh: opts.callRefresh })
       : [];
     return _.map(columns, column =>
-      !formSchema[column.key] ? Object.assign(column, { title: `${column.title}(miss)` }) : column,
+      // 不检测不包含在 schema 中且不属于模型的列名
+      !formSchema[column.key] && !_.includes(['action'], column.key)
+        ? { ...column, title: `${column.title}(miss)` }
+        : column,
     );
   };
 
@@ -352,7 +355,7 @@ export class ModelAdapter {
     return associationsFields;
   });
 
-  public loadModels = (modelName: string, configs?: ModelListConfig): any => {
+  public loadModels = (modelName: string, configs: ModelListConfig = {}): any => {
     logger.debug('[loadModels]', {
       modelName,
       configs,
@@ -366,8 +369,15 @@ export class ModelAdapter {
     const auth = AppContext.fromStore('auth');
     return this.service.loadModels(auth, modelName, {
       pagination: { page, size },
-      sorter: configs && configs.sorter,
-      relations: configs && configs.relations,
+      filters: _.mapValues<Record<string, [Partial<Condition>]>, WhereConditions>(
+        configs.filters,
+        _.flow(
+          fp.get(0),
+          parseJSONIfCould,
+        ),
+      ),
+      sorter: configs.sorter,
+      relations: configs.relations,
       ...this.getModelConfig(modelName),
     });
   };

@@ -3,28 +3,12 @@ import * as _ from 'lodash';
 import { AppContext } from '@asuna-admin/core';
 import { Config } from '@asuna-admin/config';
 import { createLogger } from '@asuna-admin/logger';
+import { PaginationConfig } from 'antd/es/pagination';
 
-// --------------------------------------------------------------
-// Types
-// --------------------------------------------------------------
-
-export interface TablePagination {
-  showSizeChanger: boolean;
-  showTotal: number | Function;
-  current: number;
-  pageSize: number;
-  total: number;
-  pageSizeOptions: string[];
-}
-
-// --------------------------------------------------------------
-// Main
-// --------------------------------------------------------------
-
-const logger = createLogger('adapters::response', 'warn');
+const logger = createLogger('adapters::response');
 
 export const responseProxy = {
-  extract(apiResponse: object): { items: object[]; pagination: TablePagination } {
+  extract(apiResponse: object): { items: object[]; pagination: PaginationConfig } {
     return AppContext.ctx.response.extract(apiResponse);
   },
 };
@@ -62,7 +46,7 @@ export class ResponseAdapter {
     }
   };
 
-  extractPagination = (apiResponse): TablePagination => {
+  extractPagination = (apiResponse): PaginationConfig => {
     const { page, size, total: totalElements } = this.extractPageable(apiResponse);
     return {
       showSizeChanger: true,
@@ -71,10 +55,12 @@ export class ResponseAdapter {
       pageSize: size,
       total: totalElements,
       pageSizeOptions: ['10', '25', '50', '100'],
+      size: 'small',
+      showQuickJumper: true,
     };
   };
 
-  extract = (apiResponse): { items: object[]; pagination: TablePagination } => {
+  extract = (apiResponse): { items: object[]; pagination: PaginationConfig } => {
     const { items } = apiResponse;
     return { items, pagination: this.extractPagination(apiResponse) };
   };

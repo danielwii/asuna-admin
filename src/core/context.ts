@@ -58,7 +58,7 @@ export interface INextConfig {
      */
     isServer?: boolean;
   };
-  publicRuntimeConfig?: { env?: string };
+  publicRuntimeConfig?: { env?: string; version?: string };
 }
 
 // --------------------------------------------------------------
@@ -169,6 +169,10 @@ class AppContext {
 
   public static get isDevMode() {
     return idx(AppContext.nextConfig.publicRuntimeConfig, _ => _.env) === 'dev';
+  }
+
+  public static get publicConfig() {
+    return AppContext.nextConfig.publicRuntimeConfig || {};
   }
 
   public static get ctx() {

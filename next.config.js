@@ -8,6 +8,7 @@ const R = require('ramda');
 const withTypescript = require('@zeit/next-typescript');
 const withProgressBar = require('next-progressbar');
 const withCss = require('@zeit/next-css');
+const pkg = require('./package.json');
 
 const jarvis = new Jarvis({ port: 1337 });
 const bundleAnalyzerPlugin = new BundleAnalyzerPlugin({ openAnalyzer: false });
@@ -70,5 +71,6 @@ module.exports = R.compose(
 
   publicRuntimeConfig: {
     env: process.env.ENV || 'dev',
+    version: pkg.version,
   },
 });

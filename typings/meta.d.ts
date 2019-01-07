@@ -110,7 +110,7 @@ export interface STIMetaInfoOptions extends MetaInfoBaseOptions {
   /**
    * 使用继承类时该字段应该是只读的
    */
-  accessible?: 'readonly';
+  accessible: 'readonly' | 'hidden';
   enumData?: { [key: string]: string | object };
   defaultValue?: string;
 }
@@ -137,3 +137,43 @@ export function EntityMetaInfo(options: EntityMetaInfoOptions): Function {
     target.entityInfo = options;
   };
 }
+
+// --------------------------------------------------------------
+// Conditions
+// --------------------------------------------------------------
+
+type AndCondition = { $and: Condition };
+type OrCondition = { $or: Condition };
+type LikeCondition = { $like: string };
+type NotLikeCondition = { $notLike: string };
+type AnyCondition = { $any: any[] };
+type InCondition = { $in: any[] };
+type NotInCondition = { $notIn: any[] };
+type BetweenCondition = { $between: [any, any] };
+type EqualCondition = { $eq: any };
+type LessThanCondition = { $lt: any };
+type GreatThanCondition = { $gt: any };
+type RawCondition = { $raw: any };
+type NotNullCondition = { $notNull: true };
+type IsNullCondition = { $isNull: true };
+type NotCondition = { $not: any };
+
+export type Condition = Partial<
+  AndCondition &
+    LikeCondition &
+    OrCondition &
+    NotLikeCondition &
+    AnyCondition &
+    InCondition &
+    NotInCondition &
+    BetweenCondition &
+    EqualCondition &
+    LessThanCondition &
+    GreatThanCondition &
+    RawCondition &
+    NotNullCondition &
+    IsNullCondition &
+    NotCondition
+>;
+
+export type WhereConditions = Record<string, Condition>;
