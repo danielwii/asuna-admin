@@ -8,9 +8,10 @@ import { Subscription } from 'rxjs';
 
 import { contentActions, modelsActions, panesActions, RootState } from '@asuna-admin/store';
 import { castModelKey, diff } from '@asuna-admin/helpers';
-import { responseProxy, TablePagination } from '@asuna-admin/adapters';
+import { responseProxy } from '@asuna-admin/adapters';
 import { ActionEvent, AppContext, EventBus, EventType } from '@asuna-admin/core';
 import { createLogger } from '@asuna-admin/logger';
+import { PaginationConfig } from 'antd/es/pagination';
 
 const logger = createLogger('modules:content:index');
 
@@ -34,7 +35,7 @@ interface IState {
    */
   creatable: boolean;
   columns: any;
-  pagination?: TablePagination;
+  pagination?: PaginationConfig;
   filters?: object;
   sorter?: object;
   // sorter?: {
@@ -174,9 +175,7 @@ class ContentIndex extends React.Component<IProps, IState> {
       content: `删除 ${modelName}？`,
       okText: '确认',
       cancelText: '取消',
-      onOk: () => {
-        dispatch(modelsActions.remove(modelName, record));
-      },
+      onOk: () => dispatch(modelsActions.remove(modelName, record)),
     });
   };
 
@@ -192,7 +191,12 @@ class ContentIndex extends React.Component<IProps, IState> {
 
     logger.debug('[handleTableChange]', { availableSorter, transformedSorter });
     dispatch(
-      contentActions.loadModels(modelName, { relations, pagination, sorter: transformedSorter }),
+      contentActions.loadModels(modelName, {
+        relations,
+        filters,
+        pagination,
+        sorter: transformedSorter,
+      }),
     );
     this.setState({
       pagination,
@@ -237,7 +241,7 @@ class ContentIndex extends React.Component<IProps, IState> {
           rowKey="id"
           loading={loading}
           columns={columns}
-          pagination={pagination as any}
+          pagination={pagination}
           onChange={this._handleTableChange}
         />
         {/* language=CSS */}
@@ -252,8 +256,6 @@ class ContentIndex extends React.Component<IProps, IState> {
   }
 }
 
-const mapStateToProps = (state: RootState): any => ({
-  ...state.content,
-});
+const mapStateToProps = (state: RootState): any => state.content;
 
 export default connect(mapStateToProps)(ContentIndex);

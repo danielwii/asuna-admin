@@ -7,7 +7,7 @@ import Truncate from 'react-truncate';
 import { join } from 'path';
 import styled from 'styled-components';
 
-import { Button, Checkbox, Icon, Popconfirm, Tooltip } from 'antd';
+import { Button, Checkbox, Icon, Input, Popconfirm, Tooltip } from 'antd';
 
 import { castModelKey } from './cast';
 import { WithDebugInfo } from './debug';
@@ -15,8 +15,10 @@ import { WithDebugInfo } from './debug';
 import { Config } from '@asuna-admin/config';
 import { createLogger } from '@asuna-admin/logger';
 import { AppContext } from '@asuna-admin/core';
+import { ColumnProps } from 'antd/es/table';
+import { removePreAndSuf } from '@asuna-admin/helpers';
 
-const logger = createLogger('helpers', 'warn');
+const logger = createLogger('helpers');
 
 export * from './cast';
 export * from './error';
@@ -36,12 +38,81 @@ const ThumbImage = styled.img`
   max-height: 80px;
 `;
 
+/**
+ * used by services
+ * @param token
+ */
 export const authHeader = token => {
   if (Config.is('AUTH_HEADER', 'AuthHeaderAsBearerToken')) {
     return { headers: { Authorization: `Bearer ${token}` } };
   }
   return { headers: { Authorization: token } };
 };
+
+type ConditionType = 'like' | 'boolean';
+type SwitchConditionExtras = {};
+
+function generateSearchColumnProps(
+  dataIndex: string,
+  conditionType?: ConditionType,
+  conditionExtras?: SwitchConditionExtras,
+): ColumnProps<any> {
+  // only called in filterDropdown
+  const getSelectedValue = value => {
+    switch (conditionType) {
+      case 'like':
+        return [{ $like: `%${value}%` }];
+      // case 'boolean':
+      //   return [{ $eq: value === 'true' }];
+      default:
+        return [value];
+    }
+  };
+  const getSelectedKey = selectedKeys => {
+    if (selectedKeys[0]) {
+      switch (conditionType) {
+        case 'like':
+          return removePreAndSuf(selectedKeys[0].$like, '%', '%');
+        default:
+          return selectedKeys[0];
+      }
+    }
+    return undefined;
+  };
+
+  if (conditionType === 'boolean') {
+    return {
+      filterMultiple: false,
+      filters: [
+        { text: 'True', value: JSON.stringify({ $eq: true }) },
+        { text: 'False', value: JSON.stringify({ $or: [{ $eq: false }, { $isNull: true }] }) },
+      ],
+    };
+  }
+
+  return {
+    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }: any) => (
+      <div>
+        <Input
+          addonBefore={conditionType}
+          placeholder={`Search ${dataIndex}`}
+          value={getSelectedKey(selectedKeys)}
+          onChange={e => setSelectedKeys(e.target.value ? getSelectedValue(e.target.value) : [])}
+          onPressEnter={confirm}
+        />
+        <Button type="primary" onClick={confirm} icon="search" size="small">
+          Search
+        </Button>
+        <Button onClick={clearFilters} size="small">
+          Reset
+        </Button>
+      </div>
+    ),
+    filterIcon: filtered => (
+      <Icon type="search" style={{ color: filtered ? '#1890ff' : 'inherit' }} />
+    ),
+  };
+}
 
 export const columnHelper = {
   generateOriginal: (key, title, transformer?) => ({
@@ -65,16 +136,17 @@ export const columnHelper = {
     dataIndex: key,
     render: text => {
       const content = transformer ? transformer(text) : text;
-      return <WithDebugInfo info={{ key, title, text }}>content</WithDebugInfo>;
+      return <WithDebugInfo info={{ key, title, text }}>{content}</WithDebugInfo>;
     },
   }),
-  generate: (key, title, transformer?) => ({
+  generate: (key, title, opts: { transformer?; searchType?: ConditionType } = {}) => ({
     key,
     title,
     dataIndex: key,
     sorter: true,
+    ...generateSearchColumnProps(key, opts.searchType),
     render: text => {
-      const value = transformer ? transformer(text) : text;
+      const value = opts.transformer ? opts.transformer(text) : text;
       if (typeof value === 'string' && value.length > 20) {
         return <Tooltip title={value}>{`${value.slice(0, 20)}...`}</Tooltip>;
       }
@@ -191,6 +263,7 @@ export const columnHelper = {
     title,
     dataIndex: castModelKey(key),
     key: castModelKey(key),
+    ...generateSearchColumnProps(castModelKey(key), 'boolean', {}),
     render: (isActive, record) => (
       <Popconfirm
         title={isActive ? `是否注销: ${record.id}` : `是否激活: ${record.id}`}
@@ -217,12 +290,12 @@ export const columnHelper = {
 export const commonColumns = {
   any: (key, title?) => columnHelper.generate(key, title || key.toUpperCase()),
   id: columnHelper.generateID(),
-  name: columnHelper.generate('name', '名称'),
+  name: columnHelper.generate('name', '名称', { searchType: 'like' }),
   ordinal: columnHelper.generate('ordinal', '序号'),
-  description: columnHelper.generate('description', '描述'),
-  title: columnHelper.generate('title', '标题'),
-  nameEn: columnHelper.generate('nameEn', '英文名称'),
-  email: columnHelper.generate('email', 'Email'),
+  description: columnHelper.generate('description', '描述', { searchType: 'like' }),
+  title: columnHelper.generate('title', '标题', { searchType: 'like' }),
+  nameEn: columnHelper.generate('nameEn', '英文名称', { searchType: 'like' }),
+  email: columnHelper.generate('email', 'Email', { searchType: 'like' }),
   type: columnHelper.generate('type', '类型'),
   createdAt: columnHelper.generateCalendar('createdAt', '创建时间'),
   updatedAt: columnHelper.generateCalendar('updatedAt', '更新时间'),
