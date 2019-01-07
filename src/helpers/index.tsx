@@ -8,15 +8,15 @@ import { join } from 'path';
 import styled from 'styled-components';
 
 import { Button, Checkbox, Icon, Input, Popconfirm, Tooltip } from 'antd';
+import { ColumnProps } from 'antd/es/table';
 
 import { castModelKey } from './cast';
 import { WithDebugInfo } from './debug';
+import { removePreAndSuf } from './func';
 
 import { Config } from '@asuna-admin/config';
 import { createLogger } from '@asuna-admin/logger';
 import { AppContext } from '@asuna-admin/core';
-import { ColumnProps } from 'antd/es/table';
-import { removePreAndSuf } from '@asuna-admin/helpers';
 
 const logger = createLogger('helpers');
 
