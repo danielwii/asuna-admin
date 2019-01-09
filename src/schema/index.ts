@@ -176,9 +176,6 @@ export const asyncLoadAssociationsDecorator = async (
             {
               modelName: selectable,
               association: fieldsOfAssociations[selectable],
-              onChange: value => {
-                logger.log(TAG, 'onChange', { value });
-              },
               onSearch: _.debounce(async (value, callback) => {
                 logger.log(TAG, 'onSearch', { value });
 

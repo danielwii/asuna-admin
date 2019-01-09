@@ -4,9 +4,11 @@ import _ from 'lodash';
 import * as R from 'ramda';
 import idx from 'idx';
 import util from 'util';
+import styled from 'styled-components';
 
 import { Anchor, Button, Col, Form, Row, Tag } from 'antd';
 import { FormComponentProps } from 'antd/es/form';
+import { CircleLoader } from 'react-spinners';
 
 import {
   generateAuthorities,
@@ -34,6 +36,17 @@ import { EnumFilterMetaInfoOptions, MetaInfoOptions } from 'typings/meta';
 import { WithDebugInfo } from '@asuna-admin/helpers/debug';
 
 const logger = createLogger('components:dynamic-form');
+
+const FixedLoading = styled(({ className }) => (
+  <div className={className}>
+    <CircleLoader color="#13c2c2" />
+  </div>
+))`
+  position: fixed;
+  right: 1rem;
+  top: 1rem;
+  z-index: 20;
+`;
 
 export enum DynamicFormTypes {
   // --------------------------------------------------------------
@@ -71,6 +84,7 @@ export enum DynamicFormTypes {
 }
 
 type DynamicFormProps = {
+  loading?: boolean;
   anchor?: boolean;
   /**
    * 隐藏提交按钮
@@ -179,7 +193,7 @@ export class DynamicForm extends React.Component<
         // --------------------------------------------------------------
         logger.debug('[DynamicForm]', '[buildField][ManyToMany]', { field });
         if (R.has('foreignOpts')(field)) {
-          const { modelName, association = defaultAssociation, onChange, onSearch } = R.path([
+          const { modelName, association = defaultAssociation, onSearch } = R.path([
             'foreignOpts',
             0,
           ])(field);
@@ -194,7 +208,6 @@ export class DynamicForm extends React.Component<
             mode: 'multiple',
             withSortTree: type === 'Sort',
             onSearch,
-            onChange,
             getName: R.prop(association.name || defaultAssociation.name),
             getValue: R.prop(association.value || defaultAssociation.value),
           });
@@ -223,11 +236,7 @@ export class DynamicForm extends React.Component<
         const items: Item[] = _.map(enumData, (value, key) => ({ key, value: [key, value] }));
         const type = idx(field.options as EnumFilterMetaInfoOptions, _ => _.filterType);
         logger.log('[DynamicForm]', '[buildField][EnumFilter|Enum]', { type, items });
-        return generateSelect(form, {
-          ...(options as any),
-          items,
-          getName: R.prop('key'),
-        });
+        return generateSelect(form, { ...(options as any), items, getName: R.prop('key') });
       }
       case DynamicFormTypes.Association: {
         // --------------------------------------------------------------
@@ -235,7 +244,7 @@ export class DynamicForm extends React.Component<
         // --------------------------------------------------------------
         logger.debug('[DynamicForm]', '[buildField][Association]', field);
         if (R.has('foreignOpts')(field)) {
-          const { modelName, association = defaultAssociation, onChange, onSearch } = R.path([
+          const { modelName, association = defaultAssociation, onSearch } = R.path([
             'foreignOpts',
             0,
           ])(field);
@@ -246,7 +255,6 @@ export class DynamicForm extends React.Component<
             ...(options as any),
             items,
             existItems,
-            onChange,
             onSearch,
             getName: R.prop(association.name || defaultAssociation.name),
             getValue: R.prop(association.value || defaultAssociation.value),
@@ -289,12 +297,7 @@ export class DynamicForm extends React.Component<
   };
 
   render() {
-    const {
-      fields,
-      delegate,
-      anchor,
-      form: { validateFields },
-    } = this.props;
+    const { loading, fields, delegate, anchor } = this.props;
     logger.log('[DynamicForm]', '[render]', { props: this.props });
 
     // validateFields((errors, values) => console.log({ errors, values }));
@@ -314,6 +317,7 @@ export class DynamicForm extends React.Component<
     return (
       <React.Fragment>
         <div className="dynamic-form">
+          {loading && <FixedLoading />}
           <Row type="flex" gutter={anchor ? 16 : 0}>
             <Col span={anchor ? 18 : 24}>
               <Form>
@@ -406,14 +410,14 @@ interface IPureElementProps {
 
 class EnhancedPureElement extends React.Component<IPureElementProps> {
   shouldComponentUpdate(nextProps, nextState) {
+    logger.log('[EnhancedPureElement][shouldComponentUpdate]', { nextProps, nextState });
     const isRequired = R.path(['options', 'required'])(nextProps.field);
     const propsDiff = diff(this.props, nextProps, { exclude: ['builder'] });
     const stateDiff = diff(this.state, nextState);
     const shouldUpdate = isRequired || propsDiff.isDifferent || stateDiff.isDifferent;
     if (shouldUpdate) {
       logger.debug(
-        '[EnhancedPureElement]',
-        '[shouldComponentUpdate]',
+        '[EnhancedPureElement][shouldComponentUpdate]',
         {
           nextProps,
           nextState,
@@ -426,12 +430,29 @@ class EnhancedPureElement extends React.Component<IPureElementProps> {
         shouldUpdate,
       );
     }
+    logger.log(
+      '[EnhancedPureElement][shouldComponentUpdate]',
+      { stateDiff, propsDiff, isRequired },
+      shouldUpdate,
+    );
     return shouldUpdate;
+  }
+
+  componentWillUnmount(): void {
+    logger.log('[EnhancedPureElement][componentWillUnmount]', this.state, this.props);
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
+    logger.log('[EnhancedPureElement][componentDidCatch]', error, errorInfo);
+  }
+
+  componentDidMount(): void {
+    logger.log('[EnhancedPureElement][componentDidMount]', this.state, this.props);
   }
 
   render() {
     const { field, index, builder } = this.props;
-    logger.debug('[EnhancedPureElement]', '[render]', { props: this.props, state: this.state });
+    logger.log('[EnhancedPureElement][render]', { props: this.props, state: this.state });
 
     // options.accessible = 'hidden' 时需要隐藏该元素
     const hidden = idx(field as DynamicFormField, _ => _.options.accessible) === 'hidden';

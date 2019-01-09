@@ -42,6 +42,7 @@
         "children", //
         "form"      // supported by Form.create()
       ]
-    }]
+    }],
+    "global-require": "off"
   }
 }
