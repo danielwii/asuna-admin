@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import * as R from 'ramda';
 import moment from 'moment';
 
-import { Form, message } from 'antd';
+import { Form, Icon, message } from 'antd';
 
 import { DynamicForm, DynamicFormTypes } from '@asuna-admin/components/DynamicForm';
 import * as schemaHelper from '@asuna-admin/schema';
@@ -304,9 +304,13 @@ class ContentUpsert extends React.Component<IProps, IState> {
         const asyncDecoratedFields = await R.pipeP(...asyncDecorators('ASSOCIATIONS'))(
           decoratedFields,
         );
-        const isDifferent = diff(asyncDecoratedFields, decoratedFields).isDifferent;
+        const isDifferent = diff(asyncDecoratedFields, this.state.fields).isDifferent;
         if (isDifferent) {
-          logger.debug('[handleFormChange]', { asyncDecoratedFields, decoratedFields });
+          logger.debug('[handleFormChange]', {
+            asyncDecoratedFields,
+            decoratedFields,
+            state: this.state.fields,
+          });
           this.setState({ fields: asyncDecoratedFields });
         }
         this.setState({
@@ -370,11 +374,24 @@ class ContentUpsert extends React.Component<IProps, IState> {
 
     // loading 仅在初次加载时渲染，否则编辑器会 lose focus
     const noFields = R.anyPass([R.isEmpty, R.isNil])(fields);
-    const loading = noFields || R.any(R.equals(true), R.values(loadings));
+    if (noFields || R.any(R.equals(true), R.values(loadings))) {
+      return (
+        <React.Fragment>
+          <Icon type="loading" style={{ fontSize: 24 }} spin />
+          {/* language=CSS */}
+          <style jsx>{`
+            div {
+              width: 100%;
+              margin: 10rem 0;
+              text-align: center;
+            }
+          `}</style>
+        </React.Fragment>
+      );
+    }
 
     return (
       <ContentForm
-        loading={loading}
         anchor
         fields={fields}
         onChange={this._handleFormChange}
