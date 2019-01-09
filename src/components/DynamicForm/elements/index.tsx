@@ -3,10 +3,10 @@ import React from 'react';
 import { Checkbox, DatePicker, Form, Icon, Input, InputNumber, Switch, TimePicker } from 'antd';
 import { GetFieldDecoratorOptions, WrappedFormUtils } from 'antd/es/form/Form';
 
-import { BraftRichEditor } from '../../RichEditor';
 import { VideoUploader } from '../Videos';
 import { Authorities } from '../Authorities';
 
+import { BraftRichEditor } from '@asuna-admin/components';
 import { Config } from '@asuna-admin/config';
 import { createLogger } from '@asuna-admin/logger';
 
@@ -101,7 +101,7 @@ export const generateComponent = (
 export type HiddenOptions = { key: string; name: string };
 
 export const generateHidden = (form: WrappedFormUtils, options: HiddenOptions) => {
-  logger.debug('generateHidden', options);
+  logger.debug('[generateHidden]', options);
   const { key, name } = options;
   const fieldName = key || name;
   if (name) {

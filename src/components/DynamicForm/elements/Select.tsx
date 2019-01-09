@@ -38,7 +38,6 @@ export type SelectOptions = {
   getValue: () => string;
   withSortTree: boolean;
   filterType?: 'Sort';
-  onChange?: (selectedItems: number | string | Item[] | any[]) => void;
   onSearch?: (value: string, cb: (items: Item[]) => void) => any;
   enumSelector: { name?: string; value?: string };
 };
@@ -87,7 +86,6 @@ export function generateSelect<T>(
     getName = R.prop('name'),
     getValue = R.prop('value'),
     withSortTree = false,
-    onChange,
     onSearch,
     enumSelector = {},
   }: SelectOptions,
@@ -115,7 +113,9 @@ export function generateSelect<T>(
     };
 
     _onSortEnd = ({ oldIndex, newIndex }) => {
+      const { onChange } = this.props;
       const selectedItems = arrayMove(this.state.selectedItems, oldIndex, newIndex);
+      logger.debug('[_onSortEnd]', { selectedItems, oldIndex, newIndex });
       onChange!(selectedItems);
       this.setState({ selectedItems });
     };
@@ -245,7 +245,7 @@ export function generateSelect<T>(
       }
     };
 
-    public componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
+    componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
       logger.error(error, errorInfo);
     }
 
