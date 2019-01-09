@@ -177,7 +177,7 @@ export class ImageTrivia extends React.Component<IProps, IState> {
                 maxHeight: maxHeight || DEFAULT_MAX_HEIGHT,
                 maxWidth: maxWidth || DEFAULT_MAX_WEIGHT,
               }}
-              src={value.url}
+              src={value.url || ''}
               crop={crop}
               onImageLoaded={this.onImageLoaded as any}
               onComplete={this.onCropComplete}
