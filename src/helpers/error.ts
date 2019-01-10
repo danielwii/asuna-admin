@@ -2,6 +2,7 @@ import { AxiosResponse } from 'axios';
 import * as R from 'ramda';
 
 import { createLogger } from '@asuna-admin/logger';
+import idx from 'idx';
 
 const logger = createLogger('helpers:errors', 'warn');
 
@@ -12,6 +13,13 @@ interface FormError {
       message: string;
     }[];
   };
+}
+
+export function toErrorMessage(e) {
+  if (e.response) {
+    return idx(e, _ => _.response.data.message);
+  }
+  return e.message;
 }
 
 export function isErrorResponse(error) {

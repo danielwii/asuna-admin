@@ -9,6 +9,7 @@ import { authActions } from './auth.actions';
 
 import { createLogger } from '@asuna-admin/logger';
 import { securityProxy } from '@asuna-admin/adapters';
+import { toErrorMessage } from '@asuna-admin/helpers';
 
 const logger = createLogger('store:security', 'warn');
 
@@ -65,7 +66,7 @@ const securitySagaFunctions = {
         yield put(securityActions.loadAllRolesSuccess(response.data));
       } catch (e) {
         logger.warn('[loadAllRoles]', 'CATCH -> load all roles error', e);
-        message.error(e.message);
+        message.error(toErrorMessage(e));
       }
     }
   },
@@ -82,7 +83,7 @@ const securitySagaFunctions = {
         yield put(securityActions.getCurrentUserSuccess(response.data));
       } catch (e) {
         logger.warn('[getCurrentUser]', 'CATCH -> get current user error', e);
-        message.error(e.message);
+        message.error(toErrorMessage(e));
         yield put(authActions.logout());
       }
     }

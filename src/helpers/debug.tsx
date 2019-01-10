@@ -20,6 +20,6 @@ export class WithDebugInfo extends React.PureComponent<IWithDebugInfoProps> {
         </>
       );
     }
-    return children;
+    return children || '';
   }
 }

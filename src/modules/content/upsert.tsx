@@ -9,7 +9,7 @@ import { DynamicForm, DynamicFormTypes } from '@asuna-admin/components/DynamicFo
 import * as schemaHelper from '@asuna-admin/schema';
 import { Pane } from '@asuna-admin/components';
 import { modelsActions, RootState } from '@asuna-admin/store';
-import { diff, isErrorResponse, toFormErrors } from '@asuna-admin/helpers';
+import { diff, isErrorResponse, toErrorMessage, toFormErrors } from '@asuna-admin/helpers';
 import { AppContext, EventBus, EventType } from '@asuna-admin/core';
 import { createLogger } from '@asuna-admin/logger';
 
@@ -348,7 +348,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
           const errors = toFormErrors(error.response);
           logger.warn('[upsert callback]', { response, error, errors });
           if (typeof errors === 'string') {
-            message.error(errors);
+            message.error(toErrorMessage(errors));
           } else {
             this._handleFormChange(errors);
             this.setState({ hasErrors: true });

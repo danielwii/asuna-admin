@@ -10,6 +10,7 @@ import { contentActions } from './content.redux';
 import { RootState } from '@asuna-admin/store';
 import { createLogger } from '@asuna-admin/logger';
 import { AppContext } from '@asuna-admin/core';
+import { toErrorMessage } from '@asuna-admin/helpers';
 
 const logger = createLogger('store:models', 'warn');
 
@@ -84,7 +85,7 @@ const modelsSagaFunctions = {
         yield put(modelsActions.fetchSuccess(modelName, response.data));
       } catch (e) {
         logger.warn('[fetch]', e, { e });
-        message.error(e.message);
+        message.error(toErrorMessage(e));
       }
     }
   },
@@ -110,7 +111,7 @@ const modelsSagaFunctions = {
         } catch (e) {
           logger.warn('[upsert] callback error', e, { e });
         }
-        message.error(error.message);
+        message.error(toErrorMessage(error));
       }
     }
   },
@@ -136,7 +137,7 @@ const modelsSagaFunctions = {
         } catch (e) {
           logger.warn('[upsert] callback error', e, { e });
         }
-        message.error(error.message);
+        message.error(toErrorMessage(error));
       }
     }
   },
@@ -160,7 +161,7 @@ const modelsSagaFunctions = {
         logger.log('[loadAllSchemas]', 'load all model schemas', effects, schemas);
       } catch (e) {
         logger.warn('[loadAllSchemas]', e, { e });
-        message.error(e.message);
+        message.error(toErrorMessage(e));
       }
     }
   },

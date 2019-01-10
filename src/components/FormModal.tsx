@@ -8,7 +8,7 @@ import { WrappedFormUtils } from 'antd/es/form/Form';
 
 import { DynamicForm } from './DynamicForm';
 
-import { toFormErrors } from '@asuna-admin/helpers';
+import { toErrorMessage, toFormErrors } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 import idx from 'idx';
 
@@ -83,7 +83,7 @@ export class FormModal extends React.Component<IProps, IState> {
           const errors = toFormErrors(e.response);
           logger.error('[FormModal][handleOk]', { e, errors });
           if (_.isString(errors)) {
-            message.error(errors);
+            message.error(toErrorMessage(errors));
           } else {
             this.handleFormChange(errors);
           }
