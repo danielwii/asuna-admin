@@ -6,6 +6,7 @@ import { Button, Divider, Tabs } from 'antd';
 
 import ModulesLoader from '@asuna-admin/modules';
 import { createLogger } from '@asuna-admin/logger';
+import { diff } from '@asuna-admin/helpers';
 
 const logger = createLogger('components:panes');
 
@@ -15,6 +16,10 @@ export type Pane = {
   key: string;
   linkTo: string;
   title: string;
+  data: {
+    modelName: string;
+    record: any;
+  };
   // composed: {
   //   component: object;
   //   state: object;
@@ -55,6 +60,17 @@ export class Panes extends React.Component<IPanesProps, IState> {
     }
   };
 
+  shouldComponentUpdate(
+    nextProps: Readonly<IPanesProps>,
+    nextState: Readonly<IState>,
+    nextContext: any,
+  ): boolean {
+    const propsDiff = diff(nextProps, this.props);
+    const stateDiff = diff(nextState, this.state);
+    logger.log('[shouldComponentUpdate]', { propsDiff, stateDiff });
+    return propsDiff.isDifferent || stateDiff.isDifferent;
+  }
+
   render() {
     const { titles } = this.state;
 
@@ -65,7 +81,7 @@ export class Panes extends React.Component<IPanesProps, IState> {
     }
 
     const title = titles[activeKey];
-    logger.log('[render]', { title });
+    logger.log('[render]', { props: this.props, stats: this.state });
 
     const operations = (
       <React.Fragment>

@@ -12,6 +12,7 @@ import { modelsActions, RootState } from '@asuna-admin/store';
 import { diff, isErrorResponse, toErrorMessage, toFormErrors } from '@asuna-admin/helpers';
 import { AppContext, EventBus, EventType } from '@asuna-admin/core';
 import { createLogger } from '@asuna-admin/logger';
+import idx from 'idx';
 
 const logger = createLogger('modules:content:upsert');
 
@@ -82,10 +83,12 @@ interface IProps extends ReduxProps {
 }
 
 interface IState {
-  preDecorators: (tag: string) => any[];
-  asyncDecorators: (tag: string) => any[];
+  status: 'Initializing' | 'Loading' | 'Loaded' | 'Updating' | 'Done';
   isInsertMode: boolean;
   modelName: string;
+  /**
+   * 是否是第一次初始化操作
+   */
   init: boolean;
   loadings: { INIT: boolean; LOAD: boolean; ASSOCIATIONS: boolean };
   fields: FormField[];
@@ -96,6 +99,23 @@ interface IState {
 }
 
 class ContentUpsert extends React.Component<IProps, IState> {
+  preDecorators = tag => [
+    schemaHelper.peek(`before-${tag}`),
+    schemaHelper.hiddenComponentDecorator,
+    schemaHelper.jsonDecorator,
+    schemaHelper.enumDecorator,
+    schemaHelper.associationDecorator,
+    schemaHelper.peek(`after-${tag}`),
+  ];
+
+  asyncDecorators = tag => [
+    // TODO 目前异步数据拉取无法在页面上显示对应字段的 loading 状态
+    async fields => R.curry(schemaHelper.peek(`before-async-${tag}`))(fields),
+    // async fields => schemaHelper.hiddenComponentDecorator(fields),
+    schemaHelper.asyncLoadAssociationsDecorator,
+    async fields => R.curry(schemaHelper.peek(`after-async-${tag}`))(fields),
+  ];
+
   constructor(props) {
     super(props);
 
@@ -107,26 +127,12 @@ class ContentUpsert extends React.Component<IProps, IState> {
       R.split(/::/),
       R.path(['pane', 'key']),
     )(basis);
-    logger.debug('[constructor]', 'model name is ', modelName);
+    logger.log('[constructor]', 'model name is ', modelName);
 
-    const isInsertMode = this._detectUpsertMode(modelName);
+    const isInsertMode = !R.path(['pane', 'data', 'record'])(basis);
 
     this.state = {
-      preDecorators: tag => [
-        schemaHelper.peek(`before-${tag}`),
-        schemaHelper.hiddenComponentDecorator,
-        schemaHelper.jsonDecorator,
-        schemaHelper.enumDecorator,
-        schemaHelper.associationDecorator,
-        schemaHelper.peek(`after-${tag}`),
-      ],
-      asyncDecorators: tag => [
-        // TODO 目前异步数据拉取无法在页面上显示对应字段的 loading 状态
-        async fields => R.curry(schemaHelper.peek(`before-async-${tag}`))(fields),
-        // async fields => schemaHelper.hiddenComponentDecorator(fields),
-        schemaHelper.asyncLoadAssociationsDecorator,
-        async fields => R.curry(schemaHelper.peek(`after-async-${tag}`))(fields),
-      ],
+      status: 'Initializing',
       isInsertMode,
       modelName,
       init: true,
@@ -144,7 +150,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
   async componentWillMount() {
     logger.log('[componentWillMount]', { props: this.props, state: this.state });
     const { basis } = this.props;
-    const { isInsertMode } = this.state;
+    const { isInsertMode, init } = this.state;
 
     // content::create::name::timestamp => name
     const modelName = R.compose(
@@ -171,50 +177,41 @@ class ContentUpsert extends React.Component<IProps, IState> {
     // Using pre decorators instead
     // --------------------------------------------------------------
 
-    const { preDecorators, asyncDecorators } = this.state;
+    let decoratedFields = R.pipe(...this.preDecorators('INIT'))(formFields);
+    let originalFieldValues;
 
-    let decoratedFields = R.pipe(...preDecorators('INIT'))(formFields);
-
-    // INSERT-MODE: 仅在新增模式下拉取数据
+    // INSERT-MODE: 仅在新增模式下拉取关联数据
     if (isInsertMode) {
-      decoratedFields = await R.pipeP(...asyncDecorators('ASSOCIATIONS'))(decoratedFields);
+      decoratedFields = await R.pipeP(...this.asyncDecorators('ASSOCIATIONS'))(decoratedFields);
+    } else {
+      // 非新增模式尝试再次拉取数据
+      this._reloadEntity(modelName);
+      const models = this.props.models;
+      const record = idx(this.props, _ => _.basis.pane.data.record);
+
+      logger.debug('[componentWillMount]', { modelName, record });
+      originalFieldValues = R.pathOr({}, [modelName, record.id])(models);
     }
 
-    this.setState({
+    await this.setState({
+      // 不是新增时还存在更多信息的加载操作
+      status: this.state.isInsertMode ? 'Done' : 'Loading',
+      // 填充整个页面需要的数据，这是页面初始化后第一次数据完整数据填充，并且已经包括了关联数据，但是并未包含真实的值
       fields: decoratedFields,
+      // 包括了表单的元数据，当前页面也只需要填充这一次
       wrappedFormSchema: formFields,
-      loadings: { ...this.state.loadings, INIT: false, ASSOCIATIONS: false },
+      // 更新当前的加载状态，这里可以结束初始化和关联阶段
+      loadings: { INIT: false, LOAD: this.state.loadings.LOAD, ASSOCIATIONS: false },
+      originalFieldValues,
     });
-  }
 
-  /**
-   * update 模式时第一次加载数据需要通过异步获取到的数据进行渲染。
-   * 渲染成功后则不再处理 props 的数据更新，以保证当前用户的修改不会丢失。
-   * @param nextProps
-   */
-  componentWillReceiveProps(nextProps) {
-    logger.log('[componentWillReceiveProps]', {
-      props: this.props,
-      state: this.state,
-      nextProps,
-    });
-    const { isInsertMode, modelName, init } = this.state;
-    // 初次更新时加载数据
-    if (!isInsertMode && init) {
-      const {
-        models,
-        basis: {
-          pane: {
-            data: { record },
-          },
-        },
-      } = nextProps;
-
-      logger.debug('[componentWillReceiveProps]', { modelName, record });
-      const fieldValues = R.pathOr({}, [modelName, record.id])(models);
-      logger.log('[componentWillReceiveProps]', 'field values is', fieldValues);
-      this._handleFormChange(R.map(value => ({ value }))(fieldValues));
-      this.setState({ originalFieldValues: fieldValues });
+    /*
+     * update 模式时第一次加载数据需要通过异步获取到的数据进行渲染。
+     * 渲染成功后则不再处理 props 的数据更新，以保证当前用户的修改不会丢失。
+     */
+    if (originalFieldValues && init) {
+      logger.debug('[componentWillMount]', 'field values is', originalFieldValues);
+      this._handleFormChange(R.map(value => ({ value }))(originalFieldValues));
     }
   }
 
@@ -234,25 +231,25 @@ class ContentUpsert extends React.Component<IProps, IState> {
     const samePane = key === activeKey;
     const shouldUpdate =
       samePane && (propsDiff.isDifferent || stateDiff.isDifferent || this.state.hasErrors);
-    logger.log('[shouldComponentUpdate]', { nextProps, nextState, nextContext }, shouldUpdate, {
-      samePane,
-      propsDiff,
-      stateDiff,
-      hasErrors: this.state.hasErrors,
-    });
+    logger.log(
+      '[shouldComponentUpdate]',
+      { nextProps, nextState, nextContext },
+      { shouldUpdate, samePane, propsDiff, stateDiff, hasErrors: this.state.hasErrors },
+    );
     return shouldUpdate;
   }
 
-  _detectUpsertMode = modelName => {
+  _reloadEntity = modelName => {
     const { dispatch, basis } = this.props;
 
-    const record = R.path(['pane', 'data', 'record'])(basis);
-    if (record) {
-      logger.debug('[detectUpsertMode]', 'set to update mode and load model...', record);
-      dispatch(modelsActions.fetch(modelName, { id: record.id, profile: 'ids' }));
-      return false;
-    }
-    return true;
+    return new Promise(resolve => {
+      const record = R.path(['pane', 'data', 'record'])(basis);
+      if (record) {
+        logger.log('[_reloadEntity]', 'reload model...', record);
+        dispatch(modelsActions.fetch(modelName, { id: record.id, profile: 'ids' }, resolve));
+        resolve();
+      }
+    });
   };
 
   /**
@@ -263,13 +260,13 @@ class ContentUpsert extends React.Component<IProps, IState> {
     const { isInsertMode, init } = this.state;
     logger.log('[handleFormChange]', { changedFields, state: this.state });
     if (!R.isEmpty(changedFields)) {
-      const { wrappedFormSchema, fields, preDecorators, asyncDecorators } = this.state;
+      const { wrappedFormSchema, fields } = this.state;
 
       const currentChangedFields = R.map(R.pick(['value', 'errors']))(changedFields);
       const changedFieldsBefore = R.mergeDeepRight(wrappedFormSchema, fields);
       const allChangedFields = R.mergeDeepRight(changedFieldsBefore, currentChangedFields);
       // 这里只装饰变化的 fields
-      const decoratedFields = R.pipe(...preDecorators('LOAD'))(allChangedFields);
+      const decoratedFields = R.pipe(...this.preDecorators('LOAD'))(allChangedFields);
 
       const stateDiff = diff(this.state, { fields: decoratedFields }, { include: ['fields'] });
       logger.debug('[handleFormChange]', {
@@ -298,10 +295,11 @@ class ContentUpsert extends React.Component<IProps, IState> {
 
       if (updateModeAtTheFirstTime || hasEnumFilter || hasSelectable) {
         this.setState({
+          status: 'Updating',
           loadings: { ...this.state.loadings, ASSOCIATIONS: true },
         });
         logger.debug('[handleFormChange]', 'load async decorated fields');
-        const asyncDecoratedFields = await R.pipeP(...asyncDecorators('ASSOCIATIONS'))(
+        const asyncDecoratedFields = await R.pipeP(...this.asyncDecorators('ASSOCIATIONS'))(
           decoratedFields,
         );
         const isDifferent = diff(asyncDecoratedFields, this.state.fields).isDifferent;
@@ -311,14 +309,16 @@ class ContentUpsert extends React.Component<IProps, IState> {
             decoratedFields,
             state: this.state.fields,
           });
-          this.setState({ fields: asyncDecoratedFields });
         }
         this.setState({
+          status: 'Done',
           init: false,
           loadings: { ...this.state.loadings, LOAD: false, ASSOCIATIONS: false },
+          fields: asyncDecoratedFields,
         });
       } else {
         this.setState({
+          status: 'Done',
           fields: decoratedFields,
           loadings: { ...this.state.loadings, LOAD: false, ASSOCIATIONS: false },
         });
@@ -327,7 +327,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
   };
 
   _handleFormSubmit = event => {
-    logger.debug('[handleFormSubmit]', event);
+    logger.log('[handleFormSubmit]', event);
     event.preventDefault();
     const { originalFieldValues } = this.state;
 
@@ -368,7 +368,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
   };
 
   render() {
-    const { fields, loadings } = this.state;
+    const { fields, loadings, status } = this.state;
 
     logger.log('[render]', { props: this.props, state: this.state });
 
@@ -378,6 +378,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
       return (
         <React.Fragment>
           <Icon type="loading" style={{ fontSize: 24 }} spin />
+          <div>{status}</div>
           {/* language=CSS */}
           <style jsx>{`
             div {

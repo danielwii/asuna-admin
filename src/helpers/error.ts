@@ -15,6 +15,16 @@ interface FormError {
   };
 }
 
+export type ReduxCallback = (data: { response: object; error: Error }) => void;
+
+export function safeCallback(cb, data) {
+  try {
+    if (cb != null) cb(data);
+  } catch (e) {
+    logger.warn('callback error', e, { e });
+  }
+}
+
 export function toErrorMessage(e) {
   if (e.response) {
     return idx(e, _ => _.response.data.message);
