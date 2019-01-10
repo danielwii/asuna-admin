@@ -213,7 +213,7 @@ export class DynamicForm extends React.Component<
           });
         }
         logger.warn('[buildField]', 'foreignOpts is required in association.', { field });
-        return <div>association need foreignOpts.</div>;
+        return <div>association({util.inspect(field)}) need foreignOpts.</div>;
       }
       case DynamicFormTypes.Enum:
       //   // --------------------------------------------------------------
@@ -263,7 +263,7 @@ export class DynamicForm extends React.Component<
         logger.warn('[DynamicForm]', '[buildField]', 'foreignOpts is required in association.', {
           field,
         });
-        return <div>association need foreignOpts.</div>;
+        return <div>association({util.inspect(field)}) need foreignOpts.</div>;
       }
       case DynamicFormTypes.SimpleJSON:
         logger.debug('[DynamicForm]', '[buildField][SimpleJSON]', field, options);

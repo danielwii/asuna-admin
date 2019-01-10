@@ -3,12 +3,12 @@ import _ from 'lodash';
 import { join } from 'path';
 
 import { Icon, Modal, Upload } from 'antd';
-import { RcFile, UploadChangeParam, UploadFile, UploadFileStatus } from 'antd/es/upload/interface';
+import { RcFile, UploadFile, UploadFileStatus } from 'antd/es/upload/interface';
 import { diff } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 import { upload, validateFile } from '@asuna-admin/helpers/upload';
 
-const logger = createLogger('components:dynamic-form:images', 'warn');
+const logger = createLogger('components:dynamic-form:images');
 
 // --------------------------------------------------------------
 // Uploader
@@ -55,17 +55,6 @@ export class ImagesUploader extends React.Component<IProps, IState> {
     }
   }
 
-  /**
-   * set fileList for Uploader when new images uploaded
-   * @param nextProps
-   * @param nextContext
-   */
-  componentWillReceiveProps(nextProps, nextContext) {
-    logger.debug('[componentWillReceiveProps]', nextProps, nextContext);
-    const { value: images } = nextProps;
-    this.wrapImagesToFileList(images);
-  }
-
   shouldComponentUpdate(nextProps, nextState) {
     const TAG = '[shouldComponentUpdate]';
     const propsDiff = diff(this.props, nextProps);
@@ -102,13 +91,14 @@ export class ImagesUploader extends React.Component<IProps, IState> {
     });
   };
 
-  handleChange = (info: UploadChangeParam): void => {
-    logger.log('[ImagesUploader][handleChange]', { info });
-    const { onChange } = this.props;
-    const images = _.compact(info.fileList.map(file => file.url)).join(',');
-    logger.log('[ImagesUploader][handleChange]', { images });
-    onChange!(images);
-  };
+  // updated file status will received here, maybe will handled later
+  // handleChange = (info: UploadChangeParam): void => {
+  //   logger.log('[ImagesUploader][handleChange]', { info });
+  //   const { onChange } = this.props;
+  //   const images = _.compact(info.fileList.map(file => file.url)).join(',');
+  //   logger.log('[ImagesUploader][handleChange]', { images });
+  //   onChange!(images);
+  // };
 
   customRequest = (option: any): void => {
     const { onChange, urlHandler, prefix, value } = this.props;
@@ -120,11 +110,13 @@ export class ImagesUploader extends React.Component<IProps, IState> {
         const images = _.compact([uploadedImages, image]).join(',');
         logger.log('[ImagesUploader][customRequest]', { uploaded, image, images, uploadedImages });
         onChange!(images);
+        this.wrapImagesToFileList(images);
       }
     });
   };
 
   render() {
+    const { value } = this.props;
     const { previewVisible, previewImage, fileList, fileSize } = this.state;
 
     logger.debug('[render]', { fileList });
@@ -139,13 +131,14 @@ export class ImagesUploader extends React.Component<IProps, IState> {
     return (
       <div className="clearfix">
         <Upload
+          key={value}
           listType="picture-card"
           fileList={fileList as UploadFile[]}
           supportServerRender
           customRequest={this.customRequest}
           beforeUpload={(file: RcFile, rcFiles: RcFile[]) => validateFile(file)}
           onPreview={this.handlePreview}
-          onChange={this.handleChange}
+          // onChange={this.handleChange}
         >
           {fileList && fileList.length >= fileSize ? null : uploadButton}
         </Upload>

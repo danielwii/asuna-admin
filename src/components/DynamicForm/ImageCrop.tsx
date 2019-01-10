@@ -67,7 +67,6 @@ export class ImageCrop extends React.PureComponent<IProps, IState> {
   };
 
   onCropComplete = (crop, pixelCrop) => {
-    console.log({ crop, pixelCrop });
     this.makeClientCrop(crop, pixelCrop);
   };
 

@@ -10,7 +10,7 @@ import { contentActions } from './content.redux';
 import { RootState } from '@asuna-admin/store';
 import { createLogger } from '@asuna-admin/logger';
 import { AppContext } from '@asuna-admin/core';
-import { toErrorMessage } from '@asuna-admin/helpers';
+import { ReduxCallback, safeCallback, toErrorMessage } from '@asuna-admin/helpers';
 
 const logger = createLogger('store:models', 'warn');
 
@@ -36,12 +36,19 @@ export const isModelModule = action => action.type.startsWith('models::') && !ac
 
 const modelsActions = {
   // action: (args) => ({ type, payload })
-  fetch: (modelName: string, data: { id: number | string; profile: Asuna.Profile }) =>
-    reduxAction(modelsActionTypes.FETCH, {
+  fetch: (
+    modelName: string,
+    data: { id: number | string; profile: Asuna.Profile },
+    callback?: ReduxCallback,
+  ) => ({
+    type: modelsActionTypes.FETCH,
+    payload: {
       modelName,
       data,
       loading: { [modelName]: true }, // not using this moment
-    }),
+    },
+    callback,
+  }),
   fetchSuccess: (modelName: string, response) =>
     reduxAction(modelsActionTypes.FETCH_SUCCESS, {
       modelName,
@@ -74,7 +81,7 @@ const modelsActions = {
 // --------------------------------------------------------------
 
 const modelsSagaFunctions = {
-  *fetch({ payload: { modelName, data } }) {
+  *fetch({ payload: { modelName, data }, callback }) {
     const { token } = yield select<RootState>(state => state.auth);
     if (token) {
       message.loading(`loading model '${modelName}'...`);
@@ -82,9 +89,12 @@ const modelsSagaFunctions = {
         const response = yield call(AppContext.adapters.models.fetch, modelName, data);
         message.success(`load model '${modelName}' success!`);
         logger.log('[fetch]', 'response of load model is', response);
+        safeCallback(callback, { response });
+
         yield put(modelsActions.fetchSuccess(modelName, response.data));
       } catch (e) {
         logger.warn('[fetch]', e, { e });
+        safeCallback(callback, { error: e });
         message.error(toErrorMessage(e));
       }
     }
