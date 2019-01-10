@@ -8,8 +8,9 @@ import { RootState } from '@asuna-admin/store';
 import { createLogger } from '@asuna-admin/logger';
 import { ModelListConfig } from '@asuna-admin/adapters';
 import { AppContext } from '@asuna-admin/core';
+import { toErrorMessage } from '@asuna-admin/helpers';
 
-const logger = createLogger('store:content', 'warn');
+const logger = createLogger('store:content');
 
 // --------------------------------------------------------------
 // Module actionTypes
@@ -77,7 +78,7 @@ function* loadModels({ payload: { name, models } }: LoadModelsParams) {
       );
     } catch (e) {
       logger.warn('[loadModels]', { e });
-      message.error(e.message);
+      message.error(toErrorMessage(e));
     }
   }
 }

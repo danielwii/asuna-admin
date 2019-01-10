@@ -10,6 +10,7 @@ import { routerActions } from './router.redux';
 
 import { createLogger } from '@asuna-admin/logger';
 import { authProxy } from '@asuna-admin/adapters';
+import { toErrorMessage } from '@asuna-admin/helpers';
 import idx from 'idx';
 
 const logger = createLogger('store:auth');
@@ -44,7 +45,7 @@ function* loginSaga({ payload: { username, password }, callback }) {
     }
     if (error.response) {
       yield put(authActions.loginFailed(error.response));
-      message.error(JSON.stringify(error.response.data));
+      message.error(toErrorMessage(error));
     }
   }
 }
