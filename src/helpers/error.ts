@@ -4,7 +4,7 @@ import * as R from 'ramda';
 import { createLogger } from '@asuna-admin/logger';
 import idx from 'idx';
 
-const logger = createLogger('helpers:errors', 'warn');
+const logger = createLogger('helpers:errors');
 
 interface FormError {
   [key: string]: {
@@ -15,7 +15,14 @@ interface FormError {
   };
 }
 
-export type ReduxCallback = (data: { response: object; error: Error }) => void;
+// TODO move to node-buffs one day :)
+export const reduxActionCallbackPromise = (action): Promise<any> =>
+  new Promise((resolve, reject) => {
+    const callback = ({ response, error }) => (response ? resolve(response) : reject(error));
+    action(callback);
+  });
+
+export type ReduxCallback<T> = (data: { response: T; error: Error }) => void;
 
 export function safeCallback(cb, data) {
   try {

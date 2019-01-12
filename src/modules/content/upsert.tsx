@@ -10,10 +10,17 @@ import { DynamicForm, DynamicFormTypes } from '@asuna-admin/components/DynamicFo
 import * as schemaHelper from '@asuna-admin/schema';
 import { Pane } from '@asuna-admin/components';
 import { modelsActions, RootState } from '@asuna-admin/store';
-import { diff, isErrorResponse, toErrorMessage, toFormErrors } from '@asuna-admin/helpers';
+import {
+  diff,
+  isErrorResponse,
+  reduxActionCallbackPromise,
+  toErrorMessage,
+  toFormErrors,
+} from '@asuna-admin/helpers';
 import { AppContext, EventBus, EventType } from '@asuna-admin/core';
 import { createLogger } from '@asuna-admin/logger';
 import idx from 'idx';
+import { AxiosResponse } from 'axios';
 
 const logger = createLogger('modules:content:upsert');
 
@@ -189,12 +196,15 @@ class ContentUpsert extends React.Component<IProps, IState> {
       decoratedFields = await R.pipeP(...this.asyncDecorators('ASSOCIATIONS'))(decoratedFields);
     } else {
       // 非新增模式尝试再次拉取数据
-      await this._reloadEntity(modelName);
-      const models = this.props.models;
       const record = idx(this.props, _ => _.basis.pane.data.record);
-
-      logger.debug('[componentWillMount]', { modelName, record });
-      originalFieldValues = R.pathOr({}, [modelName, record.id])(models);
+      const { data: entity } = await this._reloadEntity(record);
+      const models = this.props.models;
+      originalFieldValues = R.pathOr(entity, [modelName, record.id])(models);
+      logger.debug(
+        '[componentWillMount]',
+        { modelName, record, entity },
+        diff(originalFieldValues, record),
+      );
     }
 
     await this.setState({
@@ -230,7 +240,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
     const { key } = this.state;
     const { activeKey } = nextProps;
     const propsDiff = { isDifferent: false };
-    // const propsDiff     = diff(this.props, nextProps);
+    // const propsDiff = diff(this.props, nextProps);
     const stateDiff = diff(this.state, nextState, { include: ['fields', 'loadings'] });
     const samePane = key === activeKey;
     const shouldUpdate =
@@ -243,15 +253,14 @@ class ContentUpsert extends React.Component<IProps, IState> {
     return shouldUpdate;
   }
 
-  _reloadEntity = modelName => {
-    const { dispatch, basis } = this.props;
+  _reloadEntity = (record): Promise<AxiosResponse> => {
+    const { dispatch } = this.props;
+    const { modelName } = this.state;
 
-    return new Promise(resolve => {
-      const record = R.path(['pane', 'data', 'record'])(basis);
+    return reduxActionCallbackPromise(callback => {
       if (record) {
         logger.log('[_reloadEntity]', 'reload model...', record);
-        dispatch(modelsActions.fetch(modelName, { id: record.id, profile: 'ids' }, resolve));
-        resolve();
+        dispatch(modelsActions.fetch(modelName, { id: record.id, profile: 'ids' }, callback));
       }
     });
   };

@@ -5,14 +5,13 @@ import { reduxAction } from 'node-buffs';
 import * as R from 'ramda';
 import _ from 'lodash';
 
-import { contentActions } from './content.redux';
-
-import { RootState } from '@asuna-admin/store';
+import { contentActions, RootState } from '@asuna-admin/store';
 import { createLogger } from '@asuna-admin/logger';
 import { AppContext } from '@asuna-admin/core';
 import { ReduxCallback, safeCallback, toErrorMessage } from '@asuna-admin/helpers';
+import { AxiosResponse } from 'axios';
 
-const logger = createLogger('store:models', 'warn');
+const logger = createLogger('store:models');
 
 // --------------------------------------------------------------
 // Module actionTypes
@@ -39,7 +38,7 @@ const modelsActions = {
   fetch: (
     modelName: string,
     data: { id: number | string; profile: Asuna.Profile },
-    callback?: ReduxCallback,
+    callback?: ReduxCallback<AxiosResponse>,
   ) => ({
     type: modelsActionTypes.FETCH,
     payload: {
