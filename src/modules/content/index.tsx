@@ -12,6 +12,7 @@ import { responseProxy } from '@asuna-admin/adapters';
 import { ActionEvent, AppContext, EventBus, EventType } from '@asuna-admin/core';
 import { createLogger } from '@asuna-admin/logger';
 import { PaginationConfig } from 'antd/es/pagination';
+import { ColumnProps } from 'antd/es/table';
 
 const logger = createLogger('modules:content:index');
 
@@ -29,12 +30,12 @@ interface IProps extends ReduxProps {
 interface IState {
   key: string;
   modelName: string;
-  relations: string[];
+  relations?: string[];
   /**
    * 不为 true 时页面不显示新建按钮
    */
   creatable: boolean;
-  columns: any;
+  columns?: (ColumnProps<any> & { relation: any })[];
   pagination?: PaginationConfig;
   filters?: object;
   sorter?: object;
@@ -55,45 +56,14 @@ class ContentIndex extends React.Component<IProps, IState> {
 
     logger.debug('[constructor]', { basis });
 
-    const actions = (text, record, extras) => (
-      <span>
-        {/*{extras && extras(auth)}*/}
-        <Button size="small" type="dashed" onClick={() => this._edit(text, record)}>
-          Edit
-        </Button>
-        {R.not(R.prop(castModelKey('isSystem'), record)) && (
-          <React.Fragment>
-            <Divider type="vertical" />
-            <Button size="small" type="danger" onClick={() => this._remove(text, record)}>
-              Delete
-            </Button>
-          </React.Fragment>
-        )}
-      </span>
-    );
-
     // content::name => name
     // prettier-ignore
     const modelName = R.compose(R.nth(1), R.split(/::/), R.path(['pane', 'key']))(basis);
     const modelConfig = this.modelsAdapter.getModelConfig(modelName);
     logger.debug('[constructor]', { modelConfig, modelName });
 
-    const columns = this.modelsAdapter.getColumns(modelName, {
-      callRefresh: this._refresh,
-      actions,
-    });
-
-    // prettier-ignore
-    const relations = R.compose(
-      R.filter(R.compose(R.not, R.isEmpty)),
-      R.map(R.values),
-      R.map(R.pick(['relation'])),
-    )(columns);
-
     this.state = {
       modelName,
-      columns,
-      relations,
       creatable: modelConfig.creatable !== false,
       key: activeKey,
       sorter: {
@@ -118,6 +88,41 @@ class ContentIndex extends React.Component<IProps, IState> {
         },
       }),
     };
+  }
+
+  async componentDidMount() {
+    const { basis } = this.props;
+    const actions = (text, record, extras) => (
+      <span>
+        {/*{extras && extras(auth)}*/}
+        <Button size="small" type="dashed" onClick={() => this._edit(text, record)}>
+          Edit
+        </Button>
+        {R.not(R.prop(castModelKey('isSystem'), record)) && (
+          <React.Fragment>
+            <Divider type="vertical" />
+            <Button size="small" type="danger" onClick={() => this._remove(text, record)}>
+              Delete
+            </Button>
+          </React.Fragment>
+        )}
+      </span>
+    );
+
+    // prettier-ignore
+    const modelName = R.compose(R.nth(1), R.split(/::/), R.path(['pane', 'key']))(basis);
+    const columns = await this.modelsAdapter.getColumns(modelName, {
+      callRefresh: this._refresh,
+      actions,
+    });
+    // prettier-ignore
+    const relations = R.compose(
+      R.filter(R.compose(R.not, R.isEmpty)),
+      R.map(R.values),
+      R.map(R.pick(['relation'])),
+    )(columns);
+    logger.debug('[componentDidMount]', { columns, relations });
+    this.setState({ columns, relations });
 
     const { pagination, filters, sorter } = this.state;
     this._handleTableChange(pagination, filters, sorter);
@@ -224,7 +229,7 @@ class ContentIndex extends React.Component<IProps, IState> {
     logger.debug('[render]', { creatable, models, dataSource, columns, pagination });
 
     return (
-      <div>
+      <>
         {creatable && (
           <React.Fragment>
             <Button onClick={this._create}>Create</Button>
@@ -235,23 +240,28 @@ class ContentIndex extends React.Component<IProps, IState> {
 
         <hr />
 
-        <Table
-          className="asuna-content-table"
-          dataSource={dataSource}
-          rowKey="id"
-          loading={loading}
-          columns={columns}
-          pagination={pagination}
-          onChange={this._handleTableChange}
-        />
+        {columns && (
+          <Table
+            className="asuna-content-table"
+            dataSource={dataSource}
+            rowKey="id"
+            loading={loading}
+            columns={columns}
+            pagination={pagination}
+            onChange={this._handleTableChange}
+          />
+        )}
         {/* language=CSS */}
         <style jsx global>{`
+          .ant-tabs {
+            overflow: inherit !important;
+          }
           .asuna-content-table td,
           th {
             padding: 0.3rem !important;
           }
         `}</style>
-      </div>
+      </>
     );
   }
 }

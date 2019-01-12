@@ -1,6 +1,7 @@
 import * as R from 'ramda';
 import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
+import bluebird from 'bluebird';
 import { AxiosResponse } from 'axios';
 import idx from 'idx';
 import { PaginationConfig } from 'antd/es/pagination';
@@ -12,6 +13,7 @@ import { Config } from '@asuna-admin/config';
 import { createLogger } from '@asuna-admin/logger';
 import { AuthState } from '@asuna-admin/store';
 import { Condition, WhereConditions } from 'typings/meta';
+import { ColumnProps } from 'antd/es/table';
 
 // --------------------------------------------------------------
 // Types
@@ -23,12 +25,20 @@ export interface IModelBody {
   [key: string]: any;
 }
 
+export interface RestListQuery {
+  fields?: string[];
+  keywords?: string | null;
+  page?: number;
+  size?: number;
+}
+
 export interface IModelService {
   loadModels(
     auth: { token: string | null },
     modelName: string,
     configs: {
       relations?: string[];
+      fields?: string[];
       pagination?: Asuna.Pageable;
       filters?: WhereConditions;
       sorter?: any;
@@ -72,11 +82,7 @@ export interface IModelService {
   loadAssociation(
     auth: { token: string | null },
     associationName: string,
-    data: Asuna.Schema.ModelConfig & {
-      fields: string[];
-      keywords: string | null;
-      page?: number;
-    },
+    data: Asuna.Schema.ModelConfig & RestListQuery,
   ): Promise<AxiosResponse | AxiosResponse[]>;
 
   loadAssociationByIds(
@@ -94,6 +100,8 @@ const logger = createLogger('adapters:models');
 
 export interface ModelListConfig {
   endpoint?: string;
+  fields?: string[];
+  // distinct?: boolean;
   pagination?: PaginationConfig;
   filters?: Record<string, [Partial<Condition>]>;
   sorter?: Sorter | null;
@@ -256,18 +264,18 @@ export class ModelAdapter {
 
   public getAssociationConfigs = (modelName: string) => R.prop(modelName)(this.associations);
 
-  public getColumns = (
+  public getColumns = async (
     modelName: string,
     opts: { callRefresh: () => void; actions: (text, record, extras) => any },
-  ) => {
+  ): Promise<(ColumnProps<any> & { relation: any })[]> => {
     const formSchema = this.getFormSchema(modelName);
     const { table: columnsRender } = this.getModelConfig(modelName);
     const columns = columnsRender
-      ? columnsRender(opts.actions, { modelName, callRefresh: opts.callRefresh })
+      ? await Promise.all(columnsRender(opts.actions, { modelName, callRefresh: opts.callRefresh }))
       : [];
-    return _.map(columns, column =>
+    return _.map(columns, (column: ColumnProps<any> & { relation: any }) =>
       // 不检测不包含在 schema 中且不属于模型的列名
-      !formSchema[column.key] && !_.includes(['action'], column.key)
+      column.key && !formSchema[column.key] && !_.includes(['action'], column.key)
         ? { ...column, title: `${column.title}(miss)` }
         : column,
     );
@@ -355,7 +363,10 @@ export class ModelAdapter {
     return associationsFields;
   });
 
-  public loadModels = (modelName: string, configs: ModelListConfig = {}): any => {
+  public loadModels = (
+    modelName: string,
+    configs: ModelListConfig = {},
+  ): Promise<AxiosResponse> => {
     logger.debug('[loadModels]', {
       modelName,
       configs,
@@ -369,6 +380,7 @@ export class ModelAdapter {
     const auth = AppContext.fromStore('auth');
     return this.service.loadModels(auth, modelName, {
       pagination: { page, size },
+      fields: configs.fields,
       filters: _.mapValues<Record<string, [Partial<Condition>]>, WhereConditions>(
         configs.filters,
         _.flow(
