@@ -98,7 +98,7 @@ interface IState {
   /**
    * 备份的原始数据记录
    */
-  record?: object;
+  originalFieldValues?: object;
   wrappedFormSchema?: object;
 }
 
@@ -182,16 +182,19 @@ class ContentUpsert extends React.Component<IProps, IState> {
     // --------------------------------------------------------------
 
     let decoratedFields = R.pipe(...this.preDecorators('INIT'))(formFields);
-    let record;
+    let originalFieldValues;
 
     // INSERT-MODE: 仅在新增模式下拉取关联数据
     if (isInsertMode) {
       decoratedFields = await R.pipeP(...this.asyncDecorators('ASSOCIATIONS'))(decoratedFields);
     } else {
       // 非新增模式尝试再次拉取数据
-      this._reloadEntity(modelName);
-      record = idx(this.props, _ => _.basis.pane.data.record) || {};
+      await this._reloadEntity(modelName);
+      const models = this.props.models;
+      const record = idx(this.props, _ => _.basis.pane.data.record);
+
       logger.debug('[componentWillMount]', { modelName, record });
+      originalFieldValues = R.pathOr({}, [modelName, record.id])(models);
     }
 
     await this.setState({
@@ -203,16 +206,16 @@ class ContentUpsert extends React.Component<IProps, IState> {
       wrappedFormSchema: formFields,
       // 更新当前的加载状态，这里可以结束初始化和关联阶段
       loadings: { INIT: false, LOAD: this.state.loadings.LOAD, ASSOCIATIONS: false },
-      record,
+      originalFieldValues,
     });
 
     /*
      * update 模式时第一次加载数据需要通过异步获取到的数据进行渲染。
      * 渲染成功后则不再处理 props 的数据更新，以保证当前用户的修改不会丢失。
      */
-    if (record && init) {
-      logger.debug('[componentWillMount]', 'field values is', record);
-      this._handleFormChange(R.map(value => ({ value }))(record));
+    if (originalFieldValues && init) {
+      logger.debug('[componentWillMount]', 'field values is', originalFieldValues);
+      await this._handleFormChange(R.map(value => ({ value }))(originalFieldValues));
     }
   }
 
@@ -330,15 +333,15 @@ class ContentUpsert extends React.Component<IProps, IState> {
   _handleFormSubmit = event => {
     logger.log('[handleFormSubmit]', event);
     event.preventDefault();
-    const { record } = this.state;
+    const { originalFieldValues } = this.state;
 
     const fieldPairs = R.compose(
-      R.pickBy((value, key) => (record ? value !== record[key] : true)),
+      R.pickBy((value, key) => (originalFieldValues ? value !== originalFieldValues[key] : true)),
       R.map(R.prop('value')),
     )(this.state.fields);
     logger.debug('[handleFormSubmit]', { fieldPairs });
 
-    const id = R.prop('id')(record);
+    const id = R.prop('id')(originalFieldValues);
 
     const { dispatch, onClose } = this.props;
     const { modelName, isInsertMode } = this.state;
