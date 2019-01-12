@@ -3,7 +3,8 @@ import { connect } from 'react-redux';
 import * as R from 'ramda';
 import moment from 'moment';
 
-import { Form, Icon, message } from 'antd';
+import { Form, message } from 'antd';
+import { PropagateLoader } from 'react-spinners';
 
 import { DynamicForm, DynamicFormTypes } from '@asuna-admin/components/DynamicForm';
 import * as schemaHelper from '@asuna-admin/schema';
@@ -94,7 +95,10 @@ interface IState {
   fields: FormField[];
   key: string;
   hasErrors: boolean;
-  originalFieldValues?: object;
+  /**
+   * 备份的原始数据记录
+   */
+  record?: object;
   wrappedFormSchema?: object;
 }
 
@@ -178,7 +182,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
     // --------------------------------------------------------------
 
     let decoratedFields = R.pipe(...this.preDecorators('INIT'))(formFields);
-    let originalFieldValues;
+    let record;
 
     // INSERT-MODE: 仅在新增模式下拉取关联数据
     if (isInsertMode) {
@@ -186,11 +190,8 @@ class ContentUpsert extends React.Component<IProps, IState> {
     } else {
       // 非新增模式尝试再次拉取数据
       this._reloadEntity(modelName);
-      const models = this.props.models;
-      const record = idx(this.props, _ => _.basis.pane.data.record);
-
+      record = idx(this.props, _ => _.basis.pane.data.record) || {};
       logger.debug('[componentWillMount]', { modelName, record });
-      originalFieldValues = R.pathOr({}, [modelName, record.id])(models);
     }
 
     await this.setState({
@@ -202,16 +203,16 @@ class ContentUpsert extends React.Component<IProps, IState> {
       wrappedFormSchema: formFields,
       // 更新当前的加载状态，这里可以结束初始化和关联阶段
       loadings: { INIT: false, LOAD: this.state.loadings.LOAD, ASSOCIATIONS: false },
-      originalFieldValues,
+      record,
     });
 
     /*
      * update 模式时第一次加载数据需要通过异步获取到的数据进行渲染。
      * 渲染成功后则不再处理 props 的数据更新，以保证当前用户的修改不会丢失。
      */
-    if (originalFieldValues && init) {
-      logger.debug('[componentWillMount]', 'field values is', originalFieldValues);
-      this._handleFormChange(R.map(value => ({ value }))(originalFieldValues));
+    if (record && init) {
+      logger.debug('[componentWillMount]', 'field values is', record);
+      this._handleFormChange(R.map(value => ({ value }))(record));
     }
   }
 
@@ -329,15 +330,15 @@ class ContentUpsert extends React.Component<IProps, IState> {
   _handleFormSubmit = event => {
     logger.log('[handleFormSubmit]', event);
     event.preventDefault();
-    const { originalFieldValues } = this.state;
+    const { record } = this.state;
 
     const fieldPairs = R.compose(
-      R.pickBy((value, key) => (originalFieldValues ? value !== originalFieldValues[key] : true)),
+      R.pickBy((value, key) => (record ? value !== record[key] : true)),
       R.map(R.prop('value')),
     )(this.state.fields);
     logger.debug('[handleFormSubmit]', { fieldPairs });
 
-    const id = R.prop('id')(originalFieldValues);
+    const id = R.prop('id')(record);
 
     const { dispatch, onClose } = this.props;
     const { modelName, isInsertMode } = this.state;
@@ -377,14 +378,15 @@ class ContentUpsert extends React.Component<IProps, IState> {
     if (noFields || R.any(R.equals(true), R.values(loadings))) {
       return (
         <React.Fragment>
-          <Icon type="loading" style={{ fontSize: 24 }} spin />
-          <div>{status}</div>
+          <span>{status}...</span>
+          <div>
+            <PropagateLoader color="#13c2c2" />
+          </div>
           {/* language=CSS */}
           <style jsx>{`
             div {
-              width: 100%;
-              margin: 10rem 0;
-              text-align: center;
+              width: 0;
+              margin: 10rem auto;
             }
           `}</style>
         </React.Fragment>

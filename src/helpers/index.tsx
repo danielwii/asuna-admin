@@ -6,6 +6,7 @@ import deepDiff from 'deep-diff';
 import Truncate from 'react-truncate';
 import { join } from 'path';
 import styled from 'styled-components';
+import idx from 'idx';
 
 import { Button, Checkbox, Icon, Input, Popconfirm, Tooltip } from 'antd';
 import { ColumnProps } from 'antd/es/table';
@@ -129,16 +130,42 @@ export const columnHelper = {
     sorter: true,
     render: text => (transformer ? transformer(text) : text),
   }),
-  generateRelation: (key, title, transformer?) => ({
+  generateRelation: async (
     key,
     title,
-    relation: key,
-    dataIndex: key,
-    render: text => {
-      const content = transformer ? transformer(text) : text;
-      return <WithDebugInfo info={{ key, title, text }}>{content}</WithDebugInfo>;
-    },
-  }),
+    opts: { transformer?; enableFilter?: boolean; relationField?: string; actions; extras },
+  ): Promise<ColumnProps<any> & { relation: any }> => {
+    let filterProps = {};
+    if (opts.enableFilter) {
+      const modelName = idx(opts, _ => _.extras.modelName);
+      const relation = AppContext.adapters.models.getFormSchema(modelName)[key];
+      const relationName = idx(relation, _ => _.options.selectable);
+      if (relationName) {
+        const field = opts.relationField || 'name';
+        const {
+          data: { items },
+        } = await AppContext.adapters.models.loadModels(relationName, {
+          fields: [field],
+        });
+        filterProps = {
+          filterMultiple: false,
+          filters: _.map(items, item => ({ text: item[field], value: item['id'] })),
+        };
+      }
+    }
+
+    return {
+      key,
+      title,
+      relation: key,
+      dataIndex: key,
+      ...filterProps,
+      render: text => {
+        const content = opts.transformer ? opts.transformer(text) : text;
+        return <WithDebugInfo info={{ key, title, text }}>{content}</WithDebugInfo>;
+      },
+    };
+  },
   generate: (key, title, opts: { transformer?; searchType?: ConditionType } = {}) => ({
     key,
     title,
