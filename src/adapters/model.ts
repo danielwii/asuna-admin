@@ -1,7 +1,6 @@
 import * as R from 'ramda';
 import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
-import bluebird from 'bluebird';
 import { AxiosResponse } from 'axios';
 import idx from 'idx';
 import { PaginationConfig } from 'antd/es/pagination';

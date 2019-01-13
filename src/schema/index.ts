@@ -118,12 +118,7 @@ type AssociationField = {
       };
     };
   };
-  foreignOpts: {
-    modelName: string;
-    association?: string;
-    onSearch: (value: string) => any;
-    onChange: (value: string) => any;
-  }[];
+  foreignOpts: Asuna.Schema.ForeignOpt[];
   isFilterFields: boolean;
   options: {
     filterType: 'Sort';
@@ -191,7 +186,7 @@ export const asyncLoadAssociationsDecorator = async (
               }, 500),
             },
           ];
-          logger.debug(TAG, { foreignOpts });
+          logger.debug(TAG, { fieldsOfAssociations, foreignOpts });
 
           try {
             const results = await bluebird.props({
@@ -257,11 +252,9 @@ export const associationDecorator = fields => {
   logger.log(TAG, { fields });
 
   // prettier-ignore
-  const associationFields = R.filter(
-    R.compose(R.not, R.isNil, R.prop('associations')),
-  )(fields);
+  const associationFields = R.filter(R.compose(R.not, R.isNil, R.prop('associations')))(fields);
+  logger.log(TAG, { associationFields }, R.not(R.isEmpty(associationFields)));
   if (R.not(R.isEmpty(associationFields))) {
-    logger.debug(TAG, { associationFields });
     const wrapForeignOpt = R.map(opt => ({
       ...opt,
       association: AppContext.adapters.models.getAssociationConfigs(opt.modelName),

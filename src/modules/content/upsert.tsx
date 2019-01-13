@@ -115,7 +115,6 @@ class ContentUpsert extends React.Component<IProps, IState> {
     schemaHelper.hiddenComponentDecorator,
     schemaHelper.jsonDecorator,
     schemaHelper.enumDecorator,
-    schemaHelper.associationDecorator,
     schemaHelper.peek(`after-${tag}`),
   ];
 
@@ -124,6 +123,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
     async fields => R.curry(schemaHelper.peek(`before-async-${tag}`))(fields),
     // async fields => schemaHelper.hiddenComponentDecorator(fields),
     schemaHelper.asyncLoadAssociationsDecorator,
+    schemaHelper.associationDecorator,
     async fields => R.curry(schemaHelper.peek(`after-async-${tag}`))(fields),
   ];
 
