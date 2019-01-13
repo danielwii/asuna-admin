@@ -49,51 +49,6 @@ declare module Asuna {
   }
 
   module Schema {
-    // /**
-    //  * @deprecated
-    //  */
-    // enum MetaInfoColumnType {
-    //   IMAGE = 'Image',
-    //   IMAGES = 'Images',
-    //   VIDEO = 'Video',
-    //   VIDEOS = 'Videos',
-    //   AUTHORITIES = 'Authorities',
-    //   RICH_TEXT = 'RichText',
-    //   DELETABLE = 'Deletable',
-    //   SORT_POSITION = 'SortPosition',
-    //   ENUM_FILTER = 'EnumFilter',
-    //   ENUM = 'Enum',
-    // }
-
-    // /**
-    //  * @deprecated
-    //  */
-    // enum MetaInfoFilterType {
-    //   SORT = 'Sort',
-    // }
-
-    // /**
-    //  * @deprecated
-    //  */
-    // enum MetaInfoJsonType {
-    //   STR = 'str',
-    // }
-
-    // /**
-    //  * @deprecated
-    //  */
-    // enum MetaInfoAccessible {
-    //   /**
-    //    * Column: 标记该列只读
-    //    */
-    //   READONLY = 'readonly',
-    //   /**
-    //    * Column: 标记该列隐藏
-    //    * @type {string}
-    //    */
-    //   HIDDEN = 'hidden',
-    // }
-
     interface UploadResponse {
       bucket: string;
       filename: string;
@@ -130,6 +85,13 @@ declare module Asuna {
      * @deprecated
      */
     type ModelConfigs = { [key: string]: ModelConfig };
+
+    type ForeignOpt = {
+      modelName: string;
+      association?: { name: string; value: string; fields: string[] };
+      onSearch: (value: string) => any;
+      onChange: (value: string) => any;
+    };
 
     interface FormSchema {
       name: string;

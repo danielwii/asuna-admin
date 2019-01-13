@@ -95,6 +95,7 @@ type DynamicFormProps = {
 };
 
 type DynamicFormField = {
+  foreignOpts: Asuna.Schema.ForeignOpt[];
   options: MetaInfoOptions & {
     tooltip: string;
   };
@@ -193,10 +194,7 @@ export class DynamicForm extends React.Component<
         // --------------------------------------------------------------
         logger.debug('[DynamicForm]', '[buildField][ManyToMany]', { field });
         if (R.has('foreignOpts')(field)) {
-          const { modelName, association = defaultAssociation, onSearch } = R.path([
-            'foreignOpts',
-            0,
-          ])(field);
+          const { modelName, association = defaultAssociation, onSearch } = field.foreignOpts[0];
 
           const items = R.path(['associations', modelName, 'items'])(field);
           const existItems = R.path(['associations', modelName, 'existItems'])(field);
