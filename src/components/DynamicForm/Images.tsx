@@ -40,7 +40,7 @@ export class ImagesUploader extends React.Component<IProps, IState> {
       previewImage: '',
       fileList: [],
       many: props.many,
-      fileSize: props.many ? props.fileSize || 3 : 1,
+      fileSize: props.many ? props.fileSize || 50 : 1,
     };
   }
 

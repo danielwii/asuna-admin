@@ -153,11 +153,13 @@ export const asyncLoadAssociationsDecorator = async (
     // 当已经拉取过数据后不再进行拉取，在这里认为如果已存在的 items 数量和 value 中的不一致，则重新拉取
     // TODO 如果按第一次已经拉取过来看，其实不需要再次拉取，相关数据应该从组件中传出
     // const filteredAssociations = R.pickBy(field => R.not(R.has('associations', field)))(
-    const filteredAssociations = R.pickBy(
-      field =>
-        idx(field, _ => _.associations[field.name].existItems.length) !=
-        idx(field, _ => _.value.length),
-    )(associations);
+    const filteredAssociations = R.pickBy(field => {
+      const loaded = idx(field, _ => _.associations[field.name]);
+      if (loaded) {
+        return idx(loaded, _ => _.existItems.length) != idx(field, _ => _.value.length);
+      }
+      return true;
+    })(associations);
     logger.log(TAG, { filteredAssociations });
     if (R.isEmpty(filteredAssociations)) {
       return fields;

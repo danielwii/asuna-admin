@@ -9,7 +9,7 @@ import { AppContext, IIndexRegister, ILoginRegister, INextConfig } from '@asuna-
 import { MainLayout } from '@asuna-admin/layout';
 import { createLogger } from '@asuna-admin/logger';
 
-const logger = createLogger('pages:index', 'warn');
+const logger = createLogger('pages:index');
 
 // --------------------------------------------------------------
 // Index Component
