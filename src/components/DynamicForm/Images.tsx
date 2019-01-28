@@ -66,9 +66,13 @@ export class ImagesUploader extends React.Component<IProps, IState> {
     return shouldUpdate;
   }
 
-  wrapImagesToFileList = (imagesStr: string): void => {
+  wrapImagesToFileList = (imagesInfo: string | string[]): void => {
     const { host } = this.props;
-    const images = imagesStr ? _.compact(imagesStr.split(',')) : [];
+    const images = imagesInfo
+      ? _.isArray(imagesInfo)
+        ? imagesInfo
+        : _.compact(imagesInfo.split(','))
+      : [];
     logger.debug('[wrapImagesToFileList]', { images });
     const fileList = _.map(images, (image, index) => ({
       uid: `${index}`,
