@@ -1,6 +1,7 @@
 import { call, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 import * as R from 'ramda';
 import { message } from 'antd';
+import { REHYDRATE } from 'redux-persist';
 
 import { authActions, authActionTypes, isAuthModule } from './auth.actions';
 
@@ -68,15 +69,24 @@ function* tokenWatcher(action) {
     auth: { token },
     router: { path },
   } = yield select<RootState>(state => ({ auth: state.auth, router: state.router }));
-  if (action.type === authActionTypes.LOGOUT) {
-    yield put(routerActions.toLogin());
-  } else if (!token && path !== '/login') {
-    logger.warn('[tokenWatcher]', 'no token found, current path is not login...');
+  // restored will be handled later at yield take(appActionTypes.RESTORED), simply ignore here
+  if ([appActionTypes.RESTORED].includes(action.type)) {
+    return;
+  }
+
+  if (action.type === REHYDRATE) {
+    logger.log('[tokenWatcher]', 'REHYDRATE found, wait to restore...');
     const restoredAction = yield take(appActionTypes.RESTORED);
     logger.log('[tokenWatcher]', 'waiting for app restored', restoredAction);
     if (!idx(restoredAction, _ => _.payload.auth.token)) {
       yield put(routerActions.toLogin());
     }
+  } else if (action.type === authActionTypes.LOGOUT) {
+    logger.log('[tokenWatcher]', 'logout...');
+    yield put(routerActions.toLogin());
+  } else if (!token && path !== '/login') {
+    logger.log('[tokenWatcher]', 'no token found and path is not login, goto login');
+    yield put(routerActions.toLogin());
   } else if (!path) {
     logger.warn('[tokenWatcher]', 'no path found, redirect to login...');
     yield put(routerActions.toLogin());

@@ -1,5 +1,6 @@
 import debug from 'debug';
 
+const modules: string[] = [];
 export const lv = {
   trace: 0,
   debug: 1,
@@ -9,6 +10,8 @@ export const lv = {
 };
 
 export const createLogger = (module, level: keyof typeof lv = 'warn') => {
+  modules.push(module);
+
   const error = debug(`${module}:error`);
   error.log = console.error.bind(console);
   const warn = debug(`${module}:warn`);
