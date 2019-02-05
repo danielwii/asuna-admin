@@ -28,7 +28,8 @@ yarn-error.log*
 static/libs
 .asuna
 
-# will implemented by users
+# project
+examples/*
 pages/*
 services/*
 /config.js

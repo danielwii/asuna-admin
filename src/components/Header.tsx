@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import { Button, Dropdown, Icon, Layout, Menu } from 'antd';
+import { Dropdown, Icon, Layout, Menu } from 'antd';
 
 import { AppState, AuthState } from '@asuna-admin/store';
 
@@ -20,6 +20,8 @@ const StyledVersion = styled.span`
 export interface IHeaderProps {
   auth: AuthState;
   app: AppState;
+  isSuperAdmin?: boolean;
+  isAdmin?: boolean;
   env?: string;
   version?: string;
   onSync: () => void;
@@ -27,12 +29,32 @@ export interface IHeaderProps {
 }
 
 export class Header extends React.Component<IHeaderProps> {
-  menu = () => (
+  _renderMenu = () => (
     <Menu>
       <Menu.Item>
-        <a>Profile</a>
+        {/*<a>Profile</a>*/}
+        <a onClick={this.props.onSync}>Sync Models</a>
+        {/*<Button icon="sync" onClick={this.props.onSync} />*/}
       </Menu.Item>
       <Menu.Divider />
+      {this.props.isAdmin && (
+        <Menu.Item>
+          <a>Settings</a>
+        </Menu.Item>
+      )}
+      {this.props.isAdmin && <Menu.Divider />}
+      {this.props.isSuperAdmin && (
+        <Menu.Item>
+          <a>Administrations</a>
+        </Menu.Item>
+      )}
+      {this.props.isSuperAdmin && <Menu.Divider />}
+      {this.props.env !== 'production' && (
+        <Menu.Item>
+          <a>Debug Settings</a>
+        </Menu.Item>
+      )}
+      {this.props.env !== 'production' && <Menu.Divider />}
       <Menu.Item>
         <a onClick={this.props.logout}>Logout</a>
       </Menu.Item>
@@ -40,7 +62,7 @@ export class Header extends React.Component<IHeaderProps> {
   );
 
   render() {
-    const { auth, app, onSync, env, version } = this.props;
+    const { auth, app, env, version } = this.props;
     const asuna =
       'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAAAgCAYAAADtwH1UAAAEuUlEQVRoQ+1ZSyh9XxR' +
       'e13uAMJC88i4TBoSUMjGSR4lESh4pRCYiUQqRkhDlUTIg8hxI5DGQRxgg73dGYkZKiF/frn0699x77r3/e9Tx19mz' +
@@ -85,10 +107,10 @@ export class Header extends React.Component<IHeaderProps> {
           {auth.username ? (
             <div>
               Welcome,&nbsp;
-              <Dropdown overlay={this.menu()}>
+              <Dropdown overlay={this._renderMenu()}>
                 <a>{auth.username}</a>
               </Dropdown>
-              . <Button icon="sync" onClick={onSync} />
+              .
             </div>
           ) : (
             <Icon type="loading" style={{ marginLeft: 8, fontSize: 24 }} spin />
