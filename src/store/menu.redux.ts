@@ -7,7 +7,7 @@ import { RootState } from '@asuna-admin/store';
 import { createLogger } from '@asuna-admin/logger';
 import { menuProxy } from '@asuna-admin/adapters';
 
-const logger = createLogger('store:menu', 'warn');
+const logger = createLogger('store:menu');
 
 // --------------------------------------------------------------
 // Module menuActionTypes
@@ -39,7 +39,7 @@ const menuActions = {
 const menuSagaFunctions = {
   *init() {
     try {
-      const { roles, user } = yield select<RootState>(state => state.security);
+      const { roles, user } = yield select((state: RootState) => state.security);
 
       if (user) {
         if (roles && roles.items) {

@@ -11,7 +11,7 @@ import { Button, Welcome } from '@storybook/react/demo';
 import './login.story';
 // import './layout.story';
 // import './panes.story';
-// import './side-menu.story';
+import './side-menu.story';
 // import './dynamic-form.story';
 // import './dynamic-form.rich-editor.story';
 import './dynamic-form.select.story';
@@ -23,6 +23,6 @@ import './debug.story';
 
 storiesOf('Welcome', module).add('to Storybook', () => <Welcome showApp={linkTo('Button')} />);
 
-storiesOf('Button', module)
+storiesOf('Button Examples', module)
   .add('with text', () => <Button onClick={action('clicked')}>Hello Button</Button>)
   .add('with some emoji', () => <Button onClick={action('clicked')}>😀 😎 👍 💯</Button>);
