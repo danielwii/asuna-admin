@@ -58,7 +58,7 @@ const contentActions = {
 // --------------------------------------------------------------
 
 function* loadModels({ payload: { name, models } }: LoadModelsParams) {
-  const { token } = yield select<RootState>(state => state.auth);
+  const { token } = yield select((state: RootState) => state.auth);
   if (token) {
     try {
       const {

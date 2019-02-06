@@ -21,7 +21,7 @@ const logger = createLogger('store:auth');
 // --------------------------------------------------------------
 
 function* loginSaga({ payload: { username, password }, callback }) {
-  const auth: AuthState = yield select<RootState>(state => state.auth);
+  const auth: AuthState = yield select((state: RootState) => state.auth);
   try {
     const response = yield call(authProxy.login, username, password);
     logger.log('[loginSaga]', 'response is', response);
@@ -68,7 +68,7 @@ function* tokenWatcher(action) {
   const {
     auth: { token },
     router: { path },
-  } = yield select<RootState>(state => ({ auth: state.auth, router: state.router }));
+  } = yield select((state: RootState) => ({ auth: state.auth, router: state.router }));
   // restored will be handled later at yield take(appActionTypes.RESTORED), simply ignore here
   if ([appActionTypes.RESTORED].includes(action.type)) {
     return;

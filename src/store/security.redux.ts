@@ -11,7 +11,7 @@ import { createLogger } from '@asuna-admin/logger';
 import { securityProxy } from '@asuna-admin/adapters';
 import { toErrorMessage } from '@asuna-admin/helpers';
 
-const logger = createLogger('store:security', 'warn');
+const logger = createLogger('store:security');
 
 // --------------------------------------------------------------
 // Module actionTypes
@@ -56,7 +56,7 @@ const securityActions = {
 
 const securitySagaFunctions = {
   *loadAllRoles() {
-    const { token } = yield select<RootState>(state => state.auth);
+    const { token } = yield select((state: RootState) => state.auth);
     if (token) {
       message.loading('loading all roles...');
       try {
@@ -72,7 +72,7 @@ const securitySagaFunctions = {
   },
 
   *getCurrentUser() {
-    const { token } = yield select<RootState>(state => state.auth);
+    const { token } = yield select((state: RootState) => state.auth);
     if (token) {
       message.loading('loading current user...');
       try {

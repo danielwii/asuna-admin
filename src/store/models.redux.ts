@@ -81,7 +81,7 @@ const modelsActions = {
 
 const modelsSagaFunctions = {
   *fetch({ payload: { modelName, data }, callback }) {
-    const { token } = yield select<RootState>(state => state.auth);
+    const { token } = yield select((state: RootState) => state.auth);
     if (token) {
       message.loading(`loading model '${modelName}'...`);
       try {
@@ -102,7 +102,7 @@ const modelsSagaFunctions = {
    * refresh models after model upsert in event bus
    */
   *upsert({ payload: { modelName, data }, callback }) {
-    const { token } = yield select<RootState>(state => state.auth);
+    const { token } = yield select((state: RootState) => state.auth);
     if (token) {
       message.info(`upsert model '${modelName}'...`);
       try {
@@ -125,7 +125,7 @@ const modelsSagaFunctions = {
     }
   },
   *remove({ payload: { modelName, data }, callback }) {
-    const { token } = yield select<RootState>(state => state.auth);
+    const { token } = yield select((state: RootState) => state.auth);
     if (token) {
       message.info(`remove model '${modelName}'...`);
       try {
@@ -137,7 +137,7 @@ const modelsSagaFunctions = {
         // save model data when remove is success
         yield put(modelsActions.fetchSuccess(modelName, response.data));
         // refresh models in content index
-        const { models } = yield select<RootState>(state => state.content);
+        const { models } = yield select((state: RootState) => state.content);
         yield put(contentActions.loadModels(modelName, _.get(models, `${modelName}.extras`)));
       } catch (error) {
         logger.warn('[remove]', error, { error });
@@ -152,7 +152,7 @@ const modelsSagaFunctions = {
   },
   *loadAllSchemas() {
     logger.log('[loadAllSchemas]', 'load all schemas in saga');
-    const { token } = yield select<RootState>(state => state.auth);
+    const { token } = yield select((state: RootState) => state.auth);
     if (token) {
       message.loading('loading all schemas...');
       try {

@@ -36,7 +36,7 @@ const logger = createLogger('store:app', 'warn');
 function* init() {
   try {
     // store 未恢复时等待一个恢复信号
-    const { restored } = yield select<RootState>(state => state.app);
+    const { restored } = yield select((state: RootState) => state.app);
     if (!restored) {
       yield take(REHYDRATE);
     }
@@ -50,7 +50,7 @@ function* init() {
     yield menuSagaFunctions.init();
 
     // 初始化时仅当无法找到当前的 schemas 时重新拉取所有模型定义
-    const models = yield select<RootState>(state => state.models);
+    const models = yield select((state: RootState) => state.models);
     if (!models.schemas) {
       logger.log('[init]', 'load all schemas');
       yield modelsSagaFunctions.loadAllSchemas();
@@ -99,13 +99,12 @@ function* rehydrateWatcher(action) {
  * 查询运行中的服务端版本，版本不一致时更新当前的版本，同时进行同步操作
  */
 function* heartbeat({ force }) {
-  const { token } = yield select<RootState>(state => state.auth);
-  const app: AppState = yield select<RootState>(state => state.app);
+  const app: AppState = yield select((state: RootState) => state.app);
 
   try {
     logger.debug('[heartbeat]', { apiProxy, version: apiProxy.getVersion });
 
-    const response = yield call(apiProxy.getVersion, { token });
+    const response = yield call(apiProxy.getVersion);
     logger.debug('[heartbeat]', { response, version: app.version });
 
     // 版本不一致时执行同步操作
