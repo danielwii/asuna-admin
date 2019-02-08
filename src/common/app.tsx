@@ -48,7 +48,7 @@ function withReduxSaga(config) {
   };
 }
 
-export const ReduxApp = withRedux(asunaStore.configureStore as any, { debug: false })(
+export const ReduxApp = withRedux(asunaStore.configureStore, { debug: false })(
   withReduxSaga({ async: true })(
     class extends App {
       props: any;

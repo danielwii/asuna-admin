@@ -16,7 +16,7 @@ export interface IStoreConnector<T> {
 let stateRef: RootState = {} as any;
 
 export const storeConnector: IStoreConnector<RootState> = {
-  connect: state => (stateRef = state as RootState),
+  connect: (state: RootState) => (stateRef = state),
   getState: name => stateRef[name],
   select: cb => cb(stateRef),
 };
