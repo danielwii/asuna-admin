@@ -39,6 +39,7 @@ module.exports = R.compose(
     if (isServer) {
       config.plugins.push(new ForkTsCheckerWebpackPlugin());
       if (dev) {
+        console.log('> [webpack] [Server] load jarvis & bundleAnalyzerPlugin...');
         config.plugins.push(jarvis);
         config.plugins.push(bundleAnalyzerPlugin);
       }
