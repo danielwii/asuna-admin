@@ -4,16 +4,10 @@
 node_modules
 
 # testing
-/coverage
+coverage
 
 # build
-/.awcache
-
-# production
-/build
-/dist
-/lib
-/.next
+.awcache
 
 # sonar
 .scannerwork
@@ -21,15 +15,10 @@ node_modules
 # misc
 .DS_Store
 .env*
-!/.env.example
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+!.env.example
+*.log
 static/libs
 .asuna
 
 # project
 examples/*
-pages/*
-services/*
-/config.js
