@@ -15,7 +15,7 @@
     "sourceMap": true,
     "declaration": true,
     "skipLibCheck": true,
-    "outDir": "lib",
+    "outDir": "dist",
     "baseUrl": "./",
     "paths": {
       "asuna-admin": ["src/index.ts"],
