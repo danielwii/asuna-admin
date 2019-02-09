@@ -5,19 +5,19 @@
   "author": "Daniel Wei <danielwii0326@gmail.com>",
   "license": "MIT",
   "files": [
-    "lib",
+    "dist",
     "typings"
   ],
-  "main": "lib/index.js",
-  "module": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
   "engines": {
     "node": ">=9 <11"
   },
   "scripts": {
     "autod": "autod",
     "dev": "NODE_ENV=dev node $NODE_DEBUG_OPTION server.js",
-    "prebuild": "rm -rf ./lib",
+    "prebuild": "rm -rf ./dist",
     "compile:replace-path": "node replace-path.js",
     "build": "tsc && yarn compile:replace-path",
     "start": "NODE_ENV=production node server.js",
