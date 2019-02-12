@@ -6,7 +6,6 @@ const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const R = require('ramda');
 const withTypescript = require('@zeit/next-typescript');
-const withProgressBar = require('next-progressbar');
 const withCss = require('@zeit/next-css');
 const pkg = require('./package.json');
 
@@ -21,7 +20,6 @@ if (typeof require !== 'undefined') {
 }
 
 module.exports = R.compose(
-  withProgressBar,
   withTypescript,
   withCss,
 )({

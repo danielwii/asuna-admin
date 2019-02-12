@@ -148,7 +148,7 @@ const appEpics = [
 // action = { payload: any? }
 // --------------------------------------------------------------
 
-interface AppState {
+export interface AppState {
   /**
    * null - 表示还未得到明确的连接状态
    * true | false - 表示真实的连接状态
@@ -172,4 +172,4 @@ const appReducer = (previousState: AppState = initialState, action) => {
   return previousState;
 };
 
-export { appSagas, appEpics, appReducer, AppState };
+export { appSagas, appEpics, appReducer };

@@ -103,7 +103,7 @@ const authSagas = [
 // Login reducers
 // --------------------------------------------------------------
 
-interface AuthState {
+export interface AuthState {
   loginTime: Date | null;
   username: string | null;
   token: string | null;
@@ -122,4 +122,4 @@ const authReducer = (previousState: AuthState = initialState, action) => {
   return previousState;
 };
 
-export { authSagas, authReducer, AuthState };
+export { authSagas, authReducer };

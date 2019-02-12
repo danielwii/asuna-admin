@@ -154,7 +154,7 @@ export const asyncLoadAssociationsDecorator = async (
     // TODO 如果按第一次已经拉取过来看，其实不需要再次拉取，相关数据应该从组件中传出
     // const filteredAssociations = R.pickBy(field => R.not(R.has('associations', field)))(
     const filteredAssociations = R.pickBy(field => {
-      const loaded = idx(field, _ => _.associations[field.name]);
+      const loaded = idx(field, _ => _.associations[field.name]) as any;
       if (loaded) {
         return idx(loaded, _ => _.existItems.length) != idx(field, _ => _.value.length);
       }

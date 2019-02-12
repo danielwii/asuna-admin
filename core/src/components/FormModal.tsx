@@ -123,7 +123,7 @@ export class FormModal extends React.Component<IProps, IState> {
           onCancel={this.handleCancel}
         >
           <LightForm
-            wrappedComponentRef={inst => (this.form = idx(inst, _ => _.props.form))}
+            wrappedComponentRef={inst => (this.form = idx(inst, _ => _.props.form) as any)}
             delegate
             fields={fields}
             onSubmit={this.handleOk}

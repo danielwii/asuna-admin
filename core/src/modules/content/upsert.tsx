@@ -195,8 +195,8 @@ class ContentUpsert extends React.Component<IProps, IState> {
     if (isInsertMode) {
       decoratedFields = await R.pipeP(...this.asyncDecorators('ASSOCIATIONS'))(decoratedFields);
     } else {
-      // 非新增模式尝试再次拉取数据
-      const record = idx(this.props, _ => _.basis.pane.data.record);
+      // 非新增模式尝试再次拉取数据 TODO record must have property id
+      const record = idx(this.props, _ => _.basis.pane.data.record) as any;
       const { data: entity } = await this._reloadEntity(record);
       const models = this.props.models;
       originalFieldValues = R.pathOr(entity, [modelName, record.id])(models);
