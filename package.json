@@ -1,4 +1,7 @@
 {
   "private": true,
-  "workspaces": ["core", "examples/*"]
+  "workspaces": ["core", "examples/*"],
+  "scripts": {
+    "test": "yarn workspace asuna-admin test"
+  }
 }
