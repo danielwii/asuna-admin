@@ -140,7 +140,7 @@ export class ModelAdapter {
   public identifyType = (field: Asuna.Schema.ModelSchema): string | null => {
     const plainKeys = _.map(['id', 'created_at', 'updated_at'], castModelKey);
     const basicType = idx(field, _ => _.config.type) || '';
-    const advanceType = idx(field, _ => _.config.info.type);
+    const advanceType = idx(field, _ => _.config.info.type) as any;
     const notFound = () => {
       const info = { field, plainKeys, basicType, advanceType };
       logger.warn('[identifyType]', 'type cannot identified.', info);

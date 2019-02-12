@@ -13,7 +13,7 @@ enum EventType {
 /**
  * the data body for event-bus
  */
-interface ActionEvent {
+export interface ActionEvent {
   type: EventType;
   payload: any;
   extras?: any;
@@ -57,4 +57,4 @@ EventBus.init();
 // core event bus, the events will received both from client side and server side.
 // const bus = new Subject();
 
-export { EventBus, EventType, ActionEvent };
+export { EventBus, EventType };

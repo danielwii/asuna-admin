@@ -9,6 +9,7 @@ import 'video.js/dist/video-js.css';
 export default ({ children }) => (
   <div>
     <NextHead>
+      <title>Asuna Admin</title>
       {/*<link rel="icon" type="image/png" sizes="32x32" href="/static/icons/favicon-32x32.png" />*/}
       {/*<link rel="icon" type="image/png" sizes="16x16" href="/static/icons/favicon-16x16.png" />*/}
     </NextHead>

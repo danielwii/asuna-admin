@@ -137,9 +137,9 @@ export const columnHelper = {
   ): Promise<ColumnProps<any> & { relation: any }> => {
     let filterProps = {};
     if (opts.enableFilter) {
-      const modelName = idx(opts, _ => _.extras.modelName);
+      const modelName = idx(opts, _ => _.extras.modelName) as any;
       const relation = AppContext.adapters.models.getFormSchema(modelName)[key];
-      const relationName = idx(relation, _ => _.options.selectable);
+      const relationName = idx(relation, _ => _.options.selectable) as any;
       if (relationName) {
         const field = opts.relationField || 'name';
         const {
