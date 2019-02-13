@@ -22,6 +22,7 @@ interface IProps {
   onChange?: (value: any) => void;
   many?: boolean;
   fileSize?: number;
+  jsonMode?: boolean;
 }
 
 interface IState {
@@ -105,13 +106,16 @@ export class ImagesUploader extends React.Component<IProps, IState> {
   // };
 
   customRequest = (option: any): void => {
-    const { onChange, urlHandler, prefix, value } = this.props;
+    const { onChange, urlHandler, prefix, value, jsonMode } = this.props;
     upload(option.file).then(uploaded => {
       if (uploaded) {
         logger.log('[ImagesUploader][customRequest]', { props: this.props, state: this.state });
         const image = join(prefix || '', urlHandler ? urlHandler(uploaded[0]) : `${uploaded[0]}`);
         const uploadedImages = value;
-        const images = _.compact([uploadedImages, image]).join(',');
+        let images: string | string[] = _.compact(_.flatten([uploadedImages, image]));
+        if (!jsonMode) {
+          images = images.join(',');
+        }
         logger.log('[ImagesUploader][customRequest]', { uploaded, image, images, uploadedImages });
         onChange!(images);
         this.wrapImagesToFileList(images);
@@ -123,7 +127,7 @@ export class ImagesUploader extends React.Component<IProps, IState> {
     const { value } = this.props;
     const { previewVisible, previewImage, fileList, fileSize } = this.state;
 
-    logger.debug('[render]', { fileList });
+    logger.debug('[render]', { fileList, value });
 
     const uploadButton = (
       <div>

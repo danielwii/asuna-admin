@@ -263,7 +263,7 @@ export class DynamicForm extends React.Component<
         });
         return <div>association({util.inspect(field)}) need foreignOpts.</div>;
       }
-      case DynamicFormTypes.SimpleJSON:
+      case DynamicFormTypes.SimpleJSON: // TODO json-type is string-array
         logger.debug('[DynamicForm]', '[buildField][SimpleJSON]', field, options);
         return generateStringArray(form, { ...(options as any), items: field.value });
       default: {
