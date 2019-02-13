@@ -25,7 +25,8 @@ export const generateImages = (
   return generateComponent(
     form,
     { fieldName, labelName, ...options },
-    <ImagesUploader many={true} host={host} prefix={prefix} urlHandler={handler} />,
+    // TODO jsonMode need to setup dynamically later
+    <ImagesUploader many={true} host={host} prefix={prefix} urlHandler={handler} jsonMode />,
     formItemLayout,
   );
 };
