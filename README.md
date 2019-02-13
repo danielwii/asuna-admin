@@ -11,9 +11,10 @@
 
 A contract-first admin for developers is necessary for any different server languages.
 
-## Develop
+## Roadmap
 
-0.9.0 版本开始整个项目已经完成了组件化改造，不再需要通过 clone/subtree 的方式进行开发，当然，继续使用也可以。
+- 0.11.0 upgrade nextjs to 8.0; 引入外部自定义页面组件;
+- 0.9.0 版本开始整个项目已经完成了组件化改造，提供了 clone/subtree 之外的开发方式;
 
 ## Not Really Quick Start
 
