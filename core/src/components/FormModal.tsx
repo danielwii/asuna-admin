@@ -12,7 +12,7 @@ import { toErrorMessage, toFormErrors } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 import idx from 'idx';
 
-const logger = createLogger('components:form-modal', 'warn');
+const logger = createLogger('components:form-modal');
 
 interface ILightForm {
   fields;
