@@ -52,12 +52,7 @@ export type IndexModuleRegister = {
 };
 
 export interface INextConfig {
-  serverRuntimeConfig: {
-    /**
-     * @deprecated
-     */
-    isServer?: boolean;
-  };
+  serverRuntimeConfig: {};
   publicRuntimeConfig?: { env?: string; version?: string };
 }
 
@@ -67,7 +62,7 @@ export interface INextConfig {
 
 class AppContext {
   private static nextConfig: INextConfig = {
-    serverRuntimeConfig: { isServer: false },
+    serverRuntimeConfig: {},
     publicRuntimeConfig: { env: 'canary' },
   };
 
@@ -86,6 +81,7 @@ class AppContext {
    */
   private static _dispatch: Dispatch;
   private static _subject;
+  private static _isServer: boolean;
   private static _storeConnector: IStoreConnector<RootState>;
 
   public static init(nextConfig?: INextConfig) {
@@ -160,11 +156,11 @@ class AppContext {
   }
 
   public static set isServer(isServer: boolean | undefined) {
-    AppContext.nextConfig.serverRuntimeConfig.isServer = isServer;
+    AppContext._isServer = !!isServer;
   }
 
   public static get isServer() {
-    return AppContext.nextConfig.serverRuntimeConfig.isServer;
+    return AppContext._isServer;
   }
 
   public static get isDevMode() {

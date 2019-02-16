@@ -18,6 +18,37 @@ A contract-first admin for developers is necessary for any different server lang
 
 ## Not Really Quick Start
 
+- server.js
+
+```javascript
+const { bootstrap } = require('./asuna-default-server');
+
+bootstrap();
+```
+
+- next.config.js
+
+```javascript
+const R = require('ramda');
+const withTypescript = require('@zeit/next-typescript');
+const withCss = require('@zeit/next-css');
+const { withDefaultNextConfigs } = require('./asuna-with-default-next');
+
+module.exports = R.compose(
+  withTypescript,
+  withCss,
+  withDefaultNextConfigs,
+)();
+```
+
+- .babelrc
+
+```json
+{
+  "presets": ["./asuna-babel"]
+}
+```
+
 - add service/register.ts
 
 ```typescript
