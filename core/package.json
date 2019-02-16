@@ -1,12 +1,15 @@
 {
   "name": "asuna-admin",
-  "version": "0.10.7-2",
+  "version": "0.11.0",
   "repository": "git@github.com:danielwii/asuna-admin.git",
   "author": "Daniel Wei <danielwii0326@gmail.com>",
   "license": "MIT",
   "files": [
     "dist",
-    "typings"
+    "typings",
+    "asuna-babel.js",
+    "asuna-default-server.js",
+    "asuna-with-default-next.js"
   ],
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -113,7 +116,6 @@
     "source-map-loader": "0.2.4",
     "ts-jest": "23.10.5",
     "ts-loader": "5.3.3",
-    "ts-node": "^8.0.2",
     "ts-simple-ast": "21.0.4",
     "tsconfig-extends": "1.0.1",
     "tsconfig-paths": "3.8.0",
