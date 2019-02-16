@@ -345,7 +345,7 @@ export class ModelAdapter {
     )(schema) as { [member: string]: Asuna.Schema.FormSchema };
   };
 
-  public getFieldsOfAssociations = R.memoize(() => {
+  public getFieldsOfAssociations = _.memoize(() => {
     logger.debug('[getFieldsOfAssociations]', 'modelConfigs is', this.modelConfigs);
     const concatValues = (l, r) => (R.is(String, l) ? l : R.uniq(R.concat(l, r)));
     const isNotEmpty = R.compose(

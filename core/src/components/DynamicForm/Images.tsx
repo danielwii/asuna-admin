@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { join } from 'path';
 
 import { Icon, Modal, Upload } from 'antd';
-import { RcFile, UploadFile, UploadFileStatus } from 'antd/es/upload/interface';
+import { RcFile, UploadChangeParam, UploadFile, UploadFileStatus } from 'antd/es/upload/interface';
 import { diff } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 import { upload, validateFile } from '@asuna-admin/helpers/upload';
@@ -97,13 +97,18 @@ export class ImagesUploader extends React.Component<IProps, IState> {
   };
 
   // updated file status will received here, maybe will handled later
-  // handleChange = (info: UploadChangeParam): void => {
-  //   logger.log('[ImagesUploader][handleChange]', { info });
-  //   const { onChange } = this.props;
-  //   const images = _.compact(info.fileList.map(file => file.url)).join(',');
-  //   logger.log('[ImagesUploader][handleChange]', { images });
-  //   onChange!(images);
-  // };
+  handleChange = (info: UploadChangeParam): void => {
+    logger.log('[ImagesUploader][handleChange]', { info });
+    const { onChange, jsonMode } = this.props;
+    // const images = _.compact(info.fileList.map(file => file.url)).join(',');
+    let images: string | string[] = _.compact(_.flatten(info.fileList.map(file => file.url)));
+    if (!jsonMode) {
+      images = images.join(',');
+    }
+    logger.log('[ImagesUploader][handleChange]', { images });
+    onChange!(images);
+    this.wrapImagesToFileList(images);
+  };
 
   customRequest = (option: any): void => {
     const { onChange, urlHandler, prefix, value, jsonMode } = this.props;
@@ -146,7 +151,7 @@ export class ImagesUploader extends React.Component<IProps, IState> {
           customRequest={this.customRequest}
           beforeUpload={(file: RcFile, rcFiles: RcFile[]) => validateFile(file)}
           onPreview={this.handlePreview}
-          // onChange={this.handleChange}
+          onChange={this.handleChange}
         >
           {fileList && fileList.length >= fileSize ? null : uploadButton}
         </Upload>
