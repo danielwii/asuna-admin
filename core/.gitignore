@@ -7,4 +7,4 @@ dist
 # project
 pages/*
 services/*
-config.js
+/config.js
