@@ -19,7 +19,7 @@ import './dynamic-form.select.story';
 // import './modules-models.story';
 import './rich-text.story';
 import './image-crop.story';
-import './debug.story';
+import './debug-settings.story';
 
 storiesOf('Welcome', module).add('to Storybook', () => <Welcome showApp={linkTo('Button')} />);
 

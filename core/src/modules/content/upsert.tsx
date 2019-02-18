@@ -390,7 +390,8 @@ class ContentUpsert extends React.Component<IProps, IState> {
 
     // loading 仅在初次加载时渲染，否则编辑器会 lose focus
     const noFields = R.anyPass([R.isEmpty, R.isNil])(fields);
-    if (noFields || loadings.LOAD || loadings.INIT) {
+    logger.log('[render]', { noFields }, loadings);
+    if (noFields || loadings.INIT || loadings.LOAD) {
       return (
         <React.Fragment>
           <span>{status}...</span>

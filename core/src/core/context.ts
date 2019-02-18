@@ -84,6 +84,8 @@ class AppContext {
   private static _isServer: boolean;
   private static _storeConnector: IStoreConnector<RootState>;
 
+  public static dynamicModules = {};
+
   public static init(nextConfig?: INextConfig) {
     if (nextConfig) {
       AppContext.nextConfig = nextConfig;

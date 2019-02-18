@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import styled from 'styled-components';
 
 import { Dropdown, Icon, Layout, Menu } from 'antd';
 
 import { AppState, AuthState } from '@asuna-admin/store';
+import { DebugSettings, IDebugSettingsProps } from './DebugSettings';
 
 const StyledLogoImg = styled.img`
   width: 120px;
@@ -25,7 +26,9 @@ export interface IHeaderProps {
   env?: string;
   version?: string;
   onSync: () => void;
+  handleAction: (action: string, componentName) => void;
   logout: () => void;
+  withDebugSettingsProps?: (fn: (props: IDebugSettingsProps) => any) => any;
 }
 
 export class Header extends React.Component<IHeaderProps> {
@@ -51,7 +54,9 @@ export class Header extends React.Component<IHeaderProps> {
       {this.props.isSuperAdmin && <Menu.Divider />}
       {this.props.env !== 'production' && (
         <Menu.Item>
-          <a>Debug Settings</a>
+          <a onClick={() => this.props.handleAction('set-debug', DebugSettings.name)}>
+            Debug Settings
+          </a>
         </Menu.Item>
       )}
       {this.props.env !== 'production' && <Menu.Divider />}
