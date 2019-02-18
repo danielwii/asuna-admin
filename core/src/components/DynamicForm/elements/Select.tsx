@@ -228,8 +228,11 @@ export function generateSelect<T>(
     };
 
     _onChange = (value: any | any[]) => {
-      const exists = R.filter(item => R.contains(R.prop('id')(item))(value))(this._getAllItems());
-      logger.log('[MixedSelect]', '[onChange]', { value, exists });
+      logger.log('[MixedSelect]', '[onChange]', { value, items: this._getAllItems() });
+      const exists = value
+        ? R.filter(item => R.contains(R.prop('id')(item))(value))(this._getAllItems())
+        : undefined;
+      logger.log('[MixedSelect]', '[onChange]', { exists });
 
       this.setState({ existItems: exists });
       this.props.onChange!(value);

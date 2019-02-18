@@ -26,7 +26,7 @@ interface IProps {
 }
 
 interface IState {
-  fileList: Partial<UploadFile>[];
+  fileList: UploadFile[];
   many: boolean;
   fileSize: number;
   previewImage?: string;
@@ -75,11 +75,11 @@ export class ImagesUploader extends React.Component<IProps, IState> {
         : _.compact(imagesInfo.split(','))
       : [];
     logger.debug('[wrapImagesToFileList]', { images });
-    const fileList = _.map(images, (image, index) => ({
+    const fileList = _.map<any, Partial<UploadFile>>(images, (image, index) => ({
       uid: `${index}`,
       status: 'done' as UploadFileStatus,
       url: join(host || '', image),
-    }));
+    })) as any;
     logger.debug('[wrapImagesToFileList]', 'fileList is', fileList);
     this.setState({ fileList });
   };
@@ -101,6 +101,7 @@ export class ImagesUploader extends React.Component<IProps, IState> {
     logger.log('[ImagesUploader][handleChange]', { info });
     const { onChange, jsonMode } = this.props;
     // const images = _.compact(info.fileList.map(file => file.url)).join(',');
+    // 这里只有 status 为 done 的 image 包含 url
     let images: string | string[] = _.compact(_.flatten(info.fileList.map(file => file.url)));
     if (!jsonMode) {
       images = images.join(',');
@@ -111,12 +112,13 @@ export class ImagesUploader extends React.Component<IProps, IState> {
   };
 
   customRequest = (option: any): void => {
-    const { onChange, urlHandler, prefix, value, jsonMode } = this.props;
+    logger.log('[ImagesUploader][customRequest]', option);
     upload(option.file).then(uploaded => {
+      const { onChange, urlHandler, prefix, jsonMode } = this.props;
       if (uploaded) {
         logger.log('[ImagesUploader][customRequest]', { props: this.props, state: this.state });
         const image = join(prefix || '', urlHandler ? urlHandler(uploaded[0]) : `${uploaded[0]}`);
-        const uploadedImages = value;
+        const uploadedImages = this.props.value;
         let images: string | string[] = _.compact(_.flatten([uploadedImages, image]));
         if (!jsonMode) {
           images = images.join(',');
@@ -141,12 +143,22 @@ export class ImagesUploader extends React.Component<IProps, IState> {
       </div>
     );
 
+    // 多文件上传在使用 customRequest 时第二次只会上传第一个文件。
+    // 发现增加了 onStart 方法后依然可以上传多个，目前暂时没有找到原因
+    const eventHandler = {
+      onStart(file) {
+        logger.debug('[uploader] onStart', file, file.name);
+      },
+    };
+
     return (
       <div className="clearfix">
         <Upload
+          {...eventHandler}
+          multiple
           key={value}
           listType="picture-card"
-          fileList={fileList as UploadFile[]}
+          fileList={fileList}
           supportServerRender
           customRequest={this.customRequest}
           beforeUpload={(file: RcFile, rcFiles: RcFile[]) => validateFile(file)}
