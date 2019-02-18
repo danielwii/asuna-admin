@@ -10,3 +10,4 @@ export * from './Header';
 export * from './DynamicForm';
 export * from './FormModal';
 export * from './RichEditor';
+export * from './DebugSettings';

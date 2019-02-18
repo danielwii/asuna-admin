@@ -20,6 +20,7 @@ export type Pane = {
     modelName: string;
     record: any;
   };
+  Component?;
   // composed: {
   //   component: object;
   //   state: object;
@@ -114,6 +115,7 @@ export class Panes extends React.Component<IPanesProps, IState> {
               onClose={() => this.onEdit(activeKey, 'remove')}
               basis={{ pane }}
               onTitleChange={newTitle => this.onTitleChange(activeKey, newTitle)}
+              component={pane.component}
             />
           </TabPane>
         ))}

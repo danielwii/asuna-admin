@@ -4,12 +4,12 @@ import { storiesOf } from '@storybook/react';
 import { Button } from '@storybook/react/demo';
 import * as util from 'util';
 
-import { DebugSettings } from '../src/components/Debug';
+import { DebugSettings } from '../src/components/DebugSettings';
 import { createLogger, modules } from '../src/logger';
 
-storiesOf('Debug', module)
+storiesOf('DebugSettings', module)
   //
-  .add('DebugSettings', () => {
+  .add('default', () => {
     const logger = createLogger('log');
     return (
       <div>
