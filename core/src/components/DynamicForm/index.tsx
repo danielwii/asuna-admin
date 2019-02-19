@@ -281,13 +281,13 @@ export class DynamicForm extends React.Component<
   };
 
   _handleOnSubmit = e => {
-    logger.debug('[DynamicForm]', '[handleOnSubmit]', 'onSubmit', e);
     e.preventDefault();
 
     const { form, onSubmit } = this.props;
     form.validateFields((err, values) => {
+      logger.log('[DynamicForm][handleOnSubmit]', values);
       if (err) {
-        logger.error('[DynamicForm]', '[handleOnSubmit]', 'error occurred in form', values, err);
+        logger.error('[DynamicForm][handleOnSubmit]', 'error occurred in form', values, err);
       } else {
         onSubmit(e);
       }

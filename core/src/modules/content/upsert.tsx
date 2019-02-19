@@ -367,7 +367,10 @@ class ContentUpsert extends React.Component<IProps, IState> {
             this.setState({ hasErrors: true });
           }
         } else {
-          this.setState({ hasErrors: false });
+          this.setState({
+            hasErrors: false,
+            originalFieldValues: { ...originalFieldValues, ...fieldPairs },
+          });
           // FIXME 当前页面暂未切换为 update 模式，临时关闭当前页面
           if (isInsertMode) {
             EventBus.sendEvent(EventType.MODEL_INSERT, { modelName });
