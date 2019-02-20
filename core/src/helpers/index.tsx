@@ -263,10 +263,10 @@ export const columnHelper = {
           const value = transformer ? transformer(text) : text;
           if (value) {
             const images = value.split(',');
-            const host = Config.get('IMAGE_HOST');
+            const host = Config.get('IMAGE_HOST') || '';
             return _.map(images, image => (
               <FluxCenterBox key={image}>
-                <ThumbImage src={join(host || '', `${image}?thumbnail/x80_cover`)} />
+                <ThumbImage src={`${host}${image}?thumbnail/x80_cover`} />
               </FluxCenterBox>
             ));
           }
