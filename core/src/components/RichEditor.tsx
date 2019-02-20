@@ -1,15 +1,13 @@
 import React from 'react';
-import { message } from 'antd';
-import { join } from 'path';
 
 import { apiProxy } from '@asuna-admin/adapters';
 import { AppContext } from '@asuna-admin/core';
 import { createLogger } from '@asuna-admin/logger';
+import { validateFile } from '@asuna-admin/helpers/upload';
 
-const logger = createLogger('components:rich-editor', 'warn');
+const logger = createLogger('components:rich-editor');
 
 let BraftEditor;
-let EditorState;
 
 interface IProps {
   host?: string;
@@ -25,6 +23,8 @@ interface IState {
 }
 
 export class BraftRichEditor extends React.Component<IProps, IState> {
+  private editorInstance;
+
   state: IState = {
     loading: true,
   };
@@ -32,37 +32,24 @@ export class BraftRichEditor extends React.Component<IProps, IState> {
   componentDidMount() {
     // to avoid ·window is not defined· issue
     BraftEditor = require('braft-editor').default;
-    EditorState = require('braft-editor').EditorState;
     logger.debug('[componentDidMount]', { state: this.state, props: this.props });
     const { value } = this.props;
-    this.setState({ loading: false, editorState: EditorState.createFrom(value || '') });
+    const editorState = BraftEditor.createEditorState(value || '');
+    this.setState({ loading: false, editorState });
   }
 
   _handleEditorChange = editorState => {
-    logger.debug('[handleEditorChange]', { editorState });
     const { onChange } = this.props;
     if (onChange) onChange(editorState.toHTML());
     this.setState({ editorState });
   };
 
-  _beforeUpload = file => {
-    const isImage = ['image/jpeg', 'image/png'].indexOf(file.type) > -1;
-    logger.log('[beforeUpload]', file);
-    if (!isImage) {
-      message.error('You can only upload JPG/PNG file!');
-    }
-    const isLt20M = file.size / 1024 / 1024 < 20;
-    if (!isLt20M) {
-      message.error('Image must smaller than 20MB!');
-    }
-    return isImage && isLt20M;
-  };
-
   _uploadFn = async param => {
     const { prefix, urlHandler } = this.props;
-    logger.debug('[uploadFn]', 'param is', param);
+    logger.debug('[uploadFn]', { prefix, param });
 
     const response = await apiProxy.upload(param.file, {
+      prefix,
       onUploadProgress(progressEvent) {
         logger.debug('[uploadFn][progressFn]', 'event is', progressEvent);
         param.progress((progressEvent.loaded / progressEvent.total) * 100);
@@ -75,7 +62,8 @@ export class BraftRichEditor extends React.Component<IProps, IState> {
       const image = urlHandler ? urlHandler(response.data[0]) : response.data[0];
       param.success({
         image,
-        url: join(prefix || '', `${image}`),
+        // url: join(prefix || '', `${image}`),
+        url: image,
       });
     } else {
       param.error({
@@ -85,6 +73,7 @@ export class BraftRichEditor extends React.Component<IProps, IState> {
   };
 
   render() {
+    const { host } = this.props;
     const { loading, editorState } = this.state;
 
     if (loading) return <p>loading editor...</p>;
@@ -95,11 +84,12 @@ export class BraftRichEditor extends React.Component<IProps, IState> {
 
     return (
       <BraftEditor
+        ref={instance => (this.editorInstance = instance)}
         value={editorState}
         defaultValue={editorState}
         onChange={this._handleEditorChange}
         media={{
-          validateFn: this._beforeUpload, // 指定本地校验函数
+          validateFn: validateFile, // 指定本地校验函数
           uploadFn: this._uploadFn, // 指定上传函数
           externalMedias: {
             image: true,

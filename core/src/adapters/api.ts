@@ -24,7 +24,7 @@ export interface IApiService {
 const logger = createLogger('adapters:api');
 
 export const apiProxy = {
-  upload(file, options?): Promise<AxiosResponse<Asuna.Schema.UploadResponse[]>> {
+  upload(file, options = {}): Promise<AxiosResponse<Asuna.Schema.UploadResponse[]>> {
     return AppContext.ctx.api.upload(file, options);
   },
   getVersion(): Promise<AxiosResponse> {
