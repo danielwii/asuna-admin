@@ -78,7 +78,7 @@ export class ImagesUploader extends React.Component<IProps, IState> {
     const fileList = _.map<any, Partial<UploadFile>>(images, (image, index) => ({
       uid: `${index}`,
       status: 'done' as UploadFileStatus,
-      url: join(host || '', image),
+      url: host + `/${image}`.replace('//', '/').slice(1),
     })) as any;
     logger.debug('[wrapImagesToFileList]', 'fileList is', fileList);
     this.setState({ fileList });
@@ -117,13 +117,18 @@ export class ImagesUploader extends React.Component<IProps, IState> {
       const { onChange, urlHandler, prefix, jsonMode } = this.props;
       if (uploaded) {
         logger.log('[ImagesUploader][customRequest]', { props: this.props, state: this.state });
-        const image = join(prefix || '', urlHandler ? urlHandler(uploaded[0]) : `${uploaded[0]}`);
+        const resolvedUrl = urlHandler ? urlHandler(uploaded[0]) : `${uploaded[0]}`;
+        let image = resolvedUrl;
+        if (!resolvedUrl.startsWith('http') && !resolvedUrl.startsWith(prefix || '')) {
+          image = join(prefix || '', resolvedUrl);
+        }
+        logger.log('[ImagesUploader][customRequest]', { image, prefix, resolvedUrl });
         const uploadedImages = this.props.value;
         let images: string | string[] = _.compact(_.flatten([uploadedImages, image]));
         if (!jsonMode) {
           images = images.join(',');
         }
-        logger.log('[ImagesUploader][customRequest]', { uploaded, image, images, uploadedImages });
+        logger.log('[ImagesUploader][customRequest]', { uploaded, images, uploadedImages });
         onChange!(images);
         this.wrapImagesToFileList(images);
       }
@@ -156,10 +161,10 @@ export class ImagesUploader extends React.Component<IProps, IState> {
         <Upload
           {...eventHandler}
           multiple
+          supportServerRender
           key={value}
           listType="picture-card"
           fileList={fileList}
-          supportServerRender
           customRequest={this.customRequest}
           beforeUpload={(file: RcFile, rcFiles: RcFile[]) => validateFile(file)}
           onPreview={this.handlePreview}
