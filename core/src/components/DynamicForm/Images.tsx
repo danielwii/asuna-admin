@@ -119,7 +119,7 @@ export class ImagesUploader extends React.Component<IProps, IState> {
         logger.log('[ImagesUploader][customRequest]', { props: this.props, state: this.state });
         const resolvedUrl = urlHandler ? urlHandler(uploaded[0]) : `${uploaded[0]}`;
         let image = resolvedUrl;
-        if (!resolvedUrl.startsWith('http') && !resolvedUrl.startsWith(prefix || '')) {
+        if (!resolvedUrl.startsWith('http')) {
           image = join(prefix || '', resolvedUrl);
         }
         logger.log('[ImagesUploader][customRequest]', { image, prefix, resolvedUrl });
