@@ -18,7 +18,7 @@ const proxy = createProxyServer({});
 
 proxy.on('error', (error, request, response) => {
   logger.error(`${new Date().toISOString().dim} proxy error`, { error });
-  if (!response.headersSent) {
+  if (response && !response.headersSent) {
     response.writeHead(500, { 'content-type': 'application/json' });
   }
   if (error.code === 'ECONNREFUSED') {
@@ -44,6 +44,17 @@ function bootstrap() {
           `${new Date().toISOString().dim} ${req.method.bold} ${req.url}`,
           proxyConfig ? util.inspect(proxyConfig, { colors: true }) : 'direct'.cyan,
         );
+        if (proxyConfig && proxyConfig.redirectTo) {
+          const redirectTo = proxyConfig.redirectTo(req);
+          console.log(redirectTo);
+          res.writeHead(302, {
+            Location: redirectTo,
+          });
+          res.end();
+          // handle(req, res, parsedUrl);
+          return;
+        }
+
         if (proxyConfig) {
           if (proxyConfig.dest) {
             req.url = proxyConfig.dest(req);

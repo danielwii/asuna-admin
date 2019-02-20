@@ -69,11 +69,15 @@ export class ImageTrivia extends React.Component<IProps, IState> {
 
   onSelectFile = e => {
     if (e.target.files && e.target.files.length > 0) {
-      const { onChange, urlHandler, prefix, value } = this.props;
       upload(e.target.files[0]).then(uploaded => {
+        const { onChange, urlHandler, prefix, value, host } = this.props;
         if (uploaded) {
           logger.log('[onSelectFile]', { props: this.props, state: this.state });
-          const image = join(prefix || '', urlHandler ? urlHandler(uploaded[0]) : `${uploaded[0]}`);
+          const resolvedUrl = urlHandler ? urlHandler(uploaded[0]) : `${uploaded[0]}`;
+          let image = resolvedUrl;
+          if (!resolvedUrl.startsWith('http')) {
+            image = join(prefix || '', resolvedUrl);
+          }
           logger.log('[onSelectFile]', { uploaded, image });
           onChange!(R.mergeDeepRight(value, { url: image }));
         }
@@ -158,8 +162,9 @@ export class ImageTrivia extends React.Component<IProps, IState> {
   };
 
   render() {
-    const { maxHeight, maxWidth, value } = this.props;
+    const { maxHeight, maxWidth, value, host } = this.props;
     const { crop, updateIndex } = this.state;
+    const url = value ? host + `/${value.url}`.replace('//', '/').slice(1) : '';
 
     logger.log('[render]', { value, crop });
 
@@ -177,7 +182,7 @@ export class ImageTrivia extends React.Component<IProps, IState> {
                 maxHeight: maxHeight || DEFAULT_MAX_HEIGHT,
                 maxWidth: maxWidth || DEFAULT_MAX_WEIGHT,
               }}
-              src={value.url || ''}
+              src={url}
               crop={crop}
               onImageLoaded={this.onImageLoaded as any}
               onComplete={this.onCropComplete}
