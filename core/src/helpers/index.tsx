@@ -325,6 +325,7 @@ export const commonColumns = {
   nameEn: columnHelper.generate('nameEn', '英文名称', { searchType: 'like' }),
   email: columnHelper.generate('email', 'Email', { searchType: 'like' }),
   type: columnHelper.generate('type', '类型'),
+  eduType: columnHelper.generate('eduType', '类型'),
   createdAt: columnHelper.generateCalendar('createdAt', '创建时间'),
   updatedAt: columnHelper.generateCalendar('updatedAt', '更新时间'),
   isPublished: _.curry(columnHelper.generateSwitch)('isPublished', '发布'),
