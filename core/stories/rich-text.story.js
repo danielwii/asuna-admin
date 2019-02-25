@@ -6,7 +6,7 @@ import { storiesOf } from '@storybook/react';
 import { BraftRichEditor } from '../src/components/RichEditor';
 
 import 'draft-js/dist/Draft.css';
-import 'braft-editor/dist/index.css';
+// import 'braft-editor/dist/index.css';
 
 storiesOf('RichText', module)
   // .add('default', () => <DraftRichEditor />)

@@ -46,7 +46,6 @@ function bootstrap() {
         );
         if (proxyConfig && proxyConfig.redirectTo) {
           const redirectTo = proxyConfig.redirectTo(req);
-          console.log(redirectTo);
           res.writeHead(302, {
             Location: redirectTo,
           });

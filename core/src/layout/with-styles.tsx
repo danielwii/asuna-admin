@@ -3,7 +3,7 @@ import NextHead from 'next/head';
 
 import 'antd/dist/antd.css';
 import 'draft-js/dist/Draft.css';
-import 'braft-editor/dist/index.css';
+// import 'braft-editor/dist/index.css';
 import 'video.js/dist/video-js.css';
 
 export default ({ children }) => (

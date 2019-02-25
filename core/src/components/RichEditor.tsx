@@ -5,6 +5,8 @@ import { AppContext } from '@asuna-admin/core';
 import { createLogger } from '@asuna-admin/logger';
 import { validateFile } from '@asuna-admin/helpers/upload';
 
+import 'braft-editor/dist/index.css';
+
 const logger = createLogger('components:rich-editor');
 
 let BraftEditor;
