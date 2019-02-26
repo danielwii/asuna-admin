@@ -19,6 +19,7 @@ coverage
 *.log
 static/libs
 .asuna
+.next
 
 # project
 examples/*
