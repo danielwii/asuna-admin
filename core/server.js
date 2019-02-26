@@ -1,3 +1,3 @@
-const { bootstrap } = require('./asuna-default-server');
+const { bootstrap } = require('./asuna-default-koa-server');
 
 bootstrap();
