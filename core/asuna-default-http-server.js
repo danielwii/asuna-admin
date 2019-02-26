@@ -1,34 +1,16 @@
 require('colors');
 const util = require('util');
-const debug = require('debug');
 const { createServer } = require('http');
-const { createProxyServer } = require('http-proxy');
 const { parse } = require('url');
 const next = require('next');
 
-debug.enable('http,error');
-const logger = { log: debug('http'), error: debug('error') };
+const { proxy, logger } = require('./asuna-utils');
 const configs = require('./config');
 
 const dev = process.env.NODE_ENV !== 'production';
 const port = process.env.PORT || 3000;
 const app = next({ dev });
 const handle = app.getRequestHandler();
-const proxy = createProxyServer({});
-
-proxy.on('error', (error, request, response) => {
-  logger.error(`${new Date().toISOString().dim} proxy error`, { error });
-  if (response && !response.headersSent) {
-    response.writeHead(500, { 'content-type': 'application/json' });
-  }
-  if (error.code === 'ECONNREFUSED') {
-    response.end(
-      JSON.stringify({ message: 'Sorry, our API server is down. Please come back later.' }),
-    );
-  } else {
-    response.end(JSON.stringify({ error, message: error.message }));
-  }
-});
 
 function bootstrap() {
   app.prepare().then(() => {

@@ -8,8 +8,10 @@
     "dist",
     "typings",
     "asuna-babel.js",
-    "asuna-default-server.js",
-    "asuna-with-default-next.js"
+    "asuna-default-http-server.js",
+    "asuna-default-koa-server.js",
+    "asuna-with-default-next.js",
+    "asuna-utils.js"
   ],
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -50,6 +52,8 @@
     "http-proxy": "1.17.0",
     "idx": "2.5.4",
     "immutable": "3.8.2",
+    "koa": "^2.7.0",
+    "koa-router": "^7.4.0",
     "localforage": "1.7.3",
     "lodash": "4.17.11",
     "moment": "2.24.0",
