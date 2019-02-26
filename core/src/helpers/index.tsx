@@ -266,7 +266,10 @@ export const columnHelper = {
             const host = Config.get('IMAGE_HOST') || '';
             return _.map(images, image => (
               <FluxCenterBox key={image}>
-                <ThumbImage src={`${host}${image}?thumbnail/x80_cover`} />
+                {/*<ThumbImage src={`${host}${image}?thumbnail/x80_cover`} />*/}
+                <ThumbImage
+                  src={`${host}${image}?imageView2/2/w/1280/h/1280/format/jpg/interlace/1/ignore-error/1`}
+                />
               </FluxCenterBox>
             ));
           }

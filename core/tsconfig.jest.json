@@ -15,12 +15,11 @@
     "sourceMap": true,
     "declaration": true,
     "skipLibCheck": true,
-    "outDir": "lib",
     "baseUrl": "./",
     "paths": {
       "@asuna-admin/*": ["src/*"]
     }
   },
-  "include": ["./src"],
+  "include": ["./src", "./typings"],
   "exclude": ["**/*.spec.*"]
 }

@@ -6,6 +6,7 @@ const { parse } = require('url');
 const next = require('next');
 
 const { proxy, logger } = require('./asuna-utils');
+const applyMiddleware = require('./asuna-graphql-koa-server');
 const configs = require('./config');
 
 const dev = process.env.NODE_ENV !== 'production';
@@ -13,9 +14,20 @@ const port = process.env.PORT || 3000;
 const app = next({ dev });
 const handle = app.getRequestHandler();
 
-function bootstrap() {
+function bootstrap({ root }) {
   app.prepare().then(() => {
     const server = new Koa();
+
+    // --------------------------------------------------------------
+    // setup graphql
+    // --------------------------------------------------------------
+
+    const { graphqlPath } = applyMiddleware(server, { root });
+
+    // --------------------------------------------------------------
+    // setup routes
+    // --------------------------------------------------------------
+
     const router = new Router();
 
     router.all('*', async ctx => {
@@ -70,7 +82,8 @@ function bootstrap() {
 
     server.listen(port, err => {
       if (err) throw err;
-      logger.log(`> Ready on http://localhost:${port}`.bgRed.black.bold);
+      logger.log(`> 🚀 GraphQL Ready at http://localhost:${port}${graphqlPath}`.bgRed.black.bold);
+      logger.log(`> 🚀 Ready at http://localhost:${port}`.bgRed.black.bold);
       logger.log(`> NODE_ENV: ${process.env.NODE_ENV}`.bgRed.black.bold);
       logger.log(`> ENV: ${process.env.ENV}`.bgRed.black.bold);
     });
