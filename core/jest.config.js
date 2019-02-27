@@ -10,7 +10,7 @@ module.exports = {
     '^@asuna-admin/(.*)$': '<rootDir>/src/$1',
     '\\.(css|less)$': '<rootDir>/__mocks__/styleMock.js',
   },
-  moduleFileExtensions: ['js', 'json', 'ts', 'tsx'],
+  // moduleFileExtensions: ['js', 'json', 'ts', 'tsx'],
   moduleDirectories: ['node_modules', 'src'],
   testRegex: '.spec.tsx?$',
   transform: {
