@@ -89,7 +89,7 @@ export function AssetPreview({ host, url, showPdf, fullWidth }: IAssetPreviewPro
       <a href={href} target="_blank">
         {/*<ThumbImage src={`${host}${url}?thumbnail/x80_cover`} />*/}
         <ThumbImage
-          width={fullWidth ? '100%' : 'auto'}
+          width={fullWidth ? '100%' : ''}
           src={`${host}${url}?imageView2/2/w/1280/h/1280/format/jpg/interlace/1/ignore-error/1`}
         />
       </a>
