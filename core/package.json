@@ -1,6 +1,6 @@
 {
   "name": "asuna-admin",
-  "version": "0.11.0-2",
+  "version": "0.11.0-3",
   "repository": "git@github.com:danielwii/asuna-admin.git",
   "author": "Daniel Wei <danielwii0326@gmail.com>",
   "license": "MIT",
@@ -27,8 +27,8 @@
     "prebuild": "yarn clean",
     "postpublish": "yarn clean",
     "compile:replace-path": "node replace-path.js",
-    "build": "tsc && yarn compile:replace-path",
-    "postbuild": "mv build/src dist && rm -rf build",
+    "build": "tsc",
+    "postbuild": "mv build/src dist && rm -rf build && yarn compile:replace-path",
     "start": "NODE_ENV=production node server.js",
     "storybook": "NODE_ENV=dev start-storybook -p 6006",
     "build-storybook": "NODE_ENV=dev build-storybook",
