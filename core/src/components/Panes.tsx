@@ -20,7 +20,7 @@ export type Pane = {
     modelName: string;
     record: any;
   };
-  Component?;
+  component?;
   // composed: {
   //   component: object;
   //   state: object;

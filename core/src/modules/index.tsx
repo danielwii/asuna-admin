@@ -1,12 +1,11 @@
 import React from 'react';
 import dynamic from 'next/dynamic';
 import _ from 'lodash';
-import Loadable from 'react-loadable';
 
 import { createLogger } from '@asuna-admin/logger';
 import { DebugSettings } from '@asuna-admin/components';
-import { DebugSettingsContainer } from '@asuna-admin/containers';
 import { withDebugSettingsProps } from '@asuna-admin/containers/DebugSettings';
+import { AppContext } from '@asuna-admin/core';
 
 const logger = createLogger('modules:index');
 
@@ -49,8 +48,15 @@ export default dynamic({
 
     if (component) {
       const moduleRender = ModuleRegister.renders[component];
-      console.log('loader', { moduleRender, props });
-      return moduleRender(props);
+
+      if (moduleRender) {
+        console.log('loader', { moduleRender, props });
+        return moduleRender(props);
+      }
+
+      const fc = AppContext.ctx.components.load(component);
+      console.log('loader', { fc, props });
+      return fc(props);
     }
 
     const Component = getModule(components, module).default;

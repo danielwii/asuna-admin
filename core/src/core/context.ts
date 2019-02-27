@@ -18,10 +18,15 @@ import {
 } from '@asuna-admin/adapters';
 import { AsunaDefinitions } from '@asuna-admin/core/definitions';
 import idx from 'idx';
+import * as React from 'react';
 
 // --------------------------------------------------------------
 // Types
 // --------------------------------------------------------------
+
+export interface IComponentService {
+  load: (componentName: string) => React.FC;
+}
 
 export interface ILoginRegister {
   createAuthService(): IAuthService;
@@ -39,6 +44,8 @@ export interface IIndexRegister extends ILoginRegister {
   createSecurityService(): ISecurityService;
 
   definitions: AsunaDefinitions;
+
+  componentService: IComponentService;
 }
 
 export type LoginModuleRegister = {
@@ -74,6 +81,7 @@ class AppContext {
     security: SecurityAdapter;
     models: ModelAdapter;
     ws: WsAdapter;
+    components: IComponentService;
   };
 
   /**
@@ -83,8 +91,6 @@ class AppContext {
   private static _subject;
   private static _isServer: boolean;
   private static _storeConnector: IStoreConnector<RootState>;
-
-  public static dynamicModules = {};
 
   public static init(nextConfig?: INextConfig) {
     if (nextConfig) {
@@ -207,6 +213,7 @@ class AppContext {
       security: new SecurityAdapter(register.createSecurityService()),
       models: new ModelAdapter(register.modelService, register.definitions),
       ws: new WsAdapter(),
+      components: register.componentService,
     };
   }
 }

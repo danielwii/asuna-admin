@@ -22,6 +22,7 @@
     "prettier"
   ],
   "rules": {
+    "camelcase": "warn",
     "prettier/prettier": "error",
     "import/extensions": ["error", "never", { "packages": "always" }],
     "import/no-unresolved": "off",

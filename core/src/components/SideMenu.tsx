@@ -12,7 +12,7 @@ const MenuItem: any | { link: string } = Menu.Item;
 const { Sider } = Layout;
 
 export interface ISideMenuProps {
-  onOpen: (params: { key: string; title: string; linkTo: string }) => void;
+  onOpen: (pane: Asuna.Schema.Pane) => void;
   menus?: {
     key: string;
     title: string;
@@ -32,23 +32,29 @@ export class SideMenu extends React.Component<ISideMenuProps, IState> {
    * @param key
    * @param title
    * @param link
+   * @param component
    */
   open = ({
     key,
     item: {
-      props: { title, link },
+      props: { title, link, component },
     },
   }) => {
-    logger.log('open', { key, title, link });
+    logger.log('open', { key, title, link, component });
     const { onOpen } = this.props;
-    onOpen({ key, title, linkTo: link });
+    onOpen({ key, title, linkTo: link, component });
   };
 
-  buildSubMenu(menu) {
+  buildSubMenu(menu: Asuna.Schema.Menu) {
     return (
       <SubMenu key={menu.key} title={menu.title}>
         {_.map(menu.subMenus, subMenu => (
-          <MenuItem key={`${menu.key}::${subMenu.key}`} title={subMenu.title} link={subMenu.linkTo}>
+          <MenuItem
+            key={`${menu.key}::${subMenu.key}`}
+            title={subMenu.title}
+            link={subMenu.linkTo}
+            component={subMenu.component}
+          >
             {subMenu.title}
           </MenuItem>
         ))}
