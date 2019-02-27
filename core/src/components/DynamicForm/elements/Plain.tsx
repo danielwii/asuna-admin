@@ -3,7 +3,7 @@ import { Form } from 'antd';
 import React from 'react';
 import * as _ from 'lodash';
 import { createLogger } from '@asuna-admin/logger';
-import { FluxCenterBox, ThumbImage } from '@asuna-admin/components';
+import { AssetPreview } from '@asuna-admin/components';
 import { Config } from '@asuna-admin/config';
 
 const logger = createLogger('components:dynamic-form:elements:plain');
@@ -28,14 +28,7 @@ export function PlainImages({ options, formItemLayout }: IPlainImagesProps) {
       help={help}
     >
       {_.map(assets, asset => (
-        <FluxCenterBox key={asset}>
-          <a href={`${host}${asset}`} target="_blank">
-            <ThumbImage
-              width="100%"
-              src={`${host}${asset}?imageView2/2/w/1280/h/1280/format/jpg/interlace/1/ignore-error/1`}
-            />
-          </a>
-        </FluxCenterBox>
+        <AssetPreview key={asset} host={host} url={asset} showPdf fullWidth />
       ))}
     </Form.Item>
   );

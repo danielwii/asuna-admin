@@ -12,3 +12,4 @@ export * from './FormModal';
 export * from './RichEditor';
 export * from './DebugSettings';
 export * from './Styled';
+export * from './Snippet';
