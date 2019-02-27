@@ -29,6 +29,7 @@ import {
 import { generateSelect, Item, SelectOptions } from './elements/Select';
 import { generateStringArray, StringArrayOptions } from './elements/StringArray';
 import { generateImage, generateImages, generateRichImage } from './elements/Image';
+import { PlainImages } from './elements/Plain';
 
 import { diff } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
@@ -146,6 +147,16 @@ export class DynamicForm extends React.Component<
 
     // all readonly or hidden field will rendered as plain component
     if (_.includes(['readonly'], idx(field, _ => _.options.accessible))) {
+      if (field.type === DynamicFormTypes.Images) {
+        return (
+          <PlainImages
+            options={{
+              text: _.defaultTo(field.value, options.defaultValue),
+              ...(options as PlainOptions),
+            }}
+          />
+        );
+      }
       return generatePlain({
         text: _.defaultTo(field.value, options.defaultValue),
         ...options,

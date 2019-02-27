@@ -17,6 +17,6 @@ const mapDispatchToProps = dispatch => ({});
 
 // props => <DebugSettings {...props} />
 export function withDebugSettingsProps(fn: (props: IDebugSettingsProps) => any) {
-  console.log({ fn, modules });
+  // console.log({ fn, modules });
   return fn({ modules });
 }
