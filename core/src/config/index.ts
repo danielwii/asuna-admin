@@ -51,6 +51,8 @@ interface ConfigOpts {
   IMAGE_RES_HANDLER?: (res: Asuna.Schema.UploadResponse) => string;
   VIDEO_RES_HANDLER?: (res: Asuna.Schema.UploadResponse) => string;
   ATTACHES_RES_HANDLER?: (res: Asuna.Schema.UploadResponse) => string;
+
+  GRAPHQL_HOST?: string;
 }
 
 const defaultConfiguration: ConfigOpts = {

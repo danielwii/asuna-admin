@@ -22,6 +22,6 @@
       "@asuna-admin/*": ["src/*"]
     }
   },
-  "include": ["./src", "./services", "./pages", "./typings"],
+  "include": ["./src", "./services", "./pages", "./typings", "./components"],
   "exclude": ["**/*.spec.*"]
 }

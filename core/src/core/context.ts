@@ -19,6 +19,8 @@ import {
 import { AsunaDefinitions } from '@asuna-admin/core/definitions';
 import idx from 'idx';
 import * as React from 'react';
+import { GraphqlAdapter, IGraphQLService } from '@asuna-admin/adapters/graphql';
+import { Config } from 'asuna-admin';
 
 // --------------------------------------------------------------
 // Types
@@ -82,6 +84,7 @@ class AppContext {
     models: ModelAdapter;
     ws: WsAdapter;
     components: IComponentService;
+    graphql: IGraphQLService;
   };
 
   /**
@@ -214,6 +217,7 @@ class AppContext {
       models: new ModelAdapter(register.modelService, register.definitions),
       ws: new WsAdapter(),
       components: register.componentService,
+      graphql: new GraphqlAdapter(Config.get('GRAPHQL_HOST')),
     };
   }
 }

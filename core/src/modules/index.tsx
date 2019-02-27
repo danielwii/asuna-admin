@@ -50,12 +50,12 @@ export default dynamic({
       const moduleRender = ModuleRegister.renders[component];
 
       if (moduleRender) {
-        console.log('loader', { moduleRender, props });
+        // console.log('loader', { moduleRender, props });
         return moduleRender(props);
       }
 
       const fc = AppContext.ctx.components.load(component);
-      console.log('loader', { fc, props });
+      // console.log('loader', { fc, props });
       return fc(props);
     }
 

@@ -6,7 +6,7 @@ const { parse } = require('url');
 const next = require('next');
 
 const { proxy, logger } = require('./asuna-utils');
-const applyMiddleware = require('./asuna-graphql-koa-server');
+const applyMiddleware = require('./server/graphql/apollo-koa-server');
 const configs = require('./config');
 
 const dev = process.env.NODE_ENV !== 'production';
@@ -22,7 +22,7 @@ function bootstrap({ root }) {
     // setup graphql
     // --------------------------------------------------------------
 
-    const { graphqlPath } = applyMiddleware(server, { root });
+    const { graphqlPath } = applyMiddleware(server, { root, dev });
 
     // --------------------------------------------------------------
     // setup routes
