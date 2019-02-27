@@ -20,7 +20,7 @@ import { AsunaDefinitions } from '@asuna-admin/core/definitions';
 import idx from 'idx';
 import * as React from 'react';
 import { GraphqlAdapter, IGraphQLService } from '@asuna-admin/adapters/graphql';
-import { Config } from 'asuna-admin';
+import { Config } from '@asuna-admin/config';
 
 // --------------------------------------------------------------
 // Types
