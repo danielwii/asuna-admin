@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { ComponentClass } from 'react';
 import * as React from 'react';
 
-export const FluxCenterBox = (styled.div`
+export const FlexCenterBox = (styled.div`
   display: flex;
   align-items: center;
   justify-content: center;

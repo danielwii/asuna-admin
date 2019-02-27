@@ -16,7 +16,7 @@ import { removePreAndSuf } from './func';
 import { Config } from '@asuna-admin/config';
 import { createLogger } from '@asuna-admin/logger';
 import { AppContext } from '@asuna-admin/core';
-import { FluxCenterBox, ThumbImage } from '@asuna-admin/components';
+import { AssetPreview, AssetsPreview } from '@asuna-admin/components';
 
 const logger = createLogger('helpers');
 
@@ -249,16 +249,8 @@ export const columnHelper = {
           if (value) {
             const images = _.isArray(value) ? value : value.split(',');
             const host = Config.get('IMAGE_HOST') || '';
-            return _.map(images, image => (
-              <FluxCenterBox key={image}>
-                {/*<ThumbImage src={`${host}${image}?thumbnail/x80_cover`} />*/}
-                <a href={`${host}${image}`} target="_blank">
-                  <ThumbImage
-                    src={`${host}${image}?imageView2/2/w/1280/h/1280/format/jpg/interlace/1/ignore-error/1`}
-                  />
-                </a>
-              </FluxCenterBox>
-            ));
+            // return _.map(images, image => <AssetPreview key={image} host={host} url={image} />);
+            return <AssetsPreview key={images} host={host} urls={images} />;
           }
         } catch (e) {
           logger.error('[generateImage]', e, { key, title, text });
