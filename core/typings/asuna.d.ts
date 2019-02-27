@@ -166,7 +166,23 @@ declare module Asuna {
       key: string;
       title: string;
       linkTo: string;
+      component?: string;
     }
+
+    type Pane =
+      | {
+          key: string;
+          title: string;
+          linkTo: 'content::upsert' | 'content::insert';
+          data?: { modelName; record } | any;
+        }
+      | {
+          key: string;
+          title: string;
+          linkTo: 'content::blank';
+          data?: { modelName; record } | any;
+          component: string;
+        };
 
     interface Menu {
       key: string;

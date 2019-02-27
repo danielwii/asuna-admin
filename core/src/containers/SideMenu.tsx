@@ -6,7 +6,7 @@ import { panesActions, RootState } from '@asuna-admin/store';
 
 const mapStateToProps = (state: RootState) => ({ ...state.menu });
 const mapDispatchToProps = dispatch => ({
-  onOpen: pane => dispatch(panesActions.open(pane)),
+  onOpen: (pane: Asuna.Schema.Pane) => dispatch(panesActions.open(pane)),
 });
 
 export default connect(

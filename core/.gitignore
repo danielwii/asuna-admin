@@ -2,9 +2,10 @@
 
 # build
 dist
-.next
 
 # project
 pages/*
 services/*
+components/*
+bff/*
 /config.js
