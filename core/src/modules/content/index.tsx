@@ -92,11 +92,12 @@ class ContentIndex extends React.Component<IProps, IState> {
 
   async componentDidMount() {
     const { basis } = this.props;
+    const { creatable } = this.state;
     const actions = (text, record, extras) => (
       <span>
         {/*{extras && extras(auth)}*/}
         <Button size="small" type="dashed" onClick={() => this._edit(text, record)}>
-          Edit
+          {creatable ? 'Edit' : 'View'}
         </Button>
         {R.not(R.prop(castModelKey('isSystem'), record)) && (
           <React.Fragment>
@@ -151,7 +152,7 @@ class ContentIndex extends React.Component<IProps, IState> {
     dispatch(
       panesActions.open({
         key: `content::upsert::${modelName}::${Date.now()}`,
-        title: `新增 - ${modelName}`,
+        title: `new - ${modelName}`,
         linkTo: 'content::upsert',
       }),
     );
@@ -164,7 +165,7 @@ class ContentIndex extends React.Component<IProps, IState> {
     dispatch(
       panesActions.open({
         key: `content::upsert::${modelName}::${record.id}`,
-        title: `更新 - ${modelName} - ${record.name || ''}`,
+        title: `view - ${modelName} - ${record.name || ''}`,
         linkTo: 'content::upsert',
         data: { modelName, record },
       }),
