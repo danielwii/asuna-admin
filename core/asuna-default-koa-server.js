@@ -7,14 +7,13 @@ const next = require('next');
 
 const { proxy, logger } = require('./asuna-utils');
 const applyMiddleware = require('./server/graphql/apollo-koa-server');
-const configs = require('./config');
 
 const dev = process.env.NODE_ENV !== 'production';
 const port = process.env.PORT || 3000;
 const app = next({ dev });
 const handle = app.getRequestHandler();
 
-function bootstrap({ root }) {
+function bootstrap({ root, configs }) {
   app.prepare().then(() => {
     const server = new Koa();
 
