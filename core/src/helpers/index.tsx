@@ -131,6 +131,7 @@ export const columnHelper = {
           data: { items },
         } = await AppContext.adapters.models.loadModels(relationName, {
           fields: [field],
+          pagination: { pageSize: 500 },
         });
         filterProps = {
           filterMultiple: false,
