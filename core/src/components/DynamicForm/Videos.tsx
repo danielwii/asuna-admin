@@ -153,7 +153,7 @@ export class VideoPlayer extends React.Component {
 
   componentDidMount() {
     // instantiate Video.js
-    this.player = videojs(this.videoNode, this.props, () => {
+    this.player = videojs(this.videoNode, this.props as videojs.PlayerOptions, () => {
       logger.log('[componentDidMount]', 'onPlayerReady', this);
     });
   }
