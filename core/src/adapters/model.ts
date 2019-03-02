@@ -3,6 +3,7 @@ import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
 import { AxiosResponse } from 'axios';
 import idx from 'idx';
+import bluebird from 'bluebird';
 import { PaginationConfig } from 'antd/es/pagination';
 
 import { DynamicFormTypes } from '@asuna-admin/components';
@@ -440,12 +441,20 @@ export class ModelAdapter {
     return this.service.loadSchema(auth, modelName, this.getModelConfig(modelName));
   };
 
-  public listAssociationsCallable = (associationNames: string[]) =>
-    Object.assign({}, ...associationNames.map(name => ({ [name]: this.loadAssociation(name) })));
-
-  public listSchemasCallable = () =>
-    Object.assign(
-      {},
-      ...this.allModels.map(modelName => ({ [modelName]: this.loadSchema(modelName) })),
-    );
+  async loadSchemas() {
+    if (AppContext.ctx.graphql.serverClient) {
+      const allResponse = await AppContext.ctx.graphql.loadSchemas();
+      return Object.assign({}, ..._.map(allResponse, ({ name, schema }) => ({ [name]: schema })));
+    } else {
+      const callable = Object.assign(
+        {},
+        ...this.allModels.map(modelName => ({ [modelName]: this.loadSchema(modelName) })),
+      );
+      const allResponse = await bluebird.props(callable);
+      return Object.assign(
+        {},
+        ..._.map(allResponse, (response, name) => ({ [name]: (response as any).data })),
+      );
+    }
+  }
 }
