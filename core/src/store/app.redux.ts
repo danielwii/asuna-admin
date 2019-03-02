@@ -24,7 +24,7 @@ import { apiProxy } from '@asuna-admin/adapters';
 // import 'rxjs/add/operator/switchMap';
 // import 'rxjs/add/operator/mapTo';
 
-const logger = createLogger('store:app', 'warn');
+const logger = createLogger('store:app');
 
 // --------------------------------------------------------------
 // Module sagas

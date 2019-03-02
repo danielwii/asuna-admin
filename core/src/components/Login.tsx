@@ -5,7 +5,7 @@ import { FormComponentProps } from 'antd/es/form/Form';
 
 import { createLogger } from '@asuna-admin/logger';
 
-const logger = createLogger('components:login', 'warn');
+const logger = createLogger('components:login');
 
 // TODO using DynamicForm's component instead
 function generateInput(form, name, type, required, message, placeholder, iconType) {

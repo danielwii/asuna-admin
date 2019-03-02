@@ -436,10 +436,10 @@ export class ModelAdapter {
     });
   };
 
-  public loadSchema = (modelName: string) => {
+  async loadSchema(modelName: string) {
     const auth = AppContext.fromStore('auth');
     return this.service.loadSchema(auth, modelName, this.getModelConfig(modelName));
-  };
+  }
 
   async loadSchemas() {
     if (AppContext.ctx.graphql.serverClient) {

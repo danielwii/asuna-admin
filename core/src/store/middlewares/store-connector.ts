@@ -3,7 +3,7 @@ import { DeepPartial } from 'redux';
 import { RootState } from '@asuna-admin/store';
 import { createLogger } from '@asuna-admin/logger';
 
-const logger = createLogger('store:connector', 'warn');
+const logger = createLogger('store:connector');
 
 export interface IStoreConnector<T> {
   connect(state: DeepPartial<T>): void;

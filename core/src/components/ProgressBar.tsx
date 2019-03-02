@@ -7,7 +7,7 @@ import { fadeIn, fadeOut } from 'react-animations';
 
 import { createLogger } from '@asuna-admin/logger';
 
-const logger = createLogger('components:progress-bar', 'warn');
+const logger = createLogger('components:progress-bar');
 
 interface IFadeDiv {
   out: boolean;

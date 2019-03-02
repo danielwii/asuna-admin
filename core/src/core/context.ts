@@ -70,6 +70,8 @@ export interface INextConfig {
 // --------------------------------------------------------------
 
 class AppContext {
+  private static INSTANCE: AppContext;
+
   private static nextConfig: INextConfig = {
     serverRuntimeConfig: {},
     publicRuntimeConfig: { env: 'canary' },
@@ -92,7 +94,7 @@ class AppContext {
    */
   private static _dispatch: Dispatch;
   private static _subject;
-  private static _isServer: boolean;
+  private static _isServer = typeof window === 'undefined';
   private static _storeConnector: IStoreConnector<RootState>;
 
   public static init(nextConfig?: INextConfig) {
@@ -109,6 +111,16 @@ class AppContext {
       const { storeConnector } = require('../store');
       AppContext._storeConnector = storeConnector;
     }
+
+    if (!this.INSTANCE) {
+      this.INSTANCE = new AppContext();
+    }
+  }
+
+  constructor() {}
+
+  static get instance() {
+    return AppContext.INSTANCE;
   }
 
   public static regStore(
