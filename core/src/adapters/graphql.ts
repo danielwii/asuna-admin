@@ -1,16 +1,21 @@
 import ApolloClient from 'apollo-boost';
 import gql from 'graphql-tag';
+import * as fp from 'lodash/fp';
 import { createLogger } from '@asuna-admin/logger';
 
 // --------------------------------------------------------------
 // Types
 // --------------------------------------------------------------
 
+/*
 export interface IGraphQLService {
   client: ApolloClient<any>;
+  serverClient: ApolloClient<any>;
   query(queryString: string): Promise<any>;
   queryT(query: string): Promise<any>;
+  loadSchemas(): Promise<any>;
 }
+*/
 
 // --------------------------------------------------------------
 // Main
@@ -19,7 +24,8 @@ export interface IGraphQLService {
 const logger = createLogger('adapters:graphql');
 
 export class GraphqlAdapter {
-  public client;
+  public client: ApolloClient<any>;
+  public serverClient: ApolloClient<any>;
   constructor(uri?: string) {
     if (uri) {
       this.client = new ApolloClient({ uri });
@@ -27,6 +33,7 @@ export class GraphqlAdapter {
       logger.log('graphql uri not defined, using /graphql for default');
       this.client = new ApolloClient({ uri: '/graphql' });
     }
+    this.serverClient = new ApolloClient({ uri: '/s-graphql' });
   }
 
   async query(queryString: string) {
@@ -39,5 +46,20 @@ export class GraphqlAdapter {
 
   async queryT(query: string) {
     return this.client.query({ query });
+  }
+
+  async loadSchemas() {
+    return this.serverClient
+      .query({
+        query: gql`
+          {
+            model_schemas {
+              name
+              schema
+            }
+          }
+        `,
+      })
+      .then(fp.get('data.model_schemas'));
   }
 }

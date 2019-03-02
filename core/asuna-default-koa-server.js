@@ -4,8 +4,10 @@ const Koa = require('koa');
 const Router = require('koa-router');
 const { parse } = require('url');
 const next = require('next');
+const debug = require('debug');
 
-const { proxy, logger } = require('./asuna-utils');
+const logger = { log: debug('http'), error: debug('error') };
+const { createProxy } = require('./asuna-utils');
 const applyMiddleware = require('./server/graphql/apollo-koa-server');
 
 const dev = process.env.NODE_ENV !== 'production';
@@ -14,8 +16,10 @@ const app = next({ dev });
 const handle = app.getRequestHandler();
 
 function bootstrap({ root, configs }) {
+  const PROXY_API = configs.configurator.loadConfig('PROXY_API');
   app.prepare().then(() => {
     const server = new Koa();
+    const proxy = createProxy();
 
     // --------------------------------------------------------------
     // setup graphql
@@ -28,6 +32,18 @@ function bootstrap({ root, configs }) {
     // --------------------------------------------------------------
 
     const router = new Router();
+
+    router.all('/s-graphql', async ctx => {
+      const { req, res } = ctx;
+      await new Promise((resolve, reject) => {
+        let target = PROXY_API;
+        if (configs.graphql) {
+          req.url = configs.graphql.dest ? configs.graphql.dest() : 'graphql';
+          target = configs.graphql.target ? configs.graphql.target : PROXY_API;
+        }
+        proxy.web(req, res, { target }, e => (e ? reject(e) : resolve()));
+      });
+    });
 
     router.all('*', async ctx => {
       const { req, res } = ctx;

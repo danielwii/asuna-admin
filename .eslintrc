@@ -8,24 +8,19 @@
     "plugin:jest/recommended",
     "prettier"
   ],
-  "settings": {
-    "import/resolver": {
-//      "asuna-admin": {}
-    },
-    "import/ignore": [
-      "asuna-admin.*"
-    ]
-  },
+  "settings": {},
   "parser": "babel-eslint",
   "plugins": [
     "jest",
     "prettier"
   ],
   "rules": {
-    "camelcase": "warn",
+    "no-underscore-dangle": "off",
+    "camelcase": "off",
     "prettier/prettier": "error",
     "import/extensions": ["error", "never", { "packages": "always" }],
     "import/no-unresolved": "off",
+    "import/no-extraneous-dependencies": "off",
     "function-paren-newline": ["error", "consistent"],
     "func-names": ["error", "never"],
     "key-spacing": 0,
