@@ -54,7 +54,7 @@ export class Header extends React.Component<IHeaderProps> {
       {this.props.isSuperAdmin && <Menu.Divider />}
       {this.props.env !== 'production' && (
         <Menu.Item>
-          <a onClick={() => this.props.handleAction('set-debug', DebugSettings.name)}>
+          <a onClick={() => this.props.handleAction('set-logger-level', DebugSettings.name)}>
             Debug Settings
           </a>
         </Menu.Item>

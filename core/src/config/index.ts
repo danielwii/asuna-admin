@@ -76,6 +76,7 @@ const defaultConfiguration: ConfigOpts = {
 
 export class Config {
   static opts = defaultConfiguration;
+  static isServer = typeof window === 'undefined';
 
   static update(opts: ConfigOpts = {}): void {
     Config.opts = Object.assign(Config.opts, opts);

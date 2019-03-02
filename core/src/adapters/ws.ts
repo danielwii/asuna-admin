@@ -8,7 +8,7 @@ import { createLogger } from '@asuna-admin/logger';
 // Main
 // --------------------------------------------------------------
 
-const logger = createLogger('adapters:ws', 'warn');
+const logger = createLogger('adapters:ws');
 
 export class WsAdapter {
   private port?: number;

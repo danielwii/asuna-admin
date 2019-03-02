@@ -3,24 +3,16 @@ import util from 'util';
 import _ from 'lodash';
 import * as R from 'ramda';
 import ReactCrop, { Crop, PixelCrop } from 'react-image-crop';
-import styled from 'styled-components';
 
 import 'react-image-crop/dist/ReactCrop.css';
-import { Input, List } from 'antd';
+import { Button, Icon, Input, List } from 'antd';
 import { upload } from '@asuna-admin/helpers/upload';
 import { join } from 'path';
 import { createLogger } from '@asuna-admin/logger';
+import { Title } from '@asuna-admin/components';
 import idx from 'idx';
 
 const logger = createLogger('components:dynamic-form:image-trivia');
-
-interface IHighlightTitle {
-  highlight: boolean;
-}
-
-const Title = styled.span`
-  font-weight: ${(props: IHighlightTitle) => (props.highlight ? 'bold' : 'inherit')};
-`;
 
 const DEFAULT_MAX_HEIGHT = 300;
 const DEFAULT_MAX_WEIGHT = '100%';
@@ -66,6 +58,7 @@ export class ImageTrivia extends React.Component<IProps, IState> {
   };
 
   private imageRef: HTMLImageElement;
+  private uploadElement: HTMLInputElement | null;
 
   onSelectFile = e => {
     if (e.target.files && e.target.files.length > 0) {
@@ -170,9 +163,15 @@ export class ImageTrivia extends React.Component<IProps, IState> {
 
     return (
       <div>
-        <div>
-          <input type="file" onChange={this.onSelectFile} />
-        </div>
+        <Button onClick={() => this.uploadElement!.click()}>
+          <input
+            hidden
+            type="file"
+            ref={input => (this.uploadElement = input)}
+            onChange={this.onSelectFile}
+          />
+          <Icon type="upload" /> Click to Upload
+        </Button>
         <div className="asuna-image-crop">
           {value && (
             <ReactCrop

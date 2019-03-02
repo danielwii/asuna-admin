@@ -8,7 +8,7 @@ import { Button, Icon, message, Upload } from 'antd';
 import { createLogger } from '@asuna-admin/logger';
 import { apiProxy } from '@asuna-admin/adapters';
 
-const logger = createLogger('components:dynamic-form:video', 'warn');
+const logger = createLogger('components:dynamic-form:video');
 
 // --------------------------------------------------------------
 // Function
