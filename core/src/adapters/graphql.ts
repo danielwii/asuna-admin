@@ -62,4 +62,23 @@ export class GraphqlAdapter {
       })
       .then(fp.get('data.model_schemas'));
   }
+
+  async loadGraphs() {
+    return this.serverClient
+      .query({
+        query: gql`
+          {
+            __schema {
+              queryType {
+                fields {
+                  name
+                }
+              }
+            }
+          }
+        `,
+      })
+      .then(fp.get('data.__schema.queryType.fields'))
+      .then(fp.map(fp.get('name')));
+  }
 }
