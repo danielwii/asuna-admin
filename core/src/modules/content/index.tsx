@@ -18,11 +18,7 @@ import { SorterResult } from 'antd/lib/table';
 const logger = createLogger('modules:content:index');
 
 interface IProps extends ReduxProps {
-  basis: {
-    pane: {
-      key: string;
-    };
-  };
+  basis: { pane: { key: string } };
   activeKey: string;
   models: object;
   nextGetConfig: any;
@@ -57,7 +53,7 @@ class ContentIndex extends React.Component<IProps, IState> {
 
     // content::name => name
     // prettier-ignore
-    const modelName = R.compose(R.nth(1), R.split(/::/), R.path(['pane', 'key']))(basis);
+    const modelName = _.get(basis, 'pane.model') || _.get(basis, 'pane.key').match(/^\w+::(\w+).*$/)[1];
     const modelConfig = this.modelsAdapter.getModelConfig(modelName);
     logger.debug('[constructor]', { modelConfig, modelName });
 
@@ -90,8 +86,7 @@ class ContentIndex extends React.Component<IProps, IState> {
   }
 
   async componentDidMount() {
-    const { basis } = this.props;
-    const { creatable } = this.state;
+    const { creatable, modelName } = this.state;
     const actions = (text, record, extras) => (
       <span>
         {/*{extras && extras(auth)}*/}
@@ -110,7 +105,6 @@ class ContentIndex extends React.Component<IProps, IState> {
     );
 
     // prettier-ignore
-    const modelName = R.compose(R.nth(1), R.split(/::/), R.path(['pane', 'key']))(basis);
     const columns = await this.modelsAdapter.getColumns(modelName, {
       callRefresh: this._refresh,
       actions,

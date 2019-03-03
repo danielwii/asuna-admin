@@ -76,15 +76,10 @@ declare module Asuna {
       ): any;
     }
 
-    interface ModelConfig extends ModelOpt {
+    interface ModelConfig extends ModelOpt<any> {
       table?: FRecordRender;
       model?: ModelColumn;
     }
-
-    /**
-     * @deprecated
-     */
-    type ModelConfigs = { [key: string]: ModelConfig };
 
     type ForeignOpt = {
       modelName: string;
@@ -127,8 +122,6 @@ declare module Asuna {
       };
     }
 
-    type ModelSchemas = { [key: string]: ModelSchema[] };
-
     interface Association {
       name?: string;
       value?: string;
@@ -157,13 +150,19 @@ declare module Asuna {
     // 单个模型设置，用于定义非 app 模块外的模型的访问端点
     type ModelOpts = { [key: string]: ModelOpt };
 
-    interface ModelOpt {
+    interface ModelOpt<T> {
       creatable?: boolean;
       endpoint?: string;
+      columns?: {
+        [key in keyof T]: {
+          editor: (fields: any) => string;
+        }
+      };
     }
 
     interface SubMenu {
       key: string;
+      model?: string;
       title: string;
       linkTo: string;
       component?: string;
@@ -172,12 +171,14 @@ declare module Asuna {
     type Pane =
       | {
           key: string;
+          model?: string;
           title: string;
           linkTo: 'content::upsert' | 'content::insert';
           data?: { modelName; record } | any;
         }
       | {
           key: string;
+          model?: string;
           title: string;
           linkTo: 'content::blank';
           data?: { modelName; record } | any;
@@ -189,7 +190,5 @@ declare module Asuna {
       title: string;
       subMenus: SubMenu[];
     }
-
-    type Menus = Menu[];
   }
 }

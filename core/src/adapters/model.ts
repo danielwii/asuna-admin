@@ -205,6 +205,7 @@ export class ModelAdapter {
     modelName: string,
     data: { endpoint?: string; id: number; profile?: Asuna.Profile },
   ) => {
+    logger.log('[fetch]', { modelName, data });
     const auth = AppContext.fromStore('auth');
     const modelConfig = this.getModelConfig(modelName);
     const schema = this.getFormSchema(modelName);
@@ -268,6 +269,7 @@ export class ModelAdapter {
     modelName: string,
     opts: { callRefresh: () => void; actions: (text, record, extras) => any },
   ): Promise<(ColumnProps<any> & { relation: any })[]> => {
+    logger.log('[getColumns]', { modelName, opts });
     const formSchema = this.getFormSchema(modelName);
     const { table: columnsRender } = this.getModelConfig(modelName);
     const columns = columnsRender
@@ -294,7 +296,7 @@ export class ModelAdapter {
       return config;
     }
     logger.warn(TAG, `'${modelName}' not found in`, this.modelConfigs, 'generate a default one.');
-    return { model: {}, table: defaultColumns };
+    return { model: {}, table: defaultColumns, columns: {} };
   };
 
   public getFormSchema = (

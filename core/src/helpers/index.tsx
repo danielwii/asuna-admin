@@ -16,7 +16,7 @@ import { removePreAndSuf } from './func';
 import { Config } from '@asuna-admin/config';
 import { createLogger } from '@asuna-admin/logger';
 import { AppContext } from '@asuna-admin/core';
-import { AssetPreview, AssetsPreview } from '@asuna-admin/components';
+import { AssetsPreview } from '@asuna-admin/components';
 
 const logger = createLogger('helpers');
 
