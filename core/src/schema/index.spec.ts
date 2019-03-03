@@ -2,21 +2,24 @@ import * as schemaHelper from './';
 
 describe('schemaHelper.enumDecorator', () => {
   test('schemaHelper.enumDecorator', async () => {
-    const decorated = await schemaHelper.enumDecorator({
-      refInclude: { name: 'refInclude', value: [1] },
-      refNotInclude: { name: 'refNotInclude' },
-      type: {
-        name: 'type',
-        ref: 'type',
-        type: 'EnumFilter',
-        options: {
-          filterType: 'Sort',
-          enumData: {
-            refInclude: 'refValue1',
-            refNotInclude: 'refValue2',
+    const { fields: decorated } = await schemaHelper.enumDecorator({
+      modelName: 'test-model',
+      fields: {
+        refInclude: { name: 'refInclude', value: [1] },
+        refNotInclude: { name: 'refNotInclude' },
+        type: {
+          name: 'type',
+          ref: 'type',
+          type: 'EnumFilter',
+          options: {
+            filterType: 'Sort',
+            enumData: {
+              refInclude: 'refValue1',
+              refNotInclude: 'refValue2',
+            },
           },
+          value: 'refInclude',
         },
-        value: 'refInclude',
       },
     });
 
@@ -44,27 +47,33 @@ describe('schemaHelper.enumDecorator', () => {
   });
 
   test('schemaHelper.enumDecorator no type found', async () => {
-    const decorated = await schemaHelper.enumDecorator({
-      type: { value: 'refInclude' },
+    const { fields: decorated } = await schemaHelper.enumDecorator({
+      modelName: 'test-model',
+      fields: {
+        type: { value: 'refInclude' },
+      },
     });
 
     expect(decorated).toEqual({ type: { value: 'refInclude' } });
   });
 
   test('schemaHelper.enumDecorator SortPosition with no value', async () => {
-    const decorated = await schemaHelper.enumDecorator({
-      refInclude: { value: [1, 2, 3], type: 'ManyToMany' },
-      type: {
-        type: 'EnumFilter',
-        value: 'refInclude',
-        options: {
-          filterType: 'Sort',
-          enumData: {
-            refInclude: 'refValue1',
+    const { fields: decorated } = await schemaHelper.enumDecorator({
+      modelName: 'test-model',
+      fields: {
+        refInclude: { value: [1, 2, 3], type: 'ManyToMany' },
+        type: {
+          type: 'EnumFilter',
+          value: 'refInclude',
+          options: {
+            filterType: 'Sort',
+            enumData: {
+              refInclude: 'refValue1',
+            },
           },
         },
+        positions: { options: { type: 'SortPosition' } },
       },
-      positions: { options: { type: 'SortPosition' } },
     });
 
     expect(decorated).toEqual({
@@ -91,21 +100,24 @@ describe('schemaHelper.enumDecorator', () => {
   });
 
   test('schemaHelper.enumDecorator SortPosition with value', async () => {
-    const decorated = await schemaHelper.enumDecorator({
-      refInclude: { value: [1, 2, 3], type: 'ManyToMany' },
-      type: {
-        type: 'EnumFilter',
-        value: 'refInclude',
-        options: {
-          filterType: 'Sort',
-          enumData: {
-            refInclude: 'refValue1',
+    const { fields: decorated } = await schemaHelper.enumDecorator({
+      modelName: 'test-model',
+      fields: {
+        refInclude: { value: [1, 2, 3], type: 'ManyToMany' },
+        type: {
+          type: 'EnumFilter',
+          value: 'refInclude',
+          options: {
+            filterType: 'Sort',
+            enumData: {
+              refInclude: 'refValue1',
+            },
           },
         },
-      },
-      positions: {
-        options: { type: 'SortPosition' },
-        value: [3, 1, 2],
+        positions: {
+          options: { type: 'SortPosition' },
+          value: [3, 1, 2],
+        },
       },
     });
 
@@ -137,21 +149,24 @@ describe('schemaHelper.enumDecorator', () => {
   });
 
   test('schemaHelper.enumDecorator SortPosition with str value', async () => {
-    const decorated = await schemaHelper.enumDecorator({
-      refInclude: { value: [1, 2, 3], type: 'ManyToMany' },
-      type: {
-        type: 'EnumFilter',
-        value: 'refInclude',
-        options: {
-          filterType: 'Sort',
-          enumData: {
-            refInclude: 'refValue1',
+    const { fields: decorated } = await schemaHelper.enumDecorator({
+      modelName: 'test-model',
+      fields: {
+        refInclude: { value: [1, 2, 3], type: 'ManyToMany' },
+        type: {
+          type: 'EnumFilter',
+          value: 'refInclude',
+          options: {
+            filterType: 'Sort',
+            enumData: {
+              refInclude: 'refValue1',
+            },
           },
         },
-      },
-      positions: {
-        options: { type: 'SortPosition', json: 'str' },
-        value: '[3, 1, 2]',
+        positions: {
+          options: { type: 'SortPosition', json: 'str' },
+          value: '[3, 1, 2]',
+        },
       },
     });
 
@@ -183,22 +198,25 @@ describe('schemaHelper.enumDecorator', () => {
   });
 
   test('schemaHelper.enumDecorator SortPosition with value and already resolved', async () => {
-    const decorated = await schemaHelper.enumDecorator({
-      refInclude: { value: [3, 2, 1], type: 'ManyToMany' },
-      type: {
-        type: 'EnumFilter',
-        value: 'refInclude',
-        options: {
-          filterType: 'Sort',
-          enumData: {
-            refInclude: 'refValue1',
+    const { fields: decorated } = await schemaHelper.enumDecorator({
+      modelName: 'test-model',
+      fields: {
+        refInclude: { value: [3, 2, 1], type: 'ManyToMany' },
+        type: {
+          type: 'EnumFilter',
+          value: 'refInclude',
+          options: {
+            filterType: 'Sort',
+            enumData: {
+              refInclude: 'refValue1',
+            },
           },
         },
-      },
-      positions: {
-        options: { type: 'SortPosition', json: 'str' },
-        value: '[3, 1, 2]',
-        raw: '[3, 1, 2]',
+        positions: {
+          options: { type: 'SortPosition', json: 'str' },
+          value: '[3, 1, 2]',
+          raw: '[3, 1, 2]',
+        },
       },
     });
 
@@ -232,8 +250,11 @@ describe('schemaHelper.enumDecorator', () => {
 
 describe('schemaHelper.jsonDecorator', () => {
   test('schemaHelper.jsonDecorator', async () => {
-    const decorated = await schemaHelper.jsonDecorator({
-      refInclude: { value: '[3, 2, 1]', type: 'ManyToMany', options: { json: 'str' } },
+    const { fields: decorated } = await schemaHelper.jsonDecorator({
+      modelName: 'test-model',
+      fields: {
+        refInclude: { value: '[3, 2, 1]', type: 'ManyToMany', options: { json: 'str' } },
+      },
     });
 
     expect(decorated).toEqual({
@@ -242,8 +263,11 @@ describe('schemaHelper.jsonDecorator', () => {
   });
 
   test('schemaHelper.jsonDecorator empty string', async () => {
-    const decorated = await schemaHelper.jsonDecorator({
-      refInclude: { value: '', type: 'ManyToMany', options: { json: 'str' } },
+    const { fields: decorated } = await schemaHelper.jsonDecorator({
+      modelName: 'test-model',
+      fields: {
+        refInclude: { value: '', type: 'ManyToMany', options: { json: 'str' } },
+      },
     });
 
     expect(decorated).toEqual({
@@ -252,8 +276,11 @@ describe('schemaHelper.jsonDecorator', () => {
   });
 
   test('schemaHelper.jsonDecorator return null for wrong json format', async () => {
-    const decorated = await schemaHelper.jsonDecorator({
-      refInclude: { value: 'test', type: 'ManyToMany', options: { json: 'str' } },
+    const { fields: decorated } = await schemaHelper.jsonDecorator({
+      modelName: 'test-model',
+      fields: {
+        refInclude: { value: 'test', type: 'ManyToMany', options: { json: 'str' } },
+      },
     });
 
     expect(decorated).toEqual({
@@ -262,18 +289,21 @@ describe('schemaHelper.jsonDecorator', () => {
   });
 
   test('schemaHelper.jsonDecorator handle json format', async () => {
-    const decorated = await schemaHelper.jsonDecorator({
-      bg: {
-        value: [
-          {
-            bucket: 'images_uploader',
-            filename: 'wallhaven-82908_thfrL3.jpg',
-            mode: 'local',
-            prefix: 'images/images_uploader',
-          },
-        ],
-        type: 'Image',
-        options: { json: 'str' },
+    const { fields: decorated } = await schemaHelper.jsonDecorator({
+      modelName: 'test-model',
+      fields: {
+        bg: {
+          value: [
+            {
+              bucket: 'images_uploader',
+              filename: 'wallhaven-82908_thfrL3.jpg',
+              mode: 'local',
+              prefix: 'images/images_uploader',
+            },
+          ],
+          type: 'Image',
+          options: { json: 'str' },
+        },
       },
     });
 
@@ -296,10 +326,13 @@ describe('schemaHelper.jsonDecorator', () => {
 
 describe('schemaHelper.hiddenComponentDecorator', () => {
   it('should hidden id when value not exists', () => {
-    const decorated = schemaHelper.hiddenComponentDecorator({
-      id: { value: null },
-      createdAt: { value: null },
-      updatedAt: { value: null },
+    const { fields: decorated } = schemaHelper.hiddenComponentDecorator({
+      modelName: 'test-model',
+      fields: {
+        id: { value: null },
+        createdAt: { value: null },
+        updatedAt: { value: null },
+      },
     } as any);
 
     expect(decorated).toEqual({
@@ -308,10 +341,13 @@ describe('schemaHelper.hiddenComponentDecorator', () => {
   });
 
   it('should not hidden id with value', () => {
-    const decorated = schemaHelper.hiddenComponentDecorator({
-      id: { value: 1 },
-      createdAt: { value: null },
-      updatedAt: { value: null },
+    const { fields: decorated } = schemaHelper.hiddenComponentDecorator({
+      modelName: 'test-model',
+      fields: {
+        id: { value: 1 },
+        createdAt: { value: null },
+        updatedAt: { value: null },
+      },
     } as any);
 
     expect(decorated).toEqual({
@@ -320,8 +356,11 @@ describe('schemaHelper.hiddenComponentDecorator', () => {
   });
 
   it('should hidden SortPosition', () => {
-    const decorated = schemaHelper.hiddenComponentDecorator({
-      positions: { options: { type: 'SortPosition' } },
+    const { fields: decorated } = schemaHelper.hiddenComponentDecorator({
+      modelName: 'test-model',
+      fields: {
+        positions: { options: { type: 'SortPosition' } },
+      },
     } as any);
 
     expect(decorated).toEqual({
@@ -330,9 +369,12 @@ describe('schemaHelper.hiddenComponentDecorator', () => {
   });
 
   it('should remove createdAt and updatedAt fields', () => {
-    const decorated = schemaHelper.hiddenComponentDecorator({
-      createdAt: { value: null },
-      updatedAt: { value: null },
+    const { fields: decorated } = schemaHelper.hiddenComponentDecorator({
+      modelName: 'test-model',
+      fields: {
+        createdAt: { value: null },
+        updatedAt: { value: null },
+      },
     } as any);
 
     expect(decorated).toEqual({});

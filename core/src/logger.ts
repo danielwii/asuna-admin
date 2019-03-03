@@ -7,7 +7,7 @@ let initialized = false;
 const storage = new Storage().instance;
 storage.getItem('debug.modules').then(stored => {
   initialized = true;
-  return Object.assign(modules, stored);
+  Object.assign(modules, stored);
 });
 
 export const lv = {
@@ -24,8 +24,11 @@ export const updateLoggerLevel = (module, level: keyof typeof lv) => {
 };
 
 export const createLogger = (module, level: keyof typeof lv = 'warn') => {
-  modules[module] = level;
-  if (initialized) {
+  if (!modules[module] || level !== 'warn') {
+    modules[module] = level;
+  }
+
+  if (initialized && level !== 'warn') {
     storage.setItem('debug.modules', modules);
   }
 

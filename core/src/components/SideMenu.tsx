@@ -1,7 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
-
 import { Layout, Menu } from 'antd';
+
 import { createLogger } from '@asuna-admin/logger';
 
 const logger = createLogger('components:side-menu');
@@ -18,6 +18,7 @@ export interface ISideMenuProps {
     title: string;
     subMenus: {
       key: string;
+      model?: string;
       title: string;
       linkTo: string;
     };
@@ -29,20 +30,16 @@ interface IState {}
 export class SideMenu extends React.Component<ISideMenuProps, IState> {
   /**
    * item's props contains all properties set in menu item
-   * @param key
-   * @param title
-   * @param link
-   * @param component
    */
   open = ({
     key,
     item: {
-      props: { title, link, component },
+      props: { model, title, link, component },
     },
   }) => {
-    logger.log('open', { key, title, link, component });
+    logger.log('open', { key, model, title, link, component });
     const { onOpen } = this.props;
-    onOpen({ key, title, linkTo: link, component });
+    onOpen({ key, model, title, linkTo: link, component });
   };
 
   buildSubMenu(menu: Asuna.Schema.Menu) {
@@ -51,6 +48,7 @@ export class SideMenu extends React.Component<ISideMenuProps, IState> {
         {_.map(menu.subMenus, subMenu => (
           <MenuItem
             key={`${menu.key}::${subMenu.key}`}
+            model={subMenu.model}
             title={subMenu.title}
             link={subMenu.linkTo}
             component={subMenu.component}

@@ -14,7 +14,7 @@ export async function getBase64(image): Promise<string | ArrayBuffer | null> {
 }
 
 export function validateFile(file: { type: string; size: number }): boolean {
-  console.log(file);
+  // console.log(file);
   const isImage = ['image/jpeg', 'image/png', 'image/gif'].indexOf(file.type) > -1;
   const isLt20M = file.size / 1024 / 1024 < 20;
   logger.log('[validateFile]', file, { isImage, isLt20M });
