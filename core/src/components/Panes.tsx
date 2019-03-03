@@ -108,7 +108,7 @@ export class Panes extends React.Component<IPanesProps, IState> {
         {_.map(panes, (pane: Pane) => (
           <TabPane tab={pane.title} key={pane.key}>
             {/*{activeKey} - {pane.key} - {title}*/}
-            {/*<pre>{JSON.stringify(pane)}</pre>*/}
+            {/*<pre>{util.inspect(pane)}</pre>*/}
             <ModulesLoader
               module={pane.linkTo || pane.key}
               activeKey={activeKey}

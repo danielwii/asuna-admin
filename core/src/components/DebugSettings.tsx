@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import * as _ from 'lodash';
 import styled from 'styled-components';
-import { lv } from 'asuna-admin';
+import { lv } from '@asuna-admin/logger';
 import { Button, FormControl, FormControlLabel, FormLabel, TextField } from '@material-ui/core';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
@@ -40,43 +40,35 @@ export function DebugSettings(props: IDebugSettingsProps) {
     setState({});
   };
 
+  const onChange = _.debounce(value => setState({ regex: new RegExp(value), filter: value }), 300);
+
   return (
     <Container>
-      <div>
-        <Button variant="contained" color="primary" onClick={resetLogger}>
-          {'Reset Logger'}
-        </Button>
-      </div>
+      <Button variant="contained" color="primary" onClick={resetLogger}>
+        {'Reset Logger'}
+      </Button>
       <Flex>
         <TextField
           label="filter"
           type="text"
           margin="normal"
-          onChange={e => setState({ regex: new RegExp(e.target.value), filter: e.target.value })}
+          onChange={e => onChange(e.target.value)}
           defaultValue={state.filter}
         />
         {_.chain(modules)
           .toPairs()
           .filter(([module]) => (_.isRegExp(state.regex) ? state.regex.test(module) : true))
           .map(([module, level]) => (
-            <div key={module}>
-              <div>
-                <FormControl>
-                  <FormLabel>{module}</FormLabel>
-                  <RadioGroup
-                    row
-                    value={level}
-                    onChange={(e, value) => setLoggerLevel(module, value)}
-                  >
-                    <FormControlLabel value="error" control={<Radio />} label="Error" />
-                    <FormControlLabel value="warn" control={<Radio />} label="Warn" />
-                    <FormControlLabel value="info" control={<Radio />} label="Info" />
-                    <FormControlLabel value="debug" control={<Radio />} label="Debug" />
-                    <FormControlLabel value="trace" control={<Radio />} label="Trace" />
-                  </RadioGroup>
-                </FormControl>
-              </div>
-            </div>
+            <FormControl key={module}>
+              <FormLabel>{module}</FormLabel>
+              <RadioGroup row value={level} onChange={(e, value) => setLoggerLevel(module, value)}>
+                <FormControlLabel value="error" control={<Radio />} label="Error" />
+                <FormControlLabel value="warn" control={<Radio />} label="Warn" />
+                <FormControlLabel value="info" control={<Radio />} label="Info" />
+                <FormControlLabel value="debug" control={<Radio />} label="Debug" />
+                <FormControlLabel value="trace" control={<Radio />} label="Trace" />
+              </RadioGroup>
+            </FormControl>
           ))
           .value()}
       </Flex>

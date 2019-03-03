@@ -13,6 +13,7 @@ import { ActionEvent, AppContext, EventBus, EventType } from '@asuna-admin/core'
 import { createLogger } from '@asuna-admin/logger';
 import { PaginationConfig } from 'antd/es/pagination';
 import { ColumnProps } from 'antd/es/table';
+import { SorterResult } from 'antd/lib/table';
 
 const logger = createLogger('modules:content:index');
 
@@ -37,13 +38,11 @@ interface IState {
   creatable: boolean;
   columns?: (ColumnProps<any> & { relation: any })[];
   pagination?: PaginationConfig;
-  filters?: object;
-  sorter?: object;
-  // sorter?: {
-  //   [key: string]: 'asc' | 'desc';
-  // };
+  filters?: Record<any, string[]>;
+  sorter?: Partial<SorterResult<any>>;
   subscription: Subscription;
   busSubscription: Subscription;
+  hasGraphAPI?: string;
 }
 
 class ContentIndex extends React.Component<IProps, IState> {
@@ -122,8 +121,14 @@ class ContentIndex extends React.Component<IProps, IState> {
       R.map(R.values),
       R.map(R.pick(['relation'])),
     )(columns);
+
+    const hasGraphAPI = _.find(
+      await AppContext.ctx.graphql.loadGraphs(),
+      schema => schema === `sys_${modelName}`,
+    );
+
     logger.debug('[componentDidMount]', { columns, relations });
-    this.setState({ columns, relations });
+    this.setState({ hasGraphAPI, columns, relations });
 
     const { pagination, filters, sorter } = this.state;
     this._handleTableChange(pagination, filters, sorter);

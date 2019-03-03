@@ -3,6 +3,14 @@ import { createLogger } from '@asuna-admin/logger';
 
 const logger = createLogger('core:definition');
 
+type SubMenus<T extends Asuna.Schema.ModelOpts = {}> = (
+  | Asuna.Schema.SubMenu
+  | {
+      key: keyof T;
+      title: string;
+      linkTo: 'content::index' | 'content::graph.index';
+    })[];
+
 export class AsunaDefinitions<T extends Asuna.Schema.ModelOpts = {}> {
   /**
    * 基础模型定义
@@ -37,13 +45,7 @@ export class AsunaDefinitions<T extends Asuna.Schema.ModelOpts = {}> {
   private _sideMenus: {
     key: string;
     title: string;
-    subMenus: (
-      | Asuna.Schema.SubMenu
-      | {
-          key: keyof T;
-          title: string;
-          linkTo: 'content::index';
-        })[];
+    subMenus: SubMenus<T>;
   }[] = [];
 
   addModelOpts(modelOpts: { [key in keyof T]?: Asuna.Schema.ModelOpt }) {
@@ -66,13 +68,7 @@ export class AsunaDefinitions<T extends Asuna.Schema.ModelOpts = {}> {
     menus: {
       key: string;
       title: string;
-      subMenus: (
-        | Asuna.Schema.SubMenu
-        | {
-            key: keyof T;
-            title: string;
-            linkTo: 'content::index';
-          })[];
+      subMenus: SubMenus<T>;
     }[],
   ) {
     this._sideMenus = [...this._sideMenus, ...menus];
