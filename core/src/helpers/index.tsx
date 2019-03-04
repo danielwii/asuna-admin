@@ -346,3 +346,12 @@ export const diff = (first, second, opts: { include?; exclude? } = {}) => {
   }
   return { verbose, isDifferent: !!verbose };
 };
+
+export const isJson = (value): boolean => {
+  try {
+    JSON.parse(value);
+    return true;
+  } catch (e) {
+    return false;
+  }
+};
