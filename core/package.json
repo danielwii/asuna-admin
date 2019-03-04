@@ -74,7 +74,7 @@
     "react-apollo": "^2.5.1",
     "react-dom": "16.8.5",
     "react-image-crop": "^6.0.14",
-    "react-pdf": "^4.0.4",
+    "react-pdf": "^4.0.5",
     "react-redux": "6.0.1",
     "react-sortable-hoc": "1.8.1",
     "react-spinners": "^0.5.1",
