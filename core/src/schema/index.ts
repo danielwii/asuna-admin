@@ -147,16 +147,16 @@ export const jsonDecorator = ({
     const toJson = value => {
       if (R.is(String, value) && value.length) {
         try {
-          return { modelName, fields: JSON.parse(value) };
+          return JSON.parse(value);
         } catch (e) {
           logger.warn(TAG, e, { jsonFields });
-          return {};
+          return null;
         }
       }
       if (R.is(Object, value)) {
         return value;
       }
-      return {};
+      return null;
     };
 
     const transformValue = R.over(R.lens(R.prop('value'), R.assoc('value')), toJson);
@@ -214,12 +214,9 @@ export const enumDecorator = ({
         // raw is the original value, if exists, means it's update request
         if (field.value && !field.raw) {
           const value = R.is(String, field.value) ? JSON.parse(field.value) : field.value;
-          return { modelName, fields: { ...field, value, raw: field.value } };
+          return { ...field, value, raw: field.value };
         }
-        return {
-          modelName,
-          fields: { ...field, value: R.path([current, 'value'])(fields), raw: field.value },
-        };
+        return { ...field, value: R.path([current, 'value'])(fields), raw: field.value };
       }),
       R.filter(R.pathEq(['options', 'type'], 'SortPosition')),
     )(fields);
