@@ -4,7 +4,7 @@ import { join } from 'path';
 
 import { Icon, Modal, Upload } from 'antd';
 import { RcFile, UploadChangeParam, UploadFile, UploadFileStatus } from 'antd/es/upload/interface';
-import { diff } from '@asuna-admin/helpers';
+import { diff, isJson } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 import { upload, validateFile } from '@asuna-admin/helpers/upload';
 
@@ -69,10 +69,12 @@ export class ImagesUploader extends React.Component<IProps, IState> {
 
   wrapImagesToFileList = (imagesInfo: string | string[]): void => {
     const { host } = this.props;
+    const castToArrays = imagesInfo =>
+      isJson(imagesInfo) ? JSON.parse(imagesInfo as string) : _.compact(imagesInfo.split(','));
     const images = imagesInfo
       ? _.isArray(imagesInfo)
         ? imagesInfo
-        : _.compact(imagesInfo.split(','))
+        : castToArrays(imagesInfo)
       : [];
     logger.debug('[wrapImagesToFileList]', { images });
     const fileList = _.map<any, Partial<UploadFile>>(images, (image, index) => ({
