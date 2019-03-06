@@ -67,8 +67,7 @@ export class ImagesUploader extends React.Component<IProps, IState> {
     return shouldUpdate;
   }
 
-  wrapImagesToFileList = (imagesInfo: string | string[]): void => {
-    const { host } = this.props;
+  valueToImages(imagesInfo) {
     const castToArrays = imagesInfo =>
       isJson(imagesInfo) ? JSON.parse(imagesInfo as string) : _.compact(imagesInfo.split(','));
     const images = imagesInfo
@@ -77,6 +76,12 @@ export class ImagesUploader extends React.Component<IProps, IState> {
         : castToArrays(imagesInfo)
       : [];
     logger.debug('[wrapImagesToFileList]', { images });
+    return images;
+  }
+
+  wrapImagesToFileList = (imagesInfo: string | string[]): void => {
+    const { host } = this.props;
+    const images = this.valueToImages(imagesInfo);
     const fileList = _.map<any, Partial<UploadFile>>(images, (image, index) => ({
       uid: `${index}`,
       status: 'done' as UploadFileStatus,
@@ -125,8 +130,9 @@ export class ImagesUploader extends React.Component<IProps, IState> {
           image = join(prefix || '', resolvedUrl);
         }
         logger.log('[ImagesUploader][customRequest]', { image, prefix, resolvedUrl });
-        const uploadedImages = this.props.value;
-        let images: string | string[] = _.compact(_.flatten([uploadedImages, image]));
+        const uploadedImages = this.valueToImages(this.props.value);
+        console.log({ uploadedImages, image }, _.flattenDeep([uploadedImages, image]));
+        let images: string | string[] = _.compact(_.flattenDeep([uploadedImages, image]));
         if (!jsonMode) {
           images = images.join(',');
         }
