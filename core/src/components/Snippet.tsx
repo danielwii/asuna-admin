@@ -4,6 +4,7 @@ import * as _ from 'lodash';
 import { Icon } from 'antd';
 // import { Document, Page } from "react-pdf/dist/entry.webpack";
 import { FlexCenterBox, ThumbImage } from './Styled';
+import { valueToUrl } from '@asuna-admin/core/url-rewriter';
 
 interface IAssetsPreviewProps {
   host: string;
@@ -90,7 +91,7 @@ export function AssetPreview({ host, url, showPdf, fullWidth }: IAssetPreviewPro
         {/*<ThumbImage src={`${host}${url}?thumbnail/x80_cover`} />*/}
         <ThumbImage
           width={fullWidth ? '100%' : ''}
-          src={`${host}${url}?imageView2/2/w/1280/h/1280/format/jpg/interlace/1/ignore-error/1`}
+          src={valueToUrl(url, { type: 'image', thumbnail: { height: 200, width: 200 } })}
         />
       </a>
     </FlexCenterBox>
