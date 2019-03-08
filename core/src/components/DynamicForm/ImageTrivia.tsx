@@ -3,14 +3,15 @@ import util from 'util';
 import _ from 'lodash';
 import * as R from 'ramda';
 import ReactCrop, { Crop, PixelCrop } from 'react-image-crop';
+import { Button, Icon, Input, List } from 'antd';
+import { join } from 'path';
+import idx from 'idx';
 
 import 'react-image-crop/dist/ReactCrop.css';
-import { Button, Icon, Input, List } from 'antd';
 import { upload } from '@asuna-admin/helpers/upload';
-import { join } from 'path';
 import { createLogger } from '@asuna-admin/logger';
 import { Title } from '@asuna-admin/components';
-import idx from 'idx';
+import { valueToUrl } from '@asuna-admin/core/url-rewriter';
 
 const logger = createLogger('components:dynamic-form:image-trivia');
 
@@ -37,6 +38,9 @@ type CropInfo = {
 interface IProps {
   maxHeight?: number;
   maxWidth?: number;
+  /**
+   * @deprecated
+   */
   host?: string;
   prefix?: string;
   urlHandler?: (res: Asuna.Schema.UploadResponse) => string;
@@ -63,7 +67,7 @@ export class ImageTrivia extends React.Component<IProps, IState> {
   onSelectFile = e => {
     if (e.target.files && e.target.files.length > 0) {
       upload(e.target.files[0]).then(uploaded => {
-        const { onChange, urlHandler, prefix, value, host } = this.props;
+        const { onChange, urlHandler, prefix, value } = this.props;
         if (uploaded) {
           logger.log('[onSelectFile]', { props: this.props, state: this.state });
           const resolvedUrl = urlHandler ? urlHandler(uploaded[0]) : `${uploaded[0]}`;
@@ -155,9 +159,9 @@ export class ImageTrivia extends React.Component<IProps, IState> {
   };
 
   render() {
-    const { maxHeight, maxWidth, value, host } = this.props;
+    const { maxHeight, maxWidth, value } = this.props;
     const { crop, updateIndex } = this.state;
-    const url = value ? host + `/${value.url}`.replace('//', '/').slice(1) : '';
+    const url = valueToUrl(idx(value, _ => _.url), { type: 'image', thumbnail: {} });
 
     logger.log('[render]', { value, crop });
 
