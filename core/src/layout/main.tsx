@@ -22,13 +22,13 @@ export default ({ loading, heartbeat, auth, appInfo }) => {
   logger.log('status', { loading, heartbeat, auth, appInfo });
   return (
     <WithStyles>
-      <Layout tagName={'main'}>
+      <Layout>
         {(loading || !heartbeat) && <LivingLoading heartbeat={heartbeat} />}
         <ProgressBar />
         <HeaderContainer />
-        <Layout tagName={'section'}>
+        <Layout>
           <SideMenuContainer />
-          <Layout style={{ padding: '1rem' }} tagName={'section'}>
+          <Layout style={{ padding: '1rem' }}>
             <StyledContentDiv>
               <PanesContainer />
             </StyledContentDiv>
