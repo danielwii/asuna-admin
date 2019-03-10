@@ -90,7 +90,7 @@ export class Header extends React.Component<IHeaderProps> {
       'yK+vrydojqOjo9mAkJugiACrrWoLBQQ0AlQOBo0AjQCVEVDZvJYBGgEqI6CyeS0DNAJURkBl81oGqEzAPwKEIs6uM' +
       'DNsAAAAAElFTkSuQmCC';
     return (
-      <Layout.Header className="header" tagName="header">
+      <Layout.Header className="header">
         <div className="logo">
           <StyledLogoImg src={asuna} alt="mast" />
         </div>
