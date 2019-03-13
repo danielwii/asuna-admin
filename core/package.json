@@ -54,7 +54,7 @@
     "fork-ts-checker-webpack-plugin": "1.0.0",
     "graphql": "^14.1.1",
     "http-proxy": "1.17.0",
-    "idx": "2.5.4",
+    "idx": "2.5.5",
     "immutable": "3.8.2",
     "koa": "^2.7.0",
     "koa-router": "^7.4.0",
