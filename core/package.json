@@ -73,7 +73,7 @@
     "react-animations": "1.0.0",
     "react-apollo": "^2.5.2",
     "react-dom": "16.8.4",
-    "react-image-crop": "^6.0.17",
+    "react-image-crop": "^6.0.18",
     "react-pdf": "^4.0.5",
     "react-redux": "6.0.1",
     "react-sortable-hoc": "1.7.1",
