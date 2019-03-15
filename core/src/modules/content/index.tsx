@@ -175,12 +175,19 @@ class ContentIndex extends React.Component<IProps, IState> {
     logger.log('[remove]', record);
     const { modelName } = this.state;
     const { dispatch } = this.props;
-    Modal.confirm({
+    const modal = Modal.confirm({
       title: '是否确认',
       content: `删除 ${modelName}？`,
       okText: '确认',
       cancelText: '取消',
-      onOk: () => dispatch(modelsActions.remove(modelName, record)),
+      onOk: () =>
+        dispatch(
+          modelsActions.remove(modelName, record, response => {
+            if (/^20\d$/.test(response.status as any)) {
+              modal.destroy();
+            }
+          }),
+        ),
     });
   };
 
