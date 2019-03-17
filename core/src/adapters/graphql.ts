@@ -59,6 +59,7 @@ export class GraphqlAdapter {
             }
           }
         `,
+        fetchPolicy: 'no-cache',
       })
       .then(fp.get('data.model_schemas'));
   }
