@@ -104,7 +104,7 @@
     "@types/debug": "4.1.2",
     "@types/jest": "24.0.10",
     "@types/lodash": "4.14.122",
-    "@types/next": "8.0.1",
+    "@types/next": "8.0.2",
     "@types/next-redux-wrapper": "2.0.2",
     "@types/react-redux": "7.0.3",
     "@types/socket.io-client": "1.4.32",
