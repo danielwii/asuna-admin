@@ -54,7 +54,7 @@ class EventBus {
 
 EventBus.init();
 
-// core event bus, the events will received both from client side and server side.
+// core event bus, the ws will received both from client side and server side.
 // const bus = new Subject();
 
 export { EventBus, EventType };
