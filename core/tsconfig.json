@@ -14,8 +14,9 @@
     "preserveConstEnums": true,
     "sourceMap": true,
     "declaration": true,
+    "declarationDir": "declaration",
     "skipLibCheck": true,
-    "outDir": "build",
+    "outDir": "dist",
     "baseUrl": "./",
     "paths": {
       "asuna-admin": ["src/index.ts"],

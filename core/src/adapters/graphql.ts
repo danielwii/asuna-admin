@@ -44,7 +44,7 @@ export class GraphqlAdapter {
     });
   }
 
-  async queryT(query: string) {
+  async queryT(query: any) {
     return this.client.query({ query });
   }
 
@@ -53,7 +53,7 @@ export class GraphqlAdapter {
       .query({
         query: gql`
           {
-            model_schemas {
+            sys_modelSchemas {
               name
               schema
             }
@@ -61,7 +61,7 @@ export class GraphqlAdapter {
         `,
         fetchPolicy: 'no-cache',
       })
-      .then(fp.get('data.model_schemas'));
+      .then(fp.get('data.sys_modelSchemas'));
   }
 
   async loadGraphs() {

@@ -8,15 +8,14 @@ const debug = require('debug');
 
 const logger = { log: debug('http'), error: debug('error') };
 const { createProxy } = require('./asuna-utils');
-const applyMiddleware = require('./server/graphql/apollo-koa-server');
 
 const dev = process.env.NODE_ENV !== 'production';
 const port = process.env.PORT || 3000;
 const app = next({ dev });
 const handle = app.getRequestHandler();
 
-function bootstrap({ root, configs }) {
-  const PROXY_API = configs.configurator.loadConfig('PROXY_API');
+function bootstrap({ root, opts }) {
+  const PROXY_API = opts.configurator.loadConfig('PROXY_API');
   app.prepare().then(() => {
     const server = new Koa();
     const proxy = createProxy();
@@ -25,7 +24,12 @@ function bootstrap({ root, configs }) {
     // setup graphql
     // --------------------------------------------------------------
 
-    const { graphqlPath } = applyMiddleware(server, { root, dev });
+    let graphqlPath;
+    if (opts.enableGraphQL) {
+      const applyMiddleware = require('./server/graphql/apollo-koa-server');
+      const graphqlMiddleware = applyMiddleware(server, { root, dev });
+      graphqlPath = graphqlMiddleware.graphqlPath;
+    }
 
     // --------------------------------------------------------------
     // setup routes
@@ -37,9 +41,9 @@ function bootstrap({ root, configs }) {
       const { req, res } = ctx;
       await new Promise((resolve, reject) => {
         let target = PROXY_API;
-        if (configs.graphql) {
-          req.url = configs.graphql.dest ? configs.graphql.dest() : 'graphql';
-          target = configs.graphql.target ? configs.graphql.target : PROXY_API;
+        if (opts.graphql) {
+          req.url = opts.graphql.dest ? opts.graphql.dest() : 'graphql';
+          target = opts.graphql.target ? opts.graphql.target : PROXY_API;
         }
         proxy.web(req, res, { target }, e => (e ? reject(e) : resolve()));
       });
@@ -52,8 +56,8 @@ function bootstrap({ root, configs }) {
       const parsedUrl = parse(req.url, true);
       const { pathname } = parsedUrl;
 
-      if (configs && configs.proxy) {
-        const proxyConfig = configs.proxy.find(config => pathname.startsWith(config.pathname));
+      if (opts && opts.proxy) {
+        const proxyConfig = opts.proxy.find(config => pathname.startsWith(config.pathname));
         logger.log(
           `${new Date().toISOString().dim} ${req.method.bold} ${req.url}`,
           proxyConfig ? util.inspect(proxyConfig, { colors: true }) : 'direct'.cyan,
@@ -97,7 +101,9 @@ function bootstrap({ root, configs }) {
 
     server.listen(port, err => {
       if (err) throw err;
-      logger.log(`> 🚀 GraphQL Ready at http://localhost:${port}${graphqlPath}`.bgRed.black.bold);
+      if (opts.enableGraphQL) {
+        logger.log(`> 🚀 GraphQL Ready at http://localhost:${port}${graphqlPath}`.bgRed.black.bold);
+      }
       logger.log(`> 🚀 Ready at http://localhost:${port}`.bgRed.black.bold);
       logger.log(`> NODE_ENV: ${process.env.NODE_ENV}`.bgRed.black.bold);
       logger.log(`> ENV: ${process.env.ENV}`.bgRed.black.bold);
