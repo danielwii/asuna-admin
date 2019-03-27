@@ -15,6 +15,7 @@ const app = next({ dev });
 const handle = app.getRequestHandler();
 
 function bootstrap({ root, opts }) {
+  logger.log(`bootstrap ... ${util.inspect({ root, opts }, { colors: true })}`);
   const PROXY_API = opts.configurator.loadConfig('PROXY_API');
   app.prepare().then(() => {
     const server = new Koa();
