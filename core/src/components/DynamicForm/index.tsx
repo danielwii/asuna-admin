@@ -26,6 +26,7 @@ import {
   InputOptions,
   PlainOptions,
 } from './elements';
+import { generateFile, generateFiles } from './elements/Files';
 import { generateSelect, Item, SelectOptions } from './elements/Select';
 import { generateStringArray, StringArrayOptions } from './elements/StringArray';
 import { generateImage, generateImages, generateRichImage } from './elements/Image';
@@ -70,6 +71,8 @@ export enum DynamicFormTypes {
 
   Image = 'Image',
   Images = 'Images',
+  File = 'File',
+  Files = 'Files',
   Video = 'Video',
   Deletable = 'Deletable',
   Switch = 'Switch',
@@ -194,6 +197,10 @@ export class DynamicForm extends React.Component<
         return generateImage(form, options);
       case DynamicFormTypes.Images:
         return generateImages(form, options);
+      case DynamicFormTypes.File:
+        return generateFile(form, options);
+      case DynamicFormTypes.Files:
+        return generateFiles(form, options);
       case DynamicFormTypes.Deletable:
       case DynamicFormTypes.Switch:
         return generateSwitch(form, options);

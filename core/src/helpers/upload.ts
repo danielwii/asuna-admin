@@ -1,6 +1,7 @@
 import { message } from 'antd';
 import { apiProxy } from '@asuna-admin/adapters';
 import { createLogger } from '@asuna-admin/logger';
+import { AxiosRequestConfig } from 'axios';
 
 const logger = createLogger('helpers:upload');
 
@@ -27,9 +28,12 @@ export function validateFile(file: { type: string; size: number }): boolean {
   return isImage && isLt20M;
 }
 
-export async function upload(file: object): Promise<Asuna.Schema.UploadResponse[] | undefined> {
+export async function upload(
+  file: object,
+  requestConfig?: AxiosRequestConfig,
+): Promise<Asuna.Schema.UploadResponse[] | undefined> {
   logger.log('[upload]', { file });
-  const response = await apiProxy.upload(file);
+  const response = await apiProxy.upload(file, {}, requestConfig);
   logger.log('[upload]', { response });
 
   return new Promise((resolve, reject) => {

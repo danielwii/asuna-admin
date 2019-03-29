@@ -7,7 +7,7 @@ import { RcFile, UploadChangeParam, UploadFile, UploadFileStatus } from 'antd/es
 import { diff } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 import { upload, validateFile } from '@asuna-admin/helpers/upload';
-import { valueToImages, valueToUrl } from '@asuna-admin/core/url-rewriter';
+import { valueToArrays, valueToUrl } from '@asuna-admin/core/url-rewriter';
 
 const logger = createLogger('components:dynamic-form:images');
 
@@ -70,7 +70,7 @@ export class ImagesUploader extends React.Component<IProps, IState> {
   }
 
   wrapImagesToFileList = (imagesInfo: string | string[]): void => {
-    const images = valueToImages(imagesInfo);
+    const images = valueToArrays(imagesInfo);
     const fileList = _.map<any, Partial<UploadFile>>(images, (image, index) => ({
       uid: `${index}`,
       status: 'done' as UploadFileStatus,
@@ -120,7 +120,7 @@ export class ImagesUploader extends React.Component<IProps, IState> {
           image = join(prefix || '', resolvedUrl);
         }
         logger.log('[ImagesUploader][customRequest]', { image, prefix, resolvedUrl });
-        const uploadedImages = valueToImages(this.props.value);
+        const uploadedImages = valueToArrays(this.props.value);
         console.log({ uploadedImages, image }, _.flattenDeep([uploadedImages, image]));
         let images: string | string[] = _.compact(_.flattenDeep([uploadedImages, image]));
         if (!jsonMode) {
@@ -155,12 +155,11 @@ export class ImagesUploader extends React.Component<IProps, IState> {
     };
 
     return (
-      <div className="clearfix">
+      <div className="clearfix" key={value}>
         <Upload
           {...eventHandler}
           multiple
           supportServerRender
-          key={value}
           listType="picture-card"
           fileList={fileList}
           customRequest={this.customRequest}

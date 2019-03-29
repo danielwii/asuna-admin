@@ -5,11 +5,11 @@ import { Config } from '@asuna-admin/config';
 
 const logger = createLogger('core:url-rewriter');
 
-export function valueToImages(value) {
+export function valueToArrays(value) {
   const castToArrays = value =>
     isJson(value) ? JSON.parse(value as string) : _.compact(value.split(','));
   const images = value ? (_.isArray(value) ? value : castToArrays(value)) : [];
-  logger.debug('[valueToImages]', { value, images });
+  logger.debug('[valueToArrays]', { value, images });
   return images;
 }
 
@@ -21,7 +21,7 @@ export function valueToUrl(
     thumbnail,
   }: {
     host?: string;
-    type?: 'image' | 'video' | 'attaches';
+    type?: 'image' | 'video' | 'attache' | 'file';
     thumbnail?: { width?: number; height?: number };
   },
 ) {
@@ -31,7 +31,8 @@ export function valueToUrl(
       _.cond([
         [_.matches('image'), _.constant(Config.get('IMAGE_HOST'))],
         [_.matches('video'), _.constant(Config.get('VIDEO_HOST'))],
-        [_.matches('attaches'), _.constant(Config.get('ATTACHES_HOST'))],
+        [_.matches('attache'), _.constant(Config.get('ATTACHE_HOST'))],
+        [_.matches('file'), _.constant(Config.get('FILE_HOST'))],
       ])(type) ||
       '';
     let url = hostPrefix + `/${value}`.replace('//', '/').slice(1);

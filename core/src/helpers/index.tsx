@@ -17,7 +17,7 @@ import { Config } from '@asuna-admin/config';
 import { createLogger } from '@asuna-admin/logger';
 import { AppContext } from '@asuna-admin/core';
 import { AssetsPreview } from '@asuna-admin/components';
-import { valueToImages } from '@asuna-admin/core/url-rewriter';
+import { valueToArrays } from '@asuna-admin/core/url-rewriter';
 
 const logger = createLogger('helpers');
 
@@ -249,7 +249,7 @@ export const columnHelper = {
         try {
           const value = transformer ? transformer(text) : text;
           if (value) {
-            const images = valueToImages(value);
+            const images = valueToArrays(value);
             // const images = _.isArray(value) ? value : value.split(',');
             const host = Config.get('IMAGE_HOST') || '';
             // return _.map(images, image => <AssetPreview key={image} host={host} url={image} />);
