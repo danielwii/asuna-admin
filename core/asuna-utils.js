@@ -1,4 +1,5 @@
 const debug = require('debug');
+const url = require('url');
 const { createProxyServer } = require('http-proxy');
 
 const logger = { log: debug('http'), error: debug('error'), debug: debug('debug') };
@@ -12,8 +13,19 @@ function enableDebug(...namespaces) {
 
 enableDebug('http', 'error');
 
-function createProxy() {
-  const proxy = createProxyServer({});
+function createProxy(api) {
+  const parsedUrl = url.parse(api);
+  const proxy = createProxyServer({
+    changeOrigin: true,
+    target:
+      parsedUrl.protocol === 'https'
+        ? {
+            protocol: 'https',
+            host: parsedUrl.host,
+            port: parsedUrl.port,
+          }
+        : null,
+  });
   proxy.on('error', (error, request, response) => {
     logger.error(`${new Date().toISOString().dim} ${request.method.bold} ${request.url} `, error);
     if (response && !response.headersSent) {
@@ -26,6 +38,10 @@ function createProxy() {
     } else {
       response.end(JSON.stringify({ error, message: error.message }));
     }
+  });
+
+  proxy.on('upgrade', function(req, socket, head) {
+    proxy.ws(req, socket, head);
   });
   return proxy;
 }

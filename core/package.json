@@ -23,7 +23,7 @@
   "scripts": {
     "autod": "autod",
     "dev": "NODE_ENV=dev node $NODE_DEBUG_OPTION server.js",
-    "clean": "rm -rf ./dist",
+    "clean": "rm -rf ./dist ./declaration",
     "prebuild": "yarn clean",
     "postpublish": "yarn clean",
     "compile:replace-path": "node replace-path.js",
@@ -87,6 +87,7 @@
     "redux-saga": "1.0.2",
     "rxjs": "6.4.0",
     "socket.io-client": "^2.2.0",
+    "stream-array": "^1.1.2",
     "styled-components": "4.2.0",
     "url-join": "4.0.0",
     "video.js": "^7.4.1"
