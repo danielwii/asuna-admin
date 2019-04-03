@@ -46,7 +46,7 @@
     "apollo-boost": "^0.3.0",
     "apollo-server-koa": "^2.4.8",
     "axios": "0.18.0",
-    "bluebird": "3.5.3",
+    "bluebird": "3.5.4",
     "braft-editor": "2.2.8",
     "colors": "^1.3.3",
     "debug": "4.1.1",
