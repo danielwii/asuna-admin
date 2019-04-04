@@ -23,6 +23,5 @@
       "@asuna-admin/*": ["src/*"]
     }
   },
-  "include": ["./src"],
-  "exclude": ["**/*.spec.*"]
+  "exclude": ["**/*.spec.*", "node_modules"]
 }
