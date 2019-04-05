@@ -23,6 +23,11 @@ module.exports = api => {
       ['import', { libraryName: 'antd', style: false }, 'import-antd'],
       // [
       //   'import',
+      //   // { libraryName: '@material-ui/core', customName: name => { return `test/lib/${name}`; } },
+      //   // { libraryName: '@material-ui/core', libraryDirectory: '', camel2DashComponentName: false },
+      // ],
+      // [
+      //   'import',
       //   { libraryName: 'lodash', libraryDirectory: '', camel2DashComponentName: false },
       //   'import-lodash',
       // ],
