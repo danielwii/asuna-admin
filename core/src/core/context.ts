@@ -187,7 +187,7 @@ class AppContext {
   }
 
   public static get isDevMode() {
-    return idx(AppContext.nextConfig.publicRuntimeConfig, _ => _.env) === 'dev';
+    return idx(AppContext.nextConfig.publicRuntimeConfig, _ => _.env) !== 'production';
   }
 
   public static get publicConfig() {
