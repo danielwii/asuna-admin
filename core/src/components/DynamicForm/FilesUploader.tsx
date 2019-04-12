@@ -2,12 +2,12 @@ import * as React from 'react';
 import { useState } from 'react';
 import { Button, Icon, message, Upload } from 'antd';
 import { UploadChangeParam, UploadProps } from 'antd/lib/upload';
-import { UploadFile } from 'antd/es/upload/interface';
+import { UploadFile, UploadFileStatus } from 'antd/es/upload/interface';
 import { join } from 'path';
 import * as _ from 'lodash';
 
 import { upload } from '@asuna-admin/helpers/upload';
-import { valueToArrays } from '@asuna-admin/core/url-rewriter';
+import { valueToArrays, valueToUrl } from '@asuna-admin/core/url-rewriter';
 import { createLogger } from '@asuna-admin/logger';
 
 const logger = createLogger('components:dynamic-form:files');
@@ -16,7 +16,7 @@ export interface IFilesUploaderProps {
   host?: string;
   prefix?: string;
   urlHandler?: (res: Asuna.Schema.UploadResponse) => string;
-  value?: string;
+  value?: string | string[];
   onChange?: (value: any) => void;
   many?: boolean;
   fileSize?: number;
@@ -27,8 +27,23 @@ interface IState {
   uploadFiles: UploadFile[];
 }
 
+const urlToUploadFile = (url, index) => ({
+  uid: `${index}`,
+  name: valueToUrl(url, { type: 'file' }),
+  status: 'done' as UploadFileStatus,
+  url: valueToUrl(url, { type: 'file' }),
+  size: 0,
+  type: '',
+});
+
 export const FilesUploader = (props: IFilesUploaderProps) => {
-  const [state, setState] = useState<IState>({ uploadFiles: [] });
+  const [state, setState] = useState<IState>({
+    uploadFiles: _.isString(props.value)
+      ? [urlToUploadFile(props.value, 0)]
+      : (props.value || []).map(urlToUploadFile),
+  });
+
+  logger.log('render', { props, state });
 
   const uploadProps: UploadProps = {
     customRequest(option: {
@@ -63,8 +78,10 @@ export const FilesUploader = (props: IFilesUploaderProps) => {
               { uploadedFiles, file: fileUrl },
               _.flattenDeep([uploadedFiles, fileUrl]),
             );
+            // 构造一个已上传文件的列表，最新的放在最后面
             let files: string | string[] = _.compact(_.flattenDeep([uploadedFiles, fileUrl]));
-            files = props.many ? files : [_.first(files) || ''];
+            // 当当前模式是单文件上传模式时，取最后一个文件为当前文件
+            files = props.many ? files : [_.last(files) || ''];
             if (!jsonMode) {
               // cast to string
               files = files.join(',');
@@ -97,7 +114,7 @@ export const FilesUploader = (props: IFilesUploaderProps) => {
   };
 
   return (
-    <Upload {...uploadProps} fileList={state.uploadFiles}>
+    <Upload {...uploadProps} fileList={state.uploadFiles as UploadFile[]}>
       <Button>
         <Icon type="upload" /> Click to Upload
       </Button>
