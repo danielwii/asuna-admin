@@ -2563,10 +2563,10 @@
   dependencies:
     "@types/express" "*"
 
-"@types/debug@4.1.3":
-  version "4.1.3"
-  resolved "https://registry.yarnpkg.com/@types/debug/-/debug-4.1.3.tgz#4965a87531d7c6863f5b097b2c518b825e926cc7"
-  integrity sha512-PQverGatRgqIhRLracrC8k/j5A6QOASVLR0wuURx6ROQZx3OQ9PnTc/5Xrznny/xaO0TwdxSgGyG90NCzk37Rg==
+"@types/debug@4.1.4":
+  version "4.1.4"
+  resolved "http://localhost:8081/repository/npm-central/@types/debug/-/debug-4.1.4.tgz#56eec47706f0fd0b7c694eae2f3172e6b0b769da"
+  integrity sha512-D9MyoQFI7iP5VdpEyPZyjjqIJ8Y8EDNQFIFVLOmeg1rI1xiHOChyUPMPRUVfqFCerxfE+yS3vMyj37F6IdtOoQ==
 
 "@types/events@*":
   version "3.0.0"
@@ -7338,10 +7338,10 @@ forever-agent@~0.6.1:
   resolved "https://registry.yarnpkg.com/forever-agent/-/forever-agent-0.6.1.tgz#fbc71f0c41adeb37f96c577ad1ed42d8fdacca91"
   integrity sha1-+8cfDEGt6zf5bFd60e1C2P2sypE=
 
-fork-ts-checker-webpack-plugin@1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/fork-ts-checker-webpack-plugin/-/fork-ts-checker-webpack-plugin-1.0.1.tgz#140453c4dc3dc35937034b7416b66a3bacfbc3a8"
-  integrity sha512-RrVxSiNtngsFDLQpP2QlrVaJK1zqRdwhtwslmDUWQTg3t3GW8QN7D3EpW/EAI+oqTqL0dGvLyluyYQ/eIrIHvQ==
+fork-ts-checker-webpack-plugin@1.0.2:
+  version "1.0.2"
+  resolved "http://localhost:8081/repository/npm-central/fork-ts-checker-webpack-plugin/-/fork-ts-checker-webpack-plugin-1.0.2.tgz#1f40585c1f60ffc3a420cd5f6a8d8be25b5635fc"
+  integrity sha512-DAyBgXAoJoSTXK8LSTvNgYJE+PmawnIyh2qZUfV5vB237ARuyEEq/H1y0i9UdhXLY6QlCH+5LojGyaHwD9W2RA==
   dependencies:
     babel-code-frame "^6.22.0"
     chalk "^2.4.1"
@@ -12457,10 +12457,10 @@ react-popper@^1.3.3:
     typed-styles "^0.0.7"
     warning "^4.0.2"
 
-react-redux@7.0.1:
-  version "7.0.1"
-  resolved "https://registry.yarnpkg.com/react-redux/-/react-redux-7.0.1.tgz#321285e6c85c3586d11cc066ab33dc580da599fb"
-  integrity sha512-orSiI/QXtGiiJmf8lN/zVTx4hysFo/kGOsce28IUu/mu98AGemBwPTDzf64P4Vf/miRmevO8/w2RSw2awDd21w==
+react-redux@7.0.2:
+  version "7.0.2"
+  resolved "http://localhost:8081/repository/npm-central/react-redux/-/react-redux-7.0.2.tgz#34b280a3482aaf60e7d4a504b1295165cbe6b86a"
+  integrity sha512-uKRuMgQt8dWbcz0U75oFK5tDo3boyAKrqvf/j94vpqRFFZfyDDy4kofUgloFIGyuKTq2Zz51zgK9RzOTFXk5ew==
   dependencies:
     "@babel/runtime" "^7.4.3"
     hoist-non-react-statics "^3.3.0"
@@ -14982,10 +14982,10 @@ webidl-conversions@^4.0.2:
   resolved "https://registry.yarnpkg.com/webidl-conversions/-/webidl-conversions-4.0.2.tgz#a855980b1f0b6b359ba1d5d9fb39ae941faa63ad"
   integrity sha512-YQ+BmxuTgd6UXZW3+ICGfyqRyHXVlD5GtQr5+qjiNW7bF0cqrzX500HVXPBOvgXb5YnzDd+h0zqyv61KUD7+Sg==
 
-webpack-bundle-analyzer@3.3.0:
-  version "3.3.0"
-  resolved "https://registry.yarnpkg.com/webpack-bundle-analyzer/-/webpack-bundle-analyzer-3.3.0.tgz#2c18aca01fa03f11dccb3f627fb40b9f38bd7225"
-  integrity sha512-xNz1oC5pFiVLyDHDz2qZs3ydAuIWv96zokdBZAz+xdhD8BX3mytCmbWkzLzNRDjuWEovhQtycuvpfd368XvLBA==
+webpack-bundle-analyzer@3.3.2:
+  version "3.3.2"
+  resolved "http://localhost:8081/repository/npm-central/webpack-bundle-analyzer/-/webpack-bundle-analyzer-3.3.2.tgz#3da733a900f515914e729fcebcd4c40dde71fc6f"
+  integrity sha512-7qvJLPKB4rRWZGjVp5U1KEjwutbDHSKboAl0IfafnrdXMrgC0tOtZbQD6Rw0u4cmpgRN4O02Fc0t8eAT+FgGzA==
   dependencies:
     acorn "^6.0.7"
     acorn-walk "^6.1.1"
@@ -15121,10 +15121,40 @@ webpack@4.29.0:
     watchpack "^1.5.0"
     webpack-sources "^1.3.0"
 
-webpack@^4.29.0, webpack@^4.29.6:
+webpack@^4.29.0:
   version "4.29.6"
   resolved "https://registry.yarnpkg.com/webpack/-/webpack-4.29.6.tgz#66bf0ec8beee4d469f8b598d3988ff9d8d90e955"
   integrity sha512-MwBwpiE1BQpMDkbnUUaW6K8RFZjljJHArC6tWQJoFm0oQtfoSebtg4Y7/QHnJ/SddtjYLHaKGX64CFjG5rehJw==
+  dependencies:
+    "@webassemblyjs/ast" "1.8.5"
+    "@webassemblyjs/helper-module-context" "1.8.5"
+    "@webassemblyjs/wasm-edit" "1.8.5"
+    "@webassemblyjs/wasm-parser" "1.8.5"
+    acorn "^6.0.5"
+    acorn-dynamic-import "^4.0.0"
+    ajv "^6.1.0"
+    ajv-keywords "^3.1.0"
+    chrome-trace-event "^1.0.0"
+    enhanced-resolve "^4.1.0"
+    eslint-scope "^4.0.0"
+    json-parse-better-errors "^1.0.2"
+    loader-runner "^2.3.0"
+    loader-utils "^1.1.0"
+    memory-fs "~0.4.1"
+    micromatch "^3.1.8"
+    mkdirp "~0.5.0"
+    neo-async "^2.5.0"
+    node-libs-browser "^2.0.0"
+    schema-utils "^1.0.0"
+    tapable "^1.1.0"
+    terser-webpack-plugin "^1.1.0"
+    watchpack "^1.5.0"
+    webpack-sources "^1.3.0"
+
+webpack@^4.30.0:
+  version "4.30.0"
+  resolved "http://localhost:8081/repository/npm-central/webpack/-/webpack-4.30.0.tgz#aca76ef75630a22c49fcc235b39b4c57591d33a9"
+  integrity sha512-4hgvO2YbAFUhyTdlR4FNyt2+YaYBYHavyzjCMbZzgglo02rlKi/pcsEzwCuCpsn1ryzIl1cq/u8ArIKu8JBYMg==
   dependencies:
     "@webassemblyjs/ast" "1.8.5"
     "@webassemblyjs/helper-module-context" "1.8.5"
