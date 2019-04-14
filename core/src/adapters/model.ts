@@ -275,12 +275,20 @@ export class ModelAdapter {
     const columns = columnsRender
       ? await Promise.all(columnsRender(opts.actions, { modelName, callRefresh: opts.callRefresh }))
       : [];
-    return _.map(columns, (column: ColumnProps<any> & { relation: any }) =>
+    return _.map(columns, (column: ColumnProps<any> & { relation: any }) => {
+      // todo antd 当前的屏幕宽度处理存在问题。
+      let fixed;
+      if (column.key === 'id') {
+        fixed = { fixed: 'left', width: 60 };
+      } else if (column.key === 'action') {
+        fixed = { fixed: 'right', width: 200 };
+      }
       // 不检测不包含在 schema 中且不属于模型的列名
-      column.key && !formSchema[column.key] && !_.includes(['action'], column.key)
-        ? { ...column, title: `${column.title}(miss)` }
-        : column,
-    );
+      return column.key && !formSchema[column.key] && !_.includes(['action'], column.key)
+        ? // 标记 schema 中不存在的列
+          { ...column, title: `${column.title}(miss)` }
+        : column;
+    });
   };
 
   public getModelConfig = (modelName: string): Asuna.Schema.ModelConfig => {

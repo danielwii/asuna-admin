@@ -12,8 +12,7 @@ import { responseProxy } from '@asuna-admin/adapters';
 import { ActionEvent, AppContext, EventBus, EventType } from '@asuna-admin/core';
 import { createLogger } from '@asuna-admin/logger';
 import { PaginationConfig } from 'antd/es/pagination';
-import { ColumnProps } from 'antd/es/table';
-import { SorterResult } from 'antd/lib/table';
+import { ColumnProps, SorterResult } from 'antd/es/table';
 
 const logger = createLogger('modules:content:index');
 
@@ -250,6 +249,7 @@ class ContentIndex extends React.Component<IProps, IState> {
         {columns && (
           <Table
             className="asuna-content-table"
+            scroll={{ x: true }}
             dataSource={dataSource}
             rowKey="id"
             loading={loading}
@@ -262,10 +262,6 @@ class ContentIndex extends React.Component<IProps, IState> {
         <style jsx global>{`
           .ant-tabs {
             overflow: inherit !important;
-          }
-          .asuna-content-table td,
-          th {
-            padding: 0.3rem !important;
           }
         `}</style>
       </>
