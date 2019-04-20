@@ -21,7 +21,10 @@ export class WsAdapter {
     this.namespace = opts.namespace || 'admin';
 
     if (!AppContext.isServer && !WsAdapter.io) {
-      WsAdapter.io = connect('/admin');
+      WsAdapter.io = connect(
+        '/admin',
+        { secure: true },
+      );
 
       WsAdapter.io.on('connect', () => {
         logger.log('[connect]', { id: WsAdapter.io.id, AppContext });
