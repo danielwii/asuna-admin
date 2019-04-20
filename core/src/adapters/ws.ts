@@ -23,7 +23,7 @@ export class WsAdapter {
     if (!AppContext.isServer && !WsAdapter.io) {
       WsAdapter.io = connect(
         '/admin',
-        { secure: true },
+        { secure: true, reconnectionDelay: 10e3, reconnectionDelayMax: 60e3 },
       );
 
       WsAdapter.io.on('connect', () => {

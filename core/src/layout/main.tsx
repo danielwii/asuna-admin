@@ -23,7 +23,7 @@ export default ({ loading, heartbeat, auth, appInfo }) => {
   return (
     <WithStyles>
       <Layout>
-        {(loading || !heartbeat) && <LivingLoading heartbeat={heartbeat} />}
+        {/*{loading && <LivingLoading heartbeat={heartbeat} />}*/}
         <ProgressBar />
         <HeaderContainer />
         <Layout>

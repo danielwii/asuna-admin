@@ -57,26 +57,18 @@ export class LoginPage extends React.Component<ILoginPageProps> {
   }
 
   render() {
-    const {
-      app: { heartbeat },
-    } = this.props;
-
     return (
       <WithStyles>
-        {heartbeat ? (
-          <StyledFullFlexContainer>
-            <Snow />
-            <Sun />
-            <StyledLogoWrapper>
-              <LogoCanvas />
-            </StyledLogoWrapper>
-            <StyledLoginWrapper>
-              <LoginContainer {...this.props} />
-            </StyledLoginWrapper>
-          </StyledFullFlexContainer>
-        ) : (
-          <LivingLoading heartbeat={heartbeat} />
-        )}
+        <StyledFullFlexContainer>
+          <Snow />
+          <Sun />
+          <StyledLogoWrapper>
+            <LogoCanvas />
+          </StyledLogoWrapper>
+          <StyledLoginWrapper>
+            <LoginContainer {...this.props} />
+          </StyledLoginWrapper>
+        </StyledFullFlexContainer>
       </WithStyles>
     );
   }

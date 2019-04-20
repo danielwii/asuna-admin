@@ -102,7 +102,7 @@ function* heartbeat({ force }) {
   const app: AppState = yield select((state: RootState) => state.app);
 
   try {
-    logger.debug('[heartbeat]', { apiProxy, version: apiProxy.getVersion });
+    logger.debug('[heartbeat]', { app });
 
     const response = yield call(apiProxy.getVersion);
     logger.debug('[heartbeat]', { force, remote: response.data, version: app.version });
