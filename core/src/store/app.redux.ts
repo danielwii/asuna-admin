@@ -96,7 +96,7 @@ function* rehydrateWatcher(action) {
 }
 
 /**
- * 查询运行中的服务端版本，版本不一致时更新当前的版本，同时进行同步操作
+ * 查询运行中的服务端版本，版本不一致时更新当前的版本，-同时进行同步操作-，目前修改为需要手动刷新
  */
 function* heartbeat({ force }) {
   const app: AppState = yield select((state: RootState) => state.app);
@@ -106,12 +106,12 @@ function* heartbeat({ force }) {
 
     const response = yield call(apiProxy.getVersion);
     logger.debug('[heartbeat]', { force, remote: response.data, version: app.version });
-
+    /*
     // 版本不一致时执行同步操作
     if (force || app.version !== response.data) {
       yield put(appActions.sync());
       yield put(appActions.loadVersionSuccess(response.data));
-    }
+    }*/
 
     if (!app.heartbeat) {
       yield put(appActions.heartbeatAlive());
