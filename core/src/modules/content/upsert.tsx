@@ -30,6 +30,7 @@ const logger = createLogger('modules:content:upsert');
 // --------------------------------------------------------------
 
 interface IContentForm {
+  form;
   fields;
   onChange: (value) => void;
   onSubmit: (fn: (e: Error) => void) => void;
@@ -78,7 +79,7 @@ const ContentForm = Form.create<IContentForm>({
       props.onChange(filteredChangedFields);
     }
   },
-})(DynamicForm);
+})(DynamicForm) as any;
 
 // --------------------------------------------------------------
 // Main
