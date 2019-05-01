@@ -76,7 +76,7 @@ export class AsunaStore {
     key: 'root',
     storage: localForage,
     debug: true,
-    timeout: 1000,
+    timeout: 10000,
     blacklist: ['app', 'router'],
   };
 
@@ -160,7 +160,10 @@ export class AsunaStore {
       store = createStore<RootState, AnyAction, any, any>(
         this.rootReducers,
         preloadedState,
-        applyMiddleware(this.sagaMiddleware, this.epicMiddleware, this.storeConnectorMiddleware),
+        applyMiddleware(
+          this.sagaMiddleware,
+          /*this.epicMiddleware, */ this.storeConnectorMiddleware,
+        ),
       );
     } else {
       // enable persistence in client side
@@ -190,6 +193,8 @@ export class AsunaStore {
       );
 
       store.__persistor = persistStore(store);
+
+      this.epicMiddleware.run(this.rootEpics);
     }
 
     /**
@@ -205,7 +210,6 @@ export class AsunaStore {
 
     // run the rootSaga initially
     store.runSagaTask();
-    this.epicMiddleware.run(this.rootEpics);
 
     return store;
   };

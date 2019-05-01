@@ -4,8 +4,6 @@ import * as R from 'ramda';
 import _ from 'lodash';
 import deepDiff from 'deep-diff';
 import Truncate from 'react-truncate';
-import { join } from 'path';
-import styled from 'styled-components';
 import idx from 'idx';
 
 import { Button, Checkbox, Icon, Input, Popconfirm, Tooltip } from 'antd';
@@ -18,26 +16,14 @@ import { removePreAndSuf } from './func';
 import { Config } from '@asuna-admin/config';
 import { createLogger } from '@asuna-admin/logger';
 import { AppContext } from '@asuna-admin/core';
+import { AssetsPreview } from '@asuna-admin/components';
+import { valueToArrays } from '@asuna-admin/core/url-rewriter';
 
 const logger = createLogger('helpers');
 
 export * from './cast';
 export * from './error';
 export * from './func';
-
-const FluxCenterBox = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid #f5f5f5;
-  border-radius: 0.2rem;
-  padding: 0.1rem;
-`;
-
-const ThumbImage = styled.img`
-  max-width: 200px;
-  max-height: 80px;
-`;
 
 /**
  * used by services
@@ -146,6 +132,7 @@ export const columnHelper = {
           data: { items },
         } = await AppContext.adapters.models.loadModels(relationName, {
           fields: [field],
+          pagination: { pageSize: 500 },
         });
         filterProps = {
           filterMultiple: false,
@@ -262,16 +249,11 @@ export const columnHelper = {
         try {
           const value = transformer ? transformer(text) : text;
           if (value) {
-            const images = value.split(',');
+            const images = valueToArrays(value);
+            // const images = _.isArray(value) ? value : value.split(',');
             const host = Config.get('IMAGE_HOST') || '';
-            return _.map(images, image => (
-              <FluxCenterBox key={image}>
-                {/*<ThumbImage src={`${host}${image}?thumbnail/x80_cover`} />*/}
-                <ThumbImage
-                  src={`${host}${image}?imageView2/2/w/1280/h/1280/format/jpg/interlace/1/ignore-error/1`}
-                />
-              </FluxCenterBox>
-            ));
+            // return _.map(images, image => <AssetPreview key={image} host={host} url={image} />);
+            return <AssetsPreview key={images} host={host} urls={images} />;
           }
         } catch (e) {
           logger.error('[generateImage]', e, { key, title, text });
@@ -365,4 +347,13 @@ export const diff = (first, second, opts: { include?; exclude? } = {}) => {
     verbose = deepDiff(first, second);
   }
   return { verbose, isDifferent: !!verbose };
+};
+
+export const isJson = (value): boolean => {
+  try {
+    JSON.parse(value);
+    return true;
+  } catch (e) {
+    return false;
+  }
 };

@@ -41,16 +41,22 @@ interface ConfigOpts {
    * 将被存入数据库的前缀
    */
   IMAGE_PREFIX?: string;
+  IMAGE_RES_HANDLER?: (res: Asuna.Schema.UploadResponse) => string;
+
   VIDEO_HOST?: string;
   VIDEO_PREFIX?: string;
-  ATTACHES_HOST?: string;
-  ATTACHES_PREFIX?: string;
+  VIDEO_RES_HANDLER?: (res: Asuna.Schema.UploadResponse) => string;
+
+  FILE_HOST?: string;
+  FILE_PREFIX?: string;
+  FILE_RES_HANDLER?: (res: Asuna.Schema.UploadResponse) => string;
+
+  ATTACHE_HOST?: string;
+  ATTACHE_PREFIX?: string;
   // --------------------------------------------------------------
   // 定义特定的资源 url 处理函数
   // --------------------------------------------------------------
-  IMAGE_RES_HANDLER?: (res: Asuna.Schema.UploadResponse) => string;
-  VIDEO_RES_HANDLER?: (res: Asuna.Schema.UploadResponse) => string;
-  ATTACHES_RES_HANDLER?: (res: Asuna.Schema.UploadResponse) => string;
+  ATTACHE_RES_HANDLER?: (res: Asuna.Schema.UploadResponse) => string;
 
   GRAPHQL_HOST?: string;
 }
@@ -65,17 +71,21 @@ const defaultConfiguration: ConfigOpts = {
   DEFAULT_PAGE_SIZE: 25,
   IMAGE_HOST: '/',
   IMAGE_PREFIX: 'uploads/images',
+  IMAGE_RES_HANDLER: responseToUrl,
   VIDEO_HOST: '/',
   VIDEO_PREFIX: 'uploads/videos',
-  ATTACHES_HOST: '/',
-  ATTACHES_PREFIX: 'uploads/attaches',
-  IMAGE_RES_HANDLER: responseToUrl,
   VIDEO_RES_HANDLER: responseToUrl,
-  ATTACHES_RES_HANDLER: responseToUrl,
+  ATTACHE_HOST: '/',
+  ATTACHE_PREFIX: 'uploads/attaches',
+  ATTACHE_RES_HANDLER: responseToUrl,
+  FILE_HOST: '/',
+  FILE_PREFIX: 'uploads/files',
+  FILE_RES_HANDLER: responseToUrl,
 };
 
 export class Config {
   static opts = defaultConfiguration;
+  static isServer = typeof window === 'undefined';
 
   static update(opts: ConfigOpts = {}): void {
     Config.opts = Object.assign(Config.opts, opts);

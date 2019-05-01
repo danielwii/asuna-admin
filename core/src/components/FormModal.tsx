@@ -15,6 +15,7 @@ import idx from 'idx';
 const logger = createLogger('components:form-modal');
 
 interface ILightForm {
+  form;
   fields;
   onChange: (value) => void;
   onSubmit: (fn: (e: Error) => void) => void;
@@ -28,7 +29,7 @@ const LightForm = Form.create<ILightForm>({
     const { onChange } = props;
     onChange(changedFields);
   },
-})(DynamicForm);
+})(DynamicForm) as any;
 
 export interface IProps {
   title: string;

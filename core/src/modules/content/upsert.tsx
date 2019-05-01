@@ -21,6 +21,7 @@ import { AppContext, EventBus, EventType } from '@asuna-admin/core';
 import { createLogger } from '@asuna-admin/logger';
 import idx from 'idx';
 import { AxiosResponse } from 'axios';
+import { asyncLoadAssociationsDecorator } from '@asuna-admin/schema/async';
 
 const logger = createLogger('modules:content:upsert');
 
@@ -29,6 +30,7 @@ const logger = createLogger('modules:content:upsert');
 // --------------------------------------------------------------
 
 interface IContentForm {
+  form;
   fields;
   onChange: (value) => void;
   onSubmit: (fn: (e: Error) => void) => void;
@@ -77,7 +79,7 @@ const ContentForm = Form.create<IContentForm>({
       props.onChange(filteredChangedFields);
     }
   },
-})(DynamicForm);
+})(DynamicForm) as any;
 
 // --------------------------------------------------------------
 // Main
@@ -115,6 +117,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
     schemaHelper.hiddenComponentDecorator,
     schemaHelper.jsonDecorator,
     schemaHelper.enumDecorator,
+    schemaHelper.dynamicTypeDecorator,
     schemaHelper.peek(`after-${tag}`),
   ];
 
@@ -122,7 +125,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
     // TODO 目前异步数据拉取无法在页面上显示对应字段的 loading 状态
     async fields => R.curry(schemaHelper.peek(`before-async-${tag}`))(fields),
     // async fields => schemaHelper.hiddenComponentDecorator(fields),
-    schemaHelper.asyncLoadAssociationsDecorator,
+    asyncLoadAssociationsDecorator,
     schemaHelper.associationDecorator,
     async fields => R.curry(schemaHelper.peek(`after-async-${tag}`))(fields),
   ];
@@ -188,12 +191,18 @@ class ContentUpsert extends React.Component<IProps, IState> {
     // Using pre decorators instead
     // --------------------------------------------------------------
 
-    let decoratedFields = R.pipe(...this.preDecorators('INIT'))(formFields);
+    let { fields: decoratedFields } = R.pipe(...this.preDecorators('INIT'))({
+      modelName,
+      fields: formFields,
+    });
     let originalFieldValues;
 
     // INSERT-MODE: 仅在新增模式下拉取关联数据
     if (isInsertMode) {
-      decoratedFields = await R.pipeP(...this.asyncDecorators('ASSOCIATIONS'))(decoratedFields);
+      ({ fields: decoratedFields } = await R.pipeP(...this.asyncDecorators('ASSOCIATIONS'))({
+        modelName,
+        fields: decoratedFields,
+      }));
     } else {
       // 非新增模式尝试再次拉取数据 TODO record must have property id
       const record = idx(this.props, _ => _.basis.pane.data.record) as any;
@@ -270,7 +279,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
    * @param changedFields
    */
   _handleFormChange = async changedFields => {
-    const { isInsertMode, init } = this.state;
+    const { isInsertMode, init, modelName } = this.state;
     logger.log('[handleFormChange]', { changedFields, state: this.state });
     if (!R.isEmpty(changedFields)) {
       const { wrappedFormSchema, fields } = this.state;
@@ -279,7 +288,10 @@ class ContentUpsert extends React.Component<IProps, IState> {
       const changedFieldsBefore = R.mergeDeepRight(wrappedFormSchema, fields);
       const allChangedFields = R.mergeDeepRight(changedFieldsBefore, currentChangedFields);
       // 这里只装饰变化的 fields
-      const decoratedFields = R.pipe(...this.preDecorators('LOAD'))(allChangedFields);
+      const { fields: decoratedFields } = R.pipe(...this.preDecorators('LOAD'))({
+        modelName,
+        fields: allChangedFields,
+      });
 
       const stateDiff = diff(this.state, { fields: decoratedFields }, { include: ['fields'] });
       logger.debug('[handleFormChange]', {
@@ -312,9 +324,9 @@ class ContentUpsert extends React.Component<IProps, IState> {
           loadings: { ...this.state.loadings, ASSOCIATIONS: true },
         });
         logger.debug('[handleFormChange]', 'load async decorated fields');
-        const asyncDecoratedFields = await R.pipeP(...this.asyncDecorators('ASSOCIATIONS'))(
-          decoratedFields,
-        );
+        const { fields: asyncDecoratedFields } = await R.pipeP(
+          ...this.asyncDecorators('ASSOCIATIONS'),
+        )({ modelName, fields: decoratedFields });
         const isDifferent = diff(asyncDecoratedFields, this.state.fields).isDifferent;
         if (isDifferent) {
           logger.debug('[handleFormChange]', {

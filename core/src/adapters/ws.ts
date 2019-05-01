@@ -8,7 +8,7 @@ import { createLogger } from '@asuna-admin/logger';
 // Main
 // --------------------------------------------------------------
 
-const logger = createLogger('adapters:ws', 'warn');
+const logger = createLogger('adapters:ws');
 
 export class WsAdapter {
   private port?: number;
@@ -21,7 +21,10 @@ export class WsAdapter {
     this.namespace = opts.namespace || 'admin';
 
     if (!AppContext.isServer && !WsAdapter.io) {
-      WsAdapter.io = connect('/admin');
+      WsAdapter.io = connect(
+        '/admin',
+        { secure: true, reconnectionDelay: 10e3, reconnectionDelayMax: 60e3 },
+      );
 
       WsAdapter.io.on('connect', () => {
         logger.log('[connect]', { id: WsAdapter.io.id, AppContext });

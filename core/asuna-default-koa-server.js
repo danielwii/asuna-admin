@@ -2,33 +2,54 @@ require('colors');
 const util = require('util');
 const Koa = require('koa');
 const Router = require('koa-router');
+const streamify = require('stream-array');
 const { parse } = require('url');
 const next = require('next');
+const debug = require('debug');
 
-const { proxy, logger } = require('./asuna-utils');
-const applyMiddleware = require('./server/graphql/apollo-koa-server');
-const configs = require('./config');
+const logger = { log: debug('http'), error: debug('error') };
+const { createProxy } = require('./asuna-utils');
 
 const dev = process.env.NODE_ENV !== 'production';
 const port = process.env.PORT || 3000;
 const app = next({ dev });
 const handle = app.getRequestHandler();
 
-function bootstrap({ root }) {
+function bootstrap({ root, opts }) {
+  logger.log(`bootstrap ... ${util.inspect({ root, opts }, { colors: true })}`);
+  const PROXY_API = opts.configurator.loadConfig('PROXY_API');
   app.prepare().then(() => {
     const server = new Koa();
+    const proxy = createProxy(PROXY_API);
 
     // --------------------------------------------------------------
     // setup graphql
     // --------------------------------------------------------------
 
-    const { graphqlPath } = applyMiddleware(server, { root, dev });
+    let graphqlPath;
+    if (opts.enableGraphQL) {
+      const applyMiddleware = require('./server/graphql/apollo-koa-server');
+      const graphqlMiddleware = applyMiddleware(server, { root, dev });
+      graphqlPath = graphqlMiddleware.graphqlPath;
+    }
 
     // --------------------------------------------------------------
     // setup routes
     // --------------------------------------------------------------
 
     const router = new Router();
+
+    router.all('/s-graphql', async ctx => {
+      const { req, res } = ctx;
+      await new Promise((resolve, reject) => {
+        let target = PROXY_API;
+        if (opts.graphql) {
+          req.url = opts.graphql.dest ? opts.graphql.dest() : 'graphql';
+          target = opts.graphql.target ? opts.graphql.target : PROXY_API;
+        }
+        proxy.web(req, res, { target }, e => (e ? reject(e) : resolve()));
+      });
+    });
 
     router.all('*', async ctx => {
       const { req, res } = ctx;
@@ -37,8 +58,8 @@ function bootstrap({ root }) {
       const parsedUrl = parse(req.url, true);
       const { pathname } = parsedUrl;
 
-      if (configs && configs.proxy) {
-        const proxyConfig = configs.proxy.find(config => pathname.startsWith(config.pathname));
+      if (opts && opts.proxy) {
+        const proxyConfig = opts.proxy.find(config => pathname.startsWith(config.pathname));
         logger.log(
           `${new Date().toISOString().dim} ${req.method.bold} ${req.url}`,
           proxyConfig ? util.inspect(proxyConfig, { colors: true }) : 'direct'.cyan,
@@ -58,7 +79,13 @@ function bootstrap({ root }) {
           }
           // proxy.web(req, res, { target: proxyConfig.target });
           await new Promise((resolve, reject) => {
-            proxy.web(req, res, { target: proxyConfig.target }, e => (e ? reject(e) : resolve()));
+            console.log(proxyConfig);
+            proxy.web(
+              req,
+              res,
+              { target: proxyConfig.target /*, buffer: streamify(req.rawBody)*/ },
+              e => (e ? reject(e) : resolve()),
+            );
           });
         } else {
           await handle(req, res);
@@ -82,7 +109,9 @@ function bootstrap({ root }) {
 
     server.listen(port, err => {
       if (err) throw err;
-      logger.log(`> 🚀 GraphQL Ready at http://localhost:${port}${graphqlPath}`.bgRed.black.bold);
+      if (opts.enableGraphQL) {
+        logger.log(`> 🚀 GraphQL Ready at http://localhost:${port}${graphqlPath}`.bgRed.black.bold);
+      }
       logger.log(`> 🚀 Ready at http://localhost:${port}`.bgRed.black.bold);
       logger.log(`> NODE_ENV: ${process.env.NODE_ENV}`.bgRed.black.bold);
       logger.log(`> ENV: ${process.env.ENV}`.bgRed.black.bold);

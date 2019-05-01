@@ -7,6 +7,7 @@ import { RcFile, UploadChangeParam, UploadFile, UploadFileStatus } from 'antd/es
 import { diff } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 import { upload, validateFile } from '@asuna-admin/helpers/upload';
+import { valueToArrays, valueToUrl } from '@asuna-admin/core/url-rewriter';
 
 const logger = createLogger('components:dynamic-form:images');
 
@@ -15,6 +16,7 @@ const logger = createLogger('components:dynamic-form:images');
 // --------------------------------------------------------------
 
 interface IProps {
+  // FIXME 目前从 url-rewriter 中获取附件前缀，未来考虑单独传入图片地址解析器，而无需从属性中获取相关知识
   host?: string;
   prefix?: string;
   urlHandler?: (res: Asuna.Schema.UploadResponse) => string;
@@ -68,17 +70,12 @@ export class ImagesUploader extends React.Component<IProps, IState> {
   }
 
   wrapImagesToFileList = (imagesInfo: string | string[]): void => {
-    const { host } = this.props;
-    const images = imagesInfo
-      ? _.isArray(imagesInfo)
-        ? imagesInfo
-        : _.compact(imagesInfo.split(','))
-      : [];
-    logger.debug('[wrapImagesToFileList]', { images });
+    const images = valueToArrays(imagesInfo);
     const fileList = _.map<any, Partial<UploadFile>>(images, (image, index) => ({
       uid: `${index}`,
       status: 'done' as UploadFileStatus,
-      url: host + `/${image}`.replace('//', '/').slice(1),
+      url: valueToUrl(image, { type: 'image', thumbnail: {} }),
+      thumbUrl: valueToUrl(image, { type: 'image', thumbnail: { width: 200, height: 200 } }),
     })) as any;
     logger.debug('[wrapImagesToFileList]', 'fileList is', fileList);
     this.setState({ fileList });
@@ -123,8 +120,9 @@ export class ImagesUploader extends React.Component<IProps, IState> {
           image = join(prefix || '', resolvedUrl);
         }
         logger.log('[ImagesUploader][customRequest]', { image, prefix, resolvedUrl });
-        const uploadedImages = this.props.value;
-        let images: string | string[] = _.compact(_.flatten([uploadedImages, image]));
+        const uploadedImages = valueToArrays(this.props.value);
+        console.log({ uploadedImages, image }, _.flattenDeep([uploadedImages, image]));
+        let images: string | string[] = _.compact(_.flattenDeep([uploadedImages, image]));
         if (!jsonMode) {
           images = images.join(',');
         }
@@ -157,12 +155,11 @@ export class ImagesUploader extends React.Component<IProps, IState> {
     };
 
     return (
-      <div className="clearfix">
+      <div className="clearfix" key={value}>
         <Upload
           {...eventHandler}
           multiple
           supportServerRender
-          key={value}
           listType="picture-card"
           fileList={fileList}
           customRequest={this.customRequest}

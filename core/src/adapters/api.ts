@@ -1,4 +1,4 @@
-import { AxiosResponse } from 'axios';
+import { AxiosResponse, AxiosRequestConfig } from 'axios';
 
 import { createLogger } from '@asuna-admin/logger';
 import { AppContext } from '@asuna-admin/core';
@@ -11,7 +11,8 @@ export interface IApiService {
   upload(
     param: { token: string | null },
     file: any,
-    options: any,
+    options: { prefix?: string },
+    requestConfig?: AxiosRequestConfig,
   ): Promise<AxiosResponse<Asuna.Schema.UploadResponse[]>>;
 
   getVersion(param: { token: string | null }): Promise<AxiosResponse>;
@@ -24,8 +25,12 @@ export interface IApiService {
 const logger = createLogger('adapters:api');
 
 export const apiProxy = {
-  upload(file, options = {}): Promise<AxiosResponse<Asuna.Schema.UploadResponse[]>> {
-    return AppContext.ctx.api.upload(file, options);
+  upload(
+    file,
+    options = {},
+    requestConfig?: AxiosRequestConfig,
+  ): Promise<AxiosResponse<Asuna.Schema.UploadResponse[]>> {
+    return AppContext.ctx.api.upload(file, options, requestConfig);
   },
   getVersion(): Promise<AxiosResponse> {
     return AppContext.ctx.api.getVersion();
@@ -39,10 +44,14 @@ export class ApiAdapter {
     this.service = service;
   }
 
-  upload = (file, options): Promise<AxiosResponse<Asuna.Schema.UploadResponse[]>> => {
+  upload = (
+    file,
+    options: { prefix?: string },
+    requestConfig?: AxiosRequestConfig,
+  ): Promise<AxiosResponse<Asuna.Schema.UploadResponse[]>> => {
     logger.log('[upload] file', file, options);
     const auth = AppContext.fromStore('auth');
-    return this.service.upload(auth, file, options);
+    return this.service.upload(auth, file, options, requestConfig);
   };
 
   getVersion = (): Promise<AxiosResponse> => {

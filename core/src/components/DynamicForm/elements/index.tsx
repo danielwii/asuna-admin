@@ -329,9 +329,9 @@ export const generateRichTextEditor = (
 
   const fieldName = key || name;
   const labelName = label || name || key;
-  const host = Config.get('ATTACHES_HOST');
-  const prefix = Config.get('ATTACHES_PREFIX');
-  const handler = Config.get('ATTACHES_RES_HANDLER');
+  const host = Config.get('ATTACHE_HOST');
+  const prefix = Config.get('ATTACHE_PREFIX');
+  const handler = Config.get('ATTACHE_RES_HANDLER');
   return generateComponent(
     form,
     { fieldName, labelName, ...options },

@@ -1,10 +1,9 @@
 import _ from 'lodash';
 import * as R from 'ramda';
-import bluebird from 'bluebird';
 import idx from 'idx';
 
 import { DynamicFormTypes } from '@asuna-admin/components';
-import { castModelKey, castModelName } from '@asuna-admin/helpers';
+import { castModelKey, castModelName, diff } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 import { AppContext } from '@asuna-admin/core';
 
@@ -16,23 +15,7 @@ export const peek = (message, callback?) => fields => {
   return fields;
 };
 
-export const tables = {
-  treeDecorator({ schema: index, items }) {
-    const TAG = '[treeDecorator]';
-    logger.log(TAG, { schema: index, items });
-    const field = R.compose(
-      R.find((field: Asuna.Schema.FormSchema) => field.options.type === 'Tree'),
-      R.values,
-    )(index);
-    if (field) {
-      logger.log(TAG, { field });
-      // TODO need implemented.
-    }
-    return { schema: index, items };
-  },
-};
-
-type Fields = {
+export type Fields = {
   [key: string]: {
     name: string;
     ref: string;
@@ -50,11 +33,11 @@ type Fields = {
   };
 };
 
-type WithHidden = {
+export type WithHidden = {
   options: { hidden?: boolean };
 };
 
-type PositionsField = Fields &
+export type PositionsField = Fields &
   WithHidden &
   DeepPartial<{
     options: {
@@ -64,7 +47,13 @@ type PositionsField = Fields &
     };
   }>;
 
-export const hiddenComponentDecorator = (fields: Fields): Fields & WithHidden => {
+export const hiddenComponentDecorator = ({
+  modelName,
+  fields,
+}: {
+  modelName: string;
+  fields: Fields;
+}): { modelName; fields: Fields & WithHidden } => {
   const TAG = '[hiddenComponentDecorator]';
   logger.log(TAG, { fields });
 
@@ -83,177 +72,38 @@ export const hiddenComponentDecorator = (fields: Fields): Fields & WithHidden =>
 
     wrappedFields = R.mergeDeepRight(wrappedFields, { ...hiddenPositions });
   }
-  logger.log(TAG, 'wrappedFields', { wrappedFields });
-  return wrappedFields;
+  logger.log(TAG, 'wrappedFields', { wrappedFields }, diff(fields, wrappedFields));
+  return { modelName, fields: wrappedFields };
 };
 
-type WithAssociation = {
-  ifFilterField: boolean;
-  type: 'ManyToMany';
-  options: {
-    filterType: 'Sort';
-  };
-};
+export const dynamicTypeDecorator = ({
+  modelName,
+  fields,
+}: {
+  modelName: string;
+  fields: Fields;
+}): { modelName; fields: Fields } => {
+  const TAG = '[dynamicTypeDecorator]';
+  const { columns } = AppContext.ctx.models.getModelConfig(modelName);
+  logger.log(TAG, { fields, columns });
 
-type AssociationField = {
-  associations: {
-    [name: string]: {
-      items: any[];
-      /**
-       * 分页拉取的关联数据大部分情况下并不包含在当前以选择的数据列表中
-       * 该对象用于拉取这部分数据的补充信息，以用于界面填充
-       */
-      existItems: any[];
-      page: number;
-      size: number;
-      total: number;
-      query: {
-        where: any;
-        parsedFields: {
-          fields: string[];
-          relatedFieldsMap: object;
-        };
-        skip: number;
-        take: number;
-      };
-    };
-  };
-  foreignOpts: Asuna.Schema.ForeignOpt[];
-  isFilterFields: boolean;
-  options: {
-    filterType: 'Sort';
-    selectable: string;
-  };
-};
+  const typePairs = Object.assign(
+    {},
+    ..._.map(columns, (column, key) => ({ [key]: { type: column.editor(fields) } })),
+  );
 
-const extractItems = R.compose(
-  R.uniqBy(R.prop('id')),
-  R.flatten,
-  R.map(R.path(['data', 'items'])),
-  R.flatten,
-);
+  logger.log(TAG, { typePairs });
 
-/**
- * 异步加载所有的关联对象，用于下拉菜单提示
- * @param fields
- * @returns {Promise<*>}
- */
-export const asyncLoadAssociationsDecorator = async (
-  fields: (Fields & WithHidden & WithAssociation) | PositionsField | EnumField,
-): Promise<(Fields & WithHidden) | PositionsField | EnumField | AssociationField> => {
-  const TAG = '[asyncLoadAssociationsDecorator]';
-  logger.log(TAG, { fields });
+  const wrappedFields = R.mergeDeepRight(fields, typePairs);
 
-  const relationShips = [DynamicFormTypes.Association, DynamicFormTypes.ManyToMany];
-  const associations = R.filter(field => R.contains(field.type)(relationShips))(fields);
-
-  if (R.not(R.isEmpty(associations))) {
-    logger.debug(TAG, 'associations is', associations);
-
-    // 当已经拉取过数据后不再进行拉取，在这里认为如果已存在的 items 数量和 value 中的不一致，则重新拉取
-    // TODO 如果按第一次已经拉取过来看，其实不需要再次拉取，相关数据应该从组件中传出
-    // const filteredAssociations = R.pickBy(field => R.not(R.has('associations', field)))(
-    const filteredAssociations = R.pickBy(field => {
-      const loaded = idx(field, _ => _.associations[field.name]) as any;
-      if (loaded) {
-        return idx(loaded, _ => _.existItems.length) != idx(field, _ => _.value.length);
-      }
-      return true;
-    })(associations);
-    logger.log(TAG, { filteredAssociations });
-    if (R.isEmpty(filteredAssociations)) {
-      return fields;
-    }
-
-    // TODO add onSearch query in options
-    const wrappedAssociations = await Promise.all(
-      R.values(filteredAssociations).map(async field => {
-        const selectable = R.pathOr([], ['options', 'selectable'])(field);
-        logger.debug(TAG, { field, selectable });
-        if (selectable) {
-          const fieldsOfAssociations = AppContext.adapters.models.getFieldsOfAssociations();
-
-          const foreignOpts = [
-            {
-              modelName: selectable,
-              association: fieldsOfAssociations[selectable],
-              onSearch: _.debounce(async (value, callback) => {
-                logger.log(TAG, 'onSearch', { value });
-
-                AppContext.adapters.models
-                  .loadAssociation(selectable, { keywords: value })
-                  .then(response => {
-                    const items = extractItems([response]);
-                    callback(items);
-                  })
-                  .catch(reason => {
-                    logger.error(TAG, reason);
-                  });
-              }, 500),
-            },
-          ];
-          logger.debug(TAG, { fieldsOfAssociations, foreignOpts });
-
-          try {
-            const results = await bluebird.props({
-              itemsResponse: AppContext.adapters.models.loadAssociation(selectable),
-              existItemsResponse: AppContext.adapters.models.loadAssociationByIds(
-                selectable,
-                field.value,
-              ),
-            });
-
-            // 当前方法只处理了单个外键的情况，没有考虑如联合主键的处理
-            const foreignKeysResponse = {
-              [selectable]: {
-                items: _.compact(extractItems([results.itemsResponse])),
-                existItems: _.compact(extractItems([results.existItemsResponse])),
-              },
-            };
-            logger.debug(TAG, { foreignOpts, foreignKeysResponse });
-            return { ...field, foreignOpts, associations: foreignKeysResponse };
-          } catch (e) {
-            logger.error(TAG, e);
-          }
-        }
-        logger.warn(TAG, 'no foreignKeys with association', { field });
-        return { ...field, type: DynamicFormTypes.Input };
-      }),
-    );
-
-    const pairedWrappedAssociations = R.zipObj(R.keys(filteredAssociations), wrappedAssociations);
-    logger.debug(TAG, { pairedWrappedAssociations });
-
-    // FIXME 临时解决关联数据从 entities 到 ids 的转换
-
-    const transformedAssociations = R.map(association => {
-      let value;
-      if (_.isArrayLike(association.value)) {
-        value = association.value
-          ? R.map(entity => R.propOr(entity, 'id', entity))(association.value)
-          : undefined;
-      } else {
-        value = association.value
-          ? R.propOr(association.value, 'id', association.value)
-          : undefined;
-      }
-      return { ...association, value };
-    })(pairedWrappedAssociations);
-
-    logger.debug(TAG, { transformedAssociations });
-
-    return R.mergeDeepRight(fields, transformedAssociations);
-  }
-
-  return fields;
+  logger.log(TAG, { wrappedFields }, diff(fields, wrappedFields));
+  return { modelName, fields: wrappedFields };
 };
 
 /**
  * 自动通过公共 associations 填充未定义的关联
- * @param fields
- * @returns {*}
  */
-export const associationDecorator = fields => {
+export const associationDecorator = ({ modelName, fields }: { modelName: string; fields }) => {
   const TAG = '[associationDecorator]';
   logger.log(TAG, { fields });
 
@@ -274,15 +124,19 @@ export const associationDecorator = fields => {
     const wrappedFields = R.mergeDeepRight(fields, withAssociations);
     logger.debug(TAG, { wrappedFields });
 
-    return wrappedFields;
+    return { modelName, fields: wrappedFields };
   }
 
-  return fields;
+  return { modelName, fields };
 };
 
-export const jsonDecorator = (
-  fields: (Fields & WithHidden) | PositionsField,
-): (Fields & WithHidden) | PositionsField => {
+export const jsonDecorator = ({
+  modelName,
+  fields,
+}: {
+  modelName: string;
+  fields: (Fields & WithHidden) | PositionsField;
+}): { modelName; fields: (Fields & WithHidden) | PositionsField } => {
   const TAG = '[jsonDecorator]';
   logger.log(TAG, { fields });
 
@@ -310,13 +164,13 @@ export const jsonDecorator = (
     const wrappedFields = R.mergeDeepRight(fields, transformedFields);
 
     logger.log(TAG, 'wrappedFields', { wrappedFields });
-    return wrappedFields;
+    return { modelName, fields: wrappedFields };
   }
 
-  return fields;
+  return { modelName, fields };
 };
 
-type EnumField = {
+export type EnumField = {
   type: DynamicFormTypes.EnumFilter;
   options: {
     enumData: { key: string; value: any[] }[];
@@ -329,12 +183,14 @@ type EnumField = {
  * 通过 Enum 定义中的 enum_data 的 key 值拉取相应 schema 中的关联
  * 通过所有的被选关联字段的 schema name 和 key 比较
  * 目前认为每个 model schema 只有一个 enum filter 定义
- * @param fields
- * @returns {*}
  */
-export const enumDecorator = (
-  fields: (Fields & WithHidden) | PositionsField | EnumField,
-): (Fields & WithHidden) | PositionsField | EnumField => {
+export const enumDecorator = ({
+  modelName,
+  fields,
+}: {
+  modelName: string;
+  fields: (Fields & WithHidden) | PositionsField | EnumField;
+}): { modelName; fields: (Fields & WithHidden) | PositionsField | EnumField } => {
   const TAG = '[enumDecorator]';
   logger.log(TAG, { fields });
 
@@ -388,8 +244,8 @@ export const enumDecorator = (
       positionsFieldPair,
     });
 
-    return wrappedFields;
+    return { modelName, fields: wrappedFields };
   }
 
-  return fields;
+  return { modelName, fields };
 };

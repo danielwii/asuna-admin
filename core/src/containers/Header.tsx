@@ -17,7 +17,7 @@ const mapDispatchToProps = (dispatch): Partial<IHeaderProps> => ({
   logout: () => dispatch(authActions.logout()),
   withDebugSettingsProps: withDebugSettingsProps,
   handleAction: (action, componentName) => {
-    console.log('container-header [handleAction]', { action, componentName });
+    // console.log('container-header [handleAction]', { action, componentName });
     AppContext.dispatch(
       panesActions.open({
         key: `${action}`,

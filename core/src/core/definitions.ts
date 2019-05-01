@@ -3,11 +3,20 @@ import { createLogger } from '@asuna-admin/logger';
 
 const logger = createLogger('core:definition');
 
+type SubMenus<T extends Asuna.Schema.ModelOpts = {}> = (
+  | Asuna.Schema.SubMenu
+  | {
+      key: keyof T;
+      model?: string;
+      title: string;
+      linkTo: 'content::index' | 'content::graph.index';
+    })[];
+
 export class AsunaDefinitions<T extends Asuna.Schema.ModelOpts = {}> {
   /**
    * 基础模型定义
    */
-  private _modelOpts: { [key in keyof T]?: Asuna.Schema.ModelOpt } = {};
+  private _modelOpts: { [key in keyof T]?: Asuna.Schema.ModelOpt<T> } = {};
   /**
    * 模型列表页配置
    * @type {{colleges: function(*=): *[], countries: function(*=): *[]}}
@@ -37,16 +46,10 @@ export class AsunaDefinitions<T extends Asuna.Schema.ModelOpts = {}> {
   private _sideMenus: {
     key: string;
     title: string;
-    subMenus: (
-      | Asuna.Schema.SubMenu
-      | {
-          key: keyof T;
-          title: string;
-          linkTo: 'content::index';
-        })[];
+    subMenus: SubMenus<T>;
   }[] = [];
 
-  addModelOpts(modelOpts: { [key in keyof T]?: Asuna.Schema.ModelOpt }) {
+  addModelOpts(modelOpts: { [key in keyof T]?: Asuna.Schema.ModelOpt<T> }) {
     this._modelOpts = extend(this._modelOpts, modelOpts); // { ...this.modelOpts, ...modelOpts };
   }
 
@@ -65,14 +68,9 @@ export class AsunaDefinitions<T extends Asuna.Schema.ModelOpts = {}> {
   addSideMenus(
     menus: {
       key: string;
+      model?: string;
       title: string;
-      subMenus: (
-        | Asuna.Schema.SubMenu
-        | {
-            key: keyof T;
-            title: string;
-            linkTo: 'content::index';
-          })[];
+      subMenus: SubMenus<T>;
     }[],
   ) {
     this._sideMenus = [...this._sideMenus, ...menus];

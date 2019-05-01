@@ -12,16 +12,12 @@ import { responseProxy } from '@asuna-admin/adapters';
 import { ActionEvent, AppContext, EventBus, EventType } from '@asuna-admin/core';
 import { createLogger } from '@asuna-admin/logger';
 import { PaginationConfig } from 'antd/es/pagination';
-import { ColumnProps } from 'antd/es/table';
+import { ColumnProps, SorterResult } from 'antd/es/table';
 
 const logger = createLogger('modules:content:index');
 
 interface IProps extends ReduxProps {
-  basis: {
-    pane: {
-      key: string;
-    };
-  };
+  basis: { pane: { key: string } };
   activeKey: string;
   models: object;
   nextGetConfig: any;
@@ -37,13 +33,11 @@ interface IState {
   creatable: boolean;
   columns?: (ColumnProps<any> & { relation: any })[];
   pagination?: PaginationConfig;
-  filters?: object;
-  sorter?: object;
-  // sorter?: {
-  //   [key: string]: 'asc' | 'desc';
-  // };
+  filters?: Record<any, string[]>;
+  sorter?: Partial<SorterResult<any>>;
   subscription: Subscription;
   busSubscription: Subscription;
+  hasGraphAPI?: string;
 }
 
 class ContentIndex extends React.Component<IProps, IState> {
@@ -58,7 +52,7 @@ class ContentIndex extends React.Component<IProps, IState> {
 
     // content::name => name
     // prettier-ignore
-    const modelName = R.compose(R.nth(1), R.split(/::/), R.path(['pane', 'key']))(basis);
+    const modelName = _.get(basis, 'pane.model') || _.get(basis, 'pane.key').match(/^\w+::(\w+).*$/)[1];
     const modelConfig = this.modelsAdapter.getModelConfig(modelName);
     logger.debug('[constructor]', { modelConfig, modelName });
 
@@ -91,12 +85,12 @@ class ContentIndex extends React.Component<IProps, IState> {
   }
 
   async componentDidMount() {
-    const { basis } = this.props;
+    const { creatable, modelName } = this.state;
     const actions = (text, record, extras) => (
       <span>
         {/*{extras && extras(auth)}*/}
         <Button size="small" type="dashed" onClick={() => this._edit(text, record)}>
-          Edit
+          {creatable ? 'Edit' : 'View'}
         </Button>
         {R.not(R.prop(castModelKey('isSystem'), record)) && (
           <React.Fragment>
@@ -110,7 +104,6 @@ class ContentIndex extends React.Component<IProps, IState> {
     );
 
     // prettier-ignore
-    const modelName = R.compose(R.nth(1), R.split(/::/), R.path(['pane', 'key']))(basis);
     const columns = await this.modelsAdapter.getColumns(modelName, {
       callRefresh: this._refresh,
       actions,
@@ -121,8 +114,14 @@ class ContentIndex extends React.Component<IProps, IState> {
       R.map(R.values),
       R.map(R.pick(['relation'])),
     )(columns);
+
+    const hasGraphAPI = _.find(
+      await AppContext.ctx.graphql.loadGraphs(),
+      schema => schema === `sys_${modelName}`,
+    );
+
     logger.debug('[componentDidMount]', { columns, relations });
-    this.setState({ columns, relations });
+    this.setState({ hasGraphAPI, columns, relations });
 
     const { pagination, filters, sorter } = this.state;
     this._handleTableChange(pagination, filters, sorter);
@@ -151,7 +150,7 @@ class ContentIndex extends React.Component<IProps, IState> {
     dispatch(
       panesActions.open({
         key: `content::upsert::${modelName}::${Date.now()}`,
-        title: `新增 - ${modelName}`,
+        title: `new - ${modelName}`,
         linkTo: 'content::upsert',
       }),
     );
@@ -164,7 +163,7 @@ class ContentIndex extends React.Component<IProps, IState> {
     dispatch(
       panesActions.open({
         key: `content::upsert::${modelName}::${record.id}`,
-        title: `更新 - ${modelName} - ${record.name || ''}`,
+        title: `view - ${modelName} - ${record.name || ''}`,
         linkTo: 'content::upsert',
         data: { modelName, record },
       }),
@@ -175,12 +174,19 @@ class ContentIndex extends React.Component<IProps, IState> {
     logger.log('[remove]', record);
     const { modelName } = this.state;
     const { dispatch } = this.props;
-    Modal.confirm({
+    const modal = Modal.confirm({
       title: '是否确认',
       content: `删除 ${modelName}？`,
       okText: '确认',
       cancelText: '取消',
-      onOk: () => dispatch(modelsActions.remove(modelName, record)),
+      onOk: () =>
+        dispatch(
+          modelsActions.remove(modelName, record, response => {
+            if (/^20\d$/.test(response.status as any)) {
+              modal.destroy();
+            }
+          }),
+        ),
     });
   };
 
@@ -243,6 +249,7 @@ class ContentIndex extends React.Component<IProps, IState> {
         {columns && (
           <Table
             className="asuna-content-table"
+            scroll={{ x: true }}
             dataSource={dataSource}
             rowKey="id"
             loading={loading}
@@ -255,10 +262,6 @@ class ContentIndex extends React.Component<IProps, IState> {
         <style jsx global>{`
           .ant-tabs {
             overflow: inherit !important;
-          }
-          .asuna-content-table td,
-          th {
-            padding: 0.3rem !important;
           }
         `}</style>
       </>

@@ -14,14 +14,14 @@
     "preserveConstEnums": true,
     "sourceMap": true,
     "declaration": true,
+    "declarationDir": "declaration",
     "skipLibCheck": true,
-    "outDir": "build",
+    "outDir": "dist",
     "baseUrl": "./",
     "paths": {
       "asuna-admin": ["src/index.ts"],
       "@asuna-admin/*": ["src/*"]
     }
   },
-  "include": ["./src", "./services", "./pages", "./typings", "./components"],
-  "exclude": ["**/*.spec.*"]
+  "exclude": ["**/*.spec.*", "node_modules"]
 }

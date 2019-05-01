@@ -3,6 +3,7 @@ import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
 import { AxiosResponse } from 'axios';
 import idx from 'idx';
+import bluebird from 'bluebird';
 import { PaginationConfig } from 'antd/es/pagination';
 
 import { DynamicFormTypes } from '@asuna-admin/components';
@@ -204,6 +205,7 @@ export class ModelAdapter {
     modelName: string,
     data: { endpoint?: string; id: number; profile?: Asuna.Profile },
   ) => {
+    logger.log('[fetch]', { modelName, data });
     const auth = AppContext.fromStore('auth');
     const modelConfig = this.getModelConfig(modelName);
     const schema = this.getFormSchema(modelName);
@@ -267,17 +269,26 @@ export class ModelAdapter {
     modelName: string,
     opts: { callRefresh: () => void; actions: (text, record, extras) => any },
   ): Promise<(ColumnProps<any> & { relation: any })[]> => {
+    logger.log('[getColumns]', { modelName, opts });
     const formSchema = this.getFormSchema(modelName);
     const { table: columnsRender } = this.getModelConfig(modelName);
     const columns = columnsRender
       ? await Promise.all(columnsRender(opts.actions, { modelName, callRefresh: opts.callRefresh }))
       : [];
-    return _.map(columns, (column: ColumnProps<any> & { relation: any }) =>
+    return _.map(columns, (column: ColumnProps<any> & { relation: any }) => {
+      // todo antd 当前的屏幕宽度处理存在问题。
+      let fixed;
+      if (column.key === 'id') {
+        fixed = { fixed: 'left', width: 60 };
+      } else if (column.key === 'action') {
+        fixed = { fixed: 'right', width: 200 };
+      }
       // 不检测不包含在 schema 中且不属于模型的列名
-      column.key && !formSchema[column.key] && !_.includes(['action'], column.key)
-        ? { ...column, title: `${column.title}(miss)` }
-        : column,
-    );
+      return column.key && !formSchema[column.key] && !_.includes(['action'], column.key)
+        ? // 标记 schema 中不存在的列
+          { ...column, title: `${column.title}(miss)` }
+        : column;
+    });
   };
 
   public getModelConfig = (modelName: string): Asuna.Schema.ModelConfig => {
@@ -293,7 +304,7 @@ export class ModelAdapter {
       return config;
     }
     logger.warn(TAG, `'${modelName}' not found in`, this.modelConfigs, 'generate a default one.');
-    return { model: {}, table: defaultColumns };
+    return { model: {}, table: defaultColumns, columns: {} };
   };
 
   public getFormSchema = (
@@ -435,17 +446,25 @@ export class ModelAdapter {
     });
   };
 
-  public loadSchema = (modelName: string) => {
+  async loadSchema(modelName: string) {
     const auth = AppContext.fromStore('auth');
     return this.service.loadSchema(auth, modelName, this.getModelConfig(modelName));
-  };
+  }
 
-  public listAssociationsCallable = (associationNames: string[]) =>
-    Object.assign({}, ...associationNames.map(name => ({ [name]: this.loadAssociation(name) })));
-
-  public listSchemasCallable = () =>
-    Object.assign(
-      {},
-      ...this.allModels.map(modelName => ({ [modelName]: this.loadSchema(modelName) })),
-    );
+  async loadSchemas() {
+    if (AppContext.ctx.graphql.serverClient) {
+      const allResponse = await AppContext.ctx.graphql.loadSchemas();
+      return Object.assign({}, ..._.map(allResponse, ({ name, schema }) => ({ [name]: schema })));
+    } else {
+      const callable = Object.assign(
+        {},
+        ...this.allModels.map(modelName => ({ [modelName]: this.loadSchema(modelName) })),
+      );
+      const allResponse = await bluebird.props(callable);
+      return Object.assign(
+        {},
+        ..._.map(allResponse, (response, name) => ({ [name]: (response as any).data })),
+      );
+    }
+  }
 }

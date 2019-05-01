@@ -24,7 +24,7 @@ import { apiProxy } from '@asuna-admin/adapters';
 // import 'rxjs/add/operator/switchMap';
 // import 'rxjs/add/operator/mapTo';
 
-const logger = createLogger('store:app', 'warn');
+const logger = createLogger('store:app');
 
 // --------------------------------------------------------------
 // Module sagas
@@ -96,23 +96,23 @@ function* rehydrateWatcher(action) {
 }
 
 /**
- * 查询运行中的服务端版本，版本不一致时更新当前的版本，同时进行同步操作
+ * 查询运行中的服务端版本，版本不一致时更新当前的版本，-同时进行同步操作-，目前修改为需要手动刷新
  */
 function* heartbeat({ force }) {
   const app: AppState = yield select((state: RootState) => state.app);
 
   try {
-    logger.debug('[heartbeat]', { apiProxy, version: apiProxy.getVersion });
+    logger.debug('[heartbeat]', { app });
 
     const response = yield call(apiProxy.getVersion);
-    logger.debug('[heartbeat]', { response, version: app.version });
+    logger.debug('[heartbeat]', { force, remote: response.data, version: app.version });
 
     // 版本不一致时执行同步操作
-    if (force || (!!app.version && app.version !== response.data)) {
+    if (force || app.version !== response.data) {
       yield put(appActions.sync());
+      yield put(appActions.loadVersionSuccess(response.data));
     }
 
-    yield put(appActions.loadVersionSuccess(response.data));
     if (!app.heartbeat) {
       yield put(appActions.heartbeatAlive());
     }

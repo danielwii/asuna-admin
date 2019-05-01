@@ -1,15 +1,14 @@
-import { all, call, put, select, takeLatest } from 'redux-saga/effects';
-
+import { call, put, select, takeLatest } from 'redux-saga/effects';
 import { message } from 'antd';
 import { reduxAction } from 'node-buffs';
 import * as R from 'ramda';
 import _ from 'lodash';
+import { AxiosResponse } from 'axios';
 
 import { contentActions, RootState } from '@asuna-admin/store';
 import { createLogger } from '@asuna-admin/logger';
 import { AppContext } from '@asuna-admin/core';
 import { ReduxCallback, safeCallback, toErrorMessage } from '@asuna-admin/helpers';
-import { AxiosResponse } from 'axios';
 
 const logger = createLogger('store:models');
 
@@ -156,18 +155,11 @@ const modelsSagaFunctions = {
     if (token) {
       message.loading('loading all schemas...');
       try {
-        const effects = AppContext.adapters.models.listSchemasCallable();
-        const allResponse = yield all(effects);
+        const schemas = yield AppContext.ctx.models.loadSchemas();
 
-        logger.log('[loadAllSchemas]', 'allResponse is', allResponse);
-
-        const schemas = Object.assign(
-          {},
-          ..._.map(allResponse, (response, name) => ({ [name]: response.data })),
-        );
         message.success('load all schemas success');
         yield put(modelsActions.loadAllSchemasSuccess(schemas));
-        logger.log('[loadAllSchemas]', 'load all model schemas', effects, schemas);
+        logger.log('[loadAllSchemas]', 'load all model schemas', schemas);
       } catch (e) {
         logger.warn('[loadAllSchemas]', e, { e });
         message.error(toErrorMessage(e));

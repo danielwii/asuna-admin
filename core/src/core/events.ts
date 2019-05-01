@@ -4,7 +4,7 @@ import { AppContext } from '@asuna-admin/core';
 /**
  * the accept type for event-bus
  */
-enum EventType {
+export enum EventType {
   MODEL_INSERT = 'MODEL_INSERT',
   MODEL_UPDATE = 'MODEL_UPDATE',
   MODEL_DELETE = 'MODEL_DELETE',
@@ -54,7 +54,7 @@ class EventBus {
 
 EventBus.init();
 
-// core event bus, the events will received both from client side and server side.
+// core event bus, the ws will received both from client side and server side.
 // const bus = new Subject();
 
-export { EventBus, EventType };
+export { EventBus };

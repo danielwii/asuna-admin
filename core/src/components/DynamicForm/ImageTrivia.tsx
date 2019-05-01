@@ -3,24 +3,17 @@ import util from 'util';
 import _ from 'lodash';
 import * as R from 'ramda';
 import ReactCrop, { Crop, PixelCrop } from 'react-image-crop';
-import styled from 'styled-components';
-
-import 'react-image-crop/dist/ReactCrop.css';
-import { Input, List } from 'antd';
-import { upload } from '@asuna-admin/helpers/upload';
+import { Button, Icon, Input, List } from 'antd';
 import { join } from 'path';
-import { createLogger } from '@asuna-admin/logger';
 import idx from 'idx';
 
+import 'react-image-crop/dist/ReactCrop.css';
+import { upload } from '@asuna-admin/helpers/upload';
+import { createLogger } from '@asuna-admin/logger';
+import { Title } from '@asuna-admin/components';
+import { valueToUrl } from '@asuna-admin/core/url-rewriter';
+
 const logger = createLogger('components:dynamic-form:image-trivia');
-
-interface IHighlightTitle {
-  highlight: boolean;
-}
-
-const Title = styled.span`
-  font-weight: ${(props: IHighlightTitle) => (props.highlight ? 'bold' : 'inherit')};
-`;
 
 const DEFAULT_MAX_HEIGHT = 300;
 const DEFAULT_MAX_WEIGHT = '100%';
@@ -45,6 +38,9 @@ type CropInfo = {
 interface IProps {
   maxHeight?: number;
   maxWidth?: number;
+  /**
+   * @deprecated
+   */
   host?: string;
   prefix?: string;
   urlHandler?: (res: Asuna.Schema.UploadResponse) => string;
@@ -66,16 +62,17 @@ export class ImageTrivia extends React.Component<IProps, IState> {
   };
 
   private imageRef: HTMLImageElement;
+  private uploadElement: HTMLInputElement | null;
 
   onSelectFile = e => {
     if (e.target.files && e.target.files.length > 0) {
       upload(e.target.files[0]).then(uploaded => {
-        const { onChange, urlHandler, prefix, value, host } = this.props;
+        const { onChange, urlHandler, prefix, value } = this.props;
         if (uploaded) {
           logger.log('[onSelectFile]', { props: this.props, state: this.state });
           const resolvedUrl = urlHandler ? urlHandler(uploaded[0]) : `${uploaded[0]}`;
           let image = resolvedUrl;
-          if (!resolvedUrl.startsWith('http')) {
+          if (!resolvedUrl.startsWith('http') && !resolvedUrl.startsWith(prefix || '')) {
             image = join(prefix || '', resolvedUrl);
           }
           logger.log('[onSelectFile]', { uploaded, image });
@@ -162,17 +159,23 @@ export class ImageTrivia extends React.Component<IProps, IState> {
   };
 
   render() {
-    const { maxHeight, maxWidth, value, host } = this.props;
+    const { maxHeight, maxWidth, value } = this.props;
     const { crop, updateIndex } = this.state;
-    const url = value ? host + `/${value.url}`.replace('//', '/').slice(1) : '';
+    const url = valueToUrl(idx(value, _ => _.url), { type: 'image', thumbnail: {} });
 
     logger.log('[render]', { value, crop });
 
     return (
       <div>
-        <div>
-          <input type="file" onChange={this.onSelectFile} />
-        </div>
+        <Button onClick={() => this.uploadElement!.click()}>
+          <input
+            hidden
+            type="file"
+            ref={input => (this.uploadElement = input)}
+            onChange={this.onSelectFile}
+          />
+          <Icon type="upload" /> Click to Upload
+        </Button>
         <div className="asuna-image-crop">
           {value && (
             <ReactCrop

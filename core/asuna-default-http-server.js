@@ -3,17 +3,20 @@ const util = require('util');
 const { createServer } = require('http');
 const { parse } = require('url');
 const next = require('next');
+const debug = require('debug');
 
-const { proxy, logger } = require('./asuna-utils');
-const configs = require('./config');
+const logger = { log: debug('http'), error: debug('error') };
+const { createProxy } = require('./asuna-utils');
 
 const dev = process.env.NODE_ENV !== 'production';
 const port = process.env.PORT || 3000;
 const app = next({ dev });
 const handle = app.getRequestHandler();
 
-function bootstrap() {
+function bootstrap({ configs }) {
   app.prepare().then(() => {
+    const proxy = createProxy();
+
     createServer((req, res) => {
       // Be sure to pass `true` as the second argument to `url.parse`.
       // This tells it to parse the query portion of the URL.

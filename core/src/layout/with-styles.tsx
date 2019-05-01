@@ -1,5 +1,6 @@
 import React from 'react';
 import NextHead from 'next/head';
+import getConfig from 'next/config';
 
 import 'antd/dist/antd.css';
 import 'draft-js/dist/Draft.css';
@@ -9,7 +10,7 @@ import 'video.js/dist/video-js.css';
 export default ({ children }) => (
   <div>
     <NextHead>
-      <title>Asuna Admin</title>
+      <title>Asuna Admin : {getConfig().publicRuntimeConfig.env}</title>
       {/*<link rel="icon" type="image/png" sizes="32x32" href="/static/icons/favicon-32x32.png" />*/}
       {/*<link rel="icon" type="image/png" sizes="16x16" href="/static/icons/favicon-16x16.png" />*/}
     </NextHead>

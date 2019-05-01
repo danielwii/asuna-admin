@@ -19,7 +19,7 @@ import {
 import { AsunaDefinitions } from '@asuna-admin/core/definitions';
 import idx from 'idx';
 import * as React from 'react';
-import { GraphqlAdapter, IGraphQLService } from '@asuna-admin/adapters/graphql';
+import { GraphqlAdapter } from '@asuna-admin/adapters/graphql';
 import { Config } from '@asuna-admin/config';
 
 // --------------------------------------------------------------
@@ -70,6 +70,8 @@ export interface INextConfig {
 // --------------------------------------------------------------
 
 class AppContext {
+  private static INSTANCE: AppContext;
+
   private static nextConfig: INextConfig = {
     serverRuntimeConfig: {},
     publicRuntimeConfig: { env: 'canary' },
@@ -84,7 +86,7 @@ class AppContext {
     models: ModelAdapter;
     ws: WsAdapter;
     components: IComponentService;
-    graphql: IGraphQLService;
+    graphql: GraphqlAdapter;
   };
 
   /**
@@ -92,7 +94,7 @@ class AppContext {
    */
   private static _dispatch: Dispatch;
   private static _subject;
-  private static _isServer: boolean;
+  private static _isServer = typeof window === 'undefined';
   private static _storeConnector: IStoreConnector<RootState>;
 
   public static init(nextConfig?: INextConfig) {
@@ -109,6 +111,16 @@ class AppContext {
       const { storeConnector } = require('../store');
       AppContext._storeConnector = storeConnector;
     }
+
+    if (!this.INSTANCE) {
+      this.INSTANCE = new AppContext();
+    }
+  }
+
+  constructor() {}
+
+  static get instance() {
+    return AppContext.INSTANCE;
   }
 
   public static regStore(
@@ -156,7 +168,7 @@ class AppContext {
         AppContext._context = {
           ...AppContext._context,
           auth: new AuthAdapter(register.createAuthService()),
-          ws: new WsAdapter(),
+          // ws: new WsAdapter(),
         };
       } else {
         this.registerIndex(register);
@@ -175,7 +187,7 @@ class AppContext {
   }
 
   public static get isDevMode() {
-    return idx(AppContext.nextConfig.publicRuntimeConfig, _ => _.env) === 'dev';
+    return idx(AppContext.nextConfig.publicRuntimeConfig, _ => _.env) !== 'production';
   }
 
   public static get publicConfig() {
@@ -215,7 +227,7 @@ class AppContext {
       api: new ApiAdapter(register.createApiService()),
       security: new SecurityAdapter(register.createSecurityService()),
       models: new ModelAdapter(register.modelService, register.definitions),
-      ws: new WsAdapter(),
+      // ws: new WsAdapter(),
       components: register.componentService,
       graphql: new GraphqlAdapter(Config.get('GRAPHQL_HOST')),
     };

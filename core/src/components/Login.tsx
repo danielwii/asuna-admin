@@ -5,7 +5,7 @@ import { FormComponentProps } from 'antd/es/form/Form';
 
 import { createLogger } from '@asuna-admin/logger';
 
-const logger = createLogger('components:login', 'warn');
+const logger = createLogger('components:login');
 
 // TODO using DynamicForm's component instead
 function generateInput(form, name, type, required, message, placeholder, iconType) {
@@ -23,6 +23,7 @@ function generateInput(form, name, type, required, message, placeholder, iconTyp
 }
 
 export interface ILoginProps {
+  form;
   login: (username: string, password: string, callback: (response) => void) => void;
 }
 
@@ -98,6 +99,6 @@ class NormalLoginForm extends React.Component<ILoginProps & FormComponentProps, 
   }
 }
 
-const Login = Form.create<ILoginProps>()(NormalLoginForm);
+const Login = Form.create<ILoginProps>()(NormalLoginForm) as any;
 
 export { Login };
