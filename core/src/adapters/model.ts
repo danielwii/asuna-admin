@@ -7,7 +7,12 @@ import bluebird from 'bluebird';
 import { PaginationConfig } from 'antd/es/pagination';
 
 import { DynamicFormTypes } from '@asuna-admin/components';
-import { castModelKey, defaultColumns, parseJSONIfCould } from '@asuna-admin/helpers';
+import {
+  castModelKey,
+  defaultColumns,
+  defaultColumnsByPrimaryKey,
+  parseJSONIfCould,
+} from '@asuna-admin/helpers';
 import { AppContext, AsunaDefinitions } from '@asuna-admin/core';
 import { Config } from '@asuna-admin/config';
 import { createLogger } from '@asuna-admin/logger';
@@ -138,8 +143,9 @@ export class ModelAdapter {
     });
   }
 
-  public identifyType = (field: Asuna.Schema.ModelSchema): string | null => {
-    const plainKeys = _.map(['id', 'created_at', 'updated_at'], castModelKey);
+  public identifyType = (modelName: string, field: Asuna.Schema.ModelSchema): string | null => {
+    const primaryKeys = this.getPrimaryKeys(modelName);
+    const plainKeys = _.map(primaryKeys.concat('created_at', 'updated_at'), castModelKey);
     const basicType = idx(field, _ => _.config.type) || '';
     const advanceType = idx(field, _ => _.config.info.type) as any;
     const notFound = () => {
@@ -299,12 +305,27 @@ export class ModelAdapter {
 
       // 未定义具体模型时，使用默认定义
       config.model = config.model || {};
-      config.table = config.table || defaultColumns;
+      config.table =
+        config.table || defaultColumnsByPrimaryKey(_.first(this.getPrimaryKeys(modelName)));
 
       return config;
     }
     logger.warn(TAG, `'${modelName}' not found in`, this.modelConfigs, 'generate a default one.');
     return { model: {}, table: defaultColumns, columns: {} };
+  };
+
+  public getPrimaryKeys = (modelName: string) => {
+    const TAG = '[getPrimaryKey]';
+    const { schemas } = AppContext.fromStore('models');
+    const schema = R.prop(modelName)(schemas);
+    if (schema != null) {
+      const primaryKeys = _.filter(schema, opts => !!idx(opts, o => o.config.primaryKey));
+      logger.debug(TAG, modelName, 'primaryKeys is', primaryKeys);
+      if (primaryKeys.length) {
+        return _.map(primaryKeys, fp.get('name'));
+      }
+    }
+    return ['id']; // by default
   };
 
   public getFormSchema = (
@@ -337,7 +358,7 @@ export class ModelAdapter {
           return {
             name: ref || field.name,
             ref,
-            type: this.identifyType(field),
+            type: this.identifyType(name, field),
             options: {
               length,
               label: _.defaultTo(idx(field, _ => _.config.info.name), null),

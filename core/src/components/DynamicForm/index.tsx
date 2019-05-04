@@ -288,6 +288,7 @@ export class DynamicForm extends React.Component<
         return (
           <WithDebugInfo key={index} info={field}>
             {`DynamicForm ${util.inspect({
+              name: field.name,
               type: field.type,
               metaType: options.type,
               key: options.key,

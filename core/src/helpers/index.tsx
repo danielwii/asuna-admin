@@ -301,6 +301,11 @@ export const columnHelper = {
  */
 export const commonColumns = {
   any: (key, title?) => columnHelper.generate(key, title || key.toUpperCase()),
+  primaryKey: (key, title) => columnHelper.generateID(key, title),
+  primaryKeyByExtra: (extras: any = {}) => {
+    const primaryKey = _.first(AppContext.adapters.models.getPrimaryKeys(extras.modelName));
+    return columnHelper.generateID(primaryKey, primaryKey.toUpperCase());
+  },
   id: columnHelper.generateID(),
   name: columnHelper.generate('name', '名称', { searchType: 'like' }),
   ordinal: columnHelper.generate('ordinal', '序号'),
@@ -323,16 +328,8 @@ export const defaultColumns = actions => [
   commonColumns.actions(actions),
 ];
 
-export const defaultNameColumns = actions => [
-  commonColumns.id,
-  commonColumns.name,
-  commonColumns.updatedAt,
-  commonColumns.actions(actions),
-];
-
-export const defaultTitleColumns = actions => [
-  commonColumns.id,
-  commonColumns.title,
+export const defaultColumnsByPrimaryKey = (primaryKey = 'id') => actions => [
+  commonColumns.primaryKey(primaryKey, primaryKey.toUpperCase()),
   commonColumns.updatedAt,
   commonColumns.actions(actions),
 ];

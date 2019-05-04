@@ -54,15 +54,16 @@ class ContentIndex extends React.Component<IProps, IState> {
     // prettier-ignore
     const modelName = _.get(basis, 'pane.model') || _.get(basis, 'pane.key').match(/^\w+::(\w+).*$/)[1];
     const modelConfig = this.modelsAdapter.getModelConfig(modelName);
-    logger.debug('[constructor]', { modelConfig, modelName });
+    const primaryKeys = this.modelsAdapter.getPrimaryKeys(modelName);
+    logger.debug('[constructor]', { modelConfig, modelName, primaryKeys });
 
     this.state = {
       modelName,
       creatable: modelConfig.creatable !== false,
       key: activeKey,
       sorter: {
-        columnKey: 'id',
-        field: 'id',
+        columnKey: _.first(primaryKeys),
+        field: _.first(primaryKeys),
         order: 'descend',
       },
       subscription: AppContext.subject.subscribe({
