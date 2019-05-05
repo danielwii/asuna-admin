@@ -8,35 +8,35 @@ describe('identify types', () => {
 
   it('return right type', () => {
     expect(
-      adapter.identifyType({
+      adapter.identifyType(null, {
         config: { type: 'DATETIME' },
         name: 'updated_at',
       }),
     ).toBe(DynamicFormTypes.Plain);
 
     expect(
-      adapter.identifyType({
+      adapter.identifyType(null, {
         config: { type: 'DATETIME' },
         name: 'founded_at',
       }),
     ).toBe(DynamicFormTypes.DateTime);
 
     expect(
-      adapter.identifyType({
+      adapter.identifyType(null, {
         config: { type: 'DATE' },
         name: 'founded_at',
       }),
     ).toBe(DynamicFormTypes.Date);
 
     expect(
-      adapter.identifyType({
+      adapter.identifyType(null, {
         config: { type: 'DATE' },
         name: 'founded_at',
       }),
     ).toBe(DynamicFormTypes.Date);
 
     expect(
-      adapter.identifyType({
+      adapter.identifyType(null, {
         config: {
           type: '', // TODO add selectable schema maybe?
           // foreignKeys: ['t_models.id'],
@@ -49,7 +49,7 @@ describe('identify types', () => {
     ).toBe(DynamicFormTypes.ManyToMany);
 
     expect(
-      adapter.identifyType({
+      adapter.identifyType(null, {
         config: {
           // foreignKeys: [],
           info: {

@@ -215,7 +215,10 @@ class AppContext {
    * @param state
    */
   public static fromStore<K extends keyof RootState>(state: K): RootState[K] {
-    return this.store.getState(state);
+    if (this.store && this.store.getState) {
+      return this.store.getState(state);
+    }
+    return {};
   }
 
   private static registerIndex(register: IIndexRegister) {
