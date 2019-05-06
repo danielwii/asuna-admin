@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import * as R from 'ramda';
+import * as _ from 'lodash';
 import moment from 'moment';
 
 import { Form, message } from 'antd';
@@ -269,7 +270,10 @@ class ContentUpsert extends React.Component<IProps, IState> {
     return reduxActionCallbackPromise(callback => {
       if (record) {
         logger.log('[_reloadEntity]', 'reload model...', record);
-        dispatch(modelsActions.fetch(modelName, { id: record.id, profile: 'ids' }, callback));
+        const primaryKey = _.first(AppContext.adapters.models.getPrimaryKeys(modelName));
+        dispatch(
+          modelsActions.fetch(modelName, { id: record[primaryKey], profile: 'ids' }, callback),
+        );
       }
     });
   };

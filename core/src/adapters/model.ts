@@ -301,7 +301,7 @@ export class ModelAdapter {
     const TAG = '[getModelConfig]';
     const config = R.prop(modelName)(this.modelConfigs);
     if (config) {
-      logger.debug(TAG, modelName, 'config is', config);
+      // logger.debug(TAG, modelName, 'config is', config);
 
       // 未定义具体模型时，使用默认定义
       config.model = config.model || {};
@@ -320,7 +320,7 @@ export class ModelAdapter {
     const schema = R.prop(modelName)(schemas);
     if (schema != null) {
       const primaryKeys = _.filter(schema, opts => !!idx(opts, o => o.config.primaryKey));
-      logger.debug(TAG, modelName, 'primaryKeys is', primaryKeys);
+      // logger.debug(TAG, modelName, 'primaryKeys is', primaryKeys);
       if (primaryKeys.length) {
         return _.map(primaryKeys, fp.get('name'));
       }
