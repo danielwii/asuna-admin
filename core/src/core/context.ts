@@ -97,6 +97,8 @@ class AppContext {
   private static _isServer = typeof window === 'undefined';
   private static _storeConnector: IStoreConnector<RootState>;
 
+  static serverSettings: string;
+
   public static init(nextConfig?: INextConfig) {
     if (nextConfig) {
       AppContext.nextConfig = nextConfig;
@@ -210,6 +212,18 @@ class AppContext {
     return AppContext._context;
   }
 
+  public static syncServerSettings() {
+    AppContext.ctx.graphql
+      .loadSystemSettings()
+      .then(
+        settings =>
+          (this.serverSettings = Object.assign(
+            {},
+            ...settings.map(setting => ({ [setting.key]: setting })),
+          )),
+      );
+  }
+
   /**
    * 提供了直接通过 redux-store 获取数据的 api
    * @param state
@@ -234,6 +248,8 @@ class AppContext {
       components: register.componentService,
       graphql: new GraphqlAdapter(Config.get('GRAPHQL_HOST')),
     };
+
+    this.syncServerSettings();
   }
 }
 

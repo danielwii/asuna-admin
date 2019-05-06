@@ -2,6 +2,7 @@ import * as _ from 'lodash';
 import { isJson } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 import { Config } from '@asuna-admin/config';
+import { AppContext } from '.';
 
 const logger = createLogger('core:url-rewriter');
 
@@ -37,9 +38,14 @@ export function valueToUrl(
       '';
     let url = hostPrefix + `/${value}`.replace('//', '/').slice(1);
     if (thumbnail) {
-      // TODO using qiniu here temporarily, update to dynamic later
-      url += `?imageView2/2/w/${thumbnail.width || 1280}/h/${thumbnail.height ||
-        1280}/format/jpg/interlace/1/ignore-error/1`;
+      const template = _.get(AppContext.serverSettings['settings.url-resolver'], 'value.uploads');
+      try {
+        url = template.replace('{{ url }}', url);
+      } catch (e) {
+        logger.warn('using template error', { template, url });
+      }
+      // url += `?imageView2/2/w/${thumbnail.width || 1280}/h/${thumbnail.height ||
+      //   1280}/format/jpg/interlace/1/ignore-error/1`;
     }
     logger.debug('[valueToUrl]', { value, url, host });
     return url;

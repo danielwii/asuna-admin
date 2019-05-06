@@ -2,6 +2,7 @@ import ApolloClient from 'apollo-boost';
 import gql from 'graphql-tag';
 import * as fp from 'lodash/fp';
 import { createLogger } from '@asuna-admin/logger';
+import { AppContext } from '@asuna-admin/core';
 
 // --------------------------------------------------------------
 // Types
@@ -37,15 +38,19 @@ export class GraphqlAdapter {
   }
 
   async query(queryString: string) {
-    return this.client.query({
+    const promise = this.client.query({
       query: gql`
         ${queryString}
       `,
     });
+    AppContext.syncServerSettings();
+    return promise;
   }
 
   async queryT(query: any) {
-    return this.client.query({ query });
+    const promise = this.client.query({ query });
+    AppContext.syncServerSettings();
+    return promise;
   }
 
   async loadSchemas() {
@@ -62,6 +67,23 @@ export class GraphqlAdapter {
         fetchPolicy: 'no-cache',
       })
       .then(fp.get('data.sys_modelSchemas'));
+  }
+
+  async loadSystemSettings() {
+    return this.serverClient
+      .query({
+        query: gql`
+          {
+            kvs(collection: "system.server") {
+              key
+              name
+              type
+              value
+            }
+          }
+        `,
+      })
+      .then(fp.get('data.kvs'));
   }
 
   async loadGraphs() {
