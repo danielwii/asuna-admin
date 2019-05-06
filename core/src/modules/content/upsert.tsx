@@ -364,38 +364,43 @@ class ContentUpsert extends React.Component<IProps, IState> {
       R.pickBy((value, key) => (originalFieldValues ? value !== originalFieldValues[key] : true)),
       R.map(R.prop('value')),
     )(this.state.fields);
-    logger.debug('[handleFormSubmit]', { fieldPairs });
-
-    const id = R.prop('id')(originalFieldValues);
+    logger.debug('[handleFormSubmit]', { fieldPairs, originalFieldValues });
 
     const { dispatch, onClose } = this.props;
     const { modelName, isInsertMode } = this.state;
 
+    const primaryKey = _.first(AppContext.adapters.models.getPrimaryKeys(modelName));
+    const id = R.prop(primaryKey)(originalFieldValues);
+
     dispatch(
-      modelsActions.upsert(modelName, { body: { ...fieldPairs, id } }, ({ response, error }) => {
-        if (isErrorResponse(error)) {
-          const errors = toFormErrors(error.response);
-          logger.warn('[upsert callback]', { response, error, errors });
-          if (typeof errors === 'string') {
-            message.error(toErrorMessage(errors));
+      modelsActions.upsert(
+        modelName,
+        { body: { ...fieldPairs, [primaryKey]: id } },
+        ({ response, error }) => {
+          if (isErrorResponse(error)) {
+            const errors = toFormErrors(error.response);
+            logger.warn('[upsert callback]', { response, error, errors });
+            if (typeof errors === 'string') {
+              message.error(toErrorMessage(errors));
+            } else {
+              this._handleFormChange(errors);
+              this.setState({ hasErrors: true });
+            }
           } else {
-            this._handleFormChange(errors);
-            this.setState({ hasErrors: true });
+            this.setState({
+              hasErrors: false,
+              originalFieldValues: { ...originalFieldValues, ...fieldPairs },
+            });
+            // FIXME 当前页面暂未切换为 update 模式，临时关闭当前页面
+            if (isInsertMode) {
+              EventBus.sendEvent(EventType.MODEL_INSERT, { modelName });
+              onClose();
+            } else {
+              EventBus.sendEvent(EventType.MODEL_UPDATE, { modelName, id });
+            }
           }
-        } else {
-          this.setState({
-            hasErrors: false,
-            originalFieldValues: { ...originalFieldValues, ...fieldPairs },
-          });
-          // FIXME 当前页面暂未切换为 update 模式，临时关闭当前页面
-          if (isInsertMode) {
-            EventBus.sendEvent(EventType.MODEL_INSERT, { modelName });
-            onClose();
-          } else {
-            EventBus.sendEvent(EventType.MODEL_UPDATE, { modelName, id });
-          }
-        }
-      }),
+        },
+      ),
     );
   };
 

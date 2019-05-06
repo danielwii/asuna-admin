@@ -81,7 +81,13 @@ export interface IModelService {
   update(
     auth: { token: string | null },
     modelName: any,
-    data: { endpoint?: string; id: number | string; body: IModelBody } & Asuna.Schema.ModelConfig,
+    data: {
+      endpoint?: string;
+      id: number | string;
+      // 主键的名称可能不是 id，这里的 id 代表值，primaryKey 代编键的名称
+      primaryKey?: string;
+      body: IModelBody;
+    } & Asuna.Schema.ModelConfig,
   ): Promise<AxiosResponse>;
 
   loadAssociation(
@@ -244,6 +250,7 @@ export class ModelAdapter {
     // const allSchemas = schemas || AppContext.store.select(R.path(['models', 'schemas']));
 
     const fields = this.getFormSchema(modelName);
+    const primaryKey = _.first(AppContext.adapters.models.getPrimaryKeys(modelName));
     logger.debug('[upsert]', 'fields is', fields);
 
     const fixKeys = _.mapKeys(data.body, (value, key) => idx(fields, _ => _[key].ref) || key);
@@ -253,10 +260,11 @@ export class ModelAdapter {
     });
     logger.debug('[upsert]', 'transformed is', transformed);
 
-    const id = idx(data, _ => _.body.id);
+    const id = idx(data, _ => _.body[primaryKey]) as any;
     if (id) {
       return this.service.update(auth, modelName, {
         id,
+        primaryKey,
         body: transformed,
         ...data,
         ...this.getModelConfig(modelName),
