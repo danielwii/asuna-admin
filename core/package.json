@@ -130,7 +130,7 @@
     "jest": "^24.8.0",
     "source-map-loader": "0.2.4",
     "ts-jest": "24.0.2",
-    "ts-loader": "5.4.6",
+    "ts-loader": "6.0.0",
     "ts-simple-ast": "21.0.4",
     "tsconfig-extends": "1.0.1",
     "tsconfig-paths": "3.8.0",
