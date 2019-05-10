@@ -34,15 +34,19 @@ const LightForm = Form.create<ILightForm>({
 export interface IProps {
   title: string;
   openButton;
-  fields;
+  fields?: object;
+  body?: React.ReactNode;
+  footer?: ({ loading, operations, params }) => React.ReactNode;
   onChange?: (value) => void;
-  onSubmit: (value: any) => Promise<AxiosResponse>;
+  onSubmit?: (value?: any) => Promise<AxiosResponse>;
+  onOperations?: ({ loading, updateState, handleCancel }) => any;
 }
 
 export interface IState {
-  fields?;
+  fields?: object;
+  params?: any;
   visible: boolean;
-  confirmLoading: boolean;
+  loading: boolean;
 }
 
 export class FormModal extends React.Component<IProps, IState> {
@@ -50,7 +54,7 @@ export class FormModal extends React.Component<IProps, IState> {
 
   state: IState = {
     visible: false,
-    confirmLoading: false,
+    loading: false,
   };
 
   componentWillMount() {
@@ -70,14 +74,14 @@ export class FormModal extends React.Component<IProps, IState> {
         logger.error('[FormModal][handleOk]', 'error occurred in form', { values, err });
       } else {
         this.setState({
-          confirmLoading: true,
+          loading: true,
         });
         try {
-          const response = await onSubmit(values);
+          const response = await onSubmit!(values);
           logger.log('response is', response);
           this.setState({
             visible: false,
-            confirmLoading: false,
+            loading: false,
             fields: R.map(field => ({ ...field, value: undefined }))(fields),
           });
         } catch (e) {
@@ -89,7 +93,7 @@ export class FormModal extends React.Component<IProps, IState> {
             this.handleFormChange(errors);
           }
           this.setState({
-            confirmLoading: false,
+            loading: false,
           });
         }
       }
@@ -108,10 +112,14 @@ export class FormModal extends React.Component<IProps, IState> {
     });
   };
 
-  render() {
-    const { title, openButton } = this.props;
+  updateState = (state: Partial<IState>) => {
+    this.setState(state as any);
+  };
 
-    const { fields, visible, confirmLoading } = this.state;
+  render() {
+    const { title, openButton, footer, body, onOperations } = this.props;
+
+    const { fields, visible, loading, params } = this.state;
 
     return (
       <React.Fragment>
@@ -120,9 +128,23 @@ export class FormModal extends React.Component<IProps, IState> {
           title={title}
           visible={visible}
           onOk={this.handleOk}
-          confirmLoading={confirmLoading}
+          confirmLoading={loading}
           onCancel={this.handleCancel}
+          footer={footer!({
+            loading,
+            params,
+            operations: {
+              handleOk: this.handleOk,
+              handleCancel: this.handleCancel,
+              ...onOperations!({
+                loading,
+                updateState: this.updateState,
+                handleCancel: this.handleCancel,
+              }),
+            },
+          })}
         >
+          {body}
           <LightForm
             wrappedComponentRef={inst => (this.form = idx(inst, _ => _.props.form) as any)}
             delegate

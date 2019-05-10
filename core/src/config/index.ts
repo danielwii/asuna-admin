@@ -28,6 +28,12 @@ interface ConfigOpts {
   AUTH_HEADER?: AuthHeader;
   API_RESPONSE_PAGE_MODE?: ApiResponsePageMode;
   API_RESPONSE_ASSOCIATION_MODE?: ApiResponseAssociationMode;
+
+  /**
+   * 默认的页面排序，'byPrimaryKey' or fields
+   */
+  TABLE_DEFAULT_ORDER_BY?: 'byPrimaryKey' | 'createdAt' | 'updatedAt' | string;
+
   /**
    * 默认返回 table 的页面大小
    * @type {string}
@@ -66,6 +72,8 @@ const defaultConfiguration: ConfigOpts = {
   MODEL_NAME_CASE: 'None',
   AUTH_HEADER: 'AuthHeaderAsBearerToken',
   API_RESPONSE_PAGE_MODE: 'Default',
+
+  TABLE_DEFAULT_ORDER_BY: 'byPrimaryKey',
 
   API_RESPONSE_ASSOCIATION_MODE: 'ids',
   DEFAULT_PAGE_SIZE: 25,

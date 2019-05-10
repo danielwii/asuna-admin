@@ -13,6 +13,7 @@ import { ActionEvent, AppContext, EventBus, EventType } from '@asuna-admin/core'
 import { createLogger } from '@asuna-admin/logger';
 import { PaginationConfig } from 'antd/es/pagination';
 import { ColumnProps, SorterResult } from 'antd/es/table';
+import { Config } from 'asuna-admin';
 
 const logger = createLogger('modules:content:index');
 
@@ -57,15 +58,22 @@ class ContentIndex extends React.Component<IProps, IState> {
     const primaryKeys = this.modelsAdapter.getPrimaryKeys(modelName);
     logger.debug('[constructor]', { modelConfig, modelName, primaryKeys });
 
+    const sorter: Partial<SorterResult<any>> = {
+      columnKey: _.first(primaryKeys),
+      field: _.first(primaryKeys),
+      order: 'descend',
+    };
+    const orderBy = Config.get('TABLE_DEFAULT_ORDER_BY');
+    if (!_.isEmpty(orderBy) && orderBy !== 'byPrimaryKey') {
+      sorter['columnKey'] = castModelKey(orderBy);
+      sorter['field'] = castModelKey(orderBy);
+    }
+
     this.state = {
       modelName,
       creatable: modelConfig.creatable !== false,
       key: activeKey,
-      sorter: {
-        columnKey: _.first(primaryKeys),
-        field: _.first(primaryKeys),
-        order: 'descend',
-      },
+      sorter,
       subscription: AppContext.subject.subscribe({
         next: action => {
           // logger.log('[observer-content-index]', { modelName, activeKey, action });
