@@ -224,13 +224,13 @@ export class ModelAdapter {
     const relations = _.chain(schema)
       .pickBy(fp.get('options.selectable'))
       // .pickBy(_.flow([fp.get('options.accessible'), fp.negate(fp.eq('hidden'))]))
-      .pickBy(opts => !_.includes(opts.options.accessible, ['hidden']))
+      .pickBy(opts => !_.includes(_.get(opts, 'options.accessible'), ['hidden']))
       .keys()
       .value();
     return this.service.fetch(
       auth,
       modelName,
-      Object.assign(data, modelConfig, { relations: (relations || []).join(',') }),
+      Object.assign(data, modelConfig, { relations: _.join(relations || [], ',') }),
     );
   };
 
