@@ -153,18 +153,20 @@ export const asyncLoadAssociationsDecorator = async ({
     logger.debug(TAG, { pairedWrappedAssociations });
 
     // FIXME 临时解决关联数据从 entities 到 ids 的转换
-
     const transformedAssociations = R.map(association => {
+      const primaryKey = _.first(AppContext.adapters.models.getPrimaryKeys(association.name));
       let value;
+
       if (_.isArrayLike(association.value)) {
         value = association.value
-          ? R.map(entity => R.propOr(entity, 'id', entity))(association.value)
+          ? R.map(entity => R.propOr(entity, primaryKey, entity))(association.value)
           : undefined;
       } else {
         value = association.value
-          ? R.propOr(association.value, 'id', association.value)
+          ? R.propOr(association.value, primaryKey, association.value)
           : undefined;
       }
+      logger.debug(TAG, 'handle association', { association, value, primaryKey });
       return { ...association, value };
     })(pairedWrappedAssociations);
 

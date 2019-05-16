@@ -8,6 +8,7 @@ import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-ho
 import { generateComponent, IFormItemLayout } from '.';
 
 import { createLogger } from '@asuna-admin/logger';
+import { AppContext } from 'asuna-admin';
 
 const logger = createLogger('components:dynamic-form:select');
 
@@ -148,7 +149,10 @@ export function generateSelect<T>(
       const SortableItem = SortableElement<{ value: string; sortIndex: number }>(
         ({ value, sortIndex }) => {
           // TODO 目前只支持 ObjectItem 且通过 id 判断排序组件，理论上，该排序也可能应用在非 EnumFilter 下且不通过 id 判断的情况
-          const item = this._getAllItems().find((current: ObjectItem) => current.id === value);
+          const primaryKey = _.first(AppContext.adapters.models.getPrimaryKeys(name));
+          const item = this._getAllItems().find(
+            (current: ObjectItem) => current[primaryKey] === value,
+          );
           const optionName = this._extractName(item);
           const optionValue = this._extractValue(item);
           return (
