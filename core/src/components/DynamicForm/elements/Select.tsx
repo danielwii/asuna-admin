@@ -285,7 +285,7 @@ export function generateSelect<T>(
               // prettier-ignore
               return (
                 <Select.Option key={optionValue} value={optionValue}>
-                  {'#'}{optionValue}{': '}{optionName}
+                  {'#'}{optionValue}{': '}<span style={{fontWeight: 'bold'}}>{optionName}</span>
                 </Select.Option>
               );
             })}

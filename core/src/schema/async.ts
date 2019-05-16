@@ -49,12 +49,13 @@ type AssociationField = {
   };
 };
 
-const extractItems = R.compose(
-  R.uniqBy(R.prop('id')),
-  R.flatten,
-  R.map(R.path(['data', 'items'])),
-  R.flatten,
-);
+const extractItemsBy = primaryKey =>
+  R.compose(
+    R.uniqBy(R.prop(primaryKey)),
+    R.flatten,
+    R.map(R.path(['data', 'items'])),
+    R.flatten,
+  );
 
 /**
  * 异步加载所有的关联对象，用于下拉菜单提示
@@ -99,6 +100,7 @@ export const asyncLoadAssociationsDecorator = async ({
         const selectable = R.pathOr([], ['options', 'selectable'])(field);
         logger.debug(TAG, { field, selectable });
         if (selectable) {
+          const primaryKey = _.first(AppContext.adapters.models.getPrimaryKeys(selectable));
           const fieldsOfAssociations = AppContext.adapters.models.getFieldsOfAssociations();
 
           const foreignOpts = [
@@ -111,7 +113,7 @@ export const asyncLoadAssociationsDecorator = async ({
                 AppContext.adapters.models
                   .loadAssociation(selectable, { keywords: value })
                   .then(response => {
-                    const items = extractItems([response]);
+                    const items = extractItemsBy(primaryKey)([response]);
                     callback(items);
                   })
                   .catch(reason => {
@@ -134,8 +136,8 @@ export const asyncLoadAssociationsDecorator = async ({
             // 当前方法只处理了单个外键的情况，没有考虑如联合主键的处理
             const foreignKeysResponse = {
               [selectable]: {
-                items: _.compact(extractItems([results.itemsResponse])),
-                existItems: _.compact(extractItems([results.existItemsResponse])),
+                items: _.compact(extractItemsBy(primaryKey)([results.itemsResponse])),
+                existItems: _.compact(extractItemsBy(primaryKey)([results.existItemsResponse])),
               },
             };
             logger.debug(TAG, { foreignOpts, foreignKeysResponse });
