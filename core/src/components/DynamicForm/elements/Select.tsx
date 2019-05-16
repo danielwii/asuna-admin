@@ -8,7 +8,7 @@ import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-ho
 import { generateComponent, IFormItemLayout } from '.';
 
 import { createLogger } from '@asuna-admin/logger';
-import { AppContext } from 'asuna-admin';
+import { AppContext } from '@asuna-admin/core';
 
 const logger = createLogger('components:dynamic-form:select');
 
