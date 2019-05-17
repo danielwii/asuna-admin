@@ -3,9 +3,11 @@ import { connect } from 'react-redux';
 import * as R from 'ramda';
 import * as _ from 'lodash';
 import moment from 'moment';
+import idx from 'idx';
+import { AxiosResponse } from 'axios';
+import { PropagateLoader } from 'react-spinners';
 
 import { Form, message } from 'antd';
-import { PropagateLoader } from 'react-spinners';
 
 import { DynamicForm, DynamicFormTypes } from '@asuna-admin/components/DynamicForm';
 import * as schemaHelper from '@asuna-admin/schema';
@@ -20,8 +22,6 @@ import {
 } from '@asuna-admin/helpers';
 import { AppContext, EventBus, EventType } from '@asuna-admin/core';
 import { createLogger } from '@asuna-admin/logger';
-import idx from 'idx';
-import { AxiosResponse } from 'axios';
 import { asyncLoadAssociationsDecorator } from '@asuna-admin/schema/async';
 
 const logger = createLogger('modules:content:upsert');

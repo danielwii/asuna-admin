@@ -2,18 +2,18 @@ import React from 'react';
 import { connect } from 'react-redux';
 import * as R from 'ramda';
 import _ from 'lodash';
+import { Subscription } from 'rxjs';
 
 import { Button, Divider, Modal, Table } from 'antd';
-import { Subscription } from 'rxjs';
+import { PaginationConfig } from 'antd/es/pagination';
+import { ColumnProps, SorterResult } from 'antd/es/table';
 
 import { contentActions, modelsActions, panesActions, RootState } from '@asuna-admin/store';
 import { castModelKey, diff } from '@asuna-admin/helpers';
 import { responseProxy } from '@asuna-admin/adapters';
 import { ActionEvent, AppContext, EventBus, EventType } from '@asuna-admin/core';
 import { createLogger } from '@asuna-admin/logger';
-import { PaginationConfig } from 'antd/es/pagination';
-import { ColumnProps, SorterResult } from 'antd/es/table';
-import { Config } from 'asuna-admin';
+import { Config } from '@asuna-admin/config';
 
 const logger = createLogger('modules:content:index');
 
@@ -191,7 +191,7 @@ class ContentIndex extends React.Component<IProps, IState> {
       onOk: () =>
         dispatch(
           modelsActions.remove(modelName, record, response => {
-            if (/^20\d$/.test(response.status as any)) {
+            if (/^20\d$/.test(response.status)) {
               modal.destroy();
             }
           }),

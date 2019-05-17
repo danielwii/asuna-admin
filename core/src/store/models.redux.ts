@@ -131,7 +131,7 @@ const modelsSagaFunctions = {
         const response = yield call(AppContext.adapters.models.remove, modelName, data);
         message.success(`remove model '${modelName}' success!`);
         logger.log('[remove]', 'response of remove model is', response);
-        if (callback != null) callback({ response });
+        if (callback != null) callback(response);
 
         // save model data when remove is success
         yield put(modelsActions.fetchSuccess(modelName, response.data));
