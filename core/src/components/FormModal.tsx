@@ -11,6 +11,7 @@ import { DynamicForm } from './DynamicForm';
 import { toErrorMessage, toFormErrors } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 import idx from 'idx';
+import { extensionRegex } from 'ts-loader/dist/types/constants';
 
 const logger = createLogger('components:form-modal');
 
@@ -120,6 +121,14 @@ export class FormModal extends React.Component<IProps, IState> {
     const { title, openButton, footer, body, onOperations } = this.props;
 
     const { fields, visible, loading, params } = this.state;
+    const extraOperations =
+      onOperations != null
+        ? onOperations({
+            loading,
+            updateState: this.updateState,
+            handleCancel: this.handleCancel,
+          })
+        : {};
 
     return (
       <React.Fragment>
@@ -130,19 +139,19 @@ export class FormModal extends React.Component<IProps, IState> {
           onOk={this.handleOk}
           confirmLoading={loading}
           onCancel={this.handleCancel}
-          footer={footer!({
-            loading,
-            params,
-            operations: {
-              handleOk: this.handleOk,
-              handleCancel: this.handleCancel,
-              ...onOperations!({
-                loading,
-                updateState: this.updateState,
-                handleCancel: this.handleCancel,
-              }),
-            },
-          })}
+          footer={
+            footer != null
+              ? footer({
+                  loading,
+                  params,
+                  operations: {
+                    handleOk: this.handleOk,
+                    handleCancel: this.handleCancel,
+                    ...extraOperations,
+                  },
+                })
+              : null
+          }
         >
           {body}
           <LightForm
