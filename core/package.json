@@ -104,7 +104,7 @@
     "@storybook/addon-info": "^5.0.11",
     "@storybook/addon-links": "^5.0.11",
     "@storybook/react": "^5.0.11",
-    "@types/bluebird": "3.5.26",
+    "@types/bluebird": "3.5.27",
     "@types/debug": "4.1.4",
     "@types/jest": "^24.0.13",
     "@types/lodash": "4.14.122",
