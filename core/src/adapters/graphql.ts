@@ -1,5 +1,4 @@
-import ApolloClient from 'apollo-boost';
-import gql from 'graphql-tag';
+import ApolloClient, { gql } from 'apollo-boost/lib/index';
 import * as fp from 'lodash/fp';
 import { createLogger } from '@asuna-admin/logger';
 import { AppContext } from '@asuna-admin/core';

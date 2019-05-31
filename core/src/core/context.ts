@@ -232,7 +232,8 @@ class AppContext {
     if (this.store && this.store.getState) {
       return this.store.getState(state);
     }
-    return {};
+    console.error('store is not available or getState not defined on state.');
+    return {} as any;
   }
 
   private static registerIndex(register: IIndexRegister) {
