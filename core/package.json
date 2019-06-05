@@ -75,7 +75,7 @@
     "react-apollo": "^2.5.6",
     "react-apollo-hooks": "^0.4.5",
     "react-dom": "16.8.6",
-    "react-image-crop": "^7.0.3",
+    "react-image-crop": "^8.0.0",
     "react-pdf": "^4.0.5",
     "react-redux": "7.0.3",
     "react-sortable-hoc": "1.9.1",
