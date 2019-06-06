@@ -12,6 +12,7 @@ import {
 
 import { persistReducer, persistStore } from 'redux-persist';
 import createSagaMiddleware from 'redux-saga';
+import { MakeStoreOptions } from 'next-redux-wrapper';
 import { all } from 'redux-saga/effects';
 
 import { composeWithDevTools } from 'redux-devtools-extension';
@@ -149,14 +150,11 @@ export class AsunaStore {
 
   private rootEpics = combineEpics(...appEpics);
 
-  public configureStore = (
-    preloadedState = this.initialState,
-    { isServer, req, debug, storeKey },
-  ): Store => {
-    logger.log('configureStore', { preloadedState, isServer, req, debug, storeKey });
-    AppContext.isServer = isServer;
+  public configureStore = (preloadedState = this.initialState, opts: MakeStoreOptions): Store => {
+    logger.log('configureStore', opts);
+    AppContext.isServer = opts.isServer;
     let store;
-    if (isServer) {
+    if (opts.isServer) {
       store = createStore<RootState, AnyAction, any, any>(
         this.rootReducers,
         preloadedState,
