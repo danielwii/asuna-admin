@@ -68,4 +68,4 @@ export const ReduxApp = withRedux(asunaStore.configureStore, { debug: false })(
       }
     },
   ),
-);
+) as any;
