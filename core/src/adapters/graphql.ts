@@ -36,8 +36,8 @@ export class GraphqlAdapter {
     this.serverClient = new ApolloClient({ uri: '/s-graphql' });
   }
 
-  async query(queryString: string) {
-    const promise = this.client.query({
+  async query(queryString: string, client = this.client) {
+    const promise = client.query({
       query: gql`
         ${queryString}
       `,
@@ -46,8 +46,8 @@ export class GraphqlAdapter {
     return promise;
   }
 
-  async queryT(query: any) {
-    const promise = this.client.query({ query });
+  async queryT(query: any, client = this.client) {
+    const promise = client.query({ query });
     AppContext.syncServerSettings();
     return promise;
   }
