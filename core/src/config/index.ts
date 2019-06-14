@@ -78,7 +78,7 @@ const defaultConfiguration: ConfigOpts = {
   API_RESPONSE_ASSOCIATION_MODE: 'ids',
   DEFAULT_PAGE_SIZE: 25,
   IMAGE_HOST: '/',
-  IMAGE_PREFIX: 'uploads/images',
+  IMAGE_PREFIX: 'uploads/default',
   IMAGE_RES_HANDLER: responseToUrl,
   VIDEO_HOST: '/',
   VIDEO_PREFIX: 'uploads/videos',

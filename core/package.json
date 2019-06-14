@@ -35,7 +35,8 @@
     "pre-commit": "jest",
     "test": "ENV=test jest",
     "changelog": "conventional-changelog -p asuna-admin -i CHANGELOG.md",
-    "init-changelog": "conventional-changelog -p asuna-admin -i CHANGELOG.md -r 0"
+    "init-changelog": "conventional-changelog -p asuna-admin -i CHANGELOG.md -r 0",
+    "check:circular": "npx madge --circular --extensions ts ./"
   },
   "peerDependencies": {},
   "dependencies": {
