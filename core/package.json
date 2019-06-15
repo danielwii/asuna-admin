@@ -125,7 +125,7 @@
     "babel-plugin-idx": "^2.4.0",
     "babel-plugin-import": "1.12.0",
     "babel-plugin-module-resolver": "3.2.0",
-    "babel-plugin-styled-components": "1.10.0",
+    "babel-plugin-styled-components": "1.10.1",
     "eslint-plugin-react-hooks": "^1.6.0",
     "glob": "7.1.4",
     "jest": "^24.8.0",
