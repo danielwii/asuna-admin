@@ -434,7 +434,10 @@ export class ModelAdapter {
   };
 
   private getFieldsOfAssociation(associationName: string): string[] {
-    const defaultFields = R.pathOr(['id', 'name'], [associationName, 'fields'])(this.associations);
+    const primaryKey = _.first(AppContext.adapters.models.getPrimaryKeys(associationName));
+    const defaultFields = R.pathOr([primaryKey, 'name'], [associationName, 'fields'])(
+      this.associations,
+    );
     return R.pathOr(defaultFields, [associationName, 'fields'])(this.getFieldsOfAssociations());
   }
 
