@@ -18,14 +18,14 @@ const StyledContentDiv = styled.div`
   min-height: 280px;
 `;
 
-export default ({ loading, heartbeat, auth, appInfo }) => {
+export default ({ loading, heartbeat, auth, appInfo, hideCharacteristics }) => {
   logger.log('status', { loading, heartbeat, auth, appInfo });
   return (
-    <WithStyles>
+    <WithStyles hideCharacteristics={hideCharacteristics}>
       <Layout>
         {/*{loading && <LivingLoading heartbeat={heartbeat} />}*/}
         <ProgressBar />
-        <HeaderContainer />
+        <HeaderContainer {...{ hideLogo: hideCharacteristics }} />
         <Layout>
           <SideMenuContainer />
           <Layout style={{ padding: '1rem' }}>

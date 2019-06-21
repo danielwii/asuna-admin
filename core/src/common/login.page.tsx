@@ -41,6 +41,7 @@ const StyledLogoWrapper = styled.div`
 export interface ILoginPageProps extends ReduxProps {
   app: AppState;
   register: ILoginRegister & IIndexRegister;
+  hideCharacteristics: boolean;
 }
 
 export class LoginPage extends React.Component<ILoginPageProps> {
@@ -57,14 +58,19 @@ export class LoginPage extends React.Component<ILoginPageProps> {
   }
 
   render() {
+    const { hideCharacteristics } = this.props;
     return (
-      <WithStyles>
+      <WithStyles hideCharacteristics>
         <StyledFullFlexContainer>
-          <Snow />
-          <Sun />
-          <StyledLogoWrapper>
-            <LogoCanvas />
-          </StyledLogoWrapper>
+          {!hideCharacteristics && (
+            <>
+              <Snow />
+              <Sun />
+              <StyledLogoWrapper>
+                <LogoCanvas />
+              </StyledLogoWrapper>
+            </>
+          )}
           <StyledLoginWrapper>
             <LoginContainer {...this.props} />
           </StyledLoginWrapper>

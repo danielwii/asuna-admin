@@ -19,6 +19,7 @@ export interface IIndexPageProps extends ReduxProps {
   auth: AuthState;
   app: AppState;
   register: ILoginRegister & IIndexRegister;
+  hideCharacteristics?: boolean;
   appInfo: {
     userAgent: string;
   };
@@ -46,10 +47,19 @@ export class IndexPage extends React.Component<IIndexPageProps> {
       auth,
       app: { loading, heartbeat },
       appInfo,
+      hideCharacteristics,
     } = this.props;
     logger.debug('[render]', this.props);
 
-    return <MainLayout loading={loading} heartbeat={heartbeat} auth={auth} appInfo={appInfo} />;
+    return (
+      <MainLayout
+        loading={loading}
+        heartbeat={heartbeat}
+        auth={auth}
+        appInfo={appInfo}
+        hideCharacteristics={hideCharacteristics}
+      />
+    );
   }
 }
 

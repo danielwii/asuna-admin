@@ -38,7 +38,11 @@ export function valueToUrl(
       '';
     let url = hostPrefix + `/${value}`.replace('//', '/').slice(1);
     if (thumbnail) {
-      const template = _.get(AppContext.serverSettings['settings.url-resolver'], 'value.uploads');
+      const template = _.get(
+        AppContext.serverSettings['settings.url-resolver'],
+        'value.uploads',
+        '',
+      );
       if (!_.isString(template)) {
         logger.log('template for settings.url-resolver/value.uploads dose not exists.');
         return url;

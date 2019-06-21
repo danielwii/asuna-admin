@@ -21,6 +21,7 @@ const StyledVersion = styled.span`
 export interface IHeaderProps {
   auth: AuthState;
   app: AppState;
+  hideLogo?: boolean;
   isSuperAdmin?: boolean;
   isAdmin?: boolean;
   env?: string;
@@ -67,7 +68,7 @@ export class Header extends React.Component<IHeaderProps> {
   );
 
   render() {
-    const { auth, app, env, version } = this.props;
+    const { auth, app, env, version, hideLogo } = this.props;
     const asuna =
       'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAAAgCAYAAADtwH1UAAAEuUlEQVRoQ+1ZSyh9XxR' +
       'e13uAMJC88i4TBoSUMjGSR4lESh4pRCYiUQqRkhDlUTIg8hxI5DGQRxgg73dGYkZKiF/frn0699x77r3/e9Tx19mz' +
@@ -91,9 +92,11 @@ export class Header extends React.Component<IHeaderProps> {
       'DNsAAAAAElFTkSuQmCC';
     return (
       <Layout.Header className="header">
-        <div className="logo">
-          <StyledLogoImg src={asuna} alt="mast" />
-        </div>
+        {!hideLogo && (
+          <div className="logo">
+            <StyledLogoImg src={asuna} alt="mast" />
+          </div>
+        )}
         {/*prettier-ignore*/}
         <StyledVersion>
           {env}-v{version}::{app.version}
