@@ -20,6 +20,7 @@ import './dynamic-form.select.story';
 import './rich-text.story';
 import './image-crop.story';
 import './debug-settings.story';
+import './2-factor-auth.story';
 
 storiesOf('Welcome', module).add('to Storybook', () => <Welcome showApp={linkTo('Button')} />);
 

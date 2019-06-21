@@ -68,7 +68,7 @@ typings/
 .asuna
 .scannerwork
 .storybook
-stories
+.stories
 examples
 dist
 #**/*.spec.ts

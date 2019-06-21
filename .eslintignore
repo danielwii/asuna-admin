@@ -9,4 +9,4 @@ bin
 coverage
 lib
 node_modules
-stories
+.stories

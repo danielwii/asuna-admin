@@ -16,6 +16,24 @@ export interface IApiService {
   ): Promise<AxiosResponse<Asuna.Schema.UploadResponse[]>>;
 
   getVersion(param: { token: string | null }): Promise<AxiosResponse>;
+
+  /**
+   * 申请 token
+   * @param opts
+   */
+  acquireOperationToken(opts: { payload: { service: string } }): Promise<AxiosResponse>;
+
+  /**
+   * 使用 token
+   * @param opts
+   */
+  useOperationToken(opts: { payload: { token: string } }): Promise<AxiosResponse>;
+
+  /**
+   * 释放 token
+   * @param opts
+   */
+  releaseOperationToken(opts: { payload: { token: string } }): Promise<AxiosResponse>;
 }
 
 // --------------------------------------------------------------
@@ -34,6 +52,15 @@ export const apiProxy = {
   },
   getVersion(): Promise<AxiosResponse> {
     return AppContext.ctx.api.getVersion();
+  },
+  acquireOperationToken(service: string): Promise<AxiosResponse> {
+    return AppContext.ctx.api.acquireOperationToken(service);
+  },
+  useOperationToken(token: string): Promise<AxiosResponse> {
+    return AppContext.ctx.api.useOperationToken(token);
+  },
+  releaseOperationToken(token: string): Promise<AxiosResponse> {
+    return AppContext.ctx.api.releaseOperationToken(token);
   },
 };
 
@@ -57,5 +84,15 @@ export class ApiAdapter {
   getVersion = (): Promise<AxiosResponse> => {
     const auth = AppContext.fromStore('auth');
     return this.service.getVersion(auth);
+  };
+
+  acquireOperationToken = (service: string): Promise<AxiosResponse> => {
+    return this.service.acquireOperationToken({ payload: { service } });
+  };
+  useOperationToken = (token: string): Promise<AxiosResponse> => {
+    return this.service.useOperationToken({ payload: { token } });
+  };
+  releaseOperationToken = (token: string): Promise<AxiosResponse> => {
+    return this.service.releaseOperationToken({ payload: { token } });
   };
 }
