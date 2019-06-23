@@ -139,7 +139,7 @@
     "typescript": "^3.5.1",
     "webpack": "^4.34.0",
     "webpack-bundle-analyzer": "3.3.2",
-    "webpack-cli": "3.3.4",
+    "webpack-cli": "3.3.5",
     "webpack-jarvis": "0.3.2",
     "webpack-node-externals": "1.7.2"
   },
