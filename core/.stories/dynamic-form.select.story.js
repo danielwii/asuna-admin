@@ -23,7 +23,7 @@ storiesOf('DynamicForm', module).add('select', () => {
   );
   return (
     <div>
-      Hello kitty.
+      welcome
       <Selector value={[1]} />
     </div>
   );

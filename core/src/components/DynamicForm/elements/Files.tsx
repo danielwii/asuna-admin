@@ -1,7 +1,7 @@
 import React from 'react';
 import { WrappedFormUtils } from 'antd/es/form/Form';
 
-import { FilesUploader } from '../FilesUploader';
+import { FileUploader } from '../FileUploader';
 import { defaultFormItemLayout, generateComponent, IFormItemLayout } from '.';
 
 import { Config } from '@asuna-admin/config';
@@ -18,14 +18,13 @@ export const generateFile = (
 
   const fieldName = key || name;
   const labelName = label || name || key;
-  const host = Config.get('FILE_HOST');
-  const prefix = Config.get('FILE_PREFIX');
+  // const host = Config.get('FILE_HOST');
   const handler = Config.get('FILE_RES_HANDLER');
   return generateComponent(
     form,
     { fieldName, labelName, ...options },
     // TODO jsonMode need to setup dynamically later
-    <FilesUploader many={false} host={host} prefix={prefix} urlHandler={handler} jsonMode />,
+    <FileUploader many={false} urlHandler={handler} jsonMode />,
     formItemLayout,
   );
 };
@@ -39,14 +38,13 @@ export const generateFiles = (
 
   const fieldName = key || name;
   const labelName = label || name || key;
-  const host = Config.get('FILE_HOST');
-  const prefix = Config.get('FILE_PREFIX');
+  // const host = Config.get('FILE_HOST');
   const handler = Config.get('FILE_RES_HANDLER');
   return generateComponent(
     form,
     { fieldName, labelName, ...options },
     // TODO jsonMode need to setup dynamically later
-    <FilesUploader many={true} host={host} prefix={prefix} urlHandler={handler} jsonMode />,
+    <FileUploader many={true} urlHandler={handler} jsonMode />,
     formItemLayout,
   );
 };

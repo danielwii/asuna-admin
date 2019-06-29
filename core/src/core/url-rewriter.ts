@@ -27,24 +27,16 @@ export function valueToUrl(
   },
 ) {
   if (value) {
-    const hostPrefix =
-      host ||
-      _.cond([
-        [_.matches('image'), _.constant(Config.get('IMAGE_HOST'))],
-        [_.matches('video'), _.constant(Config.get('VIDEO_HOST'))],
-        [_.matches('attache'), _.constant(Config.get('ATTACHE_HOST'))],
-        [_.matches('file'), _.constant(Config.get('FILE_HOST'))],
-      ])(type) ||
-      '';
-    let url = hostPrefix + `/${value}`.replace('//', '/').slice(1);
+    const endpoint = host || Config.get('UPLOADS_ENDPOINT', "");
+    let url = endpoint + `/${value}`.replace('//', '/').slice(1);
     if (thumbnail) {
       const template = _.get(
         AppContext.serverSettings['settings.url-resolver'],
         'value.uploads',
         '',
       );
-      if (!_.isString(template)) {
-        logger.log('template for settings.url-resolver/value.uploads dose not exists.');
+      if (!(_.isString(template) && template.includes('{{ url }}'))) {
+        logger.log('template for settings.url-resolver/value.uploads dose not exists or valid.');
         return url;
       }
       try {

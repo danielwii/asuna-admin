@@ -7,7 +7,7 @@ import { FlexCenterBox, ThumbImage } from './Styled';
 import { valueToUrl } from '@asuna-admin/core/url-rewriter';
 
 interface IAssetsPreviewProps {
-  host: string;
+  host?: string;
   urls: string[];
   showPdf?: boolean;
 }
@@ -23,7 +23,7 @@ export function AssetsPreview({ host, urls, showPdf }: IAssetsPreviewProps) {
 }
 
 interface IAssetPreviewProps {
-  host: string;
+  host?: string;
   url: string;
   showPdf?: boolean;
   fullWidth?: boolean;

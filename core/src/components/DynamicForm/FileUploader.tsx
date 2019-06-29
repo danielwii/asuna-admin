@@ -13,8 +13,8 @@ import { createLogger } from '@asuna-admin/logger';
 const logger = createLogger('components:dynamic-form:files');
 
 export interface IFilesUploaderProps {
-  host?: string;
-  prefix?: string;
+  // host?: string;
+  bucket?: string;
   urlHandler?: (res: Asuna.Schema.UploadResponse) => string;
   value?: string | string[];
   onChange?: (value: any) => void;
@@ -36,7 +36,7 @@ const urlToUploadFile = (url, index) => ({
   type: '',
 });
 
-export const FilesUploader = (props: IFilesUploaderProps) => {
+export const FileUploader = (props: IFilesUploaderProps) => {
   const [state, setState] = useState<IState>({
     uploadFiles: _.isString(props.value)
       ? [urlToUploadFile(props.value, 0)]
@@ -52,29 +52,35 @@ export const FilesUploader = (props: IFilesUploaderProps) => {
       onProgress: (e: { percent: number }, file: UploadFile) => void;
       onError: (error: Error, response: any, file: UploadFile) => void;
     }) {
-      logger.log('[FilesUploader][customRequest]', option);
-      upload(option.file, {
-        onUploadProgress: ({ total, loaded }) => {
-          option.onProgress(
-            { percent: +Math.round((loaded / total) * 100).toFixed(2) },
-            option.file,
-          );
+      logger.log('[FileUploader][customRequest]', option);
+      const { onChange, urlHandler, bucket, jsonMode } = props;
+
+      upload(
+        option.file,
+        {
+          onUploadProgress: ({ total, loaded }) => {
+            option.onProgress(
+              { percent: +Math.round((loaded / total) * 100).toFixed(2) },
+              option.file,
+            );
+          },
         },
-      })
+        { bucket },
+      )
         .then(uploaded => {
-          logger.log('[FilesUploader][customRequest]', { uploaded });
-          const { onChange, urlHandler, prefix, jsonMode } = props;
+          logger.log('[FileUploader][customRequest]', { uploaded });
           if (uploaded) {
-            logger.log('[FilesUploader][customRequest]', { props, state });
+            logger.log('[FileUploader][customRequest]', { props, state });
             const resolvedUrl = urlHandler ? urlHandler(uploaded[0]) : `${uploaded[0]}`;
             let fileUrl = resolvedUrl;
-            if (!resolvedUrl.startsWith('http') && !resolvedUrl.startsWith(prefix || '')) {
-              fileUrl = join(prefix || '', resolvedUrl);
-            }
-            logger.log('[FilesUploader][customRequest]', { file: fileUrl, prefix, resolvedUrl });
+            // FIXME set uploads to the uploads endpoint in the global environment
+            // if (!resolvedUrl.startsWith('http') && !resolvedUrl.startsWith('uploads' || '')) {
+            //   fileUrl = join('uploads' || '', resolvedUrl);
+            // }
+            logger.log('[FileUploader][customRequest]', { file: fileUrl, bucket, resolvedUrl });
             const uploadedFiles = valueToArrays(props.value);
             logger.log(
-              '[FilesUploader][customRequest]',
+              '[FileUploader][customRequest]',
               { uploadedFiles, file: fileUrl },
               _.flattenDeep([uploadedFiles, fileUrl]),
             );
@@ -86,7 +92,7 @@ export const FilesUploader = (props: IFilesUploaderProps) => {
               // cast to string
               files = files.join(',');
             }
-            logger.log('[FilesUploader][customRequest]', { files, uploadedFiles });
+            logger.log('[FileUploader][customRequest]', { files, uploadedFiles });
             onChange!(files);
             option.onSuccess(uploaded, option.file);
             // wrapFilesToFileList(option.file, files);
@@ -99,10 +105,10 @@ export const FilesUploader = (props: IFilesUploaderProps) => {
     onChange(info: UploadChangeParam) {
       setState({ uploadFiles: [...info.fileList] });
       if (info.file.status !== 'uploading') {
-        logger.log('[FilesUploader][onChange]', info.file, info.fileList);
+        logger.log('[FileUploader][onChange]', info.file, info.fileList);
       }
       if (info.file.status === 'done') {
-        logger.log('[FilesUploader][onChange]', info.file, info.fileList);
+        logger.log('[FileUploader][onChange]', info.file, info.fileList);
         setState({
           uploadFiles: _.compact(props.many ? info.fileList : [_.last(info.fileList)]),
         });

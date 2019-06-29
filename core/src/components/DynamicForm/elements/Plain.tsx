@@ -19,7 +19,7 @@ export function PlainImages({ options, formItemLayout }: IPlainImagesProps) {
   const fieldName = key || name;
   const labelName = label || name || key;
   const assets = _.isArray(text) ? text : _.isString(text) ? text.split(',') : text;
-  const host = Config.get('IMAGE_HOST') || '';
+  // const host = Config.get('UPLOADS_ENDPOINT', '');
   return (
     <Form.Item
       key={fieldName}
@@ -28,7 +28,7 @@ export function PlainImages({ options, formItemLayout }: IPlainImagesProps) {
       help={help}
     >
       {_.map(assets, asset => (
-        <AssetPreview key={asset} host={host} url={asset} showPdf fullWidth />
+        <AssetPreview key={asset} url={asset} showPdf fullWidth />
       ))}
     </Form.Item>
   );

@@ -1,7 +1,7 @@
 import React from 'react';
 import { WrappedFormUtils } from 'antd/es/form/Form';
 
-import { ImagesUploader } from '../Images';
+import { ImageUploader } from '../ImageUploader';
 import { defaultFormItemLayout, generateComponent, IFormItemLayout } from '.';
 import { ImageTrivia } from '../ImageTrivia';
 
@@ -19,14 +19,13 @@ export const generateImages = (
 
   const fieldName = key || name;
   const labelName = label || name || key;
-  const host = Config.get('IMAGE_HOST');
-  const prefix = Config.get('IMAGE_PREFIX');
+  // const host = Config.get('IMAGE_HOST');
   const handler = Config.get('IMAGE_RES_HANDLER');
   return generateComponent(
     form,
     { fieldName, labelName, ...options },
     // TODO jsonMode need to setup dynamically later
-    <ImagesUploader many={true} host={host} prefix={prefix} urlHandler={handler} jsonMode />,
+    <ImageUploader many={true} urlHandler={handler} jsonMode />,
     formItemLayout,
   );
 };
@@ -40,13 +39,12 @@ export const generateImage = (
 
   const fieldName = key || name;
   const labelName = label || name || key;
-  const host = Config.get('IMAGE_HOST');
-  const prefix = Config.get('IMAGE_PREFIX');
+  // const host = Config.get('IMAGE_HOST');
   const handler = Config.get('IMAGE_RES_HANDLER');
   return generateComponent(
     form,
     { fieldName, labelName, ...options },
-    <ImagesUploader many={false} host={host} prefix={prefix} urlHandler={handler} />,
+    <ImageUploader many={false} urlHandler={handler} />,
     formItemLayout,
   );
 };
@@ -61,8 +59,7 @@ export function generateRichImage(
 
   const fieldName = key || name;
   const labelName = label || name || key;
-  const host = Config.get('IMAGE_HOST');
-  const prefix = Config.get('IMAGE_PREFIX');
+  // const host = Config.get('IMAGE_HOST');
   const handler = Config.get('IMAGE_RES_HANDLER');
 
   logger.log('[generateRichImage]', { fields, options });
@@ -70,7 +67,7 @@ export function generateRichImage(
   return generateComponent(
     form,
     { fieldName, labelName, ...options },
-    <ImageTrivia host={host} prefix={prefix} urlHandler={handler} />,
+    <ImageTrivia urlHandler={handler} />,
     formItemLayout,
   );
 }

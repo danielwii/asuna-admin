@@ -78,7 +78,7 @@ export class Panes extends React.Component<IPanesProps, IState> {
     const { activeKey, panes, onActive, onCloseWithout } = this.props;
 
     if (!activeKey) {
-      return <div>^_^ - Hello kitty.</div>;
+      return <div>welcome</div>;
     }
 
     const title = titles[activeKey];

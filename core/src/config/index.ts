@@ -39,26 +39,27 @@ interface ConfigOpts {
    * @type {string}
    */
   DEFAULT_PAGE_SIZE?: number;
+  UPLOADS_ENDPOINT?: string;
   /**
    * 可以理解为不会被存入数据库的前缀
    */
-  IMAGE_HOST?: string;
+  // IMAGE_HOST?: string;
   /**
    * 将被存入数据库的前缀
    */
-  IMAGE_PREFIX?: string;
+  IMAGE_BUCKET?: string;
   IMAGE_RES_HANDLER?: (res: Asuna.Schema.UploadResponse) => string;
 
-  VIDEO_HOST?: string;
-  VIDEO_PREFIX?: string;
+  // VIDEO_HOST?: string;
+  VIDEO_BUCKET?: string;
   VIDEO_RES_HANDLER?: (res: Asuna.Schema.UploadResponse) => string;
 
-  FILE_HOST?: string;
-  FILE_PREFIX?: string;
+  // FILE_HOST?: string;
+  FILE_BUCKET?: string;
   FILE_RES_HANDLER?: (res: Asuna.Schema.UploadResponse) => string;
 
-  ATTACHE_HOST?: string;
-  ATTACHE_PREFIX?: string;
+  // ATTACHE_HOST?: string;
+  ATTACHE_BUCKET?: string;
   // --------------------------------------------------------------
   // 定义特定的资源 url 处理函数
   // --------------------------------------------------------------
@@ -77,17 +78,22 @@ const defaultConfiguration: ConfigOpts = {
 
   API_RESPONSE_ASSOCIATION_MODE: 'ids',
   DEFAULT_PAGE_SIZE: 25,
-  IMAGE_HOST: '/',
-  IMAGE_PREFIX: 'uploads/default',
+
+  UPLOADS_ENDPOINT: 'uploads/',
+  // IMAGE_HOST: 'uploads/',
+  IMAGE_BUCKET: 'default',
   IMAGE_RES_HANDLER: responseToUrl,
-  VIDEO_HOST: '/',
-  VIDEO_PREFIX: 'uploads/videos',
+
+  // VIDEO_HOST: 'uploads/',
+  VIDEO_BUCKET: 'videos',
   VIDEO_RES_HANDLER: responseToUrl,
-  ATTACHE_HOST: '/',
-  ATTACHE_PREFIX: 'uploads/attaches',
+
+  // ATTACHE_HOST: 'uploads/',
+  ATTACHE_BUCKET: 'attaches',
   ATTACHE_RES_HANDLER: responseToUrl,
-  FILE_HOST: '/',
-  FILE_PREFIX: 'uploads/files',
+
+  // FILE_HOST: 'uploads/',
+  FILE_BUCKET: 'files',
   FILE_RES_HANDLER: responseToUrl,
 };
 

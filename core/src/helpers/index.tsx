@@ -167,20 +167,22 @@ export const columnHelper = {
       return value;
     },
   }),
-  generateLink: (key, title, transformer?) => ({
+  generateLink: (key, title, opts: { transformer?; host?: string } = {}) => ({
     key,
     title,
     dataIndex: key,
     sorter: true,
     render: text => {
       if (text) {
-        const value = transformer ? transformer(text) : text;
+        const value = opts.transformer ? opts.transformer(text) : text;
         if (typeof value === 'string' && value.length > 30) {
+          const host = Config.get('UPLOADS_ENDPOINT', '');
+          const url = `${opts.host || host}${value}`;
           return (
             <React.Fragment>
-              <Tooltip title={value}>
-                <Button href={value} size="small" type="dashed" target="_blank">
-                  {`${value.slice(0, 30)}...`}
+              <Tooltip title={url}>
+                <Button href={url} size="small" type="dashed" target="_blank">
+                  {`${url.slice(0, 30)}...`}
                   <Icon type="link" />
                 </Button>
               </Tooltip>
@@ -237,9 +239,9 @@ export const columnHelper = {
    * TODO feat 增加预览大图功能
    * @param key
    * @param title
-   * @param transformer
+   * @param opts
    */
-  generateImage: (key, title, transformer?) => ({
+  generateImage: (key, title, opts: { transformer?; host?: string } = {}) => ({
     key,
     title,
     dataIndex: key,
@@ -247,13 +249,12 @@ export const columnHelper = {
     render: text => {
       if (text) {
         try {
-          const value = transformer ? transformer(text) : text;
+          const value = opts.transformer ? opts.transformer(text) : text;
           if (value) {
             const images = valueToArrays(value);
-            // const images = _.isArray(value) ? value : value.split(',');
-            const host = Config.get('IMAGE_HOST') || '';
+            const host = Config.get('UPLOADS_ENDPOINT', '');
             // return _.map(images, image => <AssetPreview key={image} host={host} url={image} />);
-            return <AssetsPreview key={images} host={host} urls={images} />;
+            return <AssetsPreview key={images} host={opts.host || host} urls={images} />;
           }
         } catch (e) {
           logger.error('[generateImage]', e, { key, title, text });

@@ -17,8 +17,8 @@ const logger = createLogger('components:dynamic-form:images');
 
 interface IProps {
   // FIXME 目前从 url-rewriter 中获取附件前缀，未来考虑单独传入图片地址解析器，而无需从属性中获取相关知识
-  host?: string;
-  prefix?: string;
+  // host?: string;
+  bucket?: string;
   urlHandler?: (res: Asuna.Schema.UploadResponse) => string;
   value?: string;
   onChange?: (value: any) => void;
@@ -35,7 +35,7 @@ interface IState {
   previewVisible?: boolean;
 }
 
-export class ImagesUploader extends React.Component<IProps, IState> {
+export class ImageUploader extends React.Component<IProps, IState> {
   constructor(props) {
     super(props);
     this.state = {
@@ -82,7 +82,7 @@ export class ImagesUploader extends React.Component<IProps, IState> {
   };
 
   handleCancel = () => {
-    logger.log('[ImagesUploader][handleCancel]', { props: this.props, state: this.state });
+    logger.log('[ImageUploader][handleCancel]', { props: this.props, state: this.state });
     this.setState({ previewVisible: false });
   };
 
@@ -95,7 +95,7 @@ export class ImagesUploader extends React.Component<IProps, IState> {
 
   // updated file status will received here, maybe will handled later
   handleChange = (info: UploadChangeParam): void => {
-    logger.log('[ImagesUploader][handleChange]', { info });
+    logger.log('[ImageUploader][handleChange]', { info });
     const { onChange, jsonMode } = this.props;
     // const images = _.compact(info.fileList.map(file => file.url)).join(',');
     // 这里只有 status 为 done 的 image 包含 url
@@ -103,30 +103,30 @@ export class ImagesUploader extends React.Component<IProps, IState> {
     if (!jsonMode) {
       images = images.join(',');
     }
-    logger.log('[ImagesUploader][handleChange]', { images });
+    logger.log('[ImageUploader][handleChange]', { images });
     onChange!(images);
     this.wrapImagesToFileList(images);
   };
 
   customRequest = (option: any): void => {
-    logger.log('[ImagesUploader][customRequest]', option);
-    upload(option.file).then(uploaded => {
-      const { onChange, urlHandler, prefix, jsonMode } = this.props;
+    logger.log('[ImageUploader][customRequest]', option);
+    const { onChange, urlHandler, bucket, jsonMode } = this.props;
+    upload(option.file, {}, { bucket }).then(uploaded => {
       if (uploaded) {
-        logger.log('[ImagesUploader][customRequest]', { props: this.props, state: this.state });
+        logger.log('[ImageUploader][customRequest]', { props: this.props, state: this.state });
         const resolvedUrl = urlHandler ? urlHandler(uploaded[0]) : `${uploaded[0]}`;
         let image = resolvedUrl;
-        if (!resolvedUrl.startsWith('http') && !resolvedUrl.startsWith(prefix || '')) {
-          image = join(prefix || '', resolvedUrl);
-        }
-        logger.log('[ImagesUploader][customRequest]', { image, prefix, resolvedUrl });
+        // if (!resolvedUrl.startsWith('http') && !resolvedUrl.startsWith(prefix || '')) {
+        //   image = join(prefix || '', resolvedUrl);
+        // }
+        logger.log('[ImageUploader][customRequest]', { image, bucket, resolvedUrl });
         const uploadedImages = valueToArrays(this.props.value);
         console.log({ uploadedImages, image }, _.flattenDeep([uploadedImages, image]));
         let images: string | string[] = _.compact(_.flattenDeep([uploadedImages, image]));
         if (!jsonMode) {
           images = images.join(',');
         }
-        logger.log('[ImagesUploader][customRequest]', { uploaded, images, uploadedImages });
+        logger.log('[ImageUploader][customRequest]', { uploaded, images, uploadedImages });
         onChange!(images);
         this.wrapImagesToFileList(images);
       }

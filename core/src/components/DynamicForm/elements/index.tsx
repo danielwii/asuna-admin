@@ -292,13 +292,12 @@ export const generateVideo = (
 
   const fieldName = key || name;
   const labelName = label || name || key;
-  const host = Config.get('VIDEO_HOST');
-  const prefix = Config.get('VIDEO_PREFIX');
+  // const host = Config.get('VIDEO_HOST');
   const handler = Config.get('VIDEO_RES_HANDLER');
   return generateComponent(
     form,
     { fieldName, labelName, ...options },
-    <VideoUploader host={host} prefix={prefix} urlHandler={handler} />,
+    <VideoUploader urlHandler={handler} />,
     formItemLayout,
   );
 };
@@ -329,13 +328,12 @@ export const generateRichTextEditor = (
 
   const fieldName = key || name;
   const labelName = label || name || key;
-  const host = Config.get('ATTACHE_HOST');
-  const prefix = Config.get('ATTACHE_PREFIX');
+  // const host = Config.get('ATTACHE_HOST');
   const handler = Config.get('ATTACHE_RES_HANDLER');
   return generateComponent(
     form,
     { fieldName, labelName, ...options },
-    <BraftRichEditor host={host} prefix={prefix} urlHandler={handler} />,
+    <BraftRichEditor urlHandler={handler} />,
     formItemLayout,
   );
 };

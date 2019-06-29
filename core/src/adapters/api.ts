@@ -11,7 +11,7 @@ export interface IApiService {
   upload(
     param: { token: string | null },
     file: any,
-    options: { prefix?: string },
+    options: { bucket?: string },
     requestConfig?: AxiosRequestConfig,
   ): Promise<AxiosResponse<Asuna.Schema.UploadResponse[]>>;
 
@@ -73,7 +73,7 @@ export class ApiAdapter {
 
   upload = (
     file,
-    options: { prefix?: string },
+    options: { bucket?: string },
     requestConfig?: AxiosRequestConfig,
   ): Promise<AxiosResponse<Asuna.Schema.UploadResponse[]>> => {
     logger.log('[upload] file', file, options);

@@ -31,6 +31,7 @@ export function validateFile(file: { type: string; size: number }): boolean {
 export async function upload(
   file: object,
   requestConfig?: AxiosRequestConfig,
+  opts: { bucket?: string } = {},
 ): Promise<Asuna.Schema.UploadResponse[] | undefined> {
   logger.log('[upload]', { file });
   const response = await apiProxy.upload(file, {}, requestConfig);
