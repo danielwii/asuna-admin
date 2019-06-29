@@ -5,10 +5,10 @@ describe('upload', () => {
     expect(
       responseToUrl({
         filename: 'filename.ext',
-        prefix: 'uploads',
+        prefix: '2019/07',
         mode: 'local',
         bucket: 'default',
       }),
-    ).toBe('uploads/filename.ext');
+    ).toBe('default/2019/07/filename.ext');
   });
 });
