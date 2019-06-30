@@ -380,12 +380,12 @@ class ContentUpsert extends React.Component<IProps, IState> {
           if (isErrorResponse(error)) {
             const errors = toFormErrors(error.response);
             logger.warn('[upsert callback]', { response, error, errors });
-            if (typeof errors === 'string') {
-              message.error(toErrorMessage(errors));
-            } else {
-              this._handleFormChange(errors);
-              this.setState({ hasErrors: true });
-            }
+            // if (typeof errors === 'string') {
+            //   message.error(toErrorMessage(errors));
+            // } else {
+            // }
+            this._handleFormChange(errors);
+            this.setState({ hasErrors: true });
           } else {
             this.setState({
               hasErrors: false,

@@ -3,7 +3,7 @@ import _ from 'lodash';
 import * as R from 'ramda';
 
 import { AxiosResponse } from 'axios';
-import { Form, message, Modal } from 'antd';
+import { Button, Form, message, Modal } from 'antd';
 import { WrappedFormUtils } from 'antd/es/form/Form';
 
 import { DynamicForm } from './DynamicForm';
@@ -88,11 +88,11 @@ export class FormModal extends React.Component<IProps, IState> {
         } catch (e) {
           const errors = toFormErrors(e.response);
           logger.error('[FormModal][handleOk]', { e, errors });
-          if (_.isString(errors)) {
-            message.error(toErrorMessage(errors));
-          } else {
-            this.handleFormChange(errors);
-          }
+          // if (_.isString(errors)) {
+          //   message.error(toErrorMessage(errors));
+          // } else {
+          // }
+          this.handleFormChange(errors);
           this.setState({
             loading: false,
           });
@@ -130,6 +130,21 @@ export class FormModal extends React.Component<IProps, IState> {
           })
         : {};
 
+    // show default footer when custom footer is undefined
+    const renderFooterOpts =
+      footer != null
+        ? {
+            footer: footer({
+              loading,
+              params,
+              operations: {
+                handleOk: this.handleOk,
+                handleCancel: this.handleCancel,
+                ...extraOperations,
+              },
+            }),
+          }
+        : null;
     return (
       <React.Fragment>
         {openButton(this.showModal)}
@@ -139,19 +154,7 @@ export class FormModal extends React.Component<IProps, IState> {
           onOk={this.handleOk}
           confirmLoading={loading}
           onCancel={this.handleCancel}
-          footer={
-            footer != null
-              ? footer({
-                  loading,
-                  params,
-                  operations: {
-                    handleOk: this.handleOk,
-                    handleCancel: this.handleCancel,
-                    ...extraOperations,
-                  },
-                })
-              : null
-          }
+          {...renderFooterOpts}
         >
           {body}
           <LightForm

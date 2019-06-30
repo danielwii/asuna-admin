@@ -29,23 +29,25 @@ declare module Asuna {
       value: any;
     }
 
+    interface ErrorResponse {
+      error: Exception;
+    }
+
     interface Exception {
-      status: 400 | 500;
-      code: Code;
+      status: number;
+      code: string;
       errors: any[];
       message: string;
       name: string;
     }
 
     interface ValidationException extends Exception {
-      status: 400;
       code: Code.VALIDATE;
-      errors: Validate[];
+      details: Validate[];
+      name: string;
     }
 
-    interface AsunaException extends Exception {
-      status: 500;
-    }
+    interface AsunaException extends Exception {}
   }
 
   module Schema {
@@ -156,7 +158,7 @@ declare module Asuna {
       columns?: {
         [key in keyof T]: {
           editor: (fields: any) => string;
-        }
+        };
       };
     }
 
