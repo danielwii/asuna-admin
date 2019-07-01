@@ -61,7 +61,7 @@ function withDefaultNextConfigs(nextConfig = {}) {
       return config;
     },
 
-    serverRuntimeConfig: {},
+    serverRuntimeConfig: { isServer: true },
 
     publicRuntimeConfig: {
       env: process.env.ENV || 'dev',
