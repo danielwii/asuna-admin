@@ -15,7 +15,13 @@ const port = process.env.PORT || 3000;
 const app = next({ dev });
 const handle = app.getRequestHandler();
 
-function bootstrap({ root, opts }) {
+/**
+ * bootstrap
+ * @param root project location, used to search graphql schemas
+ * @param opts
+ * @param enableGraphQL enable self graphql server
+ */
+function bootstrap({ root, opts, enableGraphQL }) {
   logger.log(`bootstrap ... ${util.inspect({ root, opts }, { colors: true })}`);
   const PROXY_API = opts.configurator.loadConfig('PROXY_API');
   app.prepare().then(() => {
@@ -27,7 +33,7 @@ function bootstrap({ root, opts }) {
     // --------------------------------------------------------------
 
     let graphqlPath;
-    if (opts.enableGraphQL) {
+    if (enableGraphQL) {
       const applyMiddleware = require('./server/graphql/apollo-koa-server');
       const graphqlMiddleware = applyMiddleware(server, { root, dev });
       graphqlPath = graphqlMiddleware.graphqlPath;

@@ -12,6 +12,7 @@
     "strictNullChecks": true,
     "removeComments": false,
     "preserveConstEnums": true,
+    "incremental": true,
     "sourceMap": true,
     "declaration": true,
     "declarationDir": "declaration",
