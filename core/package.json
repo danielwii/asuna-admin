@@ -26,7 +26,7 @@
     "clean": "rm -rf ./dist ./declaration",
     "prebuild-ignore": "yarn clean",
     "build": "tsc && if [[ -e ./dist/src ]]; then mv ./dist ./_dist && mv ./_dist/src ./dist && rm -rf ./_dist; fi && if [[ -e ./declaration/src ]]; then mv ./declaration ./_declaration && mv ./_declaration/src ./declaration && rm -rf ./_declaration; fi",
-    "postinstall": "yarn build",
+    "postinstall-ignore": "yarn build",
     "postbuild": "yarn compile:replace-path",
     "postpublish": "yarn clean",
     "compile:replace-path": "node replace-path.js",

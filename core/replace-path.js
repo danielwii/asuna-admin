@@ -10,12 +10,18 @@ const opts = {
   alias: { '@asuna-admin': './' },
 };
 
+let importExportCounts = 0;
+
 const handleSourceFile = absoluteBaseUrl => async sourceFile => {
+  // console.log({ sourceFile, importDeclarations: sourceFile.getImportDeclarations(), exportDeclarations: sourceFile.getExportDeclarations() });
   const importExportDeclarations = [
     ...sourceFile.getImportDeclarations(),
     ...sourceFile.getExportDeclarations(),
   ];
+  importExportCounts += importExportDeclarations.length;
   const sourceFileAbsolutePath = sourceFile.getFilePath();
+  // console.log({ importExportDeclarations });
+  // console.log('source:', sourceFileAbsolutePath);
   let sourceFileWasChanged = false;
   importExportDeclarations.forEach(declaration => {
     // if module seems like absolute
@@ -77,10 +83,14 @@ opts.roots.forEach(root => {
   // const matchPathFunc = paths.createMatchPath(absoluteBaseUrl, compilerOptions.paths || {});
   const project = new Project({ compilerOptions });
 
-  // console.log({ opts, paths: compilerOptions.paths, absoluteBaseUrl });
+  // console.log({ opts, paths: compilerOptions.paths, absoluteBaseUrl, search: `./${root}/**/*.{js,jsx,ts,tsx}` });
 
   project.addExistingSourceFiles(`./${root}/**/*.{js,jsx,ts,tsx}`);
   const sourceFiles = project.getSourceFiles();
 
   sourceFiles.forEach(handleSourceFile(absoluteBaseUrl));
+
+  if (importExportCounts === 0) {
+    console.warn('compile:replace-path may not works with commonjs.');
+  }
 });
