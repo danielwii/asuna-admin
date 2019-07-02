@@ -5,5 +5,5 @@ import join from 'url-join';
  * @param res
  */
 export function responseToUrl(res: Asuna.Schema.UploadResponse) {
-  return join(res.bucket, res.prefix, res.filename);
+  return join(res.fullpath);
 }

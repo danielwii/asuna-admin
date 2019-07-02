@@ -79,7 +79,7 @@ const defaultConfiguration: ConfigOpts = {
   API_RESPONSE_ASSOCIATION_MODE: 'ids',
   DEFAULT_PAGE_SIZE: 25,
 
-  UPLOADS_ENDPOINT: 'uploads/',
+  UPLOADS_ENDPOINT: '/uploads',
   // IMAGE_HOST: 'uploads/',
   IMAGE_BUCKET: 'default',
   IMAGE_RES_HANDLER: responseToUrl,

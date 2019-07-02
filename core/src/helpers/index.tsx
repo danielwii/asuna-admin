@@ -17,7 +17,7 @@ import { Config } from '@asuna-admin/config';
 import { createLogger } from '@asuna-admin/logger';
 import { AppContext } from '@asuna-admin/core';
 import { AssetsPreview } from '@asuna-admin/components';
-import { valueToArrays } from '@asuna-admin/core/url-rewriter';
+import { joinUrl, valueToArrays } from '@asuna-admin/core/url-rewriter';
 
 const logger = createLogger('helpers');
 
@@ -176,8 +176,10 @@ export const columnHelper = {
       if (text) {
         const value = opts.transformer ? opts.transformer(text) : text;
         if (typeof value === 'string' && value.length > 30) {
-          const host = Config.get('UPLOADS_ENDPOINT', '');
-          const url = `${opts.host || host}${value}`;
+          // const host = Config.get('UPLOADS_ENDPOINT');
+          // const url = `${opts.host || host}${value}`;
+          // const url = joinUrl(Config.get('UPLOADS_ENDPOINT'), value);
+          const url = value;
           return (
             <React.Fragment>
               <Tooltip title={url}>
@@ -252,9 +254,9 @@ export const columnHelper = {
           const value = opts.transformer ? opts.transformer(text) : text;
           if (value) {
             const images = valueToArrays(value);
-            const host = Config.get('UPLOADS_ENDPOINT', '');
+            // const host = Config.get('UPLOADS_ENDPOINT', '');
             // return _.map(images, image => <AssetPreview key={image} host={host} url={image} />);
-            return <AssetsPreview key={images} host={opts.host || host} urls={images} />;
+            return <AssetsPreview key={images} urls={images} />;
           }
         } catch (e) {
           logger.error('[generateImage]', e, { key, title, text });

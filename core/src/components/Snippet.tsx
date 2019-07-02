@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 import { Icon } from 'antd';
 // import { Document, Page } from "react-pdf/dist/entry.webpack";
 import { FlexCenterBox, ThumbImage } from './Styled';
-import { valueToUrl } from '@asuna-admin/core/url-rewriter';
+import { joinUrl, valueToUrl } from '@asuna-admin/core/url-rewriter';
 
 interface IAssetsPreviewProps {
   host?: string;
@@ -41,7 +41,7 @@ export function AssetPreview({ host, url, showPdf, fullWidth }: IAssetPreviewPro
     pageNumber: 1,
     loading: true,
   });
-  const href = `${host}${url}`;
+  const href = joinUrl(host, url);
 
   const onDocumentLoadSuccess = ({ numPages }) => {
     setState({ numPages, pageNumber: 1, loading: false });

@@ -14,6 +14,12 @@ export function valueToArrays(value) {
   return images;
 }
 
+export function joinUrl(base?: string, path?: string): string {
+  const safeBase = base || '';
+  const endpoint = safeBase.endsWith('/') ? safeBase : `${safeBase}/`;
+  return endpoint + `/${path || ''}`.replace('//', '/').slice(1);
+}
+
 export function valueToUrl(
   value,
   {
@@ -27,8 +33,10 @@ export function valueToUrl(
   },
 ) {
   if (value) {
-    const endpoint = host || Config.get('UPLOADS_ENDPOINT', "");
-    let url = endpoint + `/${value}`.replace('//', '/').slice(1);
+    // const base = host || Config.get('UPLOADS_ENDPOINT') || '';
+    // let url = joinUrl(base, value);
+    // response value param fullpath already includes uploads path
+    let url = value;
     if (thumbnail) {
       const template = _.get(
         AppContext.serverSettings['settings.url-resolver'],

@@ -8,7 +8,8 @@ describe('upload', () => {
         prefix: '2019/07',
         mode: 'local',
         bucket: 'default',
+        fullpath: '/uploads/default/2019/07/filename.ext'
       }),
-    ).toBe('default/2019/07/filename.ext');
+    ).toBe('/uploads/default/2019/07/filename.ext');
   });
 });

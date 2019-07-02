@@ -56,6 +56,7 @@ declare module Asuna {
       filename: string;
       mode: 'local' | 'qiniu';
       prefix: string;
+      fullpath: string;
     }
 
     // type EntityMetaInfoOptions = {
