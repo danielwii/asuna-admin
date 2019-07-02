@@ -73,7 +73,7 @@ function* loadModels({ payload: { name, models } }: LoadModelsParams) {
 
       yield put(
         contentActions.loadModelsSuccess({
-          [name]: { data: response.data, loading: false },
+          [name]: { data: response.data, loading: false, extras },
         }),
       );
     } catch (e) {
@@ -95,9 +95,13 @@ const contentSagas = [
 
 const initialState = {};
 
-const contentReducer = (previousState = initialState, action) => {
+const contentReducer = (previousState: any = initialState, action) => {
   if (isContentModule(action)) {
-    return R.mergeDeepRight(previousState, action.payload);
+    return {
+      name: action.payload.name,
+      models: { ...previousState.models, ...action.payload.models },
+    };
+    // return R.mergeDeepRight(previousState, action.payload); // FIXME mergeDeepRight won't delete unused properties in object
   }
   return previousState;
 };
