@@ -3,7 +3,6 @@ const webpack = require('webpack');
 const Jarvis = require('webpack-jarvis');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
-const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const pkg = require('./package.json');
 
 const jarvis = new Jarvis({ port: 1337 });
@@ -32,7 +31,6 @@ function withDefaultNextConfigs(nextConfig = {}) {
       config.resolve.plugins = config.resolve.plugins || [];
 
       if (isServer) {
-        config.plugins.push(new ForkTsCheckerWebpackPlugin());
         if (dev) {
           console.log('> [webpack] [Server] load jarvis & bundleAnalyzerPlugin...');
           config.plugins.push(jarvis);

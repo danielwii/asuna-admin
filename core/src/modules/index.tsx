@@ -1,11 +1,10 @@
-import React from 'react';
-import dynamic from 'next/dynamic';
-import _ from 'lodash';
-
-import { createLogger } from '@asuna-admin/logger';
 import { DebugSettings } from '@asuna-admin/components';
 import { withDebugSettingsProps } from '@asuna-admin/containers/DebugSettings';
 import { AppContext } from '@asuna-admin/core';
+import { createLogger } from '@asuna-admin/logger';
+import _ from 'lodash';
+import dynamic from 'next/dynamic';
+import React from 'react';
 
 const logger = createLogger('modules:index');
 
@@ -34,32 +33,30 @@ export class ModuleRegister {
   };
 }
 
-export default dynamic({
-  modules: () =>
-    ({
-      'content::index': () => import('./content/index'),
-      'content::upsert': () => import('./content/upsert'),
-      'content::blank': () => import('./content/blank'),
-      default: () => import('./undefined'),
-    } as any),
-  render: (props, components) => {
-    logger.log({ props });
-    const { module, component } = props as any;
+const components = {
+  'content::index': dynamic(() => import('./content/index')),
+  'content::upsert': dynamic(() => import('./content/upsert')),
+  'content::blank': dynamic(() => import('./content/blank')),
+  default: dynamic(() => import('./undefined')),
+};
 
-    if (component) {
-      const moduleRender = ModuleRegister.renders[component];
+export default function(props) {
+  logger.log({ props });
+  const { module, component } = props as any;
 
-      if (moduleRender) {
-        // console.log('loader', { moduleRender, props });
-        return moduleRender(props);
-      }
+  if (component) {
+    const moduleRender = ModuleRegister.renders[component];
 
-      const fc = AppContext.ctx.components.load(component);
-      // console.log('loader', { fc, props });
-      return fc(props);
+    if (moduleRender) {
+      // console.log('loader', { moduleRender, props });
+      return moduleRender(props);
     }
 
-    const Component = getModule(components, module).default;
-    return <Component {...props} />;
-  },
-}) as any;
+    const fc = AppContext.ctx.components.load(component);
+    // console.log('loader', { fc, props });
+    return fc(props);
+  }
+
+  const Component = getModule(components, module);
+  return <Component {...props} />;
+}

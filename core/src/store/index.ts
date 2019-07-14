@@ -78,7 +78,7 @@ export class AsunaStore {
     storage: localForage,
     debug: true,
     timeout: 10000,
-    blacklist: ['app', 'router', 'auth'],
+    blacklist: ['app', 'router' /*, 'auth'*/],
   };
 
   private constructor() {

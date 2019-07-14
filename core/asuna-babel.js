@@ -13,7 +13,6 @@ module.exports = api => {
           'class-properties': {},
         },
       ],
-      '@zeit/next-typescript/babel',
     ],
     plugins: [
       'babel-plugin-idx',
