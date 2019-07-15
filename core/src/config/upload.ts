@@ -1,3 +1,5 @@
+import { Asuna } from '@asuna-admin/types';
+
 import join from 'url-join';
 
 /**

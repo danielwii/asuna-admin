@@ -1,12 +1,11 @@
-import React from 'react';
-import videojs from 'video.js';
-import * as R from 'ramda';
-import _ from 'lodash';
+import { apiProxy } from '@asuna-admin/adapters';
+import { createLogger } from '@asuna-admin/logger';
 
 import { Button, Icon, message, Upload } from 'antd';
-
-import { createLogger } from '@asuna-admin/logger';
-import { apiProxy } from '@asuna-admin/adapters';
+import _ from 'lodash';
+import * as R from 'ramda';
+import React from 'react';
+import videojs from 'video.js';
 
 const logger = createLogger('components:dynamic-form:video');
 

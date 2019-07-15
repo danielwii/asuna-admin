@@ -1,9 +1,10 @@
+import { Header, IHeaderProps } from '@asuna-admin/components';
+import { appActions, authActions, panesActions, RootState } from '@asuna-admin/store';
+import { AppContext } from '@asuna-admin/core';
+
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { Header, IHeaderProps } from '@asuna-admin/components';
-import { appActions, authActions, panesActions, RootState } from '@asuna-admin/store';
-import { AppContext } from 'asuna-admin';
 import { withDebugSettingsProps } from './DebugSettings';
 
 const mapStateToProps = (state: RootState): Partial<IHeaderProps> => ({

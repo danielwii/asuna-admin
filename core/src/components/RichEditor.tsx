@@ -1,11 +1,11 @@
-import React from 'react';
-
 import { apiProxy } from '@asuna-admin/adapters';
 import { AppContext } from '@asuna-admin/core';
-import { createLogger } from '@asuna-admin/logger';
 import { validateFile } from '@asuna-admin/helpers/upload';
+import { createLogger } from '@asuna-admin/logger';
+import { Asuna } from '@asuna-admin/types';
 
 import 'braft-editor/dist/index.css';
+import * as React from 'react';
 
 const logger = createLogger('components:rich-editor');
 

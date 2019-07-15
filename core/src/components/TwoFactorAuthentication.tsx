@@ -1,7 +1,7 @@
-import * as React from 'react';
 import { Icon, Steps } from 'antd';
-import { useState } from 'react';
 import { StepProps } from 'antd/es/steps';
+import * as React from 'react';
+import { useState } from 'react';
 
 const { Step } = Steps;
 

@@ -1,10 +1,12 @@
+import { joinUrl, valueToUrl } from '@asuna-admin/core/url-rewriter';
+
+import { Icon } from 'antd';
+import * as _ from 'lodash';
 import React, { useState } from 'react';
 import { Document, Page } from 'react-pdf';
-import * as _ from 'lodash';
-import { Icon } from 'antd';
 // import { Document, Page } from "react-pdf/dist/entry.webpack";
+
 import { FlexCenterBox, ThumbImage } from './Styled';
-import { joinUrl, valueToUrl } from '@asuna-admin/core/url-rewriter';
 
 interface IAssetsPreviewProps {
   host?: string;

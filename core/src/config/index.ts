@@ -1,3 +1,5 @@
+import { Asuna } from '@asuna-admin/types';
+
 import { responseToUrl } from './upload';
 
 type StringCase = 'None' | 'Snake' | 'Camel';

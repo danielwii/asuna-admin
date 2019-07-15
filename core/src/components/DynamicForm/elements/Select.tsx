@@ -1,14 +1,14 @@
-import React from 'react';
-import * as R from 'ramda';
-import * as _ from 'lodash';
+import { AppContext } from '@asuna-admin/core';
+import { createLogger } from '@asuna-admin/logger';
+
 import { Select } from 'antd';
 import { WrappedFormUtils } from 'antd/es/form/Form';
+import * as _ from 'lodash';
+import * as R from 'ramda';
+import React from 'react';
 import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc';
 
 import { generateComponent, IFormItemLayout } from '.';
-
-import { createLogger } from '@asuna-admin/logger';
-import { AppContext } from '@asuna-admin/core';
 
 const logger = createLogger('components:dynamic-form:select');
 

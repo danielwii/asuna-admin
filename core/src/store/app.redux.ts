@@ -1,20 +1,18 @@
+import { apiProxy } from '@asuna-admin/adapters';
+import { createLogger } from '@asuna-admin/logger';
+
+import idx from 'idx';
+import * as R from 'ramda';
+import { REHYDRATE } from 'redux-persist';
 import { call, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 
-import { REHYDRATE } from 'redux-persist';
-import * as R from 'ramda';
-import idx from 'idx';
-
-import { appActions, appActionTypes, isAppModule } from './app.actions';
-
 import { actions, RootState } from './';
-import { securitySagaFunctions } from './security.redux';
+import { appActions, appActionTypes, isAppModule } from './app.actions';
+import { authActions } from './auth.actions';
 import { menuSagaFunctions } from './menu.redux';
 import { modelsSagaFunctions } from './models.redux';
 import { routerActions } from './router.redux';
-import { authActions } from './auth.actions';
-
-import { createLogger } from '@asuna-admin/logger';
-import { apiProxy } from '@asuna-admin/adapters';
+import { securitySagaFunctions } from './security.redux';
 
 // import { Observable } from 'rxjs/Observable';
 

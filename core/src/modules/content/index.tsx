@@ -1,19 +1,18 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import * as R from 'ramda';
-import _ from 'lodash';
-import { Subscription } from 'rxjs';
+import { responseProxy } from '@asuna-admin/adapters';
+import { Config } from '@asuna-admin/config';
+import { ActionEvent, AppContext, EventBus, EventType } from '@asuna-admin/core';
+import { castModelKey, diff } from '@asuna-admin/helpers';
+import { createLogger } from '@asuna-admin/logger';
+import { contentActions, modelsActions, panesActions, RootState } from '@asuna-admin/store';
 
 import { Button, Divider, Modal, Table } from 'antd';
 import { PaginationConfig } from 'antd/es/pagination';
 import { ColumnProps, SorterResult } from 'antd/es/table';
-
-import { contentActions, modelsActions, panesActions, RootState } from '@asuna-admin/store';
-import { castModelKey, diff } from '@asuna-admin/helpers';
-import { responseProxy } from '@asuna-admin/adapters';
-import { ActionEvent, AppContext, EventBus, EventType } from '@asuna-admin/core';
-import { createLogger } from '@asuna-admin/logger';
-import { Config } from '@asuna-admin/config';
+import _ from 'lodash';
+import * as R from 'ramda';
+import React from 'react';
+import { connect } from 'react-redux';
+import { Subscription } from 'rxjs';
 
 const logger = createLogger('modules:content:index');
 

@@ -1,5 +1,6 @@
-import { castModelKey, castModelName } from './cast';
 import { Config } from '@asuna-admin/config';
+
+import { castModelKey, castModelName } from './cast';
 
 describe('cast', () => {
   it('should cat model key correctly', () => {

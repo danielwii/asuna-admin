@@ -1,5 +1,6 @@
 import { extend } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
+import { Asuna } from '@asuna-admin/types';
 
 const logger = createLogger('core:definition');
 

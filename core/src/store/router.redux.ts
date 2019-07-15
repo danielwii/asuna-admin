@@ -1,5 +1,4 @@
 import { takeLatest } from 'redux-saga/effects';
-
 import Router from 'next/router';
 import * as R from 'ramda';
 

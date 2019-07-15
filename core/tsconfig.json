@@ -12,7 +12,6 @@
     "strictNullChecks": true,
     "removeComments": false,
     "preserveConstEnums": true,
-    "incremental": true,
     "sourceMap": true,
     "skipLibCheck": true,
     "outDir": "dist",

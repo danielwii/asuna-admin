@@ -1,12 +1,11 @@
-import React from 'react';
-import _ from 'lodash';
-import * as R from 'ramda';
+import { diff } from '@asuna-admin/helpers';
+import { createLogger } from '@asuna-admin/logger';
+import ModulesLoader from '@asuna-admin/modules';
 
 import { Button, Divider, Tabs } from 'antd';
-
-import ModulesLoader from '@asuna-admin/modules';
-import { createLogger } from '@asuna-admin/logger';
-import { diff } from '@asuna-admin/helpers';
+import _ from 'lodash';
+import * as R from 'ramda';
+import React from 'react';
 
 const logger = createLogger('components:panes');
 

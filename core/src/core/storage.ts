@@ -1,5 +1,6 @@
-import localforage from 'localforage';
 import { Config } from '@asuna-admin/config';
+
+import localforage from 'localforage';
 
 export class Storage {
   private static INSTANCE: Storage;

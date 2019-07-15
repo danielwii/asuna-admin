@@ -1,8 +1,6 @@
-declare module 'Asuna' {
-  export = Asuna;
-}
+import { MetaInfoOptions } from './meta';
 
-declare module Asuna {
+export declare module Asuna {
   interface Pageable {
     page: number;
     size: number;
@@ -150,9 +148,6 @@ declare module Asuna {
       };
     }
 
-    // 单个模型设置，用于定义非 app 模块外的模型的访问端点
-    type ModelOpts = { [key: string]: ModelOpt };
-
     interface ModelOpt<T> {
       creatable?: boolean;
       endpoint?: string;
@@ -162,6 +157,9 @@ declare module Asuna {
         };
       };
     }
+
+    // 单个模型设置，用于定义非 app 模块外的模型的访问端点
+    type ModelOpts = { [key: string]: ModelOpt<any> };
 
     interface SubMenu {
       key: string;

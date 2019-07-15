@@ -1,13 +1,12 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import * as R from 'ramda';
-
-import 'moment/locale/zh-cn';
-
-import { appActions, AppState, AuthState, RootState } from '@asuna-admin/store';
 import { AppContext, IIndexRegister, ILoginRegister, INextConfig } from '@asuna-admin/core';
 import { MainLayout } from '@asuna-admin/layout';
 import { createLogger } from '@asuna-admin/logger';
+import { appActions, AppState, AuthState, RootState } from '@asuna-admin/store';
+
+import 'moment/locale/zh-cn';
+import * as R from 'ramda';
+import React from 'react';
+import { connect } from 'react-redux';
 
 const logger = createLogger('pages:index');
 

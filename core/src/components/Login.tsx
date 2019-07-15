@@ -1,9 +1,8 @@
-import React from 'react';
+import { createLogger } from '@asuna-admin/logger';
 
 import { Button, Form, Icon, Input } from 'antd';
 import { FormComponentProps } from 'antd/es/form/Form';
-
-import { createLogger } from '@asuna-admin/logger';
+import React from 'react';
 
 const logger = createLogger('components:login');
 

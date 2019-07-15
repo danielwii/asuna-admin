@@ -1,17 +1,15 @@
-import React from 'react';
+import { toFormErrors } from '@asuna-admin/helpers';
+import { createLogger } from '@asuna-admin/logger';
+
+import { Form, Modal } from 'antd';
+import { WrappedFormUtils } from 'antd/es/form/Form';
+import { AxiosResponse } from 'axios';
+import idx from 'idx';
 import _ from 'lodash';
 import * as R from 'ramda';
-
-import { AxiosResponse } from 'axios';
-import { Button, Form, message, Modal } from 'antd';
-import { WrappedFormUtils } from 'antd/es/form/Form';
+import React from 'react';
 
 import { DynamicForm } from './DynamicForm';
-
-import { toErrorMessage, toFormErrors } from '@asuna-admin/helpers';
-import { createLogger } from '@asuna-admin/logger';
-import idx from 'idx';
-import { extensionRegex } from 'ts-loader/dist/types/constants';
 
 const logger = createLogger('components:form-modal');
 

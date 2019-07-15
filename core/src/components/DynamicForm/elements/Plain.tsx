@@ -1,10 +1,11 @@
-import { horizontalFormItemLayout, IFormItemLayout, PlainOptions } from '.';
-import { Form } from 'antd';
-import React from 'react';
-import * as _ from 'lodash';
-import { createLogger } from '@asuna-admin/logger';
 import { AssetPreview } from '@asuna-admin/components';
-import { Config } from '@asuna-admin/config';
+import { createLogger } from '@asuna-admin/logger';
+
+import { Form } from 'antd';
+import * as _ from 'lodash';
+import React from 'react';
+
+import { horizontalFormItemLayout, IFormItemLayout, PlainOptions } from '.';
 
 const logger = createLogger('components:dynamic-form:elements:plain');
 
@@ -23,7 +24,7 @@ export function PlainImages({ options, formItemLayout }: IPlainImagesProps) {
   return (
     <Form.Item
       key={fieldName}
-      {...formItemLayout || horizontalFormItemLayout}
+      {...(formItemLayout || horizontalFormItemLayout)}
       label={labelName}
       help={help}
     >

@@ -1,11 +1,11 @@
-import React from 'react';
-import { WrappedFormUtils } from 'antd/es/form/Form';
-
-import { FileUploader } from '../FileUploader';
-import { defaultFormItemLayout, generateComponent, IFormItemLayout } from '.';
-
 import { Config } from '@asuna-admin/config';
 import { createLogger } from '@asuna-admin/logger';
+
+import { WrappedFormUtils } from 'antd/es/form/Form';
+import React from 'react';
+
+import { defaultFormItemLayout, generateComponent, IFormItemLayout } from '.';
+import { FileUploader } from '../FileUploader';
 
 const logger = createLogger('components:dynamic-form:files');
 

@@ -1,12 +1,12 @@
-import React from 'react';
-import { WrappedFormUtils } from 'antd/es/form/Form';
-
-import { ImageUploader } from '../ImageUploader';
-import { defaultFormItemLayout, generateComponent, IFormItemLayout } from '.';
-import { ImageTrivia } from '../ImageTrivia';
-
 import { Config } from '@asuna-admin/config';
 import { createLogger } from '@asuna-admin/logger';
+
+import { WrappedFormUtils } from 'antd/es/form/Form';
+import React from 'react';
+
+import { defaultFormItemLayout, generateComponent, IFormItemLayout } from '.';
+import { ImageTrivia } from '../ImageTrivia';
+import { ImageUploader } from '../ImageUploader';
 
 const logger = createLogger('components:dynamic-form:image');
 

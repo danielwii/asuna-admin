@@ -1,5 +1,4 @@
 import { extend, parseJSONIfCould, removePreAndSuf, removePrefix, removeSuffix } from './func';
-import { Config } from '@asuna-admin/config';
 
 describe('func', () => {
   it('should extend all props', function() {

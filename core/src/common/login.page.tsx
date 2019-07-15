@@ -1,15 +1,14 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import * as R from 'ramda';
-import styled from 'styled-components';
-
-import { LivingLoading, LogoCanvas, Snow, Sun } from '@asuna-admin/components';
+import { LogoCanvas, Snow, Sun } from '@asuna-admin/components';
 import { LoginContainer } from '@asuna-admin/containers';
-
-import { AppState, RootState } from '@asuna-admin/store';
 import { AppContext, IIndexRegister, ILoginRegister, INextConfig } from '@asuna-admin/core';
 import { WithStyles } from '@asuna-admin/layout';
 import { createLogger } from '@asuna-admin/logger';
+import { AppState, RootState } from '@asuna-admin/store';
+
+import * as R from 'ramda';
+import React from 'react';
+import { connect } from 'react-redux';
+import styled from 'styled-components';
 
 const logger = createLogger('pages:login');
 
