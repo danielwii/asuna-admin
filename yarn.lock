@@ -521,7 +521,7 @@
   dependencies:
     "@babel/helper-plugin-utils" "^7.0.0"
 
-"@babel/plugin-syntax-dynamic-import@7.2.0", "@babel/plugin-syntax-dynamic-import@^7.0.0-beta.46", "@babel/plugin-syntax-dynamic-import@^7.2.0":
+"@babel/plugin-syntax-dynamic-import@7.2.0", "@babel/plugin-syntax-dynamic-import@^7.2.0":
   version "7.2.0"
   resolved "https://registry.yarnpkg.com/@babel/plugin-syntax-dynamic-import/-/plugin-syntax-dynamic-import-7.2.0.tgz#69c159ffaf4998122161ad8ebc5e6d1f55df8612"
   integrity sha512-mVxuJ0YroI/h/tbFTPGZR8cv6ai+STMKNBq0f8hFxsxWjl94qqhsb+wXbpNMDPU3cfR1TIsVFzU3nXyZMqyK4w==
@@ -1199,7 +1199,7 @@
   dependencies:
     regenerator-runtime "^0.13.2"
 
-"@babel/template@^7.0.0", "@babel/template@^7.0.0-beta.46", "@babel/template@^7.1.0", "@babel/template@^7.2.2", "@babel/template@^7.4.0":
+"@babel/template@^7.0.0", "@babel/template@^7.1.0", "@babel/template@^7.2.2", "@babel/template@^7.4.0":
   version "7.4.0"
   resolved "https://registry.yarnpkg.com/@babel/template/-/template-7.4.0.tgz#12474e9c077bae585c5d835a95c0b0b790c25c8b"
   integrity sha512-SOWwxxClTTh5NdbbYZ0BmaBVzxzTh2tO/TeLTbF6MO6EzVhHTnff8CdBXx3mEtazFBoysmEM6GU/wF+SuSx4Fw==
@@ -3960,13 +3960,13 @@ babel-plugin-add-react-displayname@^0.0.5:
   resolved "https://registry.yarnpkg.com/babel-plugin-add-react-displayname/-/babel-plugin-add-react-displayname-0.0.5.tgz#339d4cddb7b65fd62d1df9db9fe04de134122bd5"
   integrity sha1-M51M3be2X9YtHfnbn+BN4TQSK9U=
 
-babel-plugin-async-import@2.0.2:
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/babel-plugin-async-import/-/babel-plugin-async-import-2.0.2.tgz#4cea2967710c92e1b62ada16cfbc3823edc4b415"
-  integrity sha512-ozKxr2por6nBus0v6aJmggcu5ToU3/c6GAHZDAxP1b/LqasDSy1k7nzMD/XiBJl9TuIiLH/bSnRUoATRT5dn/w==
+babel-plugin-async-import@2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/babel-plugin-async-import/-/babel-plugin-async-import-2.1.0.tgz#20cd26e73ace89219c25e5076b8edc2fd8f828ad"
+  integrity sha512-/lMEjyntgxrPcyKGwm+V+LgF8lI9n8FcjEQiAlxYufETT28UPro54gde6iSSPNrxslc3TDjskPxfxaq9y187qQ==
   dependencies:
-    "@babel/plugin-syntax-dynamic-import" "^7.0.0-beta.46"
-    "@babel/template" "^7.0.0-beta.46"
+    "@babel/plugin-syntax-dynamic-import" "^7.2.0"
+    "@babel/template" "^7.4.4"
 
 babel-plugin-dynamic-import-node@2.2.0:
   version "2.2.0"
