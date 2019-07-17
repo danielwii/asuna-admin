@@ -1,12 +1,9 @@
 /* eslint-disable import/no-extraneous-dependencies,no-console,no-param-reassign,no-unused-vars */
 const webpack = require('webpack');
-const Jarvis = require('webpack-jarvis');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const pkg = require('./package.json');
 
-const jarvis = new Jarvis({ port: 1337 });
-const bundleAnalyzerPlugin = new BundleAnalyzerPlugin({ openAnalyzer: false });
 const contextReplacementPlugin = new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /zh/);
 const tsconfigPathsPlugin = new TsconfigPathsPlugin({
   logLevel: 'info',
@@ -32,9 +29,9 @@ function withDefaultNextConfigs(nextConfig = {}) {
 
       if (isServer) {
         if (dev) {
-          console.log('> [webpack] [Server] load jarvis & bundleAnalyzerPlugin...');
-          config.plugins.push(jarvis);
-          config.plugins.push(bundleAnalyzerPlugin);
+          console.log('> [webpack] [Server] load bundleAnalyzerPlugin...');
+          // config.plugins.push(jarvis);
+          config.plugins.push(new BundleAnalyzerPlugin({ openAnalyzer: false }));
         }
       } else {
         if (!dev) {
