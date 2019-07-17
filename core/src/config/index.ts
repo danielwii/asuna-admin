@@ -15,10 +15,10 @@ type ApiResponseAssociationMode = 'ids' | 'entity';
 
 type AuthHeader =
   /**
-   * header: Authorization: token
+   * header: Authorization: [string] token
    * default
    */
-  | 'AuthHeader'
+  | string
   /**
    * header: Authorization: `Bearer ${token}`
    */

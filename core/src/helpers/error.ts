@@ -35,7 +35,7 @@ export function safeCallback(cb, data) {
 }
 
 export function toErrorMessage(e) {
-  console.log('-->', { e, response: e.response });
+  logger.log('toErrorMessage', { e, response: e.response });
   if (e.response) {
     return JSON.stringify(idx(e, _ => _.response.data));
   }

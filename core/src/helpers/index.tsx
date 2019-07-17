@@ -29,10 +29,11 @@ export * from './func';
  * @param token
  */
 export const authHeader = token => {
-  if (Config.is('AUTH_HEADER', 'AuthHeaderAsBearerToken')) {
+  const schema = Config.get('AUTH_HEADER');
+  if (schema === 'AuthHeaderAsBearerToken') {
     return { headers: { Authorization: `Bearer ${token}` } };
   }
-  return { headers: { Authorization: token } };
+  return { headers: { Authorization: `${schema} ${token}` } };
 };
 
 type ConditionType = 'like' | 'boolean';
