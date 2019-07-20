@@ -4,6 +4,7 @@ node_js:
 sudo: false
 install:
   - yarn
+  - yarn workspace asuna-admin build
   - yarn global add codecov
 after_success:
   - codecov
