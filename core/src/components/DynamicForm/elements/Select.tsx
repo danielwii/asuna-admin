@@ -1,7 +1,7 @@
 import { AppContext } from '@asuna-admin/core';
 import { createLogger } from '@asuna-admin/logger';
 
-import { Select } from 'antd';
+import { Divider, Icon, Select } from 'antd';
 import { WrappedFormUtils } from 'antd/es/form/Form';
 import * as _ from 'lodash';
 import * as R from 'ramda';
@@ -21,6 +21,7 @@ interface IMixedSelectState<T> {
   selectedItems: T[];
   filterItems: T[];
   existItems: T[];
+  loading: boolean;
 }
 
 type ObjectItem = { [key: string]: any } & { id?: string | number; key?: string | number };
@@ -105,6 +106,7 @@ export function generateSelect<T>(
         selectedItems: this.props.value || [],
         filterItems: _.compact(items) || [],
         existItems: _.compact(existItems) || [],
+        loading: false,
       };
     }
 
@@ -245,9 +247,12 @@ export function generateSelect<T>(
     _onSearch = (value: string): any => {
       if (onSearch) {
         const { existItems } = this.state;
+        this.setState({ loading: true });
+        logger.log('[MixedSelect]', '[onSearch] call', { value });
         onSearch(value, items => {
-          this.setState({ filterItems: _.concat(items, existItems) });
-          logger.log('[MixedSelect]', '[onSearch]', { items });
+          const filterItems = _.concat(items, existItems);
+          logger.log('[MixedSelect]', '[onSearch]', { items, filterItems });
+          this.setState({ loading: false, filterItems });
         });
       }
     };
@@ -257,38 +262,61 @@ export function generateSelect<T>(
     }
 
     render() {
-      logger.debug('[MixedSelect]', '[render]', { state: this.state, props: this.props });
+      const items = this._getAllItems();
+      logger.debug('[MixedSelect]', '[render]', { state: this.state, props: this.props, items });
+
+      const renderedItems = items.map(item => {
+        const optionName = this._extractName(item);
+        const optionValue = this._extractValue(item);
+        // prettier-ignore
+        return (
+          <Select.Option key={optionValue} value={optionValue} title={`${optionValue}-${optionName}`}>
+            {'#'}{optionValue}{': '}<span style={{fontWeight: 'bold'}}>{optionName}</span>
+          </Select.Option>
+        );
+      });
 
       return (
         <React.Fragment>
           <Select
             {...this.props} // set extra properties from dynamic from here
-            value={this.props.value} // value 为 null 时会显示一个空白框
+            value={this.props.value || ''} // value 为 null 时会显示一个空白框
             key={fieldName}
             showSearch
             allowClear
             // style={{ width: 300 }}
             placeholder={placeholder}
-            optionFilterProp="children"
+            // optionFilterProp="children"
             mode={mode}
             onChange={this._onChange}
-            onSearch={this._onSearch}
-            filterOption={(input, option) => {
-              // logger.log('filter item is', { input, option });
-              const itemStr = R.join('', option.props.children).toLowerCase();
-              return itemStr.indexOf(input.toLowerCase()) >= 0;
-            }}
-          >
-            {this._getAllItems().map(item => {
-              const optionName = this._extractName(item);
-              const optionValue = this._extractValue(item);
-              // prettier-ignore
+            onSearch={_.debounce(value => this._onSearch(value), 500)}
+            filterOption={false}
+            /*
+            filterOption={
+              this.state.loading
+                ? false
+                : _.debounce((input, option) => {
+                    const itemStr = option.props.title.toLowerCase();
+                    const included = itemStr.toLowerCase().includes(input.toLowerCase());
+                    logger.log('filter item is', { input, option, itemStr, included });
+                    return included;
+                  }, 200)
+            }
+            dropdownRender={menu => {
+              logger.log('dropdownRender is', { menu });
               return (
-                <Select.Option key={optionValue} value={optionValue}>
-                  {'#'}{optionValue}{': '}<span style={{fontWeight: 'bold'}}>{optionName}</span>
-                </Select.Option>
+                <div>
+                  {menu}
+                  <Divider style={{ margin: '4px 0' }}/>
+                  <div style={{ padding: '8px', cursor: 'pointer' }}>
+                    <Icon type="plus"/> Add item
+                  </div>
+                </div>
               );
-            })}
+            }}
+*/
+          >
+            {renderedItems}
           </Select>
           {withSortTree && this._renderSortTree()}
         </React.Fragment>

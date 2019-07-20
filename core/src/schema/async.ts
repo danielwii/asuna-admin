@@ -109,7 +109,7 @@ export const asyncLoadAssociationsDecorator = async ({
             {
               modelName: selectable,
               association: fieldsOfAssociations[selectable],
-              onSearch: _.debounce(async (value, callback) => {
+              onSearch: async (value, callback) => {
                 logger.log(TAG, 'onSearch', { value });
 
                 AppContext.adapters.models
@@ -121,7 +121,7 @@ export const asyncLoadAssociationsDecorator = async ({
                   .catch(reason => {
                     logger.error(TAG, reason);
                   });
-              }, 500),
+              },
             },
           ];
           logger.debug(TAG, { fieldsOfAssociations, foreignOpts });

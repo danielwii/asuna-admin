@@ -2,7 +2,7 @@
 const nodePath = require('path');
 // const paths = require('tsconfig-paths');
 const tsconfig = require('tsconfig-extends');
-const Project = require('ts-simple-ast').default;
+const Project = require('ts-morph').default;
 const _ = require('lodash');
 
 const opts = {
