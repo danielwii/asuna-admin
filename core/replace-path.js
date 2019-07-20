@@ -1,18 +1,18 @@
 /* eslint-disable import/no-extraneous-dependencies,no-console */
-const nodePath = require('path');
+const { join, relative, resolve } = require('path');
 // const paths = require('tsconfig-paths');
 const tsconfig = require('tsconfig-extends');
-const { Project } = require('ts-morph');
+const { Project, SourceFile } = require('ts-morph');
 const _ = require('lodash');
 
 const opts = {
-  roots: ['dist'],
+  roots: [resolve('dist')],
   alias: { '@asuna-admin': './' },
 };
 
 let importExportCounts = 0;
 
-const handleSourceFile = absoluteBaseUrl => async sourceFile => {
+const handleSourceFile = root => async sourceFile => {
   // console.log({ sourceFile, importDeclarations: sourceFile.getImportDeclarations(), exportDeclarations: sourceFile.getExportDeclarations() });
   const importExportDeclarations = [
     ...sourceFile.getImportDeclarations(),
@@ -37,8 +37,8 @@ const handleSourceFile = absoluteBaseUrl => async sourceFile => {
       if (value) {
         const prefix = _.findKey(opts.alias, (v, k) => value.startsWith(k));
         if (prefix) {
-          const relativePathToDepsModule = nodePath.join(
-            absoluteBaseUrl,
+          const relativePathToDepsModule = join(
+            root,
             opts.alias[prefix],
             value.slice(prefix.length + 1),
           );
@@ -51,7 +51,7 @@ const handleSourceFile = absoluteBaseUrl => async sourceFile => {
 
           // and if relative module really exists
           if (relativePathToDepsModule) {
-            let resultPath = nodePath.relative(sourceFileAbsolutePath, relativePathToDepsModule);
+            let resultPath = relative(sourceFileAbsolutePath, relativePathToDepsModule);
 
             if (resultPath) {
               if (resultPath.startsWith('../../')) {
@@ -79,18 +79,20 @@ const handleSourceFile = absoluteBaseUrl => async sourceFile => {
 opts.roots.forEach(root => {
   // use `tsconfig-extends` module cause it can recursively apply "extends" field
   const compilerOptions = tsconfig.load_file_sync('./tsconfig.json');
-  const absoluteBaseUrl = nodePath.join(process.cwd(), compilerOptions.baseUrl, root);
+  // const absoluteBaseUrl = join(process.cwd(), compilerOptions.baseUrl, root);
   // const matchPathFunc = paths.createMatchPath(absoluteBaseUrl, compilerOptions.paths || {});
   const project = new Project({ compilerOptions });
 
   // console.log({ opts, paths: compilerOptions.paths, absoluteBaseUrl, search: `./${root}/**/*.{js,jsx,ts,tsx}` });
 
-  project.addExistingSourceFiles(`./${root}/**/*.{js,jsx,ts,tsx}`);
+  project.addExistingSourceFiles(`${root}/**/*.{js,jsx,ts,tsx}`);
   const sourceFiles = project.getSourceFiles();
 
-  sourceFiles.forEach(handleSourceFile(absoluteBaseUrl));
+  console.log(`root is ${root}`);
+  sourceFiles.forEach(handleSourceFile(root));
 
   if (importExportCounts === 0) {
-    console.warn('compile:replace-path may not works with commonjs.');
+    console.error('compile:replace-path may not works with commonjs.');
+    process.exit(2);
   }
 });
