@@ -15,10 +15,11 @@
     "sourceMap": true,
     "skipLibCheck": true,
     "outDir": "dist",
-    "baseUrl": "./",
+    "declarationDir": "declaration",
+    "baseUrl": "./src",
     "paths": {
-      "asuna-admin": ["src/index.ts"],
-      "@asuna-admin/*": ["src/*"]
+      "asuna-admin": ["index.ts"],
+      "@asuna-admin/*": ["*"]
     },
     "strict": false,
     "forceConsistentCasingInFileNames": true,
@@ -27,5 +28,5 @@
     "isolatedModules": true
   },
   "exclude": ["**/*.spec.*", "node_modules"],
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"]
+  "include": ["next-env.d.ts", "src/**/*.ts*"]
 }
