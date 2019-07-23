@@ -1,7 +1,7 @@
 import { AppContext } from '@asuna-admin/core';
 import { createLogger } from '@asuna-admin/logger';
 
-import { Divider, Icon, Select } from 'antd';
+import { Select } from 'antd';
 import { WrappedFormUtils } from 'antd/es/form/Form';
 import * as _ from 'lodash';
 import * as R from 'ramda';
@@ -280,7 +280,7 @@ export function generateSelect<T>(
         <React.Fragment>
           <Select
             {...this.props} // set extra properties from dynamic from here
-            value={this.props.value || ''} // value 为 null 时会显示一个空白框
+            value={this.props.value}
             key={fieldName}
             showSearch
             allowClear

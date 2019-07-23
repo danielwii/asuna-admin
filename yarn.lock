@@ -2633,10 +2633,10 @@
   resolved "https://registry.yarnpkg.com/@types/url-join/-/url-join-4.0.0.tgz#72eff71648a429c7d4acf94e03780e06671369bd"
   integrity sha512-awrJu8yML4E/xTwr2EMatC+HBnHGoDxc2+ImA9QyeUELI1S7dOCIZcyjki1rkwoA8P2D2NVgLAJLjnclkdLtAw==
 
-"@types/video.js@^7.2.10":
-  version "7.2.10"
-  resolved "https://registry.yarnpkg.com/@types/video.js/-/video.js-7.2.10.tgz#089247caa7eb3748768e4550d5c7191c37f571ba"
-  integrity sha512-BkFR2zgDIYNhlRCR/zUrDkXkJRO0y0c1HgZigsF+Ow9Wb1kM6XkTpM7C7iSUG7t1buNLDsw7FG0QYDd+ZoUuoQ==
+"@types/video.js@^7.2.11":
+  version "7.2.11"
+  resolved "https://registry.yarnpkg.com/@types/video.js/-/video.js-7.2.11.tgz#58b42acef95c40abbf93cc8fc4e1da78be2817b2"
+  integrity sha512-iMty3fhXUz9H1nsSq8FBa36lPD7cOPHfW/1n2Q9nMzi8v7vrZ4U9sX1sRjwOff2m/8gNBFnb3pC9TniTrHE8cQ==
 
 "@types/webpack-env@*":
   version "1.14.0"
@@ -4849,7 +4849,7 @@ clone-deep@^0.2.4:
     lazy-cache "^1.0.3"
     shallow-clone "^0.1.2"
 
-clsx@^1.0.2:
+clsx@^1.0.2, clsx@^1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/clsx/-/clsx-1.0.4.tgz#0c0171f6d5cb2fe83848463c15fcc26b4df8c2ec"
   integrity sha512-1mQ557MIZTrL/140j+JVdRM6e31/OA4vTYxXgqIIZlndyfjHpyawKZia1Im05Vp9BWmImkcNrNtFYQMyFcgJDg==
@@ -5587,15 +5587,15 @@ deep-object-diff@^1.1.0:
   resolved "https://registry.yarnpkg.com/deep-object-diff/-/deep-object-diff-1.1.0.tgz#d6fabf476c2ed1751fc94d5ca693d2ed8c18bc5a"
   integrity sha512-b+QLs5vHgS+IoSNcUE4n9HP2NwcHj7aqnJWsjPtuG75Rh5TOaGt0OjAYInh77d5T16V5cRDC+Pw/6ZZZiETBGw==
 
-deepmerge@2.2.1, deepmerge@^2.0.1:
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/deepmerge/-/deepmerge-2.2.1.tgz#5d3ff22a01c00f645405a2fbc17d0778a1801170"
-  integrity sha512-R9hc1Xa/NOBi9WRVUWg19rl1UB7Tt4kuPd+thNJgFZoxXsTz7ncaPaeIm+40oSGuP33DfMb4sZt1QIGiJzC4EA==
-
 deepmerge@4.0.0, deepmerge@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/deepmerge/-/deepmerge-4.0.0.tgz#3e3110ca29205f120d7cb064960a39c3d2087c09"
   integrity sha512-YZ1rOP5+kHor4hMAH+HRQnBQHg+wvS1un1hAOuIcxcBy0hzcUf6Jg2a1w65kpoOUnurOfZbERwjI1TfZxNjcww==
+
+deepmerge@^2.0.1:
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/deepmerge/-/deepmerge-2.2.1.tgz#5d3ff22a01c00f645405a2fbc17d0778a1801170"
+  integrity sha512-R9hc1Xa/NOBi9WRVUWg19rl1UB7Tt4kuPd+thNJgFZoxXsTz7ncaPaeIm+40oSGuP33DfMb4sZt1QIGiJzC4EA==
 
 define-properties@^1.1.2, define-properties@^1.1.3:
   version "1.1.3"
@@ -7265,13 +7265,6 @@ globby@^6.1.0:
     pify "^2.0.0"
     pinkie-promise "^2.0.0"
 
-globs@0.1.4:
-  version "0.1.4"
-  resolved "https://registry.yarnpkg.com/globs/-/globs-0.1.4.tgz#1d13639f6174e4ae73a7f936da7d9a079f657c1c"
-  integrity sha512-D23dWbOq48vlOraoSigbcQV4tWrnhwk+E/Um2cMuDS3/5dwGmdFeA7L/vAvDhLFlQOTDqHcXh35m/71g2A2WzQ==
-  dependencies:
-    glob "^7.1.1"
-
 good-listener@^1.2.2:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/good-listener/-/good-listener-1.2.2.tgz#d53b30cdf9313dffb7dc9a0d477096aa6d145c50"
@@ -7318,10 +7311,10 @@ graphql-tag@^2.4.2, graphql-tag@^2.9.2:
   resolved "https://registry.yarnpkg.com/graphql-tag/-/graphql-tag-2.10.1.tgz#10aa41f1cd8fae5373eaf11f1f67260a3cad5e02"
   integrity sha512-jApXqWBzNXQ8jYa/HLkZJaVw9jgwNqZkywa2zfFn16Iv1Zb7ELNHkJaXHR7Quvd5SIGsy6Ny7SUKATgnu05uEg==
 
-graphql-toolkit@0.3.5:
-  version "0.3.5"
-  resolved "https://registry.yarnpkg.com/graphql-toolkit/-/graphql-toolkit-0.3.5.tgz#1f6df21e5e8dc764dc63d5931e9960adc1799d0c"
-  integrity sha512-sPz2q8J7ko2TjG5j53Ri09rn9wBBcWELxGNVjOhMoPTbL/MwJIm5L5xxCcJpaJfgpJIQ1tp+gtPpP9Tupd9h4Q==
+graphql-toolkit@0.4.1:
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/graphql-toolkit/-/graphql-toolkit-0.4.1.tgz#f5a9fa225b51168dd0d0558dc59e8fc3d379e9b1"
+  integrity sha512-asTRlNn0381f6/wVp8F0X2vsz8GJnv4TX+KNHg1k8Ybe6Ii5HBreJTxBHJ7GXlNDhj5MGCNi09nt8Oe7Ategrg==
   dependencies:
     "@kamilkisiela/graphql-tools" "4.0.6"
     "@types/glob" "7.1.1"
@@ -7333,7 +7326,7 @@ graphql-toolkit@0.3.5:
     graphql-import "0.7.1"
     is-glob "4.0.1"
     is-valid-path "0.1.1"
-    lodash "4.17.14"
+    lodash "4.17.15"
     tslib "^1.9.3"
     valid-url "1.0.9"
 
@@ -8146,13 +8139,6 @@ is-generator-function@^1.0.7:
   version "1.0.7"
   resolved "https://registry.yarnpkg.com/is-generator-function/-/is-generator-function-1.0.7.tgz#d2132e529bb0000a7f80794d4bdf5cd5e5813522"
   integrity sha512-YZc5EwyO4f2kWCax7oegfuSr9mFz1ZvieNYBEjmukLxgXfBUbxAWGVF7GZf0zidYtoBl3WvC07YK0wT76a+Rtw==
-
-is-glob@4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/is-glob/-/is-glob-4.0.0.tgz#9521c76845cc2610a85203ddf080a958c2ffabc0"
-  integrity sha1-lSHHaEXMJhCoUgPd8ICpWML/q8A=
-  dependencies:
-    is-extglob "^2.1.1"
 
 is-glob@4.0.1, is-glob@^4.0.0, is-glob@^4.0.1:
   version "4.0.1"
@@ -9677,15 +9663,13 @@ merge-descriptors@1.0.1:
   resolved "https://registry.yarnpkg.com/merge-descriptors/-/merge-descriptors-1.0.1.tgz#b00aaa556dd8b44568150ec9d1b953f3f90cbb61"
   integrity sha1-sAqqVW3YtEVoFQ7J0blT8/kMu2E=
 
-merge-graphql-schemas@^1.6.0:
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/merge-graphql-schemas/-/merge-graphql-schemas-1.6.0.tgz#9531b7a477cf4dc73749adf9195ae2abf8f3d50d"
-  integrity sha512-cTIJHwrZA5/IdkYFNpJgfOEb6Cq6fMprgN0WLHaxwmia2rovvUdHdyqadObqdUfl4mKx1XbmdDKwjYO1vM+DOQ==
+merge-graphql-schemas@^1.6.1:
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/merge-graphql-schemas/-/merge-graphql-schemas-1.6.1.tgz#4c4744bd3f2395a876d0e6885e60c90a9a5a4568"
+  integrity sha512-XEgol3ThgEPo65Cj+cx8UhOFE4IuTSF1Mh0iK8AVOEM/hKrhLfNECmtg9U6HoHfa9nINLxeGZIVvq9rjoSx3cQ==
   dependencies:
-    deepmerge "2.2.1"
-    globs "0.1.4"
-    graphql-toolkit "0.3.5"
-    is-glob "4.0.0"
+    graphql-toolkit "0.4.1"
+    tslib "1.10.0"
 
 merge-stream@^1.0.1:
   version "1.0.1"
@@ -10136,10 +10120,10 @@ no-case@^2.2.0:
   dependencies:
     lower-case "^1.1.1"
 
-node-buffs@^0.6.5:
-  version "0.6.5"
-  resolved "https://registry.yarnpkg.com/node-buffs/-/node-buffs-0.6.5.tgz#6b9ea935338fc5509a023488f203969a401ac049"
-  integrity sha512-3b0rU+SP3Q4Xqhvx6OibgKz1TkRRxCy3KMi4/Z5guWc1Q8m6z1z8OZcV4NhKQGVswa+0EUPhWu2a5TNfmrKx/w==
+node-buffs@^0.6.7:
+  version "0.6.7"
+  resolved "https://registry.yarnpkg.com/node-buffs/-/node-buffs-0.6.7.tgz#6b150e6abc7cf0fd90a27659a49a101aff41d8f9"
+  integrity sha512-PVcLOITjjNf31sLcVSim8PyNhI+SDnHd3KIZKBofSfVAuWWd6gk21fMn5GmdlG7Lz7QByZza8ZHiNSUs+C9tuQ==
   dependencies:
     dotenv "^8.0.0"
     lodash "^4.17.15"
@@ -11266,7 +11250,7 @@ prop-types-exact@1.2.0:
     object.assign "^4.1.0"
     reflect.ownkeys "^0.2.0"
 
-prop-types@15.7.2, prop-types@15.x, prop-types@>=15.5.8, prop-types@^15.5.10, prop-types@^15.5.4, prop-types@^15.5.6, prop-types@^15.5.7, prop-types@^15.5.8, prop-types@^15.5.9, prop-types@^15.6.0, prop-types@^15.6.1, prop-types@^15.6.2, prop-types@^15.7.2:
+prop-types@15.7.2, prop-types@15.x, prop-types@^15.5.10, prop-types@^15.5.4, prop-types@^15.5.6, prop-types@^15.5.7, prop-types@^15.5.8, prop-types@^15.5.9, prop-types@^15.6.0, prop-types@^15.6.1, prop-types@^15.6.2, prop-types@^15.7.2:
   version "15.7.2"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.7.2.tgz#52c41e75b8c87e72b9d9360e0206b99dcbffa6c5"
   integrity sha512-8QQikdH7//R2vurIJSutZ1smHYTcLpRWEOlHnzcWHmBYrOGUysKwSsrC89BCiFj3CbrfJ/nXFdJepOVrY1GCHQ==
@@ -12095,12 +12079,14 @@ react-hotkeys@2.0.0-pre4:
   dependencies:
     prop-types "^15.6.1"
 
-react-image-crop@^7.0.5:
-  version "7.0.5"
-  resolved "https://registry.yarnpkg.com/react-image-crop/-/react-image-crop-7.0.5.tgz#6afc801858e3f3765f444d201c457fdda325c972"
-  integrity sha512-WtkSSvjcBosVMvmt/m8bkOoMI0faTVoqjbZda6KtEPbLwtZLsM01DquFwaPrSXV35B1ZOci8MY7T3dMtvHwsmw==
+react-image-crop@^8.1.0:
+  version "8.1.0"
+  resolved "https://registry.yarnpkg.com/react-image-crop/-/react-image-crop-8.1.0.tgz#b5e44b84d6ffc0e1b8d9c5ad912ef197aaeeb4cf"
+  integrity sha512-37FyIuVMsSLVdx2SfDihdX6Nu2kGzrHe9jmoXeIEXQhuCY9cB3HwKEusINWN7oM973ZfzDpYczm8av3IFDMdEw==
   dependencies:
-    prop-types ">=15.5.8"
+    clsx "^1.0.4"
+    core-js "^3.0.1"
+    prop-types "^15.7.2"
 
 react-inspector@^3.0.2:
   version "3.0.2"
@@ -14075,15 +14061,15 @@ tsconfig-paths@3.8.0, tsconfig-paths@^3.4.0:
     minimist "^1.2.0"
     strip-bom "^3.0.0"
 
+tslib@1.10.0, tslib@^1.7.1, tslib@^1.8.0, tslib@^1.8.1, tslib@^1.9.0, tslib@^1.9.3:
+  version "1.10.0"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.10.0.tgz#c3c19f95973fb0a62973fb09d90d961ee43e5c8a"
+  integrity sha512-qOebF53frne81cf0S9B41ByenJ3/IuH8yJKngAX35CmiZySA0khhkovshKK+jGCaMnVomla7gVlIcc3EvKPbTQ==
+
 tslib@1.9.0:
   version "1.9.0"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.9.0.tgz#e37a86fda8cbbaf23a057f473c9f4dc64e5fc2e8"
   integrity sha512-f/qGG2tUkrISBlQZEjEqoZ3B2+npJjIf04H1wuAv9iA8i04Icp+61KRXxFdha22670NJopsZCIjhC3SnjPRKrQ==
-
-tslib@^1.7.1, tslib@^1.8.0, tslib@^1.8.1, tslib@^1.9.0, tslib@^1.9.3:
-  version "1.10.0"
-  resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.10.0.tgz#c3c19f95973fb0a62973fb09d90d961ee43e5c8a"
-  integrity sha512-qOebF53frne81cf0S9B41ByenJ3/IuH8yJKngAX35CmiZySA0khhkovshKK+jGCaMnVomla7gVlIcc3EvKPbTQ==
 
 tslint-config-airbnb@^5.11.1:
   version "5.11.1"
@@ -14692,10 +14678,39 @@ webpack@4.35.3:
     watchpack "^1.5.0"
     webpack-sources "^1.3.0"
 
-webpack@^4.33.0, webpack@^4.36.1:
+webpack@^4.33.0:
   version "4.36.1"
   resolved "https://registry.yarnpkg.com/webpack/-/webpack-4.36.1.tgz#f546fda7a403a76faeaaa7196c50d12370ed18a9"
   integrity sha512-Ej01/N9W8DVyhEpeQnbUdGvOECw0L46FxS12cCOs8gSK7bhUlrbHRnWkjiXckGlHjUrmL89kDpTRIkUk6Y+fKg==
+  dependencies:
+    "@webassemblyjs/ast" "1.8.5"
+    "@webassemblyjs/helper-module-context" "1.8.5"
+    "@webassemblyjs/wasm-edit" "1.8.5"
+    "@webassemblyjs/wasm-parser" "1.8.5"
+    acorn "^6.2.0"
+    ajv "^6.1.0"
+    ajv-keywords "^3.1.0"
+    chrome-trace-event "^1.0.0"
+    enhanced-resolve "^4.1.0"
+    eslint-scope "^4.0.0"
+    json-parse-better-errors "^1.0.2"
+    loader-runner "^2.3.0"
+    loader-utils "^1.1.0"
+    memory-fs "~0.4.1"
+    micromatch "^3.1.8"
+    mkdirp "~0.5.0"
+    neo-async "^2.5.0"
+    node-libs-browser "^2.0.0"
+    schema-utils "^1.0.0"
+    tapable "^1.1.0"
+    terser-webpack-plugin "^1.1.0"
+    watchpack "^1.5.0"
+    webpack-sources "^1.3.0"
+
+webpack@^4.37.0:
+  version "4.37.0"
+  resolved "https://registry.yarnpkg.com/webpack/-/webpack-4.37.0.tgz#3508ef10f7996612c2be6026076d89760f776f54"
+  integrity sha512-iJPPvL7XpbcbwOthbzpa2BSPlmGp8lGDokAj/LdWtK80rsPoPOdANSbDBf2GAVLKZD3GhCuQ/gGkgN9HWs0Keg==
   dependencies:
     "@webassemblyjs/ast" "1.8.5"
     "@webassemblyjs/helper-module-context" "1.8.5"
