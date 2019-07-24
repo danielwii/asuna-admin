@@ -230,6 +230,16 @@ class ContentIndex extends React.Component<IProps, IState> {
     this._handleTableChange(pagination, filters, sorter);
   };
 
+  _import = () => {
+    // TODO not implemented
+    // AppContext.adapters.api.import();
+  };
+
+  _export = () => {
+    // TODO not implemented
+    // AppContext.adapters.api.export();
+  };
+
   render() {
     const { modelName, columns, creatable } = this.state;
 
@@ -251,6 +261,8 @@ class ContentIndex extends React.Component<IProps, IState> {
           </React.Fragment>
         )}
         <Button onClick={this._refresh}>Refresh</Button>
+        <Button onClick={this._import}>Import</Button>
+        <Button onClick={this._export}>Export</Button>
 
         <hr />
 

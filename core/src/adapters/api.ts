@@ -35,6 +35,24 @@ export interface IApiService {
    * @param opts
    */
   releaseOperationToken(opts: { payload: { token: string } }): Promise<AxiosResponse>;
+
+  getExcelModel(
+    param: { token: string | null },
+    data: { modelName },
+    options?: { requestConfig?: AxiosRequestConfig },
+  ): Promise<AxiosResponse>;
+
+  importExcel(
+    param: { token: string | null },
+    data: { file },
+    options?: { requestConfig?: AxiosRequestConfig },
+  ): Promise<AxiosResponse>;
+
+  exportExcel(
+    param: { token: string | null },
+    data: { modelName },
+    options?: { requestConfig?: AxiosRequestConfig },
+  ): Promise<AxiosResponse>;
 }
 
 // --------------------------------------------------------------
@@ -62,6 +80,15 @@ export const apiProxy = {
   },
   releaseOperationToken(token: string): Promise<AxiosResponse> {
     return AppContext.ctx.api.releaseOperationToken(token);
+  },
+  getExcelModel(param, data, options): Promise<AxiosResponse> {
+    return AppContext.ctx.api.getExcelModel(param, data, options);
+  },
+  importExcel(param, data, options): Promise<AxiosResponse> {
+    return AppContext.ctx.api.importExcel(param, data, options);
+  },
+  exportExcel(param, data, options): Promise<AxiosResponse> {
+    return AppContext.ctx.api.exportExcel(param, data, options);
   },
 };
 
@@ -95,5 +122,14 @@ export class ApiAdapter {
   };
   releaseOperationToken = (token: string): Promise<AxiosResponse> => {
     return this.service.releaseOperationToken({ payload: { token } });
+  };
+  getExcelModel = (param, data, options): Promise<AxiosResponse> => {
+    return this.service.getExcelModel(param, data, options);
+  };
+  importExcel = (param, data, options): Promise<AxiosResponse> => {
+    return this.service.importExcel(param, data, options);
+  };
+  exportExcel = (param, data, options): Promise<AxiosResponse> => {
+    return this.service.exportExcel(param, data, options);
   };
 }

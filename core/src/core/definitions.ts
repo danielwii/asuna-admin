@@ -1,6 +1,7 @@
 import { extend } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 import { Asuna } from '@asuna-admin/types';
+import * as React from 'react';
 
 const logger = createLogger('core:definition');
 
@@ -50,12 +51,18 @@ export class AsunaDefinitions<T extends Asuna.Schema.ModelOpts = {}> {
     subMenus: SubMenus<T>;
   }[] = [];
 
+  private _customActions: { [key in keyof T]?: React.Component[] } = {};
+
   addModelOpts(modelOpts: { [key in keyof T]?: Asuna.Schema.ModelOpt<T> }) {
     this._modelOpts = extend(this._modelOpts, modelOpts); // { ...this.modelOpts, ...modelOpts };
   }
 
   addTableColumns(tableColumns: { [key in keyof T]?: Asuna.Schema.FRecordRender }) {
     this._tableColumns = extend(this._tableColumns, tableColumns);
+  }
+
+  addCustomActions(model: keyof T, ...actions: React.Component[]) {
+    this._customActions = extend(this._customActions, { [model]: actions });
   }
 
   addModelColumns(modelsColumns: { [key in keyof T]?: Asuna.Schema.ModelColumn }) {
