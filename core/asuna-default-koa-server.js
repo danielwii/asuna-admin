@@ -2,7 +2,6 @@ require('colors');
 const util = require('util');
 const Koa = require('koa');
 const Router = require('koa-router');
-const streamify = require('stream-array');
 const { parse } = require('url');
 const next = require('next');
 const debug = require('debug');
@@ -22,7 +21,7 @@ const handle = app.getRequestHandler();
  * @param enableGraphQL enable self graphql server
  */
 function bootstrap({ root, opts, enableGraphQL }) {
-  logger.log(`bootstrap ... ${util.inspect({ root, opts }, { colors: true })}`);
+  logger.log(`bootstrap ... ${util.inspect({ root, opts }, { colors: true, depth: 5 })}`);
   const PROXY_API = opts.configurator.loadConfig('PROXY_API');
   app.prepare().then(() => {
     const server = new Koa();
@@ -86,12 +85,7 @@ function bootstrap({ root, opts, enableGraphQL }) {
           // proxy.web(req, res, { target: proxyConfig.target });
           await new Promise((resolve, reject) => {
             console.log(proxyConfig);
-            proxy.web(
-              req,
-              res,
-              { target: proxyConfig.target /*, buffer: streamify(req.rawBody)*/ },
-              e => (e ? reject(e) : resolve()),
-            );
+            proxy.web(req, res, { target: proxyConfig.target }, e => (e ? reject(e) : resolve()));
           });
         } else {
           await handle(req, res);

@@ -64,12 +64,12 @@ export class AsunaStore {
     return AsunaStore.INSTANCE;
   }
 
-  private storeConnectorMiddleware;
-  private epicMiddleware;
-  private sagaMiddleware;
-  private loggerMiddleware;
+  private readonly storeConnectorMiddleware;
+  private readonly epicMiddleware;
+  private readonly sagaMiddleware;
+  private readonly loggerMiddleware;
 
-  private initialState: DeepPartial<RootState>;
+  private readonly initialState: DeepPartial<RootState>;
   private persistConfig = {
     key: 'root',
     storage: localForage,

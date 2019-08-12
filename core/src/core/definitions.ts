@@ -1,6 +1,7 @@
-import { extend } from '@asuna-admin/helpers';
+import { commonColumns, extend } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 import { Asuna } from '@asuna-admin/types';
+import * as _ from 'lodash';
 import * as React from 'react';
 
 const logger = createLogger('core:definition');
@@ -57,6 +58,30 @@ export class AsunaDefinitions<T extends Asuna.Schema.ModelOpts = {}> {
     this._modelOpts = extend(this._modelOpts, modelOpts); // { ...this.modelOpts, ...modelOpts };
   }
 
+  setupTableColumns<EntitySchema>(
+    entity: keyof T,
+    opts: {
+      enablePublished?: boolean;
+      columns: {
+        [key in keyof EntitySchema]: (key, actions, extras) => Asuna.Schema.FRecordRender;
+      };
+    },
+  ) {
+    this._tableColumns = extend(this._tableColumns, {
+      [entity]: (actions, extras) =>
+        _.compact([
+          commonColumns.primaryKeyByExtra(extras),
+          ...Object.values(_.map(opts.columns, func => func(entity, actions, extras))),
+          commonColumns.updatedAt,
+          ...[opts.enablePublished ? commonColumns.isPublished(extras) : null],
+          commonColumns.actions(actions),
+        ]),
+    });
+  }
+
+  /**
+   * @deprecated {@see setupTableColumns}
+   */
   addTableColumns(tableColumns: { [key in keyof T]?: Asuna.Schema.FRecordRender }) {
     this._tableColumns = extend(this._tableColumns, tableColumns);
   }
@@ -73,6 +98,22 @@ export class AsunaDefinitions<T extends Asuna.Schema.ModelOpts = {}> {
     this._associations = extend(this._associations, associations);
   }
 
+  setupSideMenus(
+    key: string,
+    title: string,
+    subMenus: {
+      key: keyof T;
+      model?: string;
+      title: string;
+      linkTo: 'content::index' | 'content::graph.index';
+    }[],
+  ) {
+    this._sideMenus = [...this._sideMenus, { key: key as string, title, subMenus } as any];
+  }
+
+  /**
+   * @deprecated {@see setupTableColumns}
+   */
   addSideMenus(
     menus: {
       key: string;

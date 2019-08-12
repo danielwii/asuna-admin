@@ -30,7 +30,7 @@ const LightForm = Form.create<ILightForm>({
   },
 })(DynamicForm) as any;
 
-export interface IProps {
+export interface IFormModalProps {
   title: string;
   openButton;
   fields?: object;
@@ -41,14 +41,14 @@ export interface IProps {
   onOperations?: ({ loading, updateState, handleCancel }) => any;
 }
 
-export interface IState {
+interface IState {
   fields?: object;
   params?: any;
   visible: boolean;
   loading: boolean;
 }
 
-export class FormModal extends React.Component<IProps, IState> {
+export class FormModal extends React.Component<IFormModalProps, IState> {
   form: WrappedFormUtils;
 
   state: IState = {

@@ -47,12 +47,8 @@ function* init() {
     logger.log('[init]', 'call init menu...');
     yield menuSagaFunctions.init();
 
-    // 初始化时仅当无法找到当前的 schemas 时重新拉取所有模型定义
-    const models = yield select((state: RootState) => state.models);
-    if (!models.schemas) {
-      logger.log('[init]', 'load all schemas');
-      yield modelsSagaFunctions.loadAllSchemas();
-    }
+    logger.log('[init]', 'load all schemas');
+    yield modelsSagaFunctions.loadAllSchemas();
 
     yield put(appActions.initSuccess());
   } catch (e) {

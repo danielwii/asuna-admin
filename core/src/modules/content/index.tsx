@@ -261,6 +261,7 @@ class ContentIndex extends React.Component<IProps, IState> {
           </React.Fragment>
         )}
         <Button onClick={this._refresh}>Refresh</Button>
+        <Divider type="vertical" />
         <Button onClick={this._import}>Import</Button>
         <Button onClick={this._export}>Export</Button>
 
