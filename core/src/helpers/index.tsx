@@ -263,8 +263,7 @@ export const columnHelper = {
             const images = valueToArrays(value);
             // const host = Config.get('UPLOADS_ENDPOINT', '');
             // return _.map(images, image => <AssetPreview key={image} host={host} url={image} />);
-            return <div>{JSON.stringify(images)}</div>;
-            // return <AssetsPreview key={images} urls={images} />;
+            return <AssetsPreview key={images} urls={images} />;
           }
         } catch (e) {
           logger.error('[generateImage]', e, { key, title, text });

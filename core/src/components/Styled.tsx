@@ -19,7 +19,7 @@ interface IThumbImage {
 
 export const ThumbImage = (styled.img`
   max-width: ${({ width }) => width || '200px'};
-  max-height: ${({ width }) => width || '80px'};
+  max-height: ${({ height }) => height || '120px'};
 ` as any) as ComponentClass<IThumbImage & React.ImgHTMLAttributes<{}>>;
 
 interface IHighlightTitle {
