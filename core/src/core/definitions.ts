@@ -1,6 +1,7 @@
 import { commonColumns, extend } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 import { Asuna } from '@asuna-admin/types';
+import { ColumnProps } from 'antd/es/table';
 import * as _ from 'lodash';
 import * as React from 'react';
 
@@ -63,7 +64,7 @@ export class AsunaDefinitions<T extends Asuna.Schema.ModelOpts = {}> {
     opts: {
       enablePublished?: boolean;
       columns: {
-        [key in keyof EntitySchema]: (key, actions, extras) => Asuna.Schema.FRecordRender;
+        [key in keyof EntitySchema]: (key: string, actions, extras) => ColumnProps<any>;
       };
     },
   ) {

@@ -1,4 +1,5 @@
 import { AssetsPreview } from '@asuna-admin/components';
+import { VideoPlayer } from '@asuna-admin/components/DynamicForm/Videos';
 import { Config } from '@asuna-admin/config';
 import { AppContext } from '@asuna-admin/core';
 import { valueToArrays } from '@asuna-admin/core/url-rewriter';
@@ -6,6 +7,7 @@ import { createLogger } from '@asuna-admin/logger';
 
 import { Button, Checkbox, Icon, Input, Popconfirm, Tooltip } from 'antd';
 import { ColumnProps } from 'antd/es/table';
+import { Asuna } from 'asuna-admin';
 import deepDiff from 'deep-diff';
 import idx from 'idx';
 import _ from 'lodash';
@@ -23,6 +25,7 @@ const logger = createLogger('helpers');
 export * from './cast';
 export * from './error';
 export * from './func';
+export * from './register';
 
 /**
  * used by services
@@ -102,14 +105,14 @@ function generateSearchColumnProps(
 }
 
 export const columnHelper = {
-  generateOriginal: (key, title, transformer?) => ({
+  generateOriginal: (key, title, transformer?): ColumnProps<any> => ({
     key,
     title,
     dataIndex: key,
     sorter: true,
     render: text => (transformer ? transformer(text) : text),
   }),
-  generateID: (key = 'id', title = 'ID', transformer?) => ({
+  generateID: (key = 'id', title = 'ID', transformer?): ColumnProps<any> => ({
     key,
     title,
     dataIndex: key,
@@ -153,7 +156,11 @@ export const columnHelper = {
       },
     };
   },
-  generate: (key, title, opts: { transformer?; searchType?: ConditionType } = {}) => ({
+  generate: (
+    key,
+    title,
+    opts: { transformer?; searchType?: ConditionType } = {},
+  ): ColumnProps<any> => ({
     key,
     title,
     dataIndex: key,
@@ -167,7 +174,7 @@ export const columnHelper = {
       return value;
     },
   }),
-  generateLink: (key, title, opts: { transformer?; host?: string } = {}) => ({
+  generateLink: (key, title, opts: { transformer?; host?: string } = {}): ColumnProps<any> => ({
     key,
     title,
     dataIndex: key,
@@ -208,7 +215,7 @@ export const columnHelper = {
       return 'n/a';
     },
   }),
-  generateCalendar: (key, title, transformer?) => ({
+  generateCalendar: (key, title, transformer?): ColumnProps<any> => ({
     key: castModelKey(key),
     title,
     dataIndex: castModelKey(key),
@@ -231,7 +238,7 @@ export const columnHelper = {
    * @param actions 最终的渲染函数
    * @returns {{key: string, title: string, render: function(*=, *=): *}}
    */
-  generateActions: actions => ({
+  generateActions: (actions): ColumnProps<any> => ({
     key: 'action',
     title: 'Action',
     render: actions,
@@ -243,7 +250,7 @@ export const columnHelper = {
    * @param title
    * @param opts
    */
-  generateImage: (key, title, opts: { transformer?; host?: string } = {}) => ({
+  generateImage: (key, title, opts: { transformer?; host?: string } = {}): ColumnProps<any> => ({
     key,
     title,
     dataIndex: key,
@@ -256,10 +263,48 @@ export const columnHelper = {
             const images = valueToArrays(value);
             // const host = Config.get('UPLOADS_ENDPOINT', '');
             // return _.map(images, image => <AssetPreview key={image} host={host} url={image} />);
-            return <AssetsPreview key={images} urls={images} />;
+            return <div>{JSON.stringify(images)}</div>;
+            // return <AssetsPreview key={images} urls={images} />;
           }
         } catch (e) {
           logger.error('[generateImage]', e, { key, title, text });
+          return text;
+        }
+      }
+      return 'n/a';
+    },
+  }),
+  generateVideo: (key, title, opts: { transformer?; host?: string } = {}): ColumnProps<any> => ({
+    key,
+    title,
+    dataIndex: key,
+    sorter: true,
+    render: text => {
+      if (text) {
+        try {
+          const value = opts.transformer ? opts.transformer(text) : text;
+          if (value) {
+            const videoJsOptions = {
+              width: '100%',
+              height: 160,
+              autoplay: false,
+              controls: true,
+              sources: [
+                {
+                  src: value,
+                  // type: 'video/mp4',
+                },
+              ],
+            };
+            return (
+              <>
+                <VideoPlayer key={key} {...videoJsOptions} />
+                {value}
+              </>
+            );
+          }
+        } catch (e) {
+          logger.error('[generateVideo]', e, { key, title, text });
           return text;
         }
       }
@@ -274,7 +319,7 @@ export const columnHelper = {
    * @param {any} callRefresh
    * @returns {{title: any; dataIndex: string | any; key: string | any; render: (isActive, record) => any}}
    */
-  generateSwitch: (key, title, { modelName, callRefresh }) => ({
+  generateSwitch: (key, title, { modelName, callRefresh }): ColumnProps<any> => ({
     title,
     dataIndex: castModelKey(key),
     key: castModelKey(key),

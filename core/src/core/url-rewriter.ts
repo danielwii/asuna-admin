@@ -7,15 +7,19 @@ import { AppContext } from '.';
 
 const logger = createLogger('core:url-rewriter');
 
+const castToArrays = value =>
+  isJson(value) ? JSON.parse(value as string) : _.compact(value.split(','));
+
 export function valueToArrays(value) {
-  const castToArrays = value =>
-    isJson(value) ? JSON.parse(value as string) : _.compact(value.split(','));
   const images = value ? (_.isArray(value) ? value : castToArrays(value)) : [];
   logger.debug('[valueToArrays]', { value, images });
   return images;
 }
 
 export function joinUrl(base?: string, path?: string): string {
+  if (path && path.startsWith('http')) {
+    return path;
+  }
   const safeBase = base || '';
   const endpoint = safeBase.endsWith('/') ? safeBase : `${safeBase}/`;
   return endpoint + `/${path || ''}`.replace('//', '/').slice(1);

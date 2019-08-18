@@ -27,5 +27,11 @@
     "isolatedModules": true
   },
   "exclude": ["**/*.spec.*", "node_modules"],
-  "include": ["next-env.d.ts", "src/**/*.ts*"]
+  "include": [
+    "next-env.d.ts",
+    "src/**/*.ts*",
+    "./services/**/*.ts*",
+    "./components/**/*.ts*",
+    "./pages/**/*.ts*"
+  ]
 }
