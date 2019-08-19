@@ -23,6 +23,7 @@ import { removePreAndSuf } from './func';
 const logger = createLogger('helpers');
 
 export * from './cast';
+export * from './components';
 export * from './error';
 export * from './func';
 export * from './register';

@@ -56,6 +56,7 @@ export class GraphqlAdapter {
   async loadSchemas() {
     return this.serverClient
       .query({
+        fetchPolicy: 'no-cache',
         query: gql`
           {
             sys_modelSchemas {
@@ -64,7 +65,6 @@ export class GraphqlAdapter {
             }
           }
         `,
-        fetchPolicy: 'no-cache',
       })
       .then(fp.get('data.sys_modelSchemas'));
   }
