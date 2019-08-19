@@ -1222,7 +1222,7 @@
     "@emotion/utils" "0.11.2"
     "@emotion/weak-memoize" "0.2.3"
 
-"@emotion/core@^10.0.4", "@emotion/core@^10.0.9":
+"@emotion/core@^10.0.15", "@emotion/core@^10.0.9":
   version "10.0.16"
   resolved "https://registry.yarnpkg.com/@emotion/core/-/core-10.0.16.tgz#e43630b65c84e31e81f34db3286eab584b08cfaa"
   integrity sha512-whbiiA7FfPreBY4BqWky2qRfAZvq+4dKQ1WNJuiYQwPCNmb0pEYDgNheSbZoNKtGTtfPaM28hBbZAKWD5EZXmQ==
@@ -12256,14 +12256,12 @@ react-sortable-hoc@1.9.1:
     invariant "^2.2.4"
     prop-types "^15.5.7"
 
-react-spinners@0.5.12:
-  version "0.5.12"
-  resolved "https://registry.yarnpkg.com/react-spinners/-/react-spinners-0.5.12.tgz#3fb4f293198e60a3095aba7b5ed5fc23513a033d"
-  integrity sha512-A1UG87Yd+pdmPQKooJoywdmgSGPG6iPcOoMyfki+wxYDNDEYtejAepws+VxTt/GGpb/JRDnll5oNuQoh4nF9JA==
+react-spinners@0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/react-spinners/-/react-spinners-0.6.0.tgz#37d45acc8d0841cac62892f774fac3c9ac0158ef"
+  integrity sha512-Dn+tWCmNrotRcBBv09CgRH12GtAEhp4wB2gdkwTcKMVzODDhxm9bN5lzRJ6Zo0inriwPpUbdj0vPCWYNUUS86w==
   dependencies:
-    "@emotion/core" "^10.0.4"
-    prop-types "^15.5.10"
-    recompose "0.27.1 - 0.30.0"
+    "@emotion/core" "^10.0.15"
 
 react-syntax-highlighter@^8.0.1:
   version "8.1.0"
@@ -12438,7 +12436,7 @@ rechoir@^0.6.2:
   dependencies:
     resolve "^1.1.6"
 
-"recompose@0.27.1 - 0.30.0", recompose@^0.30.0:
+recompose@^0.30.0:
   version "0.30.0"
   resolved "https://registry.yarnpkg.com/recompose/-/recompose-0.30.0.tgz#82773641b3927e8c7d24a0d87d65aeeba18aabd0"
   integrity sha512-ZTrzzUDa9AqUIhRk4KmVFihH0rapdCSMFXjhHbNrjAWxBuUD/guYlyysMnuHjlZC/KRiOKRtB4jf96yYSkKE8w==
