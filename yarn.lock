@@ -12276,10 +12276,10 @@ react-slick@~0.25.2:
     lodash.debounce "^4.0.8"
     resize-observer-polyfill "^1.5.0"
 
-react-sortable-hoc@1.9.1:
-  version "1.9.1"
-  resolved "https://registry.yarnpkg.com/react-sortable-hoc/-/react-sortable-hoc-1.9.1.tgz#ae3d28c3cff87fb862be3ddcde9c76b5b5bd2152"
-  integrity sha512-2VeofjRav8+eZeE5Nm/+b8mrA94rQ+gBsqhXi8pRBSjOWNqslU3ZEm+0XhSlfoXJY2lkgHipfYAUuJbDtCixRg==
+react-sortable-hoc@1.10.0:
+  version "1.10.0"
+  resolved "https://registry.yarnpkg.com/react-sortable-hoc/-/react-sortable-hoc-1.10.0.tgz#35719284a45cf81dcce8568ca96e0ed36459102e"
+  integrity sha512-+7xaUS1liIt+pz9PPSuXUP5m/TVdFB8c5OO0xp8un5R26ggoYzwds4C6PsVKdP8fKIQ6giPYm2yZKyESROE85g==
   dependencies:
     "@babel/runtime" "^7.2.0"
     invariant "^2.2.4"
