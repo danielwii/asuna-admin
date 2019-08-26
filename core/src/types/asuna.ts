@@ -159,7 +159,7 @@ export declare module Asuna {
     }
 
     // 单个模型设置，用于定义非 app 模块外的模型的访问端点
-    type ModelOpts = { [key: string]: ModelOpt<any> };
+    type ModelOpts = { [key: string]: ModelOpt<any> | undefined };
 
     interface SubMenu {
       key: string;
