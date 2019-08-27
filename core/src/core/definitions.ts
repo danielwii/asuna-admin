@@ -64,7 +64,11 @@ export class AsunaDefinitions<T extends Asuna.Schema.ModelOpts = {}> {
     opts: {
       enablePublished?: boolean;
       columns: {
-        [key in keyof EntitySchema]: (key: string, actions, extras) => ColumnProps<any>;
+        [key in keyof EntitySchema]: (
+          key: string,
+          actions,
+          extras,
+        ) => ColumnProps<any> | Promise<ColumnProps<any>>;
       };
     },
   ) {
