@@ -1,5 +1,6 @@
 import { createLogger } from '@asuna-admin/logger';
 
+import * as _ from 'lodash';
 import { Button, Input } from 'antd';
 import { WrappedFormUtils } from 'antd/es/form/Form';
 import React from 'react';
@@ -47,7 +48,7 @@ class StringArray extends React.Component<IStringArrayProps> {
     const { items } = this.props;
     return (
       <React.Fragment>
-        {items.map((item, index) => (
+        {_.map(items, (item, index) => (
           <Input
             key={index}
             value={item}
