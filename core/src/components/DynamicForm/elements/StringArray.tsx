@@ -1,8 +1,8 @@
 import { createLogger } from '@asuna-admin/logger';
+import { Button, Col, Input, Row } from 'antd';
+import { WrappedFormUtils } from 'antd/es/form/Form';
 
 import * as _ from 'lodash';
-import { Button, Input } from 'antd';
-import { WrappedFormUtils } from 'antd/es/form/Form';
 import React from 'react';
 
 import { defaultFormItemLayout, generateComponent, IFormItemLayout } from '.';
@@ -44,21 +44,35 @@ class StringArray extends React.Component<IStringArrayProps> {
     this.props.onChange(this.props.items.concat(''));
   };
 
+  _remove = index => {
+    const items = this.props.items.splice(index, 1);
+    this.props.onChange(items);
+  };
+
   render(): React.ReactNode {
     const { items, onChange } = this.props;
     return (
       <React.Fragment>
         {_.map(items, (item, index) => (
-          <Input
-            key={index}
-            value={item}
-            onChange={e => {
-              items[index] = e.target.value;
-              this.setState({ items });
-              logger.debug(`update to`, { items });
-              onChange(items);
-            }}
-          />
+          <Row gutter={16}>
+            <Col span={20}>
+              <Input
+                key={index}
+                value={item}
+                onChange={e => {
+                  items[index] = e.target.value;
+                  this.setState({ items });
+                  logger.debug(`update to`, { items });
+                  onChange(items);
+                }}
+              />
+            </Col>
+            <Col span={4}>
+              <Button type="danger" block onClick={() => this._remove(index)}>
+                X
+              </Button>
+            </Col>
+          </Row>
         ))}
         <Button type="primary" block onClick={this._add}>
           Add

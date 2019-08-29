@@ -4,7 +4,7 @@ import { createLogger } from '@asuna-admin/logger';
 import { Asuna } from '@asuna-admin/types';
 import { EnumFilterMetaInfoOptions, MetaInfoOptions } from '@asuna-admin/types/meta';
 
-import { Anchor, Button, Col, Form, Row, Tag } from 'antd';
+import { Affix, Anchor, Button, Col, Form, Row, Tag } from 'antd';
 import { FormComponentProps } from 'antd/es/form';
 import idx from 'idx';
 import _ from 'lodash';
@@ -343,14 +343,16 @@ export class DynamicForm extends React.Component<
                 {renderFields}
                 {!delegate && (
                   <Form.Item>
-                    <Button
-                      type="primary"
-                      htmlType="submit"
-                      onClick={this._handleOnSubmit}
-                      // disabled={hasErrors(getFieldsError())}
-                    >
-                      Submit
-                    </Button>
+                    <Affix offsetBottom={20}>
+                      <Button
+                        type="primary"
+                        htmlType="submit"
+                        onClick={this._handleOnSubmit}
+                        // disabled={hasErrors(getFieldsError())}
+                      >
+                        Submit
+                      </Button>
+                    </Affix>
                   </Form.Item>
                 )}
               </Form>
