@@ -61,6 +61,7 @@ const ContentForm = Form.create<IContentForm>({
           key,
           changedFields,
         });
+
         return oldVar !== newVar || field.errors != null;
       }),
       R.map(field => {
@@ -354,15 +355,24 @@ class ContentUpsert extends React.Component<IProps, IState> {
   };
 
   _handleFormSubmit = event => {
-    logger.log('[handleFormSubmit]', event);
     event.preventDefault();
     const { originalFieldValues } = this.state;
 
     const fieldPairs = R.compose(
-      R.pickBy((value, key) => (originalFieldValues ? value !== originalFieldValues[key] : true)),
+      R.pickBy((value, key) =>
+        originalFieldValues
+          ? !_.isEqual(value, originalFieldValues[key]) ||
+            // fixme SimpleJSON 类型目前 newVar 和 oldVar 一样，暂时没找到原因
+            (this.state.fields[key] as any).type === 'SimpleJSON'
+          : true,
+      ),
       R.map(R.prop('value')),
     )(this.state.fields);
-    logger.debug('[handleFormSubmit]', { fieldPairs, originalFieldValues });
+    logger.debug('[handleFormSubmit]', {
+      fieldPairs,
+      originalFieldValues,
+      fields: this.state.fields,
+    });
 
     const { dispatch, onClose } = this.props;
     const { modelName, isInsertMode } = this.state;

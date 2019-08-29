@@ -392,7 +392,7 @@ class FormAnchor extends React.Component<IFormAnchorProps> {
       R.values(),
       R.omit(['id']),
       R.map(field => {
-        logger.log('[anchor]', { field });
+        logger.log('[anchor]', field);
         const noValue = R.isNil(field.value) || R.isEmpty(field.value) || false;
         // 目前使用的 RichText 在点击时会自动设置 value 为 '<p></p>'
         // (field.type === DynamicFormTypes.RichText) && field.value === '<p></p>'
@@ -425,15 +425,23 @@ interface IPureElementProps {
   builder: (field: DynamicFormField, index: number) => any;
 }
 
+const pureLogger = createLogger('components:dynamic-form:pure-element');
+
 class EnhancedPureElement extends React.Component<IPureElementProps> {
   shouldComponentUpdate(nextProps, nextState) {
-    logger.log('[EnhancedPureElement][shouldComponentUpdate]', { nextProps, nextState });
+    pureLogger.log('[EnhancedPureElement][shouldComponentUpdate]', nextProps.field, nextState);
     const isRequired = R.path(['options', 'required'])(nextProps.field);
     const propsDiff = diff(this.props, nextProps, { exclude: ['builder'] });
     const stateDiff = diff(this.state, nextState);
     const shouldUpdate = isRequired || propsDiff.isDifferent || stateDiff.isDifferent;
+    pureLogger.log(
+      '[EnhancedPureElement][shouldComponentUpdate]',
+      { isRequired },
+      propsDiff,
+      stateDiff,
+    );
     if (shouldUpdate) {
-      logger.debug(
+      pureLogger.debug(
         '[EnhancedPureElement][shouldComponentUpdate]',
         {
           nextProps,
@@ -447,7 +455,7 @@ class EnhancedPureElement extends React.Component<IPureElementProps> {
         shouldUpdate,
       );
     }
-    logger.log(
+    pureLogger.log(
       '[EnhancedPureElement][shouldComponentUpdate]',
       { stateDiff, propsDiff, isRequired },
       shouldUpdate,
@@ -456,20 +464,20 @@ class EnhancedPureElement extends React.Component<IPureElementProps> {
   }
 
   componentWillUnmount(): void {
-    logger.log('[EnhancedPureElement][componentWillUnmount]', this.state, this.props);
+    pureLogger.log('[EnhancedPureElement][componentWillUnmount]', this.state, this.props);
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
-    logger.log('[EnhancedPureElement][componentDidCatch]', error, errorInfo);
+    pureLogger.log('[EnhancedPureElement][componentDidCatch]', error, errorInfo);
   }
 
   componentDidMount(): void {
-    logger.log('[EnhancedPureElement][componentDidMount]', this.state, this.props);
+    pureLogger.log('[EnhancedPureElement][componentDidMount]', this.state, this.props);
   }
 
   render() {
     const { field, index, builder } = this.props;
-    logger.log('[EnhancedPureElement][render]', { props: this.props, state: this.state });
+    pureLogger.log('[EnhancedPureElement][render]', { props: this.props, state: this.state });
 
     // options.accessible = 'hidden' 时需要隐藏该元素
     const hidden = idx(field as DynamicFormField, _ => _.options.accessible) === 'hidden';

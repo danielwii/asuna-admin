@@ -7,8 +7,7 @@ import { createLogger } from '@asuna-admin/logger';
 
 import { Button, Checkbox, Icon, Input, Popconfirm, Tooltip } from 'antd';
 import { ColumnProps } from 'antd/es/table';
-import { Asuna } from 'asuna-admin';
-import deepDiff from 'deep-diff';
+import * as deepDiff from 'deep-diff';
 import idx from 'idx';
 import _ from 'lodash';
 import moment from 'moment';
@@ -385,11 +384,11 @@ export const defaultColumnsByPrimaryKey = (primaryKey = 'id') => actions => [
 export const diff = (first, second, opts: { include?; exclude? } = {}) => {
   let verbose;
   if (R.not(R.anyPass([R.isEmpty, R.isNil])(opts.include))) {
-    verbose = deepDiff(R.pickAll(opts.include)(first), R.pickAll(opts.include)(second));
+    verbose = deepDiff.diff(R.pickAll(opts.include)(first), R.pickAll(opts.include)(second));
   } else if (R.not(R.anyPass([R.isEmpty, R.isNil])(opts.exclude))) {
-    verbose = deepDiff(R.omit(opts.exclude)(first), R.omit(opts.exclude)(second));
+    verbose = deepDiff.diff(R.omit(opts.exclude)(first), R.omit(opts.exclude)(second));
   } else {
-    verbose = deepDiff(first, second);
+    verbose = deepDiff.diff(first, second);
   }
   return { verbose, isDifferent: !!verbose };
 };

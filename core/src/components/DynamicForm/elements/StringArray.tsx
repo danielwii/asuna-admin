@@ -45,7 +45,7 @@ class StringArray extends React.Component<IStringArrayProps> {
   };
 
   render(): React.ReactNode {
-    const { items } = this.props;
+    const { items, onChange } = this.props;
     return (
       <React.Fragment>
         {_.map(items, (item, index) => (
@@ -55,6 +55,8 @@ class StringArray extends React.Component<IStringArrayProps> {
             onChange={e => {
               items[index] = e.target.value;
               this.setState({ items });
+              logger.debug(`update to`, { items });
+              onChange(items);
             }}
           />
         ))}
