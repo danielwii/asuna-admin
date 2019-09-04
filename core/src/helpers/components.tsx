@@ -50,6 +50,6 @@ export const ComponentsHelper = {
         body: { collection: 'system.server', key, value: state.body },
       })
       .then(response => cb(response.data))
-      .catch(logger.error);
+      .catch(reason => logger.error(reason));
   },
 };
