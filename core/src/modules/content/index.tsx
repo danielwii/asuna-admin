@@ -122,7 +122,12 @@ class ContentIndex extends React.Component<IProps, IState> {
             Edit
           </Button>
         ) : (
-          <Button size="small" type="dashed" onClick={() => /*view*/ this._edit(text, record)}>
+          <Button
+            size="small"
+            type="dashed"
+            onClick={() => /*view*/ this._edit(text, record)}
+            disabled={true}
+          >
             View
           </Button>
         )}{' '}

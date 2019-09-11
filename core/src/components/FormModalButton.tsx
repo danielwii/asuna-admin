@@ -33,7 +33,7 @@ const LightForm = Form.create<ILightForm>({
 export interface IFormModalProps {
   title: string;
   openButton;
-  fields?: { [key: string]: DeepPartial<DynamicFormField> };
+  fields?: { [key: string]: DynamicFormField };
   body?: React.ReactNode;
   footer?: ({ loading, operations, params }) => React.ReactNode;
   onChange?: (value) => void;
@@ -42,7 +42,7 @@ export interface IFormModalProps {
 }
 
 interface IState {
-  fields?: { [key: string]: DeepPartial<DynamicFormField> };
+  fields?: { [key: string]: DynamicFormField };
   params?: any;
   visible: boolean;
   loading: boolean;

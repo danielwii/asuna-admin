@@ -99,17 +99,17 @@ type DynamicFormProps = {
 };
 
 export type DynamicFormField = {
-  foreignOpts: Asuna.Schema.ForeignOpt[];
-  options: MetaInfoOptions & {
+  foreignOpts?: Asuna.Schema.ForeignOpt[];
+  options?: Partial<MetaInfoOptions> & {
     required?: boolean;
-    tooltip: string;
+    tooltip?: string;
   };
-  ref: string;
-  key: string;
+  ref?: string;
+  key?: string;
   name: string;
   type: DynamicFormTypes;
-  raw: any[];
-  value: any | any[];
+  raw?: any[];
+  value?: any | any[];
 };
 
 /**
@@ -213,7 +213,7 @@ export class DynamicForm extends React.Component<
         // ManyToMany RelationShip
         // --------------------------------------------------------------
         logger.debug('[DynamicForm]', '[buildField][ManyToMany]', { field });
-        if (R.has('foreignOpts')(field)) {
+        if (field.foreignOpts) {
           const { modelName, association = defaultAssociation, onSearch } = field.foreignOpts[0];
 
           const items = R.path(['associations', modelName, 'items'])(field);
