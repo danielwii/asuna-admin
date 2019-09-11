@@ -9,7 +9,7 @@ import _ from 'lodash';
 import * as R from 'ramda';
 import React from 'react';
 
-import { DynamicForm } from './DynamicForm';
+import { DynamicForm, DynamicFormField } from './DynamicForm';
 
 const logger = createLogger('components:form-modal');
 
@@ -33,7 +33,7 @@ const LightForm = Form.create<ILightForm>({
 export interface IFormModalProps {
   title: string;
   openButton;
-  fields?: object;
+  fields?: { [key: string]: DeepPartial<DynamicFormField> };
   body?: React.ReactNode;
   footer?: ({ loading, operations, params }) => React.ReactNode;
   onChange?: (value) => void;
@@ -42,13 +42,13 @@ export interface IFormModalProps {
 }
 
 interface IState {
-  fields?: object;
+  fields?: { [key: string]: DeepPartial<DynamicFormField> };
   params?: any;
   visible: boolean;
   loading: boolean;
 }
 
-export class FormModal extends React.Component<IFormModalProps, IState> {
+export class FormModalButton extends React.Component<IFormModalProps, IState> {
   form: WrappedFormUtils;
 
   state: IState = {

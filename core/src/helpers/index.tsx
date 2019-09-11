@@ -119,36 +119,53 @@ export const columnHelper = {
     sorter: true,
     render: text => (transformer ? transformer(text) : text),
   }),
-  generateRelation: async (
-    key,
+  generateRelation: async function<EntitySchema = object>(
+    key: keyof EntitySchema,
     title,
-    opts: { transformer?; enableFilter?: boolean; relationField?: string; actions; extras },
-  ): Promise<ColumnProps<any> & { relation: any }> => {
+    opts: {
+      transformer?;
+      filterType?:
+        | 'list'
+        /**
+         * @deprecated not implemented
+         */
+        | 'search';
+      relationField?: string;
+      actions;
+      extras;
+    },
+  ): Promise<ColumnProps<any> & { relation: any }> {
     let filterProps = {};
-    if (opts.enableFilter) {
-      const modelName = idx(opts, _ => _.extras.modelName) as any;
-      const relation = AppContext.adapters.models.getFormSchema(modelName)[key];
-      const relationName = idx(relation, _ => _.options.selectable) as any;
-      if (relationName) {
-        const field = opts.relationField || 'name';
-        const {
-          data: { items },
-        } = await AppContext.adapters.models.loadModels(relationName, {
-          fields: [field],
-          pagination: { pageSize: 500 },
-        });
-        filterProps = {
-          filterMultiple: false,
-          filters: _.map(items, item => ({ text: item[field], value: item['id'] })),
-        };
-      }
+    switch (opts.filterType) {
+      case 'list':
+        const modelName = idx(opts, _ => _.extras.modelName) as any;
+        const relation = AppContext.adapters.models.getFormSchema(modelName)[key as string];
+        const relationName = idx(relation, _ => _.options.selectable) as any;
+        if (relationName) {
+          const field = opts.relationField || 'name';
+          const {
+            data: { items },
+          } = await AppContext.adapters.models.loadModels(relationName, {
+            fields: [field],
+            pagination: { pageSize: 500 },
+          });
+          filterProps = {
+            filterMultiple: false,
+            filters: _.map(items, item => ({ text: item[field], value: item['id'] })),
+          };
+        }
+        break;
+      case 'search':
+        // fixme not implemented
+        filterProps = generateSearchColumnProps(`${key}.${opts.relationField || 'name'}`, 'like');
+        break;
     }
 
     return {
-      key,
+      key: key as string,
       title,
       relation: key,
-      dataIndex: key,
+      dataIndex: key as string,
       ...filterProps,
       render: text => {
         const content = opts.transformer ? opts.transformer(text) : text;
@@ -314,32 +331,41 @@ export const columnHelper = {
    * 生成切换按钮
    * @param key
    * @param title
+   * @param {any} readonly
    * @param {any} modelName
    * @param {any} callRefresh
    * @returns {{title: any; dataIndex: string | any; key: string | any; render: (isActive, record) => any}}
    */
-  generateSwitch: (key, title, { modelName, callRefresh }): ColumnProps<any> => ({
+  generateSwitch: (
+    key,
+    title,
+    { readonly, modelName, callRefresh }: { readonly?; modelName?; callRefresh? },
+  ): ColumnProps<any> => ({
     title,
     dataIndex: castModelKey(key),
     key: castModelKey(key),
     ...generateSearchColumnProps(castModelKey(key), 'boolean', {}),
-    render: (isActive, record) => (
-      <Popconfirm
-        title={isActive ? `是否注销: ${record.id}` : `是否激活: ${record.id}`}
-        onConfirm={async () => {
-          // const { modelProxy } = require('../adapters');
-          await AppContext.adapters.models.upsert(modelName, {
-            body: {
-              id: record.id,
-              [key]: !isActive,
-            },
-          });
-          callRefresh();
-        }}
-      >
-        <Checkbox checked={isActive} />
-      </Popconfirm>
-    ),
+    render: function(isActive, record) {
+      return readonly ? (
+        <Checkbox checked={isActive} disabled={true} />
+      ) : (
+        <Popconfirm
+          title={isActive ? `是否注销: ${record.id}` : `是否激活: ${record.id}`}
+          onConfirm={async () => {
+            // const { modelProxy } = require('../adapters');
+            await AppContext.adapters.models.upsert(modelName, {
+              body: {
+                id: record.id,
+                [key]: !isActive,
+              },
+            });
+            callRefresh();
+          }}
+        >
+          <Checkbox checked={isActive} />
+        </Popconfirm>
+      );
+    },
   }),
 };
 
@@ -350,7 +376,7 @@ export const commonColumns = {
   any: (key, title?) => columnHelper.generate(key, title || key.toUpperCase()),
   primaryKey: (key, title) => columnHelper.generateID(key, title),
   primaryKeyByExtra: (extras: any = {}) => {
-    const primaryKey = _.first(AppContext.adapters.models.getPrimaryKeys(extras.modelName));
+    const primaryKey = AppContext.adapters.models.getPrimaryKey(extras.modelName);
     return columnHelper.generateID(primaryKey, primaryKey.toUpperCase());
   },
   id: columnHelper.generateID(),

@@ -4,10 +4,12 @@ import { ActionEvent, AppContext, EventBus, EventType } from '@asuna-admin/core'
 import { castModelKey, diff } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 import { contentActions, modelsActions, panesActions, RootState } from '@asuna-admin/store';
+import { Asuna } from '@asuna-admin/types';
 
 import { Button, Divider, Modal, Table } from 'antd';
 import { PaginationConfig } from 'antd/es/pagination';
 import { ColumnProps, SorterResult } from 'antd/es/table';
+import idx from 'idx';
 import _ from 'lodash';
 import * as R from 'ramda';
 import React from 'react';
@@ -26,11 +28,14 @@ interface IProps extends ReduxProps {
 interface IState {
   key: string;
   modelName: string;
+  extraName: string;
   relations?: string[];
   /**
    * 不为 true 时页面不显示新建按钮
    */
-  creatable: boolean;
+  creatable: Asuna.Schema.TableColumnOptCreatable;
+  editable: boolean;
+  deletable: boolean;
   columns?: (ColumnProps<any> & { relation: any })[];
   pagination?: PaginationConfig;
   filters?: Record<any, string[]>;
@@ -51,12 +56,24 @@ class ContentIndex extends React.Component<IProps, IState> {
     logger.debug('[constructor]', { basis });
 
     // content::name => name
-    // prettier-ignore
-    const modelName = _.get(basis, 'pane.model') || _.get(basis, 'pane.key').match(/^\w+::(\w+).*$/)[1];
+    const extraName = _.get(basis, 'pane.key').match(/^\w+::(\w+).*$/)[1];
+    const modelName = _.get(basis, 'pane.model') || extraName;
     const modelConfig = this.modelsAdapter.getModelConfig(modelName);
+    const tableColumnOpts = this.modelsAdapter.getTableColumnOpts(extraName);
     const primaryKeys = this.modelsAdapter.getPrimaryKeys(modelName);
-    logger.debug('[constructor]', { modelConfig, modelName, primaryKeys });
 
+    const creatableOpt = idx(tableColumnOpts, _ => _.creatable);
+    const creatable = _.isFunction(creatableOpt)
+      ? creatableOpt
+      : modelConfig.creatable !== false && creatableOpt !== false;
+    const deletable = idx(tableColumnOpts, _ => _.deletable) !== false;
+    const editable = idx(tableColumnOpts, _ => _.editable) !== false;
+
+    logger.debug(
+      '[constructor]',
+      { modelConfig, modelName, primaryKeys, extraName, tableColumnOpts },
+      { creatable, editable, deletable },
+    );
     const sorter: Partial<SorterResult<any>> = {
       columnKey: _.first(primaryKeys),
       field: _.first(primaryKeys),
@@ -67,10 +84,12 @@ class ContentIndex extends React.Component<IProps, IState> {
       sorter['columnKey'] = castModelKey(orderBy);
       sorter['field'] = castModelKey(orderBy);
     }
-
     this.state = {
+      extraName,
       modelName,
-      creatable: modelConfig.creatable !== false,
+      creatable,
+      editable,
+      deletable,
       key: activeKey,
       sorter,
       subscription: AppContext.subject.subscribe({
@@ -93,14 +112,21 @@ class ContentIndex extends React.Component<IProps, IState> {
   }
 
   async componentDidMount() {
-    const { creatable, modelName } = this.state;
+    const { creatable, editable, deletable, modelName, extraName } = this.state;
+    const isDeletableSystemRecord = record => !record[castModelKey('isSystem')];
     const actions = (text, record, extras) => (
       <span>
         {/*{extras && extras(auth)}*/}
-        <Button size="small" type="dashed" onClick={() => this._edit(text, record)}>
-          {creatable ? 'Edit' : 'View'}
-        </Button>
-        {R.not(R.prop(castModelKey('isSystem'), record)) && (
+        {editable ? (
+          <Button size="small" type="dashed" onClick={() => this._edit(text, record)}>
+            Edit
+          </Button>
+        ) : (
+          <Button size="small" type="dashed" onClick={() => /*view*/ this._edit(text, record)}>
+            View
+          </Button>
+        )}{' '}
+        {isDeletableSystemRecord(record) && deletable && (
           <React.Fragment>
             <Divider type="vertical" />
             <Button size="small" type="danger" onClick={() => this._remove(text, record)}>
@@ -115,7 +141,7 @@ class ContentIndex extends React.Component<IProps, IState> {
     const columns = await this.modelsAdapter.getColumns(modelName, {
       callRefresh: this._refresh,
       actions,
-    });
+    }, extraName);
     // prettier-ignore
     const relations = R.compose(
       R.filter(R.compose(R.not, R.isEmpty)),
@@ -162,6 +188,10 @@ class ContentIndex extends React.Component<IProps, IState> {
         linkTo: 'content::upsert',
       }),
     );
+  };
+
+  _view = (text, record) => {
+    logger.log('[view]', { text, record });
   };
 
   _edit = (text, record) => {
@@ -241,7 +271,7 @@ class ContentIndex extends React.Component<IProps, IState> {
   };
 
   render() {
-    const { modelName, columns, creatable } = this.state;
+    const { extraName, modelName, columns, creatable } = this.state;
 
     const { models } = this.props;
 
@@ -256,14 +286,27 @@ class ContentIndex extends React.Component<IProps, IState> {
       <>
         {creatable && (
           <React.Fragment>
-            <Button onClick={this._create}>Create</Button>
+            <Button
+              onClick={() => (_.isFunction(creatable) ? creatable(extraName) : this._create())}
+            >
+              Create
+            </Button>
             <Divider type="vertical" />
           </React.Fragment>
         )}
         <Button onClick={this._refresh}>Refresh</Button>
+
         <Divider type="vertical" />
-        <Button onClick={this._import}>Import</Button>
-        <Button onClick={this._export}>Export</Button>
+
+        {/* TODO 导入导出按钮，目前接口已经实现，但是暂未集成 */}
+        <Button.Group>
+          <Button onClick={this._import} disabled={true}>
+            Import
+          </Button>
+          <Button onClick={this._export} disabled={true}>
+            Export
+          </Button>
+        </Button.Group>
 
         <hr />
 

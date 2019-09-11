@@ -151,7 +151,7 @@ export function generateSelect<T>(
       const SortableItem = SortableElement<{ value: string; sortIndex: number }>(
         ({ value, sortIndex }) => {
           // TODO 目前只支持 ObjectItem 且通过 id 判断排序组件，理论上，该排序也可能应用在非 EnumFilter 下且不通过 id 判断的情况
-          const primaryKey = _.first(AppContext.adapters.models.getPrimaryKeys(name));
+          const primaryKey = AppContext.adapters.models.getPrimaryKey(name);
           const item = this._getAllItems().find(
             (current: ObjectItem) => current[primaryKey] === value,
           );

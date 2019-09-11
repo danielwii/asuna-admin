@@ -1,3 +1,4 @@
+import { ColumnProps } from 'antd/es/table';
 import { MetaInfoOptions } from './meta';
 
 export declare module Asuna {
@@ -131,6 +132,23 @@ export declare module Asuna {
     }
 
     type Associations = { [key: string]: Association };
+
+    type TableColumnOptCreatable = boolean | ((key: string, actions?, extras?) => void);
+
+    type TableColumnOpts<EntitySchema> = {
+      creatable?: TableColumnOptCreatable;
+      editable?: boolean;
+      deletable?: boolean;
+      enablePublished?: boolean;
+      recordActions?: (actions, extras) => void;
+      columns: {
+        [key in keyof EntitySchema]: (
+          key: string,
+          actions,
+          extras,
+        ) => ColumnProps<any> | Promise<ColumnProps<any>>;
+      };
+    };
 
     interface ModelColumn {
       associations?: Associations;

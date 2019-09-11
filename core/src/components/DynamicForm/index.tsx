@@ -98,9 +98,10 @@ type DynamicFormProps = {
   onSubmit: (fn: (e: Error) => void) => void;
 };
 
-type DynamicFormField = {
+export type DynamicFormField = {
   foreignOpts: Asuna.Schema.ForeignOpt[];
   options: MetaInfoOptions & {
+    required?: boolean;
     tooltip: string;
   };
   ref: string;
@@ -127,6 +128,7 @@ export class DynamicForm extends React.Component<
   _buildField = (fields: FormField[], field: DynamicFormField, index: number) => {
     const { form } = this.props;
 
+    field.options = field.options || {};
     const options: DeepPartial<
       DynamicFormField['options'] &
         HiddenOptions &

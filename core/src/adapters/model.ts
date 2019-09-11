@@ -123,8 +123,9 @@ export interface ModelListConfig {
 export class ModelAdapter {
   private service: IModelService;
   private allModels: string[];
-  private modelConfigs;
-  private associations;
+  private readonly modelConfigs: { [K: string]: Asuna.Schema.ModelConfig };
+  private readonly associations: { [key: string]: Asuna.Schema.Association };
+  private readonly tableColumnOpts: { [key: string]: Asuna.Schema.TableColumnOpts<any> };
 
   /**
    * @param service
@@ -141,6 +142,7 @@ export class ModelAdapter {
     this.allModels = Object.keys(definitions.modelOpts);
     this.modelConfigs = definitions.modelConfigs;
     this.associations = definitions.associations;
+    this.tableColumnOpts = definitions.tableColumnOpts;
 
     logger.log('[ModelAdapter]', '[constructor]', this.modelConfigs);
     _.map(this.modelConfigs, (config, name) => {
@@ -251,7 +253,7 @@ export class ModelAdapter {
     // const allSchemas = schemas || AppContext.store.select(R.path(['models', 'schemas']));
 
     const fields = this.getFormSchema(modelName);
-    const primaryKey = _.first(AppContext.adapters.models.getPrimaryKeys(modelName));
+    const primaryKey = AppContext.adapters.models.getPrimaryKey(modelName);
     logger.debug('[upsert]', 'fields is', fields);
 
     const fixKeys = _.mapKeys(data.body, (value, key) => idx(fields, _ => _[key].ref) || key);
@@ -283,10 +285,11 @@ export class ModelAdapter {
   public getColumns = async (
     modelName: string,
     opts: { callRefresh: () => void; actions: (text, record, extras) => any },
+    extraName?: string,
   ): Promise<(ColumnProps<any> & { relation: any })[]> => {
-    logger.log('[getColumns]', { modelName, opts });
+    logger.log('[getColumns]', { modelName, extraName, opts });
     const formSchema = this.getFormSchema(modelName);
-    const { table: columnsRender } = this.getModelConfig(modelName);
+    const { table: columnsRender } = this.getModelConfig(extraName || modelName);
     const columns = columnsRender
       ? await Promise.all(columnsRender(opts.actions, { modelName, callRefresh: opts.callRefresh }))
       : [];
@@ -315,9 +318,12 @@ export class ModelAdapter {
     );
   };
 
+  public getTableColumnOpts = (key: string): Asuna.Schema.TableColumnOpts<any> | null =>
+    this.tableColumnOpts[key];
+
   public getModelConfig = (modelName: string): Asuna.Schema.ModelConfig => {
     const TAG = '[getModelConfig]';
-    const config = R.prop(modelName)(this.modelConfigs);
+    const config = this.modelConfigs[modelName];
     if (config) {
       // logger.debug(TAG, modelName, 'config is', config);
 
@@ -332,7 +338,10 @@ export class ModelAdapter {
     return { model: {}, table: defaultColumns, columns: {} };
   };
 
-  public getPrimaryKeys = (modelName: string) => {
+  public getPrimaryKey = (modelName: string): string =>
+    _.head(this.getPrimaryKeys(modelName)) || 'id';
+
+  public getPrimaryKeys = (modelName: string): string[] => {
     const TAG = '[getPrimaryKey]';
     const { schemas } = AppContext.fromStore('models');
     const schema = R.prop(modelName)(schemas);
@@ -444,7 +453,7 @@ export class ModelAdapter {
   };
 
   private getFieldsOfAssociation(associationName: string): string[] {
-    const primaryKey = _.first(AppContext.adapters.models.getPrimaryKeys(associationName));
+    const primaryKey = AppContext.adapters.models.getPrimaryKey(associationName);
     const defaultFields = R.pathOr([primaryKey, 'name'], [associationName, 'fields'])(
       this.associations,
     );

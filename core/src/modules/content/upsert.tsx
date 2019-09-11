@@ -269,7 +269,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
     return reduxActionCallbackPromise(callback => {
       if (record) {
         logger.log('[_reloadEntity]', 'reload model...', record);
-        const primaryKey = _.first(AppContext.adapters.models.getPrimaryKeys(modelName));
+        const primaryKey = AppContext.adapters.models.getPrimaryKey(modelName);
         dispatch(
           modelsActions.fetch(modelName, { id: record[primaryKey], profile: 'ids' }, callback),
         );
@@ -377,7 +377,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
     const { dispatch, onClose } = this.props;
     const { modelName, isInsertMode } = this.state;
 
-    const primaryKey = _.first(AppContext.adapters.models.getPrimaryKeys(modelName));
+    const primaryKey = AppContext.adapters.models.getPrimaryKey(modelName);
     const id = R.prop(primaryKey)(originalFieldValues);
 
     dispatch(

@@ -102,7 +102,7 @@ export const asyncLoadAssociationsDecorator = async ({
         const selectable = R.pathOr([], ['options', 'selectable'])(field);
         logger.debug(TAG, { field, selectable });
         if (selectable) {
-          const primaryKey = _.first(AppContext.adapters.models.getPrimaryKeys(selectable));
+          const primaryKey = AppContext.adapters.models.getPrimaryKey(selectable);
           const fieldsOfAssociations = AppContext.adapters.models.getFieldsOfAssociations();
 
           const foreignOpts = [
@@ -158,7 +158,7 @@ export const asyncLoadAssociationsDecorator = async ({
 
     // FIXME 临时解决关联数据从 entities 到 ids 的转换
     const transformedAssociations = R.map(association => {
-      const primaryKey = _.first(AppContext.adapters.models.getPrimaryKeys(association.name));
+      const primaryKey = AppContext.adapters.models.getPrimaryKey(association.name);
       let value;
 
       if (_.isArrayLike(association.value)) {

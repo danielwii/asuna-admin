@@ -8,7 +8,7 @@ export * from './SideMenu';
 export * from './Panes';
 export * from './Header';
 export * from './DynamicForm';
-export * from './FormModal';
+export * from './FormModalButton';
 export * from './RichEditor';
 export * from './DebugSettings';
 export * from './Styled';
