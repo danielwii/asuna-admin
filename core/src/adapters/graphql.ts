@@ -1,5 +1,6 @@
 import { AppContext } from '@asuna-admin/core';
 import { createLogger } from '@asuna-admin/logger';
+import { authHeader } from '@asuna-admin/helpers';
 
 import ApolloClient, { gql } from 'apollo-boost';
 import * as fp from 'lodash/fp';
@@ -34,7 +35,7 @@ export class GraphqlAdapter {
       logger.log('graphql uri not defined, using /graphql for default');
       this.client = new ApolloClient({ uri: '/graphql' });
     }
-    this.serverClient = new ApolloClient({ uri: '/s-graphql' });
+    this.serverClient = new ApolloClient({ uri: '/s-graphql', headers: authHeader().headers });
   }
 
   async query(queryString: string, client = this.client) {

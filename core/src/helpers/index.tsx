@@ -31,12 +31,13 @@ export * from './register';
  * used by services
  * @param token
  */
-export const authHeader = token => {
+export const authHeader = (token?) => {
+  const authToken = token || AppContext.fromStore('auth').token;
   const schema = Config.get('AUTH_HEADER');
   if (schema === 'AuthHeaderAsBearerToken') {
-    return { headers: { Authorization: `Bearer ${token}` } };
+    return { headers: { Authorization: `Bearer ${authToken}` } };
   }
-  return { headers: { Authorization: `${schema} ${token}` } };
+  return { headers: { Authorization: `${schema} ${authToken}` } };
 };
 
 type ConditionType = 'like' | 'boolean';
