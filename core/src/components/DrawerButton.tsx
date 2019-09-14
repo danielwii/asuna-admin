@@ -2,12 +2,12 @@ import { Button, Drawer, Icon, Timeline } from 'antd';
 import { useEffect, useState } from 'react';
 import * as React from 'react';
 
-interface DrawerButtonProps {
+export interface DrawerButtonProps {
   text: string;
   title?: string;
 }
 
-class DrawerButton extends React.Component<DrawerButtonProps> {
+export class DrawerButton extends React.Component<DrawerButtonProps> {
   state = { visible: false, childrenDrawer: false };
 
   showDrawer = () => {
@@ -85,12 +85,12 @@ class DrawerButton extends React.Component<DrawerButtonProps> {
   }
 }
 
-interface HistoryTimelineProps {
+export interface HistoryTimelineProps {
   dataLoader: () => Promise<{ items: any[] }>;
   render: (history) => React.ReactChild;
 }
 
-function HistoryTimeline(props: HistoryTimelineProps) {
+export function HistoryTimeline(props: HistoryTimelineProps) {
   const { dataLoader, render } = props;
   const [state, setState] = useState<{ fields: any[] }>({ fields: [] });
 
