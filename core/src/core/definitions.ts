@@ -148,12 +148,12 @@ export class AsunaDefinitions<T extends Asuna.Schema.ModelOpts = {}> {
   }
 
   getModelConfig(key: keyof T): Asuna.Schema.ModelConfig {
-    logger.log('getModelConfig', { key });
     // 存在 extra 的配置时从 extra 中获取，否则获取默认配置
     const table = this._extraTableColumns[key as string] || this._tableColumns[key];
     const model = this._modelColumns[key];
+    logger.log('getModelConfig', { key, table, model });
     if (!table) logger.warn('[getModelConfig]', key, 'should set table');
-    if (!model) logger.warn('[getModelConfig]', key, 'should set model');
+    // if (!model) logger.warn('[getModelConfig]', key, 'should set model');
     return { ...this._modelOpts[key], table, model };
   }
 

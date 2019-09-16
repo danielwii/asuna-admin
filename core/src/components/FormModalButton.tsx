@@ -56,9 +56,8 @@ export class FormModalButton extends React.Component<IFormModalProps, IState> {
     loading: false,
   };
 
-  componentWillMount() {
-    const { fields } = this.props;
-    this.setState({ fields: { ...fields } });
+  static getDerivedStateFromProps(props, state) {
+    return { fields: { ...props.fields } };
   }
 
   showModal = () => {

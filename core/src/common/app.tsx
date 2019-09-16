@@ -1,7 +1,7 @@
 import { AsunaStore } from '@asuna-admin/store';
 
 import withRedux from 'next-redux-wrapper';
-import App, { Container } from 'next/app';
+import App from 'next/app';
 import React, { Component } from 'react';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
@@ -58,13 +58,11 @@ export const ReduxApp = withRedux(asunaStore.configureStore, { debug: false })(
         const { Component, pageProps, store } = this.props;
 
         return (
-          <Container>
-            <Provider store={store}>
-              <PersistGate loading={null} persistor={store.__persistor}>
-                <Component {...pageProps} />
-              </PersistGate>
-            </Provider>
-          </Container>
+          <Provider store={store}>
+            <PersistGate loading={null} persistor={store.__persistor}>
+              <Component {...pageProps} />
+            </PersistGate>
+          </Provider>
         );
       }
     },

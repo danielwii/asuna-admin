@@ -1,5 +1,5 @@
-import * as material from '@material-ui/core';
-import { Button, Divider } from 'antd';
+import { FormControl, FormHelperText, Input, InputLabel } from '@material-ui/core';
+import * as antd from 'antd';
 import * as formik from 'formik';
 import * as _ from 'lodash';
 import * as React from 'react';
@@ -34,18 +34,12 @@ const InnerForm = (props: FormProps & formik.FormikProps<formik.FormikValues>) =
               const hasError = !!(form.touched[formField.name] && form.errors[formField.name]);
               return (
                 <div>
-                  <material.FormControl error={hasError}>
-                    <material.InputLabel htmlFor={field.name}>{field.name}</material.InputLabel>
-                    <material.Input id={field.name} type={formField.type} {...field} />
-                    {formField.help && (
-                      <material.FormHelperText>{formField.help}</material.FormHelperText>
-                    )}
-                    {hasError && (
-                      <material.FormHelperText>
-                        {form.errors[formField.name]}
-                      </material.FormHelperText>
-                    )}
-                  </material.FormControl>
+                  <FormControl error={hasError}>
+                    <InputLabel htmlFor={field.name}>{field.name}</InputLabel>
+                    <Input id={field.name} type={formField.type} {...field} />
+                    {formField.help && <FormHelperText>{formField.help}</FormHelperText>}
+                    {hasError && <FormHelperText>{form.errors[formField.name]}</FormHelperText>}
+                  </FormControl>
                 </div>
               );
             }}
@@ -53,11 +47,11 @@ const InnerForm = (props: FormProps & formik.FormikProps<formik.FormikValues>) =
         </div>
       ))}
 
-      <Divider />
+      <antd.Divider />
 
-      <Button htmlType="submit" onSubmit={handleSubmit} disabled={isSubmitting}>
+      <antd.Button htmlType="submit" onSubmit={handleSubmit} disabled={isSubmitting}>
         {isSubmitting ? 'Submitting' : 'Submit'}
-      </Button>
+      </antd.Button>
     </formik.Form>
   );
 };

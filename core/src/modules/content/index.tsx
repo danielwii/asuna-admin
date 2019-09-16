@@ -27,6 +27,7 @@ interface IProps extends ReduxProps {
 
 interface IState {
   key: string;
+  primaryKey: string;
   modelName: string;
   extraName: string;
   relations?: string[];
@@ -61,6 +62,7 @@ class ContentIndex extends React.Component<IProps, IState> {
     const modelConfig = this.modelsAdapter.getModelConfig(modelName);
     const tableColumnOpts = this.modelsAdapter.getTableColumnOpts(extraName);
     const primaryKeys = this.modelsAdapter.getPrimaryKeys(modelName);
+    const primaryKey = _.head(primaryKeys) || 'id';
 
     const creatableOpt = idx(tableColumnOpts, _ => _.creatable);
     const creatable = _.isFunction(creatableOpt)
@@ -85,6 +87,7 @@ class ContentIndex extends React.Component<IProps, IState> {
       sorter['field'] = castModelKey(orderBy);
     }
     this.state = {
+      primaryKey,
       extraName,
       modelName,
       creatable,
@@ -320,7 +323,7 @@ class ContentIndex extends React.Component<IProps, IState> {
             className="asuna-content-table"
             scroll={{ x: true }}
             dataSource={dataSource}
-            rowKey="id"
+            rowKey={this.state.primaryKey}
             loading={loading}
             columns={columns}
             pagination={pagination}
