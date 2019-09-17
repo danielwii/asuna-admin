@@ -10,9 +10,9 @@
     "outdated": "yarn workspaces run outdated"
   },
   "devDependencies": {
-    "@commitlint/config-conventional": "^8.1.0",
+    "@commitlint/config-conventional": "^8.2.0",
     "babel-eslint": "^10.0.3",
-    "commitlint": "^8.1.0",
+    "commitlint": "^8.2.0",
     "cz-conventional-changelog": "^3.0.2",
     "eslint": "^6.4.0",
     "eslint-config-airbnb": "^18.0.1",
