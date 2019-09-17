@@ -65,7 +65,7 @@
     "lru-cache": "^5.1.1",
     "merge-graphql-schemas": "^1.7.0",
     "moment": "2.24.0",
-    "next": "9.0.5",
+    "next": "9.0.6",
     "next-redux-wrapper": "3.0.0",
     "next-transpile-modules": "^2.3.1",
     "node-buffs": "^0.6.7",
