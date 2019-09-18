@@ -68,7 +68,7 @@
     "next": "9.0.6",
     "next-redux-wrapper": "3.0.0",
     "next-transpile-modules": "^2.3.1",
-    "node-buffs": "^0.6.9",
+    "node-buffs": "^0.6.10",
     "object-hash": "1.3.1",
     "ramda": "0.26.1",
     "react": "16.9.0",

@@ -10583,10 +10583,10 @@ no-case@^2.2.0:
   dependencies:
     lower-case "^1.1.1"
 
-node-buffs@^0.6.9:
-  version "0.6.9"
-  resolved "https://registry.yarnpkg.com/node-buffs/-/node-buffs-0.6.9.tgz#33be3c8c0a16d9d9426b76d2ef922cbb28d2a2a3"
-  integrity sha512-Ec2HwMJTGh/M3Y6vwZAqmVnFG8MwuXusUO4KWfCHOtpq8XFd1Cpx7UyuRlzFEz3ikTYWFByFPhIS2Q6qLDZnMA==
+node-buffs@^0.6.10:
+  version "0.6.10"
+  resolved "https://registry.yarnpkg.com/node-buffs/-/node-buffs-0.6.10.tgz#9264cfc892cb5433447b59ee49abdb9842687304"
+  integrity sha512-jxbMwYkzNG+Fht1wOsDaDfsnS49NEoXcwllyh1u6BsV1J0TeVCgx5fHQ5a0r/IjSYzffnWQXFigsc2ohW/sL8Q==
   dependencies:
     dotenv "^8.1.0"
     lodash "^4.17.15"
