@@ -5,7 +5,7 @@ import { AppContext } from '@asuna-admin/core';
 import { valueToArrays } from '@asuna-admin/core/url-rewriter';
 import { createLogger } from '@asuna-admin/logger';
 
-import { Button, Checkbox, Icon, Input, Popconfirm, Tooltip } from 'antd';
+import { Badge, Button, Checkbox, Icon, Input, Popconfirm, Statistic, Tooltip } from 'antd';
 import { ColumnProps } from 'antd/es/table';
 import * as deepDiff from 'deep-diff';
 import idx from 'idx';
@@ -190,6 +190,31 @@ export const columnHelper = {
         return <Tooltip title={value}>{`${value.slice(0, 20)}...`}</Tooltip>;
       }
       return value;
+    },
+  }),
+  generateNumber: (
+    key,
+    title,
+    opts: { transformer?; searchType?: ConditionType; type: 'badge' | 'statistics' } = {
+      type: 'badge',
+    },
+  ): ColumnProps<any> => ({
+    key,
+    title,
+    dataIndex: key,
+    sorter: true,
+    ...generateSearchColumnProps(key, opts.searchType),
+    render: text => {
+      const value = opts.transformer ? opts.transformer(text) : text;
+      return opts.type === 'badge' ? (
+        <Badge
+          count={+value}
+          overflowCount={Number.MAX_SAFE_INTEGER}
+          style={{ backgroundColor: '#52c41a' }}
+        />
+      ) : (
+        <Statistic value={+value} />
+      );
     },
   }),
   generateLink: (key, title, opts: { transformer?; host?: string } = {}): ColumnProps<any> => ({
