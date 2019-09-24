@@ -305,7 +305,9 @@ export class ModelAdapter {
           fixed = { fixed: 'right', width: 200 };
         }
         // 不检测不包含在 schema 中且不属于模型的列名
-        return column.key && !formSchema[column.key] && !_.includes(['action'], column.key)
+        const isRelationKey = (column.key as string).includes('.');
+        const isActionKey = _.includes(['action'], column.key);
+        return column.key && !formSchema[column.key] && !isActionKey && !isRelationKey
           ? // 标记 schema 中不存在的列
             { ...column, title: `${column.title}(miss)` }
           : column;

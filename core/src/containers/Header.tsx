@@ -1,6 +1,6 @@
 import { Header, IHeaderProps } from '@asuna-admin/components';
-import { appActions, authActions, panesActions, RootState } from '@asuna-admin/store';
 import { AppContext } from '@asuna-admin/core';
+import { appActions, authActions, panesActions, RootState } from '@asuna-admin/store';
 
 import React from 'react';
 import { connect } from 'react-redux';
@@ -16,7 +16,7 @@ const mapStateToProps = (state: RootState): Partial<IHeaderProps> => ({
 const mapDispatchToProps = (dispatch): Partial<IHeaderProps> => ({
   onSync: () => dispatch(appActions.heartbeat(true)),
   logout: () => dispatch(authActions.logout()),
-  withDebugSettingsProps: withDebugSettingsProps,
+  withDebugSettingsProps,
   handleAction: (action, componentName) => {
     // console.log('container-header [handleAction]', { action, componentName });
     AppContext.dispatch(

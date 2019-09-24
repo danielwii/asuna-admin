@@ -15,4 +15,5 @@ export * from './RichEditor';
 export * from './DebugSettings';
 export * from './Styled';
 export * from './Snippet';
+export * from './Timeline';
 export * from './TwoFactorAuthentication';

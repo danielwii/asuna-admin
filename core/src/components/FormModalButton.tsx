@@ -1,7 +1,7 @@
-import { toFormErrors } from '@asuna-admin/helpers';
+import { toErrorMessage, toFormErrors } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 
-import { Form, Modal } from 'antd';
+import { Form, message, Modal } from 'antd';
 import { WrappedFormUtils } from 'antd/es/form/Form';
 import { AxiosResponse } from 'axios';
 import idx from 'idx';
@@ -11,7 +11,7 @@ import React from 'react';
 
 import { DynamicForm, DynamicFormField } from './DynamicForm';
 
-const logger = createLogger('components:form-modal');
+const logger = createLogger('components:form-modal-button');
 
 interface ILightForm {
   form;
@@ -24,8 +24,7 @@ const LightForm = Form.create<ILightForm>({
   mapPropsToFields({ fields }) {
     return _.mapValues(fields, field => Form.createFormField({ ...field }));
   },
-  onFieldsChange(props, changedFields) {
-    const { onChange } = props;
+  onFieldsChange({ onChange }, changedFields) {
     onChange(changedFields);
   },
 })(DynamicForm) as any;
@@ -39,6 +38,7 @@ export interface IFormModalProps {
   onChange?: (value) => void;
   onSubmit?: (value?: any) => Promise<AxiosResponse>;
   onOperations?: ({ loading, updateState, handleCancel }) => any;
+  onRefresh?: () => any;
 }
 
 interface IState {
@@ -51,31 +51,28 @@ interface IState {
 export class FormModalButton extends React.Component<IFormModalProps, IState> {
   form: WrappedFormUtils;
 
-  state: IState = {
-    visible: false,
-    loading: false,
-  };
+  constructor(props: Readonly<IFormModalProps>) {
+    super(props);
 
-  static getDerivedStateFromProps(props, state) {
-    return { fields: { ...props.fields } };
+    this.state = {
+      visible: false,
+      loading: false,
+      fields: props.fields,
+    };
   }
 
-  showModal = () => {
-    this.setState({ visible: true });
-  };
+  showModal = () => this.setState({ visible: true });
 
   handleOk = () => {
-    const { onSubmit } = this.props;
+    const { onSubmit, onRefresh } = this.props;
     const { fields } = this.state;
     this.form.validateFields(async (err, values) => {
       if (err) {
         logger.error('[FormModal][handleOk]', 'error occurred in form', { values, err });
       } else {
-        this.setState({
-          loading: true,
-        });
+        this.setState({ loading: true });
         try {
-          const response = await onSubmit!(values);
+          const response = await onSubmit!(values).finally(() => onRefresh && onRefresh());
           logger.log('response is', response);
           this.setState({
             visible: false,
@@ -85,14 +82,9 @@ export class FormModalButton extends React.Component<IFormModalProps, IState> {
         } catch (e) {
           const errors = toFormErrors(e.response);
           logger.error('[FormModal][handleOk]', { e, errors });
-          // if (_.isString(errors)) {
-          //   message.error(toErrorMessage(errors));
-          // } else {
-          // }
+          message.error(toErrorMessage(errors));
           this.handleFormChange(errors);
-          this.setState({
-            loading: false,
-          });
+          this.setState({ loading: false });
         }
       }
     });
@@ -100,29 +92,22 @@ export class FormModalButton extends React.Component<IFormModalProps, IState> {
 
   handleFormChange = changedFields => {
     const { fields } = this.state;
-    logger.log('[handleFormChange]', { fields, changedFields });
-    this.setState({ fields: R.mergeDeepRight(fields, changedFields) });
+    const merged = R.mergeDeepRight(fields, changedFields);
+    logger.log('[handleFormChange]', { fields, changedFields, merged });
+    this.setState({ fields: merged });
   };
 
-  handleCancel = () => {
-    this.setState({
-      visible: false,
-    });
-  };
-
-  updateState = (state: Partial<IState>) => {
-    this.setState(state as any);
-  };
+  handleCancel = () => this.setState({ visible: false });
 
   render() {
     const { title, openButton, footer, body, onOperations } = this.props;
-
     const { fields, visible, loading, params } = this.state;
+
     const extraOperations =
       onOperations != null
         ? onOperations({
             loading,
-            updateState: this.updateState,
+            updateState: (state: Partial<IState>) => this.setState(state as IState),
             handleCancel: this.handleCancel,
           })
         : {};
@@ -142,6 +127,7 @@ export class FormModalButton extends React.Component<IFormModalProps, IState> {
             }),
           }
         : null;
+
     return (
       <React.Fragment>
         {openButton(this.showModal)}

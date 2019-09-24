@@ -19,9 +19,7 @@ export interface IIndexPageProps extends ReduxProps {
   app: AppState;
   register: ILoginRegister & IIndexRegister;
   hideCharacteristics?: boolean;
-  appInfo: {
-    userAgent: string;
-  };
+  appInfo: { userAgent: string; environments: object };
 }
 
 export class IndexPage extends React.Component<IIndexPageProps> {
@@ -36,9 +34,12 @@ export class IndexPage extends React.Component<IIndexPageProps> {
 
   static async getInitialProps({ req }) {
     const userAgent = req ? req.headers['user-agent'] : navigator.userAgent;
-    return {
-      appInfo: { userAgent },
+    const appInfo = {
+      userAgent,
+      environments: { production: process.env.NODE_ENV === 'production' },
     };
+
+    return { appInfo };
   }
 
   render() {

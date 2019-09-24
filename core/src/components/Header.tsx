@@ -1,6 +1,7 @@
 import { AppState, AuthState } from '@asuna-admin/store';
 
-import { Dropdown, Icon, Layout, Menu } from 'antd';
+import { Button, Dropdown, Icon, Layout, Menu, Modal } from 'antd';
+import getConfig from 'next/config';
 import React from 'react';
 import styled from 'styled-components';
 
@@ -101,6 +102,17 @@ export class Header extends React.Component<IHeaderProps> {
         <StyledVersion>
           {env}-v{version}::{app.version}
         </StyledVersion>
+        <Button
+          size="small"
+          type="link"
+          onClick={() =>
+            Modal.info({
+              content: <pre>{JSON.stringify(getConfig(), null, 2)}</pre>,
+            })
+          }
+        >
+          Environment Info
+        </Button>
         {/*
         <Menu
           theme="dark"

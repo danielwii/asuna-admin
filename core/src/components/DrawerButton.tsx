@@ -1,6 +1,7 @@
-import { Button, Drawer, Icon, Timeline } from 'antd';
-import { useEffect, useState } from 'react';
+import { Button, Drawer, Empty, Icon, Skeleton, Timeline } from 'antd';
+import _ from 'lodash';
 import * as React from 'react';
+import { useEffect, useState } from 'react';
 
 export interface DrawerButtonProps {
   text: string;
@@ -92,14 +93,20 @@ export interface HistoryTimelineProps {
 
 export function HistoryTimeline(props: HistoryTimelineProps) {
   const { dataLoader, render } = props;
-  const [state, setState] = useState<{ fields: any[] }>({ fields: [] });
+  const [state, setState] = useState<{ loading: boolean; fields: any[] }>({
+    loading: true,
+    fields: [],
+  });
 
   useEffect(() => {
     (async () => {
       const data = await dataLoader();
-      setState({ fields: data.items });
+      if (data) setState({ loading: false, fields: data.items });
     })();
   }, []);
+
+  if (state.loading) return <Skeleton active />;
+  if (_.isEmpty(state.fields)) return <Empty />;
 
   return <Timeline>{state.fields.map(render)}</Timeline>;
 }

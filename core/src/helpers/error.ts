@@ -39,7 +39,7 @@ export function toErrorMessage(e) {
   if (e.response) {
     return JSON.stringify(idx(e, _ => _.response.data));
   }
-  return e.message;
+  return e.message || JSON.stringify(e);
 }
 
 export function isErrorResponse(error) {
@@ -49,7 +49,7 @@ export function isErrorResponse(error) {
 }
 
 export function toFormErrors(response: AxiosResponse): FormError | string | null {
-  if (response === null) {
+  if (!response) {
     return null;
   }
   if (response.data.error) {

@@ -62,19 +62,22 @@ export declare module Asuna {
     //   name: string;
     // };
 
+    type RecordRenderActions = (text, record, extras) => any;
+    type RecordRenderExtras = {
+      modelName: string;
+      /**
+       * 用于处理完毕后的的页面刷新
+       */
+      callRefresh: () => void;
+    };
+
     interface FRecordRender {
       (
         /**
          * 用于渲染额外的功能按钮
          */
-        actions: (text, record, extras) => any,
-        opts: {
-          modelName: string;
-          /**
-           * 用于处理完毕后的的页面刷新
-           */
-          callRefresh: () => void;
-        },
+        actions: RecordRenderActions,
+        opts: RecordRenderExtras,
       ): any;
     }
 
@@ -140,12 +143,19 @@ export declare module Asuna {
       editable?: boolean;
       deletable?: boolean;
       enablePublished?: boolean;
-      recordActions?: (actions, extras) => void;
+      recordActions?: (actions: RecordRenderActions, extras: RecordRenderExtras) => void;
+      customColumns?: {
+        [key: string]: (
+          key: string,
+          actions: RecordRenderActions,
+          extras: RecordRenderExtras,
+        ) => ColumnProps<any> | Promise<ColumnProps<any>>;
+      };
       columns: {
         [key in keyof EntitySchema]: (
           key: string,
-          actions,
-          extras,
+          actions: RecordRenderActions,
+          extras: RecordRenderExtras,
         ) => ColumnProps<any> | Promise<ColumnProps<any>>;
       };
     };

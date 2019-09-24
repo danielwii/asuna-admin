@@ -4,8 +4,9 @@ import { Config } from '@asuna-admin/config';
 import { AppContext } from '@asuna-admin/core';
 import { valueToArrays } from '@asuna-admin/core/url-rewriter';
 import { createLogger } from '@asuna-admin/logger';
+import { Asuna } from '@asuna-admin/types';
 
-import { Badge, Button, Checkbox, Icon, Input, Popconfirm, Statistic, Tooltip } from 'antd';
+import { Badge, Button, Checkbox, Icon, Input, Popconfirm, Statistic, Tag, Tooltip } from 'antd';
 import { ColumnProps } from 'antd/es/table';
 import * as deepDiff from 'deep-diff';
 import idx from 'idx';
@@ -120,27 +121,30 @@ export const columnHelper = {
     sorter: true,
     render: text => (transformer ? transformer(text) : text),
   }),
-  generateRelation: async function<EntitySchema = object>(
-    key: keyof EntitySchema,
-    title,
+  generateRelationFp: <RelationSchema extends any = object>(
+    key: string,
+    title: string,
     opts: {
-      transformer?;
+      ref?: string;
+      transformer: keyof RelationSchema | ((record) => React.ReactChild);
       filterType?:
         | 'list'
-        /**
-         * @deprecated not implemented
-         */
+        /** FIXME not implemented */
         | 'search';
       relationField?: string;
-      actions;
-      extras;
+      render?: (content) => React.ReactChild;
     },
-  ): Promise<ColumnProps<any> & { relation: any }> {
+  ) => async (
+    laterKey: string,
+    actions: Asuna.Schema.RecordRenderActions,
+    extras: Asuna.Schema.RecordRenderExtras,
+  ): Promise<ColumnProps<any> & { relation: any }> => {
+    const ref = (opts.ref || key) as string;
     let filterProps = {};
     switch (opts.filterType) {
       case 'list':
-        const modelName = idx(opts, _ => _.extras.modelName) as any;
-        const relation = AppContext.adapters.models.getFormSchema(modelName)[key as string];
+        const modelName = extras.modelName;
+        const relation = AppContext.adapters.models.getFormSchema(modelName)[ref];
         const relationName = idx(relation, _ => _.options.selectable) as any;
         if (relationName) {
           const field = opts.relationField || 'name';
@@ -158,19 +162,87 @@ export const columnHelper = {
         break;
       case 'search':
         // fixme not implemented
-        filterProps = generateSearchColumnProps(`${key}.${opts.relationField || 'name'}`, 'like');
+        filterProps = generateSearchColumnProps(`${ref}.${opts.relationField || 'name'}`, 'like');
         break;
     }
 
     return {
       key: key as string,
       title,
-      relation: key,
-      dataIndex: key as string,
+      relation: ref,
+      dataIndex: ref,
+      ...filterProps,
+      render: text => {
+        const content = _.isFunction(opts.transformer)
+          ? opts.transformer(text)
+          : text[opts.transformer];
+        return (
+          <WithDebugInfo info={{ key, title, opts, text }}>
+            {opts.render ? opts.render(content) : content}
+          </WithDebugInfo>
+        );
+      },
+    };
+  },
+  /**
+   * @deprecated {@see generateRelationFp}
+   * @param key
+   * @param title
+   * @param opts
+   */
+  generateRelation: async function<EntitySchema = object, RelationSchema = object>(
+    key: string,
+    title,
+    opts: {
+      ref?: keyof EntitySchema;
+      transformer?;
+      filterType?:
+        | 'list'
+        /**
+         * @deprecated not implemented
+         */
+        | 'search';
+      relationField?: string;
+      actions;
+      extras;
+    },
+  ): Promise<ColumnProps<any> & { relation: any }> {
+    const ref = (opts.ref || key) as string;
+    let filterProps = {};
+    switch (opts.filterType) {
+      case 'list':
+        const modelName = idx(opts, _ => _.extras.modelName) as any;
+        const relation = AppContext.adapters.models.getFormSchema(modelName)[ref];
+        const relationName = idx(relation, _ => _.options.selectable) as any;
+        if (relationName) {
+          const field = opts.relationField || 'name';
+          const {
+            data: { items },
+          } = await AppContext.adapters.models.loadModels(relationName, {
+            fields: [field],
+            pagination: { pageSize: 500 },
+          });
+          filterProps = {
+            filterMultiple: false,
+            filters: _.map(items, item => ({ text: item[field], value: item['id'] })),
+          };
+        }
+        break;
+      case 'search':
+        // fixme not implemented
+        filterProps = generateSearchColumnProps(`${ref}.${opts.relationField || 'name'}`, 'like');
+        break;
+    }
+
+    return {
+      key: key as string,
+      title,
+      relation: ref,
+      dataIndex: ref,
       ...filterProps,
       render: text => {
         const content = opts.transformer ? opts.transformer(text) : text;
-        return <WithDebugInfo info={{ key, title, text }}>{content}</WithDebugInfo>;
+        return <WithDebugInfo info={{ key, title, opts, text }}>{content}</WithDebugInfo>;
       },
     };
   },
@@ -186,10 +258,47 @@ export const columnHelper = {
     ...generateSearchColumnProps(key, opts.searchType),
     render: text => {
       const value = opts.transformer ? opts.transformer(text) : text;
+      let component = value;
       if (typeof value === 'string' && value.length > 20) {
-        return <Tooltip title={value}>{`${value.slice(0, 20)}...`}</Tooltip>;
+        component = <Tooltip title={value}>{`${value.slice(0, 20)}...`}</Tooltip>;
       }
-      return value;
+      return <WithDebugInfo info={{ key, title, text }}>{component}</WithDebugInfo>;
+    },
+  }),
+  generateTag: (
+    key,
+    title,
+    opts: {
+      transformer?;
+      colorMap?: {
+        [key: string]:
+          | null
+          | 'magenta'
+          | 'red'
+          | 'volcano'
+          | 'orange'
+          | 'gold'
+          | 'lime'
+          | 'green'
+          | 'cyan'
+          | 'blue'
+          | 'geekblue'
+          | 'purple';
+      };
+    } = {},
+  ): ColumnProps<any> => ({
+    key,
+    title,
+    dataIndex: key,
+    sorter: true,
+    // ...generateSearchColumnProps(key, opts.searchType),
+    render: text => {
+      const value = opts.transformer ? opts.transformer(text) : text;
+      return (
+        <WithDebugInfo info={{ key, title, text }}>
+          <Tag color={_.get(opts, `colorMap['${value}']`)}>{value}</Tag>
+        </WithDebugInfo>
+      );
     },
   }),
   generateNumber: (
@@ -401,8 +510,8 @@ export const columnHelper = {
 export const commonColumns = {
   any: (key, title?) => columnHelper.generate(key, title || key.toUpperCase()),
   primaryKey: (key, title) => columnHelper.generateID(key, title),
-  primaryKeyByExtra: (extras: any = {}) => {
-    const primaryKey = AppContext.adapters.models.getPrimaryKey(extras.modelName);
+  primaryKeyByExtra: (extras: Asuna.Schema.RecordRenderExtras) => {
+    const primaryKey = AppContext.adapters.models.getPrimaryKey(_.get(extras, 'modelName'));
     return columnHelper.generateID(primaryKey, primaryKey.toUpperCase());
   },
   id: columnHelper.generateID(),
