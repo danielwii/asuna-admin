@@ -15,7 +15,8 @@ if (typeof require !== 'undefined') {
 }
 
 function withDefaultNextConfigs(nextConfig = {}) {
-  return Object.assign({}, nextConfig, {
+  return {
+    ...nextConfig,
     webpack(config, options) {
       const { dev, isServer, buildId } = options;
       if (!isServer && buildId) {
@@ -62,7 +63,7 @@ function withDefaultNextConfigs(nextConfig = {}) {
       env: process.env.ENV || 'dev',
       version: pkg.version,
     },
-  });
+  };
 }
 
 module.exports = { withDefaultNextConfigs };
