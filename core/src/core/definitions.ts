@@ -6,15 +6,6 @@ import * as React from 'react';
 
 const logger = createLogger('core:definition');
 
-type SubMenus<T extends Asuna.Schema.ModelOpts = {}> = (
-  | Asuna.Schema.SubMenu
-  | {
-      key: keyof T;
-      model?: string;
-      title: string;
-      linkTo: 'content::index' | 'content::graph.index';
-    })[];
-
 export class AsunaDefinitions<T extends Asuna.Schema.ModelOpts = {}> {
   /**
    * 基础模型定义
@@ -50,12 +41,7 @@ export class AsunaDefinitions<T extends Asuna.Schema.ModelOpts = {}> {
    * 定义左侧导航条
    * @type {*[]}
    */
-  private _sideMenus: {
-    key: string;
-    title: string;
-    subMenus: SubMenus<T>;
-  }[] = [];
-
+  private _sideMenus: Asuna.Schema.Menu<T>[] = [];
   private _tableColumnOpts: { [key: string]: Asuna.Schema.TableColumnOpts<any> } = {};
   private _customActions: { [key in keyof T]?: React.Component[] } = {};
 
@@ -81,18 +67,12 @@ export class AsunaDefinitions<T extends Asuna.Schema.ModelOpts = {}> {
     this._modelOpts = extend(this._modelOpts, modelOpts); // { ...this.modelOpts, ...modelOpts };
   }
 
-  setupExtraTableColumns<EntitySchema>(
-    key: string,
-    opts: Asuna.Schema.TableColumnOpts<EntitySchema>,
-  ): void {
+  setupExtraTableColumns<EntitySchema>(key: string, opts: Asuna.Schema.TableColumnOpts<EntitySchema>): void {
     this._tableColumnOpts[key] = opts;
     this._extraTableColumns = extend(this._extraTableColumns, this.wrapTableColumns(key, opts));
   }
 
-  setupTableColumns<EntitySchema>(
-    entity: keyof T,
-    opts: Asuna.Schema.TableColumnOpts<EntitySchema>,
-  ): void {
+  setupTableColumns<EntitySchema>(entity: keyof T, opts: Asuna.Schema.TableColumnOpts<EntitySchema>): void {
     this._tableColumnOpts[entity as string] = opts;
     this._tableColumns = extend(this._tableColumns, this.wrapTableColumns(entity as string, opts));
   }
@@ -116,22 +96,7 @@ export class AsunaDefinitions<T extends Asuna.Schema.ModelOpts = {}> {
     this._associations = extend(this._associations, associations);
   }
 
-  setupSideMenus(
-    key: string,
-    title: string,
-    subMenus: (
-      | {
-          key: keyof T;
-          title: string;
-          linkTo: 'content::index' | 'content::graph.index';
-        }
-      | {
-          key: string;
-          model: keyof T;
-          title: string;
-          linkTo: 'content::index' | 'content::graph.index';
-        })[],
-  ): void {
+  setupSideMenus(key: string, title: string, subMenus: Asuna.Schema.SubMenus<T>): void {
     this._sideMenus = [...this._sideMenus, { key: key as string, title, subMenus } as any];
   }
 
@@ -143,7 +108,7 @@ export class AsunaDefinitions<T extends Asuna.Schema.ModelOpts = {}> {
       key: string;
       model?: string;
       title: string;
-      subMenus: SubMenus<T>;
+      subMenus: Asuna.Schema.SubMenus<T>;
     }[],
   ): void {
     this._sideMenus = [...this._sideMenus, ...menus];
@@ -177,11 +142,7 @@ export class AsunaDefinitions<T extends Asuna.Schema.ModelOpts = {}> {
     return this._tableColumnOpts;
   }
 
-  get sideMenus(): {
-    key: string;
-    title: string;
-    subMenus: SubMenus<T>;
-  }[] {
+  get sideMenus(): Asuna.Schema.Menu<T>[] {
     return this._sideMenus;
   }
 }

@@ -1,12 +1,7 @@
 import { DynamicFormTypes } from '@asuna-admin/components';
 import { Config } from '@asuna-admin/config';
 import { AppContext, AsunaDefinitions } from '@asuna-admin/core';
-import {
-  castModelKey,
-  defaultColumns,
-  defaultColumnsByPrimaryKey,
-  parseJSONIfCould,
-} from '@asuna-admin/helpers';
+import { castModelKey, defaultColumns, defaultColumnsByPrimaryKey, parseJSONIfCould } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 import { AuthState } from '@asuna-admin/store';
 import { Asuna } from '@asuna-admin/types';
@@ -172,10 +167,7 @@ export class ModelAdapter {
       // --------------------------------------------------------------
       [
         () => !!idx(field, _ => _.config.selectable),
-        () =>
-          idx(field, _ => _.config.many)
-            ? DynamicFormTypes.ManyToMany
-            : DynamicFormTypes.Association,
+        () => (idx(field, _ => _.config.many) ? DynamicFormTypes.ManyToMany : DynamicFormTypes.Association),
       ],
       // --------------------------------------------------------------
       // identify advanced types
@@ -216,10 +208,7 @@ export class ModelAdapter {
    * @param modelName
    * @param data
    */
-  public fetch = (
-    modelName: string,
-    data: { endpoint?: string; id: number; profile?: Asuna.Profile },
-  ) => {
+  public fetch = (modelName: string, data: { endpoint?: string; id: number; profile?: Asuna.Profile }) => {
     logger.log('[fetch]', { modelName, data });
     const auth = AppContext.fromStore('auth');
     const modelConfig = this.getModelConfig(modelName);
@@ -320,8 +309,7 @@ export class ModelAdapter {
     );
   };
 
-  public getTableColumnOpts = (key: string): Asuna.Schema.TableColumnOpts<any> | null =>
-    this.tableColumnOpts[key];
+  public getTableColumnOpts = (key: string): Asuna.Schema.TableColumnOpts<any> | null => this.tableColumnOpts[key];
 
   public getModelConfig = (modelName: string): Asuna.Schema.ModelConfig => {
     const TAG = '[getModelConfig]';
@@ -331,8 +319,7 @@ export class ModelAdapter {
 
       // 未定义具体模型时，使用默认定义
       config.model = config.model || {};
-      config.table =
-        config.table || defaultColumnsByPrimaryKey(_.first(this.getPrimaryKeys(modelName)));
+      config.table = config.table || defaultColumnsByPrimaryKey(_.first(this.getPrimaryKeys(modelName)));
 
       return config;
     }
@@ -340,8 +327,7 @@ export class ModelAdapter {
     return { model: {}, table: defaultColumns, columns: {} };
   };
 
-  public getPrimaryKey = (modelName: string): string =>
-    _.head(this.getPrimaryKeys(modelName)) || 'id';
+  public getPrimaryKey = (modelName: string): string => _.head(this.getPrimaryKeys(modelName)) || 'id';
 
   public getPrimaryKeys = (modelName: string): string[] => {
     const TAG = '[getPrimaryKey]';
@@ -357,10 +343,7 @@ export class ModelAdapter {
     return ['id']; // by default
   };
 
-  public getFormSchema = (
-    name: string,
-    values?: { [member: string]: any },
-  ): Asuna.Schema.FormSchemas => {
+  public getFormSchema = (name: string, values?: { [member: string]: any }): Asuna.Schema.FormSchemas => {
     const { schemas } = AppContext.fromStore('models');
     if (!schemas || !name) {
       logger.error('[getFormSchema]', 'schemas or name is required.', { schemas, name });
@@ -423,20 +406,14 @@ export class ModelAdapter {
     return associationsFields;
   });
 
-  public loadModels = (
-    modelName: string,
-    configs: ModelListConfig = {},
-  ): Promise<AxiosResponse> => {
+  public loadModels = (modelName: string, configs: ModelListConfig = {}): Promise<AxiosResponse> => {
     logger.debug('[loadModels]', {
       modelName,
       configs,
       modelConfig: this.getModelConfig(modelName),
     });
     const page = _.defaultTo(idx(configs, _ => _.pagination.current), 1);
-    const size = _.defaultTo(
-      idx(configs, _ => _.pagination.pageSize),
-      Config.get('DEFAULT_PAGE_SIZE') || 25,
-    );
+    const size = _.defaultTo(idx(configs, _ => _.pagination.pageSize), Config.get('DEFAULT_PAGE_SIZE') || 25);
     const auth = AppContext.fromStore('auth');
     return this.service.loadModels(auth, modelName, {
       pagination: { page, size },
@@ -456,16 +433,11 @@ export class ModelAdapter {
 
   private getFieldsOfAssociation(associationName: string): string[] {
     const primaryKey = AppContext.adapters.models.getPrimaryKey(associationName);
-    const defaultFields = R.pathOr([primaryKey, 'name'], [associationName, 'fields'])(
-      this.associations,
-    );
+    const defaultFields = R.pathOr([primaryKey, 'name'], [associationName, 'fields'])(this.associations);
     return R.pathOr(defaultFields, [associationName, 'fields'])(this.getFieldsOfAssociations());
   }
 
-  public loadAssociationByIds = (
-    associationName: string,
-    ids: string[] | number[],
-  ): Promise<AxiosResponse | void> => {
+  public loadAssociationByIds = (associationName: string, ids: string[] | number[]): Promise<AxiosResponse | void> => {
     if (_.trim(associationName) && !_.isEmpty(ids)) {
       logger.debug('[loadAssociationByIds]', { associationName, ids });
 
@@ -514,10 +486,7 @@ export class ModelAdapter {
         ...this.allModels.map(modelName => ({ [modelName]: this.loadSchema(modelName) })),
       );
       const allResponse = await bluebird.props(callable);
-      return Object.assign(
-        {},
-        ..._.map(allResponse, (response, name) => ({ [name]: (response as any).data })),
-      );
+      return Object.assign({}, ..._.map(allResponse, (response, name) => ({ [name]: (response as any).data })));
     }
   }
 }

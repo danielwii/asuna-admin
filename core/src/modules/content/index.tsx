@@ -44,6 +44,8 @@ interface IState {
   subscription: Subscription;
   busSubscription: Subscription;
   hasGraphAPI?: string;
+
+  opts?: Asuna.Schema.TableColumnOpts<any>;
 }
 
 class ContentIndex extends React.Component<IProps, IState> {
@@ -94,6 +96,7 @@ class ContentIndex extends React.Component<IProps, IState> {
       editable,
       deletable,
       key: activeKey,
+      opts: tableColumnOpts || undefined,
       sorter,
       subscription: AppContext.subject.subscribe({
         next: action => {
@@ -125,12 +128,7 @@ class ContentIndex extends React.Component<IProps, IState> {
             Edit
           </Button>
         ) : (
-          <Button
-            size="small"
-            type="dashed"
-            onClick={() => /*view*/ this._edit(text, record)}
-            disabled={true}
-          >
+          <Button size="small" type="dashed" onClick={() => /*view*/ this._edit(text, record)} disabled={true}>
             View
           </Button>
         )}{' '}
@@ -157,10 +155,7 @@ class ContentIndex extends React.Component<IProps, IState> {
       R.map(R.pick(['relation'])),
     )(columns);
 
-    const hasGraphAPI = _.find(
-      await AppContext.ctx.graphql.loadGraphs(),
-      schema => schema === `sys_${modelName}`,
-    );
+    const hasGraphAPI = _.find(await AppContext.ctx.graphql.loadGraphs(), schema => schema === `sys_${modelName}`);
 
     logger.debug('[componentDidMount]', { columns, relations });
     this.setState({ hasGraphAPI, columns, relations });
@@ -228,9 +223,7 @@ class ContentIndex extends React.Component<IProps, IState> {
       onOk: () =>
         dispatch(
           modelsActions.remove(modelName, record, response => {
-            if (/^20\d$/.test(response.status)) {
-              modal.destroy();
-            }
+            if (/^20\d$/.test(response.status)) modal.destroy();
           }),
         ),
     });
@@ -279,7 +272,7 @@ class ContentIndex extends React.Component<IProps, IState> {
   };
 
   render() {
-    const { extraName, modelName, columns, creatable } = this.state;
+    const { extraName, modelName, columns, creatable, opts } = this.state;
 
     const { models } = this.props;
 
@@ -294,11 +287,7 @@ class ContentIndex extends React.Component<IProps, IState> {
       <>
         {creatable && (
           <React.Fragment>
-            <Button
-              onClick={() => (_.isFunction(creatable) ? creatable(extraName) : this._create())}
-            >
-              Create
-            </Button>
+            <Button onClick={() => (_.isFunction(creatable) ? creatable(extraName) : this._create())}>Create</Button>
             <Divider type="vertical" />
           </React.Fragment>
         )}
@@ -315,6 +304,18 @@ class ContentIndex extends React.Component<IProps, IState> {
             Export
           </Button>
         </Button.Group>
+
+        <Divider type="vertical" />
+
+        {opts && opts.renderHelp && (
+          <Button
+            type="dashed"
+            shape="circle"
+            icon="info"
+            size="small"
+            onClick={() => Modal.info({ width: '60%', content: opts.renderHelp })}
+          />
+        )}
 
         <hr />
 

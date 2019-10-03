@@ -14,16 +14,7 @@ const { Sider } = Layout;
 
 export interface ISideMenuProps {
   onOpen: (pane: Asuna.Schema.Pane) => void;
-  menus?: {
-    key: string;
-    title: string;
-    subMenus: {
-      key: string;
-      model?: string;
-      title: string;
-      linkTo: string;
-    };
-  }[];
+  menus?: Asuna.Schema.Menu[];
 }
 
 interface IState {}
@@ -46,7 +37,7 @@ export class SideMenu extends React.Component<ISideMenuProps, IState> {
   buildSubMenu(menu: Asuna.Schema.Menu) {
     return (
       <SubMenu key={menu.key} title={menu.title}>
-        {_.map(menu.subMenus, subMenu => (
+        {_.map(menu.subMenus, (subMenu: Asuna.Schema.ComponentSubMenu /* 统一按照通用组件处理 */) => (
           <MenuItem
             key={`${menu.key}::${subMenu.key}`}
             model={subMenu.model}

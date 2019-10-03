@@ -1,4 +1,5 @@
 import { ColumnProps } from 'antd/es/table';
+import React from 'react';
 import { MetaInfoOptions } from './meta';
 
 export declare module Asuna {
@@ -143,6 +144,7 @@ export declare module Asuna {
       editable?: boolean;
       deletable?: boolean;
       enablePublished?: boolean;
+      renderHelp?: React.ReactChild;
       recordActions?: (actions: RecordRenderActions, extras: RecordRenderExtras) => void;
       customColumns?: {
         [key: string]: (
@@ -189,13 +191,32 @@ export declare module Asuna {
     // 单个模型设置，用于定义非 app 模块外的模型的访问端点
     type ModelOpts = { [key: string]: ModelOpt<any> | undefined };
 
-    interface SubMenu {
+    type SubMenus<T extends Asuna.Schema.ModelOpts = {}> = Asuna.Schema.SubMenu<T>[];
+    type SubMenu<T extends Asuna.Schema.ModelOpts = {}> = ComponentSubMenu | NormalSubMenu<T> | ModelSubMenu<T>;
+
+    type ComponentSubMenu = {
       key: string;
       model?: string;
       title: string;
       linkTo: string;
       component?: string;
-    }
+    };
+
+    type NormalSubMenu<T extends Asuna.Schema.ModelOpts = {}> = {
+      key: keyof T;
+      title: string;
+      linkTo: 'content::index' | 'content::graph.index';
+    };
+
+    /*
+     * 用于模型可能重复时的定义
+     */
+    type ModelSubMenu<T extends Asuna.Schema.ModelOpts = {}> = {
+      key: keyof T;
+      model?: string;
+      title: string;
+      linkTo: 'content::index' | 'content::graph.index';
+    };
 
     type Pane =
       | {
@@ -214,10 +235,10 @@ export declare module Asuna {
           component: string;
         };
 
-    interface Menu {
+    interface Menu<T extends Asuna.Schema.ModelOpts = {}> {
       key: string;
       title: string;
-      subMenus: SubMenu[];
+      subMenus: SubMenus<T>;
     }
   }
 }
