@@ -32,15 +32,14 @@ const InnerForm = (props: FormProps & formik.FormikProps<formik.FormikValues>) =
             name={formField.name}
             render={({ field, form }: formik.FieldProps<formik.FormikValues>) => {
               const hasError = !!(form.touched[formField.name] && form.errors[formField.name]);
+              const value = field.value || formField.defaultValue;
               return (
-                <div>
-                  <FormControl error={hasError}>
-                    <InputLabel htmlFor={field.name}>{field.name}</InputLabel>
-                    <Input id={field.name} type={formField.type} {...field} />
-                    {formField.help && <FormHelperText>{formField.help}</FormHelperText>}
-                    {hasError && <FormHelperText>{form.errors[formField.name]}</FormHelperText>}
-                  </FormControl>
-                </div>
+                <FormControl error={hasError} fullWidth={true}>
+                  <InputLabel htmlFor={field.name}>{field.name}</InputLabel>
+                  <Input id={field.name} type={formField.type} {...field} value={value} />
+                  {formField.help && <FormHelperText>{formField.help}</FormHelperText>}
+                  {hasError && <FormHelperText>{form.errors[formField.name]}</FormHelperText>}
+                </FormControl>
               );
             }}
           />
@@ -52,12 +51,18 @@ const InnerForm = (props: FormProps & formik.FormikProps<formik.FormikValues>) =
       <antd.Button htmlType="submit" onSubmit={handleSubmit} disabled={isSubmitting}>
         {isSubmitting ? 'Submitting' : 'Submit'}
       </antd.Button>
+
+      {/*<div>
+        Preview:
+        <Highlight language="json">{JSON.stringify(state.body, null, 2)}</Highlight>
+      </div>*/}
     </formik.Form>
   );
 };
 
-interface FormRenderProps extends FormProps {
+interface EasyFormProps extends FormProps {
   // initialValues(props): any;
+  onSubmit: (values) => Promise<any>;
 }
 
 /*  creatable: (key, actions, extras) => {
@@ -65,7 +70,7 @@ interface FormRenderProps extends FormProps {
     Modal.info({
       okText: '取消',
       content: (
-        <FormRender
+        <EasyForm
           fields={{
             change: {
               name: 'change',
@@ -79,10 +84,9 @@ interface FormRenderProps extends FormProps {
       ),
     });
   },*/
-const FormRender = formik.withFormik<FormRenderProps, any>({
+export const EasyForm = formik.withFormik<EasyFormProps, any>({
   // Transform outer props into form values
-  mapPropsToValues: props =>
-    Object.assign({}, ..._.map(props.fields, field => ({ [field.name]: field.defaultValue }))),
+  mapPropsToValues: props => Object.assign({}, ..._.map(props.fields, field => ({ [field.name]: field.defaultValue }))),
 
   validate: (values: formik.FormikValues, props) => {
     const errors: formik.FormikErrors<formik.FormikValues> = {};
@@ -99,9 +103,7 @@ const FormRender = formik.withFormik<FormRenderProps, any>({
     return errors;
   },
 
-  handleSubmit: (values, formikBag) => {
-    console.log(values, formikBag);
-    // Modal.info({ content: JSON.stringify({ values }) });
-    // do submitting things
+  handleSubmit: (values, { props, setSubmitting }) => {
+    props.onSubmit(values).finally(() => setSubmitting(false));
   },
 })(InnerForm);

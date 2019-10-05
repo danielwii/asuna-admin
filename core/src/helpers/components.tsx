@@ -12,29 +12,25 @@ export const ComponentsHelper = {
     createStyles({
       root: {
         flexGrow: 1,
-        // margin: '1rem',
+        margin: '.1rem',
       },
       container: {
         display: 'flex',
         flexWrap: 'wrap',
       },
-      textField: {
-        width: 300,
-      },
+      textField: { width: 300 },
       fullwidthTextField: {},
       button: {},
       margin: {
         margin: theme.spacing(1),
       },
-      menu: {
-        width: 200,
-      },
+      menu: { width: 200 },
     }),
-  loadByKey: (key: string) =>
+  loadByKey: (key: string, collection: string = 'system.server') =>
     useQuery(
       gql`
       {
-        kv(collection: "system.server", key: "${key}") {
+        kv(collection: "${collection}", key: "${key}") {
           updatedAt
           name
           value
@@ -43,13 +39,13 @@ export const ComponentsHelper = {
     `,
       { fetchPolicy: 'no-cache' },
     ),
-  save: (key: string, state, cb) => {
-    logger.log('save', state);
-    AppContext.adapters.models
+  save: (identifier: { key: string; collection?: string }, body: any, cb?): Promise<any> => {
+    logger.log('save', { body });
+    return AppContext.adapters.models
       .upsert('kv__pairs', {
-        body: { collection: 'system.server', key, value: state.body },
+        body: { collection: identifier.collection || 'system.server', key: identifier.key, value: body },
       })
-      .then(response => cb(response.data))
+      .then(response => (cb ? cb(response.data) : response.data))
       .catch(reason => logger.error(reason));
   },
 };
