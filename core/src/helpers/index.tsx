@@ -100,9 +100,7 @@ function generateSearchColumnProps(
         </Button>
       </div>
     ),
-    filterIcon: filtered => (
-      <Icon type="search" style={{ color: filtered ? '#1890ff' : 'inherit' }} />
-    ),
+    filterIcon: filtered => <Icon type="search" style={{ color: filtered ? '#1890ff' : 'inherit' }} />,
   };
 }
 
@@ -173,9 +171,7 @@ export const columnHelper = {
       dataIndex: ref,
       ...filterProps,
       render: text => {
-        const content = _.isFunction(opts.transformer)
-          ? opts.transformer(text)
-          : text[opts.transformer];
+        const content = _.isFunction(opts.transformer) ? opts.transformer(text) : text[opts.transformer];
         return (
           <WithDebugInfo info={{ key, title, opts, text }}>
             {opts.render ? opts.render(content) : content}
@@ -246,11 +242,7 @@ export const columnHelper = {
       },
     };
   },
-  generate: (
-    key,
-    title,
-    opts: { transformer?; searchType?: ConditionType } = {},
-  ): ColumnProps<any> => ({
+  generate: (key, title, opts: { transformer?; searchType?: ConditionType } = {}): ColumnProps<any> => ({
     key,
     title,
     dataIndex: key,
@@ -316,11 +308,7 @@ export const columnHelper = {
     render: text => {
       const value = opts.transformer ? opts.transformer(text) : text;
       return opts.type === 'badge' ? (
-        <Badge
-          count={+value}
-          overflowCount={Number.MAX_SAFE_INTEGER}
-          style={{ backgroundColor: '#52c41a' }}
-        />
+        <Badge count={+value} overflowCount={Number.MAX_SAFE_INTEGER} style={{ backgroundColor: '#52c41a' }} />
       ) : (
         <Statistic value={+value} />
       );
@@ -377,9 +365,10 @@ export const columnHelper = {
         const value = transformer ? transformer(text) : text;
         const content = moment(text).calendar();
         return (
-          <Truncate trimWhitespace lines={1} ellipsis={<Tooltip title={value}>...</Tooltip>}>
+          <Tooltip title={value}>
             {content}
-          </Truncate>
+            <div>{moment(text).fromNow()}</div>
+          </Tooltip>
         );
       }
       return 'n/a';
@@ -530,11 +519,7 @@ export const commonColumns = {
   actions: columnHelper.generateActions,
 };
 
-export const defaultColumns = actions => [
-  commonColumns.id,
-  commonColumns.updatedAt,
-  commonColumns.actions(actions),
-];
+export const defaultColumns = actions => [commonColumns.id, commonColumns.updatedAt, commonColumns.actions(actions)];
 
 export const defaultColumnsByPrimaryKey = (primaryKey = 'id') => actions => [
   commonColumns.primaryKey(primaryKey, primaryKey.toUpperCase()),

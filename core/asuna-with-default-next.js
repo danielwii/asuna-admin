@@ -87,4 +87,4 @@ function HACK_removeMinimizeOptionFromCssLoaders(config) {
   });
 }
 
-module.exports = { withDefaultNextConfigs };
+module.exports = { withDefaultNextConfigs, HACK_removeMinimizeOptionFromCssLoaders };
