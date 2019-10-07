@@ -1,3 +1,4 @@
+export * from './DataDisplay';
 export * from './ProgressBar';
 export * from './Snow';
 export * from './Sun';
