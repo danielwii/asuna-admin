@@ -34,6 +34,7 @@ export interface IPanesProps {
   onActive: (key: string) => void;
   onClose: (key: string) => void;
   onCloseWithout: (key?: string) => void;
+  onCloseCurrent: (key?: string) => void;
 }
 
 interface IState {
@@ -74,7 +75,7 @@ export class Panes extends React.Component<IPanesProps, IState> {
   render() {
     const { titles } = this.state;
 
-    const { activeKey, panes, onActive, onCloseWithout } = this.props;
+    const { activeKey, panes, onActive, onCloseWithout, onCloseCurrent } = this.props;
 
     if (!activeKey) {
       return <div>welcome</div>;
@@ -90,6 +91,8 @@ export class Panes extends React.Component<IPanesProps, IState> {
           <React.Fragment>
             <Divider type="vertical" />
             <Button icon="minus-square" onClick={() => onCloseWithout(activeKey)} />
+            <Divider type="vertical" />
+            <Button onClick={() => onCloseCurrent(activeKey)} >Close Current</Button>
           </React.Fragment>
         )}
       </React.Fragment>

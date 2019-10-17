@@ -13,6 +13,7 @@ export const panesActionTypes = {
   CLOSE: 'panes::close',
   CLOSE_ALL: 'panes::close-all',
   CLOSE_WITHOUT: 'panes::close-without',
+  CLOSE_CURRENT: 'panes::close-current',
 };
 
 export const isPanesModule = action => action.type.startsWith('panes::') && !action.transient;
@@ -28,4 +29,5 @@ export const panesActions = {
   close: key => reduxAction(panesActionTypes.CLOSE, { key }),
   closeAll: () => reduxAction(panesActionTypes.CLOSE_ALL),
   onCloseWithout: activeKey => reduxAction(panesActionTypes.CLOSE_WITHOUT, { activeKey }),
+  onCloseCurrent: activeKey => reduxAction(panesActionTypes.CLOSE_CURRENT, { activeKey }),
 };

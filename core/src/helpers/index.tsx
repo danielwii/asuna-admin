@@ -14,7 +14,6 @@ import _ from 'lodash';
 import moment from 'moment';
 import * as R from 'ramda';
 import React from 'react';
-import Truncate from 'react-truncate';
 
 import { castModelKey } from './cast';
 import { WithDebugInfo } from './debug';
@@ -26,6 +25,7 @@ export * from './cast';
 export * from './components';
 export * from './error';
 export * from './func';
+export * from './message-box';
 export * from './register';
 
 /**
@@ -119,25 +119,31 @@ export const columnHelper = {
     sorter: true,
     render: text => (transformer ? transformer(text) : text),
   }),
-  generateRelationFp: <RelationSchema extends any = object>(
+  fpGenerateRelation: <RelationSchema extends any = object>(
     key: string,
     title: string,
     opts: {
       ref?: string;
-      transformer: keyof RelationSchema | ((record) => React.ReactChild);
+      transformer?: keyof RelationSchema | ((record) => React.ReactChild);
       filterType?:
         | 'list'
         /** FIXME not implemented */
         | 'search';
       relationField?: string;
       render?: (content) => React.ReactChild;
-    },
+    } = {},
   ) => async (
     laterKey: string,
     actions: Asuna.Schema.RecordRenderActions,
     extras: Asuna.Schema.RecordRenderExtras,
   ): Promise<ColumnProps<any> & { relation: any }> => {
-    const ref = (opts.ref || key) as string;
+    let ref, transformer;
+    if (!opts.ref && !opts.transformer) {
+      [ref, transformer] = key.split('.');
+    }
+
+    ref = ref || opts.ref || key;
+    transformer = transformer || opts.transformer;
     let filterProps = {};
     switch (opts.filterType) {
       case 'list':
@@ -171,7 +177,7 @@ export const columnHelper = {
       dataIndex: ref,
       ...filterProps,
       render: text => {
-        const content = _.isFunction(opts.transformer) ? opts.transformer(text) : text[opts.transformer];
+        const content = _.isFunction(transformer) ? transformer(text) : text[transformer];
         return (
           <WithDebugInfo info={{ key, title, opts, text }}>
             {opts.render ? opts.render(content) : content}

@@ -1,5 +1,5 @@
 import { AppContext } from '@asuna-admin/core';
-import { ReduxCallback, safeCallback, toErrorMessage } from '@asuna-admin/helpers';
+import { ReduxCallback, safeCallback, TimelineMessageBox, toErrorMessage } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 import { contentActions, RootState } from '@asuna-admin/store';
 import { Asuna } from '@asuna-admin/types';
@@ -68,8 +68,7 @@ const modelsActions = {
   }),
 
   loadAllSchemas: () => reduxAction(modelsActionTypes.LOAD_ALL_SCHEMAS),
-  loadAllSchemasSuccess: schemas =>
-    reduxAction(modelsActionTypes.LOAD_ALL_SCHEMAS_SUCCESS, { schemas }),
+  loadAllSchemasSuccess: schemas => reduxAction(modelsActionTypes.LOAD_ALL_SCHEMAS_SUCCESS, { schemas }),
 };
 
 // --------------------------------------------------------------
@@ -153,17 +152,21 @@ const modelsSagaFunctions = {
   *loadAllSchemas() {
     logger.log('[loadAllSchemas]', 'load all schemas in saga');
     const { token } = yield select((state: RootState) => state.auth);
+    const boxId = 'loadAllSchemas';
     if (token) {
-      message.loading('loading all schemas...');
+      // message.loading('loading all schemas...');
+      TimelineMessageBox.push({ key: boxId, type: 'loading', message: `loading all schemas...` });
       try {
         const schemas = yield AppContext.ctx.models.loadSchemas();
 
-        message.success('load all schemas success');
+        // message.success('load all schemas success');
+        TimelineMessageBox.push({ key: boxId, type: 'done', message: `load all schemas success!` });
         yield put(modelsActions.loadAllSchemasSuccess(schemas));
         logger.log('[loadAllSchemas]', 'load all model schemas', schemas);
       } catch (e) {
         logger.warn('[loadAllSchemas]', e, { e });
-        message.error(toErrorMessage(e));
+        // message.error(toErrorMessage(e));
+        TimelineMessageBox.push({ key: boxId, type: 'error', message: toErrorMessage(e) });
       }
     }
   },
@@ -197,11 +200,4 @@ const modelsReducer = (previousState = initialState, action) => {
   return previousState;
 };
 
-export {
-  modelsActionTypes,
-  modelsActions,
-  modelsSagas,
-  modelsReducer,
-  modelsCleaner,
-  modelsSagaFunctions,
-};
+export { modelsActionTypes, modelsActions, modelsSagas, modelsReducer, modelsCleaner, modelsSagaFunctions };

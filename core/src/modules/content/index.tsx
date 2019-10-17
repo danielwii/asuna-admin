@@ -59,7 +59,8 @@ class ContentIndex extends React.Component<IProps, IState> {
     logger.debug('[constructor]', { basis });
 
     // content::name => name
-    const extraName = _.get(basis, 'pane.key').match(/^\w+::(\w+).*$/)[1];
+    const matched = _.get(basis, 'pane.key').match(/^\w+::(\w+).*$/);
+    const extraName = matched ? matched[1] : null;
     const modelName = _.get(basis, 'pane.model') || extraName;
     const modelConfig = this.modelsAdapter.getModelConfig(modelName);
     const tableColumnOpts = this.modelsAdapter.getTableColumnOpts(extraName);

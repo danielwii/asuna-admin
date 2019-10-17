@@ -1,10 +1,9 @@
 import { ModelListConfig } from '@asuna-admin/adapters';
 import { AppContext } from '@asuna-admin/core';
-import { toErrorMessage } from '@asuna-admin/helpers';
+import { TimelineMessageBox, toErrorMessage } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 import { RootState } from '@asuna-admin/store';
 
-import { message } from 'antd';
 import { reduxAction } from 'node-buffs';
 import { call, put, select, takeLatest } from 'redux-saga/effects';
 
@@ -43,8 +42,7 @@ const contentActions = {
       name,
       models: { [name]: { extras, loading: true } },
     }),
-  loadModelsSuccess: data =>
-    reduxAction(contentActionTypes.CONTENT_LOAD_MODELS_SUCCESS, { models: data }),
+  loadModelsSuccess: data => reduxAction(contentActionTypes.CONTENT_LOAD_MODELS_SUCCESS, { models: data }),
   // loadModelsFailed : error => reduxAction(contentActionTypes.CONTENT_LOAD_MODELS_FAILED, {}, error),
 };
 
@@ -57,16 +55,19 @@ const contentActions = {
 
 function* loadModels({ payload: { name, models } }: LoadModelsParams) {
   const { token } = yield select((state: RootState) => state.auth);
+  const boxId = 'loadModels';
   if (token) {
     try {
       const {
         [name]: { extras },
       } = models;
       logger.debug('[loadModels]', 'loading content', { name, extras });
-      message.loading(`loading content '${name}'...`);
+      // message.loading(`loading content '${name}'...`);
+      TimelineMessageBox.push({ key: boxId, type: 'loading', message: `loading content '${name}'...` });
 
       const response = yield call(AppContext.adapters.models.loadModels, name, extras);
-      message.success(`load content '${name}' success`);
+      // message.success(`load content '${name}' success`);
+      TimelineMessageBox.push({ key: boxId, type: 'done', message: `load content '${name}' success` });
       logger.log('[loadModels]', 'loaded content', { name, response });
 
       yield put(
@@ -76,7 +77,8 @@ function* loadModels({ payload: { name, models } }: LoadModelsParams) {
       );
     } catch (e) {
       logger.warn('[loadModels]', { e });
-      message.error(toErrorMessage(e));
+      // message.error(toErrorMessage(e));
+      TimelineMessageBox.push({ key: boxId, type: 'error', message: toErrorMessage(e) });
     }
   }
 }
