@@ -110,14 +110,14 @@ export const columnHelper = {
     title,
     dataIndex: key,
     sorter: true,
-    render: text => (transformer ? transformer(text) : text),
+    render: record => (transformer ? transformer(record) : record),
   }),
   generateID: (key = 'id', title = 'ID', transformer?): ColumnProps<any> => ({
     key,
     title,
     dataIndex: key,
     sorter: true,
-    render: text => (transformer ? transformer(text) : text),
+    render: record => (transformer ? transformer(record) : record),
   }),
   fpGenerateRelation: <RelationSchema extends any = object>(
     key: string,
@@ -130,7 +130,7 @@ export const columnHelper = {
         /** FIXME not implemented */
         | 'search';
       relationField?: string;
-      render?: (content) => React.ReactChild;
+      render?: (content, record) => React.ReactChild;
     } = {},
   ) => async (
     laterKey: string,
@@ -176,11 +176,11 @@ export const columnHelper = {
       relation: ref,
       dataIndex: ref,
       ...filterProps,
-      render: text => {
-        const content = _.isFunction(transformer) ? transformer(text) : text[transformer];
+      render: record => {
+        const content = _.isFunction(transformer) ? transformer(record) : record[transformer];
         return (
-          <WithDebugInfo info={{ key, title, opts, text }}>
-            {opts.render ? opts.render(content) : content}
+          <WithDebugInfo info={{ key, title, opts, record }}>
+            {opts.render ? opts.render(content, record) : content}
           </WithDebugInfo>
         );
       },
@@ -242,9 +242,9 @@ export const columnHelper = {
       relation: ref,
       dataIndex: ref,
       ...filterProps,
-      render: text => {
-        const content = opts.transformer ? opts.transformer(text) : text;
-        return <WithDebugInfo info={{ key, title, opts, text }}>{content}</WithDebugInfo>;
+      render: record => {
+        const content = opts.transformer ? opts.transformer(record) : record;
+        return <WithDebugInfo info={{ key, title, opts, record }}>{content}</WithDebugInfo>;
       },
     };
   },
@@ -254,13 +254,13 @@ export const columnHelper = {
     dataIndex: key,
     sorter: true,
     ...generateSearchColumnProps(key, opts.searchType),
-    render: text => {
-      const value = opts.transformer ? opts.transformer(text) : text;
+    render: record => {
+      const value = opts.transformer ? opts.transformer(record) : record;
       let component = value;
       if (typeof value === 'string' && value.length > 20) {
         component = <Tooltip title={value}>{`${value.slice(0, 20)}...`}</Tooltip>;
       }
-      return <WithDebugInfo info={{ key, title, text }}>{component}</WithDebugInfo>;
+      return <WithDebugInfo info={{ key, title, record }}>{component}</WithDebugInfo>;
     },
   }),
   generateTag: (
@@ -290,10 +290,10 @@ export const columnHelper = {
     dataIndex: key,
     sorter: true,
     // ...generateSearchColumnProps(key, opts.searchType),
-    render: text => {
-      const value = opts.transformer ? opts.transformer(text) : text;
+    render: record => {
+      const value = opts.transformer ? opts.transformer(record) : record;
       return (
-        <WithDebugInfo info={{ key, title, text }}>
+        <WithDebugInfo info={{ key, title, record }}>
           <Tag color={_.get(opts, `colorMap['${value}']`)}>{value}</Tag>
         </WithDebugInfo>
       );
@@ -311,8 +311,8 @@ export const columnHelper = {
     dataIndex: key,
     sorter: true,
     ...generateSearchColumnProps(key, opts.searchType),
-    render: text => {
-      const value = opts.transformer ? opts.transformer(text) : text;
+    render: record => {
+      const value = opts.transformer ? opts.transformer(record) : record;
       return opts.type === 'badge' ? (
         <Badge count={+value} overflowCount={Number.MAX_SAFE_INTEGER} style={{ backgroundColor: '#52c41a' }} />
       ) : (
@@ -325,9 +325,9 @@ export const columnHelper = {
     title,
     dataIndex: key,
     sorter: true,
-    render: text => {
-      if (text) {
-        const value = opts.transformer ? opts.transformer(text) : text;
+    render: record => {
+      if (record) {
+        const value = opts.transformer ? opts.transformer(record) : record;
         if (typeof value === 'string' && value.length > 30) {
           // const host = Config.get('UPLOADS_ENDPOINT');
           // const url = `${opts.host || host}${value}`;
@@ -366,14 +366,14 @@ export const columnHelper = {
     title,
     dataIndex: castModelKey(key),
     sorter: true,
-    render: text => {
-      if (text) {
-        const value = transformer ? transformer(text) : text;
-        const content = moment(text).calendar();
+    render: record => {
+      if (record) {
+        const value = transformer ? transformer(record) : record;
+        const content = moment(record).calendar();
         return (
           <Tooltip title={value}>
             {content}
-            <div>{moment(text).fromNow()}</div>
+            <div>{moment(record).fromNow()}</div>
           </Tooltip>
         );
       }
@@ -402,10 +402,10 @@ export const columnHelper = {
     title,
     dataIndex: key,
     sorter: true,
-    render: text => {
-      if (text) {
+    render: record => {
+      if (record) {
         try {
-          const value = opts.transformer ? opts.transformer(text) : text;
+          const value = opts.transformer ? opts.transformer(record) : record;
           if (value) {
             const images = valueToArrays(value);
             // const host = Config.get('UPLOADS_ENDPOINT', '');
@@ -413,8 +413,8 @@ export const columnHelper = {
             return <AssetsPreview key={images} urls={images} />;
           }
         } catch (e) {
-          logger.error('[generateImage]', e, { key, title, text });
-          return text;
+          logger.error('[generateImage]', e, { key, title, record });
+          return record;
         }
       }
       return 'n/a';
@@ -425,10 +425,10 @@ export const columnHelper = {
     title,
     dataIndex: key,
     sorter: true,
-    render: text => {
-      if (text) {
+    render: record => {
+      if (record) {
         try {
-          const value = opts.transformer ? opts.transformer(text) : text;
+          const value = opts.transformer ? opts.transformer(record) : record;
           if (value) {
             const videoJsOptions = {
               width: '100%',
@@ -450,8 +450,8 @@ export const columnHelper = {
             );
           }
         } catch (e) {
-          logger.error('[generateVideo]', e, { key, title, text });
-          return text;
+          logger.error('[generateVideo]', e, { key, title, record });
+          return record;
         }
       }
       return 'n/a';

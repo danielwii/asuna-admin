@@ -6,9 +6,14 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import Highlight from 'react-highlight';
 
+export enum FormFieldType {
+  string = 'string',
+  number = 'number',
+}
+
 export type FormField = {
   name: string;
-  type: 'number' | 'string';
+  type: FormFieldType;
   validate?: (value) => string | null;
   help?: string;
   required?: boolean;

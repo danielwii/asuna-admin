@@ -70,11 +70,7 @@ function* loadModels({ payload: { name, models } }: LoadModelsParams) {
       TimelineMessageBox.push({ key: boxId, type: 'done', message: `load content '${name}' success` });
       logger.log('[loadModels]', 'loaded content', { name, response });
 
-      yield put(
-        contentActions.loadModelsSuccess({
-          [name]: { data: response.data, loading: false, extras },
-        }),
-      );
+      yield put(contentActions.loadModelsSuccess({ [name]: { data: response.data, loading: false, extras } }));
     } catch (e) {
       logger.warn('[loadModels]', { e });
       // message.error(toErrorMessage(e));

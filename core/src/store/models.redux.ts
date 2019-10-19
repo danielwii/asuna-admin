@@ -3,8 +3,6 @@ import { ReduxCallback, safeCallback, TimelineMessageBox, toErrorMessage } from 
 import { createLogger } from '@asuna-admin/logger';
 import { contentActions, RootState } from '@asuna-admin/store';
 import { Asuna } from '@asuna-admin/types';
-
-import { message } from 'antd';
 import { AxiosResponse } from 'axios';
 import _ from 'lodash';
 import { reduxAction } from 'node-buffs';
@@ -81,11 +79,12 @@ const modelsActions = {
 const modelsSagaFunctions = {
   *fetch({ payload: { modelName, data }, callback }) {
     const { token } = yield select((state: RootState) => state.auth);
+    const boxId = 'fetch';
     if (token) {
-      message.loading(`loading model '${modelName}'...`);
+      TimelineMessageBox.push({ key: boxId, type: 'loading', message: `loading model '${modelName}'...` });
       try {
         const response = yield call(AppContext.adapters.models.fetch, modelName, data);
-        message.success(`load model '${modelName}' success!`);
+        TimelineMessageBox.push({ key: boxId, type: 'done', message: `load model '${modelName}' success` });
         logger.log('[fetch]', 'response of load model is', response);
         safeCallback(callback, { response });
 
@@ -93,7 +92,7 @@ const modelsSagaFunctions = {
       } catch (e) {
         logger.warn('[fetch]', e, { e });
         safeCallback(callback, { error: e });
-        message.error(toErrorMessage(e));
+        TimelineMessageBox.push({ key: boxId, type: 'error', message: toErrorMessage(e) });
       }
     }
   },
@@ -102,11 +101,12 @@ const modelsSagaFunctions = {
    */
   *upsert({ payload: { modelName, data }, callback }) {
     const { token } = yield select((state: RootState) => state.auth);
+    const boxId = 'upsert';
     if (token) {
-      message.info(`upsert model '${modelName}'...`);
+      TimelineMessageBox.push({ key: boxId, type: 'loading', message: `upsert model '${modelName}'...` });
       try {
         const response = yield call(AppContext.adapters.models.upsert, modelName, data);
-        message.success(`upsert model '${modelName}' success!`);
+        TimelineMessageBox.push({ key: boxId, type: 'done', message: `upsert model '${modelName}' success` });
         logger.log('[upsert]', 'response of upsert model is', response);
         if (callback != null) callback({ response });
 
@@ -119,17 +119,18 @@ const modelsSagaFunctions = {
         } catch (e) {
           logger.warn('[upsert] callback error', e, { e });
         }
-        message.error(toErrorMessage(error));
+        TimelineMessageBox.push({ key: boxId, type: 'error', message: toErrorMessage(error) });
       }
     }
   },
   *remove({ payload: { modelName, data }, callback }) {
     const { token } = yield select((state: RootState) => state.auth);
+    const boxId = 'remove';
     if (token) {
-      message.info(`remove model '${modelName}'...`);
+      TimelineMessageBox.push({ key: boxId, type: 'loading', message: `remove model '${modelName}'...` });
       try {
         const response = yield call(AppContext.adapters.models.remove, modelName, data);
-        message.success(`remove model '${modelName}' success!`);
+        TimelineMessageBox.push({ key: boxId, type: 'done', message: `remove model '${modelName}' success` });
         logger.log('[remove]', 'response of remove model is', response);
         if (callback != null) callback(response);
 
@@ -145,7 +146,7 @@ const modelsSagaFunctions = {
         } catch (e) {
           logger.warn('[upsert] callback error', e, { e });
         }
-        message.error(toErrorMessage(error));
+        TimelineMessageBox.push({ key: boxId, type: 'error', message: toErrorMessage(error) });
       }
     }
   },
@@ -154,18 +155,15 @@ const modelsSagaFunctions = {
     const { token } = yield select((state: RootState) => state.auth);
     const boxId = 'loadAllSchemas';
     if (token) {
-      // message.loading('loading all schemas...');
       TimelineMessageBox.push({ key: boxId, type: 'loading', message: `loading all schemas...` });
       try {
         const schemas = yield AppContext.ctx.models.loadSchemas();
 
-        // message.success('load all schemas success');
         TimelineMessageBox.push({ key: boxId, type: 'done', message: `load all schemas success!` });
         yield put(modelsActions.loadAllSchemasSuccess(schemas));
         logger.log('[loadAllSchemas]', 'load all model schemas', schemas);
       } catch (e) {
         logger.warn('[loadAllSchemas]', e, { e });
-        // message.error(toErrorMessage(e));
         TimelineMessageBox.push({ key: boxId, type: 'error', message: toErrorMessage(e) });
       }
     }
