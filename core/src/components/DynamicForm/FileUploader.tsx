@@ -7,8 +7,7 @@ import { Button, Icon, message, Upload } from 'antd';
 import { UploadFile, UploadFileStatus } from 'antd/es/upload/interface';
 import { UploadChangeParam, UploadProps } from 'antd/lib/upload';
 import * as _ from 'lodash';
-import * as React from 'react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 const logger = createLogger('components:dynamic-form:files');
 
@@ -38,20 +37,13 @@ const urlToUploadFile = (url, index) => ({
 
 export const FileUploader = (props: IFilesUploaderProps) => {
   const [state, setState] = useState<IState>({
-    uploadFiles: _.isString(props.value)
-      ? [urlToUploadFile(props.value, 0)]
-      : (props.value || []).map(urlToUploadFile),
+    uploadFiles: _.isString(props.value) ? [urlToUploadFile(props.value, 0)] : (props.value || []).map(urlToUploadFile),
   });
 
   logger.log('render', { props, state });
 
   const uploadProps: UploadProps = {
-    customRequest(option: {
-      file: UploadFile;
-      onSuccess: (response: any, file: UploadFile) => void;
-      onProgress: (e: { percent: number }, file: UploadFile) => void;
-      onError: (error: Error, response: any, file: UploadFile) => void;
-    }) {
+    customRequest(option) {
       logger.log('[FileUploader][customRequest]', option);
       const { onChange, urlHandler, bucket, jsonMode } = props;
 
@@ -59,10 +51,7 @@ export const FileUploader = (props: IFilesUploaderProps) => {
         option.file,
         {
           onUploadProgress: ({ total, loaded }) => {
-            option.onProgress(
-              { percent: +Math.round((loaded / total) * 100).toFixed(2) },
-              option.file,
-            );
+            option.onProgress({ percent: +Math.round((loaded / total) * 100).toFixed(2) }, option.file);
           },
         },
         { bucket },
@@ -98,7 +87,7 @@ export const FileUploader = (props: IFilesUploaderProps) => {
             // wrapFilesToFileList(option.file, files);
           }
         })
-        .catch(reason => option.onError(reason, reason.response, option.file));
+        .catch(option.onError);
     },
     multiple: false,
     supportServerRender: true,

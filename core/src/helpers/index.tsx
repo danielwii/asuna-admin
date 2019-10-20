@@ -130,7 +130,7 @@ export const columnHelper = {
         /** FIXME not implemented */
         | 'search';
       relationField?: string;
-      render?: (content, record) => React.ReactChild;
+      render?: (content, record?) => React.ReactChild;
     } = {},
   ) => async (
     laterKey: string,
@@ -177,7 +177,7 @@ export const columnHelper = {
       dataIndex: ref,
       ...filterProps,
       render: record => {
-        const content = _.isFunction(transformer) ? transformer(record) : record[transformer];
+        const content = record ? (_.isFunction(transformer) ? transformer(record) : record[transformer]) : null;
         return (
           <WithDebugInfo info={{ key, title, opts, record }}>
             {opts.render ? opts.render(content, record) : content}
