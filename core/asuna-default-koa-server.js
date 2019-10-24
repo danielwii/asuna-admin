@@ -14,6 +14,9 @@ const port = process.env.PORT || 3000;
 const app = next({ dev });
 const handle = app.getRequestHandler();
 
+// MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 / listeners added to [EventEmitter].
+process.setMaxListeners(20);
+
 /**
  * bootstrap
  * @param root project location, used to search graphql schemas
