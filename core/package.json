@@ -127,7 +127,7 @@
     "babel-plugin-import": "^1.12.2",
     "babel-plugin-module-resolver": "^3.2.0",
     "babel-plugin-styled-components": "^1.10.6",
-    "glob": "^7.1.4",
+    "glob": "^7.1.5",
     "jest": "^24.9.0",
     "source-map-loader": "^0.2.4",
     "ts-jest": "^24.1.0",
