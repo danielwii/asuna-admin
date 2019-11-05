@@ -89,7 +89,7 @@
     "redux-logger": "3.0.6",
     "redux-observable": "1.2.0",
     "redux-persist": "^6.0.0",
-    "redux-saga": "1.1.1",
+    "redux-saga": "1.1.2",
     "rxjs": "^6.5.3",
     "socket.io-client": "^2.3.0",
     "stream-array": "^1.1.2",
