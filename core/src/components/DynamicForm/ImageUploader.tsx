@@ -4,7 +4,7 @@ import { upload, validateFile } from '@asuna-admin/helpers/upload';
 import { createLogger } from '@asuna-admin/logger';
 import { Asuna } from '@asuna-admin/types';
 
-import { Icon, Modal, Upload } from 'antd';
+import { Icon, Input, Modal, Upload } from 'antd';
 import { RcFile, UploadChangeParam, UploadFile, UploadFileStatus } from 'antd/es/upload/interface';
 import _ from 'lodash';
 import React from 'react';
@@ -18,6 +18,7 @@ const logger = createLogger('components:dynamic-form:images');
 interface IProps {
   // FIXME 目前从 url-rewriter 中获取附件前缀，未来考虑单独传入图片地址解析器，而无需从属性中获取相关知识
   // host?: string;
+  key?: string;
   bucket?: string;
   urlHandler?: (res: Asuna.Schema.UploadResponse) => string;
   value?: string;
@@ -74,6 +75,7 @@ export class ImageUploader extends React.Component<IProps, IState> {
     const fileList = _.map<any, Partial<UploadFile>>(images, (image, index) => ({
       uid: `${index}`,
       status: 'done' as UploadFileStatus,
+      name: valueToUrl(image, { type: 'image', thumbnail: {} }),
       url: valueToUrl(image, { type: 'image', thumbnail: {} }),
       thumbUrl: valueToUrl(image, { type: 'image', thumbnail: { width: 200, height: 200 } }),
     })) as any;
@@ -108,6 +110,16 @@ export class ImageUploader extends React.Component<IProps, IState> {
     this.wrapImagesToFileList(images);
   };
 
+  valueToSubmit = (value?: string | string[], extra?: string): string | string[] => {
+    const uploadedImages = valueToArrays(value);
+    let images: string | string[] = _.compact(_.flattenDeep([uploadedImages, extra]));
+    if (!this.props.jsonMode) {
+      images = images.join(',');
+    }
+    logger.log('[ImageUploader][customRequest]', { images, uploadedImages });
+    return images;
+  };
+
   customRequest = (option: any): void => {
     logger.log('[ImageUploader][customRequest]', option);
     const { onChange, urlHandler, bucket, jsonMode } = this.props;
@@ -115,18 +127,12 @@ export class ImageUploader extends React.Component<IProps, IState> {
       if (uploaded) {
         logger.log('[ImageUploader][customRequest]', { props: this.props, state: this.state });
         const resolvedUrl = urlHandler ? urlHandler(uploaded[0]) : `${uploaded[0]}`;
-        let image = resolvedUrl;
+        // let image = resolvedUrl;
         // if (!resolvedUrl.startsWith('http') && !resolvedUrl.startsWith(prefix || '')) {
         //   image = join(prefix || '', resolvedUrl);
         // }
-        logger.log('[ImageUploader][customRequest]', { image, bucket, resolvedUrl });
-        const uploadedImages = valueToArrays(this.props.value);
-        console.log({ uploadedImages, image }, _.flattenDeep([uploadedImages, image]));
-        let images: string | string[] = _.compact(_.flattenDeep([uploadedImages, image]));
-        if (!jsonMode) {
-          images = images.join(',');
-        }
-        logger.log('[ImageUploader][customRequest]', { uploaded, images, uploadedImages });
+        const images = this.valueToSubmit(this.props.value, resolvedUrl);
+        logger.log('[ImageUploader][customRequest]', { uploaded, images });
         onChange!(images);
         this.wrapImagesToFileList(images);
       }
@@ -134,7 +140,7 @@ export class ImageUploader extends React.Component<IProps, IState> {
   };
 
   render() {
-    const { value } = this.props;
+    const { key, value } = this.props;
     const { previewVisible, previewImage, fileList, fileSize } = this.state;
 
     logger.debug('[render]', { fileList, value });
@@ -155,12 +161,12 @@ export class ImageUploader extends React.Component<IProps, IState> {
     };
 
     return (
-      <div className="clearfix" key={value}>
+      <div className="clearfix" key={key}>
         <Upload
           {...eventHandler}
           multiple
           supportServerRender
-          listType="picture-card"
+          listType="picture"
           fileList={fileList}
           customRequest={this.customRequest}
           beforeUpload={(file: RcFile, rcFiles: RcFile[]) => validateFile(file)}
@@ -172,6 +178,14 @@ export class ImageUploader extends React.Component<IProps, IState> {
         <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>
           <img style={{ width: '100%' }} src={previewImage} alt="" />
         </Modal>
+        <Input.TextArea
+          value={_.isString(value) ? value : JSON.stringify(value)}
+          autoSize={{ minRows: 2, maxRows: 6 }}
+          onChange={event => {
+            this.props.onChange!(this.valueToSubmit(event.target.value));
+            this.wrapImagesToFileList(event.target.value);
+          }}
+        />
       </div>
     );
   }

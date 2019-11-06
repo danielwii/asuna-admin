@@ -25,7 +25,7 @@ export const generateImages = (
     form,
     { fieldName, labelName, ...options },
     // TODO jsonMode need to setup dynamically later
-    <ImageUploader many={true} urlHandler={handler} jsonMode />,
+    <ImageUploader key={fieldName} many={true} urlHandler={handler} jsonMode />,
     formItemLayout,
   );
 };
@@ -44,7 +44,7 @@ export const generateImage = (
   return generateComponent(
     form,
     { fieldName, labelName, ...options },
-    <ImageUploader many={false} urlHandler={handler} />,
+    <ImageUploader key={fieldName} many={false} urlHandler={handler} />,
     formItemLayout,
   );
 };

@@ -7,10 +7,9 @@ import { AppContext } from '.';
 
 const logger = createLogger('core:url-rewriter');
 
-const castToArrays = value =>
-  isJson(value) ? JSON.parse(value as string) : _.compact(value.split(','));
+const castToArrays = value => (isJson(value) ? JSON.parse(value as string) : _.compact(value.split(',')));
 
-export function valueToArrays(value) {
+export function valueToArrays(value): any[] {
   const images = value ? (_.isArray(value) ? value : castToArrays(value)) : [];
   logger.debug('[valueToArrays]', { value, images });
   return images;
@@ -43,11 +42,7 @@ export function valueToUrl(
     // response value param fullpath already includes uploads path
     let url = value;
     if (thumbnail) {
-      const template = _.get(
-        AppContext.serverSettings['settings.url-resolver'],
-        'value.uploads',
-        '',
-      );
+      const template = _.get(AppContext.serverSettings['settings.url-resolver'], 'value.uploads', '');
       if (!(_.isString(template) && template.includes('{{ url }}'))) {
         logger.log('template for settings.url-resolver/value.uploads dose not exists or valid.');
         return url;

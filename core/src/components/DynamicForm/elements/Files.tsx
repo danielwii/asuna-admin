@@ -24,7 +24,7 @@ export const generateFile = (
     form,
     { fieldName, labelName, ...options },
     // TODO jsonMode need to setup dynamically later
-    <FileUploader many={false} urlHandler={handler} jsonMode />,
+    <FileUploader key={fieldName} many={false} urlHandler={handler} jsonMode />,
     formItemLayout,
   );
 };
@@ -44,7 +44,7 @@ export const generateFiles = (
     form,
     { fieldName, labelName, ...options },
     // TODO jsonMode need to setup dynamically later
-    <FileUploader many={true} urlHandler={handler} jsonMode />,
+    <FileUploader key={fieldName} many={true} urlHandler={handler} jsonMode />,
     formItemLayout,
   );
 };
