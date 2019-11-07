@@ -28,8 +28,14 @@ interface FormProps<FieldsType> {
   fields: FieldsType;
 }
 
-const InnerForm = (props: FormProps<FormFields> & formik.FormikProps<formik.FormikValues>) => {
-  const { touched, errors, isSubmitting, message, body, fields, handleSubmit, values } = props;
+interface EasyFormProps extends FormProps<FormFields> {
+  // initialValues(props): any;
+  onSubmit: (values: any) => Promise<any>;
+  onClear: () => Promise<any>;
+}
+
+const InnerForm = (props: EasyFormProps & formik.FormikProps<formik.FormikValues>) => {
+  const { touched, errors, isSubmitting, message, body, fields, handleSubmit, handleReset, values, onClear } = props;
   return (
     <formik.Form>
       {message && <h1>{message}</h1>}
@@ -52,13 +58,13 @@ const InnerForm = (props: FormProps<FormFields> & formik.FormikProps<formik.Form
           />
         </div>
       ))}
-
       <antd.Divider />
-
       <antd.Button htmlType="submit" onSubmit={handleSubmit} disabled={isSubmitting}>
         {isSubmitting ? 'Submitting' : 'Submit'}
-      </antd.Button>
-
+      </antd.Button>{' '}
+      <antd.Button onClick={handleReset} disabled={isSubmitting}>
+        {isSubmitting ? 'Resetting' : 'Reset'}
+      </antd.Button>{' '}
       {/*<div>
         Preview:
         <Highlight language="json">{JSON.stringify(state.body, null, 2)}</Highlight>
@@ -66,11 +72,6 @@ const InnerForm = (props: FormProps<FormFields> & formik.FormikProps<formik.Form
     </formik.Form>
   );
 };
-
-interface EasyFormProps extends FormProps<FormFields> {
-  // initialValues(props): any;
-  onSubmit: (values) => Promise<any>;
-}
 
 /*  creatable: (key, actions, extras) => {
     // Modal.info({ content: JSON.stringify({ key, actions, extras }) });
@@ -129,8 +130,26 @@ export type FormFieldsGroup = { name?: string; fields: FormFieldDef[] };
 
 export type GroupFormFields = { [groupKey: string]: FormFieldsGroup };
 
-const GroupInnerForm = (props: ValuesFormProps & formik.FormikProps<formik.FormikValues>) => {
-  const { touched, errors, isSubmitting, message, body, fields, handleSubmit, values, fieldValues } = props;
+interface GroupEasyFormProps extends ValuesFormProps {
+  // initialValues(props): any;
+  onSubmit: (values: any) => Promise<any>;
+  onClear: () => Promise<any>;
+}
+
+const GroupInnerForm = (props: GroupEasyFormProps & formik.FormikProps<formik.FormikValues>) => {
+  const {
+    touched,
+    errors,
+    isSubmitting,
+    message,
+    body,
+    fields,
+    handleSubmit,
+    handleReset,
+    values,
+    fieldValues,
+    onClear,
+  } = props;
   return (
     <antd.Row gutter={16}>
       <antd.Col span={18}>
@@ -147,7 +166,7 @@ const GroupInnerForm = (props: ValuesFormProps & formik.FormikProps<formik.Formi
                     name={formField.name}
                     render={({ field, form }: formik.FieldProps<formik.FormikValues>) => {
                       const hasError = !!(form.touched[formField.name] && form.errors[formField.name]);
-                      const value = field.value || fieldValues[formField.name] || formField.defaultValue;
+                      const value = _.defaultTo(field.value, fieldValues[formField.name] || formField.defaultValue);
                       return (
                         <FormControl error={hasError} fullWidth={true}>
                           <InputLabel htmlFor={field.name}>
@@ -164,12 +183,16 @@ const GroupInnerForm = (props: ValuesFormProps & formik.FormikProps<formik.Formi
               })}
             </antd.Card>
           ))}
-
           <antd.Divider />
-
           <antd.Button htmlType="submit" onSubmit={handleSubmit} disabled={isSubmitting}>
             {isSubmitting ? 'Submitting' : 'Submit'}
-          </antd.Button>
+          </antd.Button>{' '}
+          <antd.Button onClick={handleReset} disabled={isSubmitting}>
+            {isSubmitting ? 'Resetting' : 'Reset'}
+          </antd.Button>{' '}
+          {/*<antd.Button type="danger" onClick={onClear} disabled={isSubmitting}>*/}
+          {/*  {isSubmitting ? 'Clearing' : 'Clear'}*/}
+          {/*</antd.Button>*/}
         </formik.Form>
       </antd.Col>
       <antd.Col span={6}>
@@ -187,11 +210,6 @@ const GroupInnerForm = (props: ValuesFormProps & formik.FormikProps<formik.Formi
     </antd.Row>
   );
 };
-
-interface GroupEasyFormProps extends ValuesFormProps {
-  // initialValues(props): any;
-  onSubmit: (values) => Promise<any>;
-}
 
 export const EasyGroupForm = formik.withFormik<GroupEasyFormProps, any>({
   // Transform outer props into form values

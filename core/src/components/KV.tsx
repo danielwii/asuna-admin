@@ -1,7 +1,7 @@
 import { EasyForm, EasyGroupForm, FormFields, GroupFormFields } from '@asuna-admin/components';
 import { ComponentsHelper } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
-import { Divider, Icon, Typography } from 'antd';
+import { Button, default as antd, Divider, Icon, Typography } from 'antd';
 import 'highlight.js/styles/default.css';
 import * as _ from 'lodash';
 import React, { useEffect, useState } from 'react';
@@ -16,6 +16,7 @@ export function GroupFormKVComponent(props: {
   kvCollection?: string;
   kvKey: string;
   initialState?: { body: GroupFormBody };
+  enableClear?: boolean;
   info: React.ReactChild;
 });
 
@@ -23,6 +24,7 @@ export function GroupFormKVComponent(props: {
   kvCollection?: string;
   kvKey: string;
   initialState: { body: any };
+  enableClear?: boolean;
   info: React.ReactChild;
   fields: (state) => GroupFormFields;
 });
@@ -31,6 +33,7 @@ export function GroupFormKVComponent(props: {
   kvCollection?: string;
   kvKey: string;
   initialState: { body: GroupFormBody | any };
+  enableClear?: boolean;
   info: React.ReactChild;
   fields: (state) => GroupFormFields;
 }) {
@@ -65,6 +68,7 @@ export function GroupFormKVComponent(props: {
         fields={state.body.form}
         fieldValues={state.body.values}
         onSubmit={values => ComponentsHelper.save({ key, collection }, { form: state.body.form, values }, refetch)}
+        onClear={() => ComponentsHelper.clear({ key, collection }, refetch)}
       />
       <Divider />
       <Highlight language="json">{util.inspect(data, false, 10)}</Highlight>
@@ -78,6 +82,7 @@ export function FormKVComponent(props: {
   kvCollection?: string;
   kvKey: string;
   initialState: { body: FormBody };
+  enableClear?: boolean;
   info: React.ReactChild;
 });
 
@@ -85,6 +90,7 @@ export function FormKVComponent(props: {
   kvCollection?: string;
   kvKey: string;
   initialState: { body: any };
+  enableClear?: boolean;
   info: React.ReactChild;
   fields: (state) => FormFields;
 });
@@ -93,6 +99,7 @@ export function FormKVComponent(props: {
   kvCollection?: string;
   kvKey: string;
   initialState: { body: FormBody | any };
+  enableClear?: boolean;
   info: React.ReactChild;
   fields: (state) => FormFields;
 }) {
@@ -125,6 +132,7 @@ export function FormKVComponent(props: {
       <EasyForm
         fields={fields(state)}
         onSubmit={values => ComponentsHelper.save({ key, collection }, values, refetch)}
+        onClear={() => ComponentsHelper.clear({ key, collection }, refetch)}
       />
       <Divider />
       <Highlight language="json">{util.inspect(state.body, false, 10)}</Highlight>

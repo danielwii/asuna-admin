@@ -40,10 +40,19 @@ export const ComponentsHelper = {
       { fetchPolicy: 'no-cache' },
     ),
   save: (identifier: { key: string; collection?: string }, body: any, cb?): Promise<any> => {
-    logger.log('save', { body });
+    logger.log('save', { identifier, body });
     return AppContext.adapters.models
       .upsert('kv__pairs', {
         body: { collection: identifier.collection || 'system.server', key: identifier.key, value: body },
+      })
+      .then(response => (cb ? cb(response.data) : response.data))
+      .catch(reason => logger.error(reason));
+  },
+  clear: (identifier: { key: string; collection?: string }, cb?): Promise<any> => {
+    logger.log('clear', { identifier });
+    return AppContext.adapters.models
+      .upsert('kv__pairs', {
+        body: { collection: identifier.collection || 'system.server', key: identifier.key, value: null },
       })
       .then(response => (cb ? cb(response.data) : response.data))
       .catch(reason => logger.error(reason));
