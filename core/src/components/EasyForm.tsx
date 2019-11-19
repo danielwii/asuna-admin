@@ -1,14 +1,14 @@
-import { ImageUploader } from '@asuna-admin/components/DynamicForm/ImageUploader';
 import { Config } from '@asuna-admin/config';
 import { AppContext } from '@asuna-admin/core';
 import { createLogger } from '@asuna-admin/logger';
 import { FormControl, FormHelperText, Input, InputLabel } from '@material-ui/core';
 import * as antd from 'antd';
-import { FieldInputProps } from 'formik';
 import * as formik from 'formik';
+import { FieldInputProps } from 'formik';
 import * as _ from 'lodash';
 import * as React from 'react';
 import Highlight from 'react-highlight';
+import { ImageUploader } from './DynamicForm/ImageUploader';
 
 const logger = createLogger('components:easy-form');
 
