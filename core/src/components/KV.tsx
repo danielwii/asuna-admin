@@ -1,12 +1,13 @@
 import { EasyForm, EasyGroupForm, FormFields, GroupFormFields } from '@asuna-admin/components';
 import { ComponentsHelper } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
-import { Button, default as antd, Divider, Icon, Typography } from 'antd';
-import 'highlight.js/styles/default.css';
+import { Col, Divider, Icon, Row, Typography } from 'antd';
 import * as _ from 'lodash';
 import React, { useEffect, useState } from 'react';
 import Highlight from 'react-highlight';
 import * as util from 'util';
+
+import 'highlight.js/styles/default.css';
 
 const logger = createLogger('components:kv-form');
 
@@ -81,7 +82,7 @@ type FormBody = { form: FormFields; values: object };
 export function FormKVComponent(props: {
   kvCollection?: string;
   kvKey: string;
-  initialState: { body: FormBody };
+  // initialState: { body: FormBody };
   enableClear?: boolean;
   info: React.ReactChild;
 });
@@ -89,7 +90,7 @@ export function FormKVComponent(props: {
 export function FormKVComponent(props: {
   kvCollection?: string;
   kvKey: string;
-  initialState: { body: any };
+  // initialState: { body: any };
   enableClear?: boolean;
   info: React.ReactChild;
   fields: (state) => FormFields;
@@ -98,16 +99,15 @@ export function FormKVComponent(props: {
 export function FormKVComponent(props: {
   kvCollection?: string;
   kvKey: string;
-  initialState: { body: FormBody | any };
+  // initialState: { body: FormBody | any };
   enableClear?: boolean;
   info: React.ReactChild;
   fields: (state) => FormFields;
 }) {
-  const { kvCollection: collection, kvKey: key, info, initialState, fields } = props;
-  const [state, setState] = useState(initialState);
+  const { kvCollection: collection, kvKey: key, info, /*initialState, */ fields } = props;
+  const [body, setBody] = useState({});
   const { loading, error, data, refetch } = ComponentsHelper.loadByKey(key, collection);
-  console.log({ props, data, error, loading });
-  useEffect(() => setState({ body: _.get(data, 'kv.value', {}) }), [JSON.stringify(data)]);
+  useEffect(() => setBody(_.get(data, 'kv.value', {})), [JSON.stringify(data)]);
 
   if (loading) return <p>Loading...</p>;
   if (error)
@@ -118,7 +118,8 @@ export function FormKVComponent(props: {
       </>
     );
 
-  logger.log('render', { state, data });
+  const fieldValues = fields(body);
+  logger.log('render', props, body, { data, fields, /*initialState, */ fieldValues });
 
   return (
     <>
@@ -129,13 +130,21 @@ export function FormKVComponent(props: {
         </Typography.Paragraph>
       </Typography>
       <Divider />
-      <EasyForm
-        fields={fields(state)}
-        onSubmit={values => ComponentsHelper.save({ key, collection }, values, refetch)}
-        onClear={() => ComponentsHelper.clear({ key, collection }, refetch)}
-      />
-      <Divider />
-      <Highlight language="json">{util.inspect(state.body, false, 10)}</Highlight>
+      <Row gutter={16}>
+        <Col span={18}>
+          <EasyForm
+            fields={fieldValues}
+            onSubmit={values => ComponentsHelper.save({ key, collection }, values, refetch)}
+            onClear={() => ComponentsHelper.clear({ key, collection }, refetch)}
+          />
+        </Col>
+        <Col span={6}>
+          <div>
+            <h3>Preview:</h3>
+            <Highlight language="json">{JSON.stringify(body, null, 2)}</Highlight>
+          </div>
+        </Col>
+      </Row>
       <Divider />
       <Highlight language="json">{util.inspect(data, false, 10)}</Highlight>
     </>

@@ -1,14 +1,21 @@
+import { ImageUploader } from '@asuna-admin/components/DynamicForm/ImageUploader';
+import { Config } from '@asuna-admin/config';
 import { AppContext } from '@asuna-admin/core';
+import { createLogger } from '@asuna-admin/logger';
 import { FormControl, FormHelperText, Input, InputLabel } from '@material-ui/core';
 import * as antd from 'antd';
+import { FieldInputProps } from 'formik';
 import * as formik from 'formik';
 import * as _ from 'lodash';
 import * as React from 'react';
 import Highlight from 'react-highlight';
 
+const logger = createLogger('components:easy-form');
+
 export enum FormFieldType {
   string = 'string',
   number = 'number',
+  image = 'image',
 }
 
 export type FormField = {
@@ -34,28 +41,67 @@ interface EasyFormProps extends FormProps<FormFields> {
   onClear: () => Promise<any>;
 }
 
+function RenderInputComponent({
+  type,
+  field,
+  value,
+}: {
+  type: FormFieldType;
+  field: FieldInputProps<any>;
+  value: any;
+}) {
+  logger.log('[RenderInputComponent]', field, { type, value });
+  switch (type) {
+    case FormFieldType.image: {
+      return (
+        <>
+          <br />
+          <ImageUploader
+            many={false}
+            urlHandler={Config.get('IMAGE_RES_HANDLER')}
+            value={value}
+            onChange={newValue => {
+              logger.log('[RenderInputComponent]', { type, value, newValue });
+              field.onChange({ target: { id: field.name, name: field.name, value: newValue } });
+            }}
+          />
+        </>
+      );
+    }
+    default: {
+      return (
+        <>
+          <InputLabel htmlFor={field.name}>{field.name}</InputLabel>
+          <Input id={field.name} type={type} {...field} value={value} />
+        </>
+      );
+    }
+  }
+}
+
 const InnerForm = (props: EasyFormProps & formik.FormikProps<formik.FormikValues>) => {
   const { touched, errors, isSubmitting, message, body, fields, handleSubmit, handleReset, values, onClear } = props;
+  logger.log('[InnerForm]', props.values);
   return (
     <formik.Form>
       {message && <h1>{message}</h1>}
       {_.map(fields, (formField: FormField, key: string) => (
         <div key={key}>
-          <formik.Field
-            name={formField.name}
-            render={({ field, form }: formik.FieldProps<formik.FormikValues>) => {
+          <formik.Field name={formField.name}>
+            {({ field, form }: formik.FieldProps<formik.FormikValues>) => {
               const hasError = !!(form.touched[formField.name] && form.errors[formField.name]);
-              const value = field.value || formField.defaultValue;
+              const value = _.defaultTo(field.value, formField.defaultValue);
+              logger.log('render field', field, { hasError, value });
               return (
-                <FormControl error={hasError} fullWidth={true}>
-                  <InputLabel htmlFor={field.name}>{field.name}</InputLabel>
-                  <Input id={field.name} type={formField.type} {...field} value={value} />
+                <FormControl key={field.name} error={hasError} fullWidth={true}>
+                  <RenderInputComponent type={formField.type} field={field} value={value} />
+                  {/*<Input id={field.name} type={formField.type} {...field} value={value} />*/}
                   {formField.help && <FormHelperText>{formField.help}</FormHelperText>}
                   {hasError && <FormHelperText>{form.errors[formField.name]}</FormHelperText>}
                 </FormControl>
               );
             }}
-          />
+          </formik.Field>
         </div>
       ))}
       <antd.Divider />
@@ -161,10 +207,8 @@ const GroupInnerForm = (props: GroupEasyFormProps & formik.FormikProps<formik.Fo
               {_.map(fieldsGroup.fields, (fieldDef: FormFieldDef) => {
                 const formField = fieldDef.field;
                 return (
-                  <formik.Field
-                    key={fieldDef.name}
-                    name={formField.name}
-                    render={({ field, form }: formik.FieldProps<formik.FormikValues>) => {
+                  <formik.Field key={fieldDef.name} name={formField.name}>
+                    {({ field, form }: formik.FieldProps<formik.FormikValues>) => {
                       const hasError = !!(form.touched[formField.name] && form.errors[formField.name]);
                       const value = _.defaultTo(field.value, fieldValues[formField.name] || formField.defaultValue);
                       return (
@@ -172,13 +216,14 @@ const GroupInnerForm = (props: GroupEasyFormProps & formik.FormikProps<formik.Fo
                           <InputLabel htmlFor={field.name}>
                             {field.name} / {fieldDef.name}
                           </InputLabel>
-                          <Input id={field.name} type={formField.type} {...field} value={value} />
+                          {/*<Input id={field.name} type={formField.type} {...field} value={value} />*/}
+                          <RenderInputComponent type={formField.type} field={field} value={value} />
                           {formField.help && <FormHelperText>{formField.help}</FormHelperText>}
                           {hasError && <FormHelperText>{form.errors[formField.name]}</FormHelperText>}
                         </FormControl>
                       );
                     }}
-                  />
+                  </formik.Field>
                 );
               })}
             </antd.Card>

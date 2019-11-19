@@ -37,40 +37,42 @@ interface IState {
 }
 
 export class ImageUploader extends React.Component<IProps, IState> {
-  constructor(props) {
-    super(props);
-    this.state = {
-      previewVisible: false,
-      previewImage: '',
-      fileList: [],
-      many: props.many,
-      fileSize: props.many ? props.fileSize || 50 : 1,
-    };
+  state = {
+    previewVisible: false,
+    previewImage: '',
+    fileList: ImageUploader.wrapImagesToFileList(this.props.value),
+    many: !!this.props.many,
+    fileSize: this.props.many ? this.props.fileSize || 50 : 1,
+  };
+
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if (nextProps.value) {
+      logger.debug('[getDerivedStateFromProps]', { nextProps, prevState }, nextProps.value);
+      return { fileList: ImageUploader.wrapImagesToFileList(nextProps.value) };
+    }
+
+    // Return null to indicate no change to state.
+    return null;
   }
 
-  /**
-   * set fileList for Uploader at first time
-   */
-  componentWillMount() {
-    logger.debug('[componentWillMount]', this.props);
-    const { value: images } = this.props;
-    if (images) {
-      this.wrapImagesToFileList(images);
-    }
+  /*
+  getSnapshotBeforeUpdate(prevProps, prevState) {
+    logger.debug('[getSnapshotBeforeUpdate]', { prevProps, prevState });
   }
+*/
 
   shouldComponentUpdate(nextProps, nextState) {
     const TAG = '[shouldComponentUpdate]';
-    const propsDiff = diff(this.props, nextProps);
+    const propsDiff = diff(this.props.value, nextProps.value);
     const stateDiff = diff(this.state, nextState);
     const shouldUpdate = propsDiff.isDifferent || stateDiff.isDifferent;
     if (shouldUpdate) {
-      logger.debug(TAG, { nextProps, nextState, propsDiff, stateDiff }, shouldUpdate);
+      logger.debug(TAG, { nextProps, nextState }, propsDiff, stateDiff, shouldUpdate);
     }
     return shouldUpdate;
   }
 
-  wrapImagesToFileList = (imagesInfo: string | string[]): void => {
+  static wrapImagesToFileList = (imagesInfo?: string | string[]): UploadFile[] => {
     const images = valueToArrays(imagesInfo);
     const fileList = _.map<any, Partial<UploadFile>>(images, (image, index) => ({
       uid: `${index}`,
@@ -80,7 +82,7 @@ export class ImageUploader extends React.Component<IProps, IState> {
       thumbUrl: valueToUrl(image, { type: 'image', thumbnail: { width: 200, height: 200 } }),
     })) as any;
     logger.debug('[wrapImagesToFileList]', 'fileList is', fileList);
-    this.setState({ fileList });
+    return fileList;
   };
 
   handleCancel = () => {
@@ -107,7 +109,7 @@ export class ImageUploader extends React.Component<IProps, IState> {
     }
     logger.log('[ImageUploader][handleChange]', { images });
     onChange!(images);
-    this.wrapImagesToFileList(images);
+    this.setState({ fileList: ImageUploader.wrapImagesToFileList(images) });
   };
 
   valueToSubmit = (value?: string | string[], extra?: string): string | string[] => {
@@ -134,7 +136,7 @@ export class ImageUploader extends React.Component<IProps, IState> {
         const images = this.valueToSubmit(this.props.value, resolvedUrl);
         logger.log('[ImageUploader][customRequest]', { uploaded, images });
         onChange!(images);
-        this.wrapImagesToFileList(images);
+        this.setState({ fileList: ImageUploader.wrapImagesToFileList(images) });
       }
     });
   };
@@ -182,8 +184,9 @@ export class ImageUploader extends React.Component<IProps, IState> {
           value={_.isString(value) ? value : JSON.stringify(value)}
           autoSize={{ minRows: 2, maxRows: 6 }}
           onChange={event => {
+            logger.debug('[onChange]', event);
             this.props.onChange!(this.valueToSubmit(event.target.value));
-            this.wrapImagesToFileList(event.target.value);
+            this.setState({ fileList: ImageUploader.wrapImagesToFileList(event.target.value) });
           }}
         />
       </div>

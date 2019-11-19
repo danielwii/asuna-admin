@@ -29,8 +29,7 @@ function getModule(components, module) {
 
 export class ModuleRegister {
   static renders = {
-    DebugSettings: props =>
-      withDebugSettingsProps(innerProps => <DebugSettings {...props} {...innerProps} />),
+    DebugSettings: props => withDebugSettingsProps(innerProps => <DebugSettings {...props} {...innerProps} />),
   };
 }
 
@@ -55,7 +54,14 @@ export default function(props) {
 
     const fc = AppContext.ctx.components.load(component);
     // console.log('loader', { fc, props });
-    return fc(props);
+    return fc ? (
+      fc(props)
+    ) : (
+      <>
+        <b>404 not exists.</b>
+        <pre>{JSON.stringify(props, null, 2)}</pre>
+      </>
+    );
   }
 
   const Component = getModule(components, module);

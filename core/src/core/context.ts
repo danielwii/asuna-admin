@@ -97,7 +97,7 @@ class AppContext {
   private static _isServer = typeof window === 'undefined';
   private static _storeConnector: IStoreConnector<RootState>;
 
-  static serverSettings: string;
+  static serverSettings: object;
 
   public static init(nextConfig?: INextConfig) {
     if (nextConfig) {
@@ -125,11 +125,7 @@ class AppContext {
     return AppContext.INSTANCE;
   }
 
-  public static regStore(
-    storeConnector: IStoreConnector<RootState>,
-    initialState?: object,
-    force?: boolean,
-  ) {
+  public static regStore(storeConnector: IStoreConnector<RootState>, initialState?: object, force?: boolean) {
     if (!AppContext._storeConnector || force) {
       AppContext._storeConnector = storeConnector;
       if (initialState) {
@@ -216,11 +212,7 @@ class AppContext {
     AppContext.ctx.graphql
       .loadSystemSettings()
       .then(
-        settings =>
-          (this.serverSettings = Object.assign(
-            {},
-            ...settings.map(setting => ({ [setting.key]: setting })),
-          )),
+        settings => (this.serverSettings = Object.assign({}, ...settings.map(setting => ({ [setting.key]: setting })))),
       );
   }
 
