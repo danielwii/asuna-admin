@@ -243,7 +243,7 @@ export const columnHelper = {
       dataIndex: ref,
       ...filterProps,
       render: record => {
-        const content = opts.transformer ? opts.transformer(record) : record;
+        const content = _.isFunction(opts.transformer) ? opts.transformer(record) : record[opts.transformer];
         return <WithDebugInfo info={{ key, title, opts, record }}>{content}</WithDebugInfo>;
       },
     };
@@ -255,7 +255,7 @@ export const columnHelper = {
     sorter: true,
     ...generateSearchColumnProps(key, opts.searchType),
     render: record => {
-      const value = opts.transformer ? opts.transformer(record) : record;
+      const value = _.isFunction(opts.transformer) ? opts.transformer(record) : record;
       let component = value;
       if (typeof value === 'string' && value.length > 20) {
         component = <Tooltip title={value}>{`${value.slice(0, 20)}...`}</Tooltip>;
@@ -291,7 +291,7 @@ export const columnHelper = {
     sorter: true,
     // ...generateSearchColumnProps(key, opts.searchType),
     render: record => {
-      const value = opts.transformer ? opts.transformer(record) : record;
+      const value = _.isFunction(opts.transformer) ? opts.transformer(record) : record;
       return (
         <WithDebugInfo info={{ key, title, record }}>
           <Tag color={_.get(opts, `colorMap['${value}']`)}>{value}</Tag>
@@ -312,7 +312,7 @@ export const columnHelper = {
     sorter: true,
     ...generateSearchColumnProps(key, opts.searchType),
     render: record => {
-      const value = opts.transformer ? opts.transformer(record) : record;
+      const value = _.isFunction(opts.transformer) ? opts.transformer(record) : record;
       return opts.type === 'badge' ? (
         <Badge count={+value} overflowCount={Number.MAX_SAFE_INTEGER} style={{ backgroundColor: '#52c41a' }} />
       ) : (
@@ -327,7 +327,7 @@ export const columnHelper = {
     sorter: true,
     render: record => {
       if (record) {
-        const value = opts.transformer ? opts.transformer(record) : record;
+        const value = _.isFunction(opts.transformer) ? opts.transformer(record) : record;
         if (typeof value === 'string' && value.length > 30) {
           // const host = Config.get('UPLOADS_ENDPOINT');
           // const url = `${opts.host || host}${value}`;
@@ -405,7 +405,7 @@ export const columnHelper = {
     render: record => {
       if (record) {
         try {
-          const value = opts.transformer ? opts.transformer(record) : record;
+          const value = _.isFunction(opts.transformer) ? opts.transformer(record) : record;
           if (value) {
             const images = valueToArrays(value);
             // const host = Config.get('UPLOADS_ENDPOINT', '');
@@ -428,7 +428,7 @@ export const columnHelper = {
     render: record => {
       if (record) {
         try {
-          const value = opts.transformer ? opts.transformer(record) : record;
+          const value = _.isFunction(opts.transformer) ? opts.transformer(record) : record;
           if (value) {
             const videoJsOptions = {
               width: '100%',
