@@ -53,10 +53,7 @@ export type PlainOptions = {
   help?: string;
 };
 
-export const generatePlain = (
-  options: PlainOptions,
-  formItemLayout: IFormItemLayout = horizontalFormItemLayout,
-) => {
+export const generatePlain = (options: PlainOptions, formItemLayout: IFormItemLayout = horizontalFormItemLayout) => {
   const { key, label, text, help } = options;
   logger.log('[generatePlain]', options);
   const fieldName = key || name;
@@ -114,21 +111,12 @@ export const generateHidden = (form: WrappedFormUtils, options: HiddenOptions) =
   return null;
 };
 
-export const generateCheckbox = (
-  form: WrappedFormUtils,
-  options,
-  formItemLayout?: IFormItemLayout,
-) => {
+export const generateCheckbox = (form: WrappedFormUtils, options, formItemLayout?: IFormItemLayout) => {
   const { key, name, label } = options;
 
   const fieldName = key || name;
   const labelName = label || name || key;
-  return generateComponent(
-    form,
-    { fieldName, labelName, ...options },
-    <Checkbox />,
-    formItemLayout,
-  );
+  return generateComponent(form, { fieldName, labelName, ...options }, <Checkbox />, formItemLayout);
 };
 
 export const generateInputNumber = (
@@ -140,12 +128,7 @@ export const generateInputNumber = (
   logger.debug('[generateInputNumber]', options);
   const fieldName = key || name;
   const labelName = label || name || key;
-  return generateComponent(
-    form,
-    { fieldName, labelName, ...options },
-    <InputNumber />,
-    formItemLayout,
-  );
+  return generateComponent(form, { fieldName, labelName, ...options }, <InputNumber />, formItemLayout);
 };
 
 export type InputOptions = {
@@ -162,17 +145,7 @@ export type InputOptions = {
 
 export const generateInput = (
   form: WrappedFormUtils,
-  {
-    key,
-    name,
-    label,
-    required = false,
-    requiredMessage,
-    placeholder = '',
-    iconType,
-    help,
-    length,
-  }: InputOptions,
+  { key, name, label, required = false, requiredMessage, placeholder = '', iconType, help, length }: InputOptions,
   formItemLayout?: IFormItemLayout,
 ) => {
   const fieldName = key || name;
@@ -181,10 +154,7 @@ export const generateInput = (
   let component;
   if (iconType) {
     component = (
-      <Input
-        prefix={<Icon type={iconType} style={{ color: 'rgba(0,0,0,.25)' }} />}
-        placeholder={placeholder}
-      />
+      <Input prefix={<Icon type={iconType} style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder={placeholder} />
     );
   } else {
     component = <Input placeholder={placeholder} />;
@@ -208,21 +178,12 @@ export const generateInput = (
   );
 };
 
-export const generateTextArea = (
-  form: WrappedFormUtils,
-  options,
-  formItemLayout?: IFormItemLayout,
-) => {
+export const generateTextArea = (form: WrappedFormUtils, options, formItemLayout?: IFormItemLayout) => {
   const { key, name, label } = options;
 
   const fieldName = key || name;
   const labelName = label || name || key;
-  return generateComponent(
-    form,
-    { fieldName, labelName, ...options },
-    <Input.TextArea autosize />,
-    formItemLayout,
-  );
+  return generateComponent(form, { fieldName, labelName, ...options }, <Input.TextArea autoSize />, formItemLayout);
 };
 
 /**
@@ -242,20 +203,10 @@ export const generateDateTime = (
   const labelName = label || name || key;
 
   if (mode === 'time') {
-    return generateComponent(
-      form,
-      { fieldName, labelName, ...options },
-      <TimePicker />,
-      formItemLayout,
-    );
+    return generateComponent(form, { fieldName, labelName, ...options }, <TimePicker />, formItemLayout);
   }
   if (mode === 'date') {
-    return generateComponent(
-      form,
-      { fieldName, labelName, ...options },
-      <DatePicker />,
-      formItemLayout,
-    );
+    return generateComponent(form, { fieldName, labelName, ...options }, <DatePicker />, formItemLayout);
   }
   return generateComponent(
     form,
@@ -310,12 +261,7 @@ export const generateAuthorities = (
 
   const fieldName = key || name;
   const labelName = label || name || key;
-  return generateComponent(
-    form,
-    { fieldName, labelName, ...options },
-    <Authorities />,
-    formItemLayout,
-  );
+  return generateComponent(form, { fieldName, labelName, ...options }, <Authorities />, formItemLayout);
 };
 
 export const generateRichTextEditor = (

@@ -145,6 +145,7 @@ export declare module Asuna {
       deletable?: boolean;
       enablePublished?: boolean;
       renderHelp?: React.ReactChild;
+      renderActions?: (extras: RecordRenderExtras) => React.ReactChild;
       recordActions?: (actions: RecordRenderActions, extras: RecordRenderExtras) => void;
       customColumns?: {
         [key: string]: (

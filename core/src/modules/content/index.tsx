@@ -308,6 +308,13 @@ class ContentIndex extends React.Component<IProps, IState> {
 
         <Divider type="vertical" />
 
+        {opts && opts.renderActions && (
+          <>
+            {opts.renderActions({ modelName, callRefresh: this._refresh })}
+            <Divider type="vertical" />
+          </>
+        )}
+
         {opts && opts.renderHelp && (
           <Button
             type="dashed"
