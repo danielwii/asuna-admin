@@ -248,7 +248,12 @@ export class ModelAdapter {
     const fixKeys = _.mapKeys(data.body, (value, key) => idx(fields, _ => _[key].ref) || key);
     const transformed = _.mapValues(fixKeys, (value, key) => {
       // json 用于描述该字段需要通过字符串转换处理，目前用于服务器端不支持 JSON 数据格式的情况
-      return _.eq(idx(fields, _ => _[key].options.json), 'str') ? JSON.stringify(value) : value;
+      return _.eq(
+        idx(fields, _ => _[key].options.json),
+        'str',
+      )
+        ? JSON.stringify(value)
+        : value;
     });
     logger.debug('[upsert]', 'transformed is', transformed);
 
@@ -289,9 +294,9 @@ export class ModelAdapter {
         // todo antd 当前的屏幕宽度处理存在问题。
         let fixed;
         if (column.key === 'id') {
-          fixed = { fixed: 'left', width: 60 };
+          // fixed = { fixed: 'left', width: 60 };
         } else if (column.key === 'action') {
-          fixed = { fixed: 'right', width: 200 };
+          fixed = { fixed: 'right', width: 250 };
         }
         // 不检测不包含在 schema 中且不属于模型的列名
         const isRelationKey = (column.key as string).includes('.');
@@ -299,7 +304,7 @@ export class ModelAdapter {
         return column.key && !formSchema[column.key] && !isActionKey && !isRelationKey
           ? // 标记 schema 中不存在的列
             { ...column, title: `${column.title}(miss)` }
-          : column;
+          : { ...column, ...fixed };
       });
     }
     return _.filter<any>(
@@ -365,17 +370,29 @@ export class ModelAdapter {
         (field: Asuna.Schema.ModelSchema): Asuna.Schema.FormSchema => {
           const ref = R.pathOr(field.name, ['config', 'info', 'ref'])(field);
           const length = _.toNumber(idx(field, _ => _.config.length)) || null; // 0 || null is null
-          const isNullable = _.defaultTo(idx(field, _ => _.config.nullable), true);
-          const isRequired = _.defaultTo(idx(field, _ => _.config.info.required), false);
+          const isNullable = _.defaultTo(
+            idx(field, _ => _.config.nullable),
+            true,
+          );
+          const isRequired = _.defaultTo(
+            idx(field, _ => _.config.info.required),
+            false,
+          );
           return {
             name: ref || field.name,
             ref,
             type: this.identifyType(name, field),
             options: {
               length,
-              label: _.defaultTo(idx(field, _ => _.config.info.name), null),
+              label: _.defaultTo(
+                idx(field, _ => _.config.info.name),
+                null,
+              ),
               // foreignKeys: idx(field, _ => _..config.foreignKeys), // @deprecated
-              selectable: _.defaultTo(idx(field, _ => _.config.selectable), null),
+              selectable: _.defaultTo(
+                idx(field, _ => _.config.selectable),
+                null,
+              ),
               required: !isNullable || isRequired,
               ...idx(field, _ => _.config.info),
               ...idx(this.getModelConfig(name), _ => _.model.settings[field.name]),
@@ -392,10 +409,7 @@ export class ModelAdapter {
   public getFieldsOfAssociations = _.memoize(() => {
     logger.debug('[getFieldsOfAssociations]', 'modelConfigs is', this.modelConfigs);
     const concatValues = (l, r) => (R.is(String, l) ? l : R.uniq(R.concat(l, r)));
-    const isNotEmpty = R.compose(
-      R.not,
-      R.anyPass([R.isEmpty, R.isNil]),
-    );
+    const isNotEmpty = R.compose(R.not, R.anyPass([R.isEmpty, R.isNil]));
     const associationsFields = R.compose(
       R.reduce(R.mergeDeepWith(concatValues), {}),
       R.filter(isNotEmpty),
@@ -412,18 +426,21 @@ export class ModelAdapter {
       configs,
       modelConfig: this.getModelConfig(modelName),
     });
-    const page = _.defaultTo(idx(configs, _ => _.pagination.current), 1);
-    const size = _.defaultTo(idx(configs, _ => _.pagination.pageSize), Config.get('DEFAULT_PAGE_SIZE') || 25);
+    const page = _.defaultTo(
+      idx(configs, _ => _.pagination.current),
+      1,
+    );
+    const size = _.defaultTo(
+      idx(configs, _ => _.pagination.pageSize),
+      Config.get('DEFAULT_PAGE_SIZE') || 25,
+    );
     const auth = AppContext.fromStore('auth');
     return this.service.loadModels(auth, modelName, {
       pagination: { page, size },
       fields: configs.fields,
       filters: _.mapValues<Record<string, [Partial<Condition>]>, WhereConditions>(
         configs.filters,
-        _.flow(
-          fp.get(0),
-          parseJSONIfCould,
-        ),
+        _.flow(fp.get(0), parseJSONIfCould),
       ),
       sorter: configs.sorter,
       relations: configs.relations,

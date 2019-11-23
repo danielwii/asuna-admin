@@ -134,12 +134,12 @@ class ContentIndex extends React.Component<IProps, IState> {
           </Button>
         )}{' '}
         {isDeletableSystemRecord(record) && deletable && (
-          <React.Fragment>
+          <>
             <Divider type="vertical" />
             <Button size="small" type="danger" onClick={() => this._remove(text, record)}>
               Delete
             </Button>
-          </React.Fragment>
+          </>
         )}
       </span>
     );

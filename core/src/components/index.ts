@@ -4,6 +4,7 @@ export * from './Snow';
 export * from './Sun';
 export * from './DrawerButton';
 export * from './EasyForm';
+export * from './ErrorInfo';
 export * from './LogoCanvas';
 export * from './LivingLoading';
 export * from './Login';

@@ -35,13 +35,7 @@ export class DrawerButton extends React.Component<DrawerButtonProps> {
           {text}
           <Icon type="select" />
         </Button>
-        <Drawer
-          title={title || text}
-          width={520}
-          closable={false}
-          onClose={this.onClose}
-          visible={this.state.visible}
-        >
+        <Drawer title={title || text} width={520} closable={false} onClose={this.onClose} visible={this.state.visible}>
           {children}
           {/*<Button type="primary" onClick={this.showChildrenDrawer}>
             Two-level drawer
