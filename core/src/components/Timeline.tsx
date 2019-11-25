@@ -1,6 +1,7 @@
-import { Badge, Icon, Statistic, Tag, Timeline } from 'antd';
+import { Badge, Col, Icon, Row, Statistic, Tag, Timeline } from 'antd';
 import moment from 'moment';
 import { default as React, useState } from 'react';
+import * as util from 'util';
 
 export interface ExchangeItem {
   id: string | number;
@@ -9,37 +10,76 @@ export interface ExchangeItem {
   after: number;
   type: string;
   remark?: string;
+  extra?: JSON;
 }
 
-export function ExchangeTimeline({ item }: { item: ExchangeItem }) {
+export function ExchangeTimeline({
+  item,
+  typeResolver,
+  typeColorResolver,
+  extraResolver,
+}: {
+  item: ExchangeItem;
+  typeResolver?: (type: string) => string;
+  typeColorResolver?: (type: string) => string | undefined;
+  extraResolver?: (extra: any) => React.ReactChild;
+}) {
   const [state, setState] = useState({});
 
   return (
     <Timeline.Item key={item.id} color={item.change > 0 ? 'green' : 'red'}>
-      <p>
+      <div>
+        <Tag>{typeResolver ? typeResolver(item.type) : item.type}</Tag>{' '}
         <Badge
           count={+item.change}
           overflowCount={Number.MAX_SAFE_INTEGER}
           style={item.change > 0 ? { backgroundColor: '#52c41a' } : {}}
         />{' '}
-        <Tag>{item.type}</Tag> at {moment(item['createdAt']).calendar()}
-      </p>
-      {item.remark && <p>Reason: {item.remark}</p>}
-      <p>
+        at {moment(item['createdAt']).calendar()}
+      </div>
+      {item.remark && <div>Reason: {item.remark}</div>}
+      <Row>
         {item.change > 0 ? (
-          <Statistic
-            value={item.after}
-            valueStyle={{ color: '#3f8600' }}
-            prefix={<Icon type="arrow-up" />}
-          />
+          <>
+            <Col span={6}>
+              <Statistic
+                title="+"
+                value={item.change}
+                valueStyle={{ color: '#3f8600' }}
+                prefix={<Icon type="arrow-up" />}
+              />
+            </Col>
+            <Col>
+              <Statistic
+                title="total"
+                value={item.after}
+                valueStyle={typeColorResolver ? { color: typeColorResolver(item.type) } : undefined}
+              />
+            </Col>
+          </>
         ) : (
-          <Statistic
-            value={item.after}
-            valueStyle={{ color: '#cf1322' }}
-            prefix={<Icon type="arrow-down" />}
-          />
+          <>
+            <Col span={6}>
+              <Statistic
+                title="-"
+                value={item.change}
+                valueStyle={{ color: '#cf1322' }}
+                prefix={<Icon type="arrow-down" />}
+              />
+            </Col>
+            <Col>
+              <Statistic
+                title="total"
+                value={item.after}
+                valueStyle={typeColorResolver ? { color: typeColorResolver(item.type) } : undefined}
+              />
+            </Col>
+          </>
         )}
-      </p>
+        {item.extra ? (
+          <Col>{extraResolver ? extraResolver(item.extra) : <pre>{util.inspect(item.extra)}</pre>}</Col>
+        ) : null}
+      </Row>
     </Timeline.Item>
   );
 }

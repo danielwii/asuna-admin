@@ -329,6 +329,7 @@ class ContentIndex extends React.Component<IProps, IState> {
 
         {columns && (
           <Table
+            size={'small'}
             className="asuna-content-table"
             scroll={{ x: true }}
             dataSource={dataSource}
