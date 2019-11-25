@@ -147,6 +147,7 @@ export declare module Asuna {
       renderHelp?: React.ReactChild;
       renderActions?: (extras: RecordRenderExtras) => React.ReactChild;
       recordActions?: (actions: RecordRenderActions, extras: RecordRenderExtras) => void;
+      rowClassName?: (record: any, index: number) => string;
       customColumns?: {
         [key: string]: (
           key: string,

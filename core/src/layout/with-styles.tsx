@@ -22,6 +22,11 @@ export default ({ children, hideCharacteristics }) => (
       pre {
         font-size: 0.65rem;
       }
+      .row-published {
+        background-color: palegreen;
+      }
+      .row-unpublished {
+      }
     `}</style>
   </div>
 );

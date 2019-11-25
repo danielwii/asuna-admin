@@ -13,6 +13,7 @@ import idx from 'idx';
 import _ from 'lodash';
 import moment from 'moment';
 import * as R from 'ramda';
+import * as util from 'util';
 import React from 'react';
 
 import { castModelKey } from './cast';
@@ -256,7 +257,7 @@ export const columnHelper = {
     ...generateSearchColumnProps(key, opts.searchType),
     render: record => {
       const value = _.isFunction(opts.transformer) ? opts.transformer(record) : record;
-      let component = value;
+      let component = _.isObject(value) ? util.inspect(value) : value;
       if (typeof value === 'string' && value.length > 20) {
         component = <Tooltip title={value}>{`${value.slice(0, 20)}...`}</Tooltip>;
       }

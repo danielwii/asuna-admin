@@ -44,7 +44,7 @@ interface IState {
   subscription: Subscription;
   busSubscription: Subscription;
   hasGraphAPI?: string;
-
+  rowClassName?: (record: any, index: number) => string;
   opts?: Asuna.Schema.TableColumnOpts<any>;
 }
 
@@ -68,6 +68,7 @@ class ContentIndex extends React.Component<IProps, IState> {
     const primaryKey = _.head(primaryKeys) || 'id';
 
     const creatableOpt = idx(tableColumnOpts, _ => _.creatable);
+    const rowClassName = idx(tableColumnOpts, _ => _.rowClassName) as any;
     const creatable = _.isFunction(creatableOpt)
       ? creatableOpt
       : modelConfig.creatable !== false && creatableOpt !== false;
@@ -96,6 +97,7 @@ class ContentIndex extends React.Component<IProps, IState> {
       creatable,
       editable,
       deletable,
+      rowClassName,
       key: activeKey,
       opts: tableColumnOpts || undefined,
       sorter,
@@ -273,7 +275,7 @@ class ContentIndex extends React.Component<IProps, IState> {
   };
 
   render() {
-    const { extraName, modelName, columns, creatable, opts } = this.state;
+    const { extraName, modelName, columns, creatable, opts, rowClassName } = this.state;
 
     const { models } = this.props;
 
@@ -338,6 +340,7 @@ class ContentIndex extends React.Component<IProps, IState> {
             columns={columns}
             pagination={pagination}
             onChange={this._handleTableChange}
+            rowClassName={rowClassName}
           />
         )}
         {/* language=CSS */}
