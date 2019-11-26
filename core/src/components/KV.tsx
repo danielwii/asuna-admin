@@ -1,13 +1,14 @@
-import { EasyForm, EasyGroupForm, FormFields, GroupFormFields } from '@asuna-admin/components';
+import { EasyForm, EasyGroupForm, ErrorInfo, FormFields, GroupFormFields } from '@asuna-admin/components';
 import { ComponentsHelper } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
-import { Col, Divider, Icon, Row, Typography } from 'antd';
+import { Button, Col, Divider, Icon, Row, Typography } from 'antd';
+
+import 'highlight.js/styles/default.css';
+
 import * as _ from 'lodash';
 import React, { useEffect, useState } from 'react';
 import Highlight from 'react-highlight';
 import * as util from 'util';
-
-import 'highlight.js/styles/default.css';
 
 const logger = createLogger('components:kv-form');
 
@@ -18,6 +19,7 @@ export function GroupFormKVComponent(props: {
   kvKey: string;
   initialState?: { body: GroupFormBody };
   enableClear?: boolean;
+  enableDestroy?: boolean;
   info: React.ReactChild;
 });
 
@@ -26,6 +28,7 @@ export function GroupFormKVComponent(props: {
   kvKey: string;
   initialState: { body: any };
   enableClear?: boolean;
+  enableDestroy?: boolean;
   info: React.ReactChild;
   fields: (state) => GroupFormFields;
 });
@@ -35,6 +38,7 @@ export function GroupFormKVComponent(props: {
   kvKey: string;
   initialState: { body: GroupFormBody | any };
   enableClear?: boolean;
+  enableDestroy?: boolean;
   info: React.ReactChild;
   fields: (state) => GroupFormFields;
 }) {
@@ -42,16 +46,16 @@ export function GroupFormKVComponent(props: {
   const initialState = !preInitialState && !fields ? { body: { form: {}, values: {} } } : preInitialState;
 
   const [state, setState] = useState(initialState);
-  const { loading, error, data, refetch } = ComponentsHelper.loadByKey(key, collection);
+  const { loading, error, data, refetch, networkStatus } = ComponentsHelper.loadByKey(key, collection);
   useEffect(() => setState({ body: _.get(data, 'kv.value', {}) }), [JSON.stringify(data)]);
 
+  // const refresh = () => refetch().then(({ data }) => setState({ body: _.get(data, 'kv.value', {}) }));
   if (loading) return <p>Loading...</p>;
   if (error)
     return (
-      <>
-        <p>Error :(</p>
-        <p>{JSON.stringify(error)}</p>
-      </>
+      <ErrorInfo>
+        <pre>{util.inspect(error)}</pre>
+      </ErrorInfo>
     );
 
   logger.log('render', { state, data });
@@ -70,6 +74,7 @@ export function GroupFormKVComponent(props: {
         fieldValues={state.body.values}
         onSubmit={values => ComponentsHelper.save({ key, collection }, { form: state.body.form, values }, refetch)}
         onClear={() => ComponentsHelper.clear({ key, collection }, refetch)}
+        onDestroy={() => ComponentsHelper.destroy({ key, collection }, refetch)}
       />
       <Divider />
       <Highlight language="json">{util.inspect(data, false, 10)}</Highlight>

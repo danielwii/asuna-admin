@@ -3,7 +3,7 @@ import { createLogger } from '@asuna-admin/logger';
 import { createStyles, Theme } from '@material-ui/core';
 import { gql } from 'apollo-boost';
 import * as React from 'react';
-import { useQuery } from 'react-apollo-hooks';
+import { useQuery } from '@apollo/react-hooks';
 
 const logger = createLogger('components:helper');
 
@@ -54,6 +54,13 @@ export const ComponentsHelper = {
       .upsert('kv__pairs', {
         body: { collection: identifier.collection || 'system.server', key: identifier.key, value: null },
       })
+      .then(response => (cb ? cb(response.data) : response.data))
+      .catch(reason => logger.error(reason));
+  },
+  destroy: (identifier: { key: string; collection?: string }, cb?): Promise<any> => {
+    logger.log('clear', { identifier });
+    return AppContext.adapters.api
+      .destroyKv({ collection: identifier.collection || 'system.server', key: identifier.key } as any)
       .then(response => (cb ? cb(response.data) : response.data))
       .catch(reason => logger.error(reason));
   },

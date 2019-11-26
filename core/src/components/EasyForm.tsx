@@ -2,6 +2,7 @@ import { Config } from '@asuna-admin/config';
 import { AppContext } from '@asuna-admin/core';
 import { createLogger } from '@asuna-admin/logger';
 import { FormControl, FormHelperText, Input, InputLabel } from '@material-ui/core';
+import { Popconfirm, Switch } from 'antd';
 import * as antd from 'antd';
 import * as formik from 'formik';
 import { FieldInputProps } from 'formik';
@@ -16,6 +17,7 @@ export enum FormFieldType {
   string = 'string',
   number = 'number',
   image = 'image',
+  boolean = 'boolean',
 }
 
 export type FormField = {
@@ -52,6 +54,27 @@ function RenderInputComponent({
 }) {
   logger.log('[RenderInputComponent]', field, { type, value });
   switch (type) {
+    case FormFieldType.boolean: {
+      return (
+        <div>
+          <InputLabel htmlFor={field.name}>{field.name}</InputLabel>
+          <Switch
+            defaultChecked={value}
+            onChange={newValue =>
+              field.onChange({
+                target: {
+                  id: field.name,
+                  name: field.name,
+                  value: newValue,
+                },
+              })
+            }
+          />
+          <br />
+          <br />
+        </div>
+      );
+    }
     case FormFieldType.image: {
       return (
         <>
@@ -86,23 +109,21 @@ const InnerForm = (props: EasyFormProps & formik.FormikProps<formik.FormikValues
     <formik.Form>
       {message && <h1>{message}</h1>}
       {_.map(fields, (formField: FormField, key: string) => (
-        <div key={key}>
-          <formik.Field name={formField.name}>
-            {({ field, form }: formik.FieldProps<formik.FormikValues>) => {
-              const hasError = !!(form.touched[formField.name] && form.errors[formField.name]);
-              const value = _.defaultTo(field.value, formField.defaultValue);
-              logger.log('render field', field, { hasError, value });
-              return (
-                <FormControl key={field.name} error={hasError} fullWidth={true}>
-                  <RenderInputComponent type={formField.type} field={field} value={value} />
-                  {/*<Input id={field.name} type={formField.type} {...field} value={value} />*/}
-                  {formField.help && <FormHelperText>{formField.help}</FormHelperText>}
-                  {hasError && <FormHelperText>{form.errors[formField.name]}</FormHelperText>}
-                </FormControl>
-              );
-            }}
-          </formik.Field>
-        </div>
+        <formik.Field key={key} name={formField.name}>
+          {({ field, form }: formik.FieldProps<formik.FormikValues>) => {
+            const hasError = !!(form.touched[formField.name] && form.errors[formField.name]);
+            const value = _.defaultTo(field.value, formField.defaultValue);
+            logger.log('render field', field, { hasError, value });
+            return (
+              <FormControl key={field.name} error={hasError} fullWidth={true}>
+                <RenderInputComponent type={formField.type} field={field} value={value} />
+                {/*<Input id={field.name} type={formField.type} {...field} value={value} />*/}
+                {formField.help && <FormHelperText>{formField.help}</FormHelperText>}
+                {hasError && <FormHelperText>{form.errors[formField.name]}</FormHelperText>}
+              </FormControl>
+            );
+          }}
+        </formik.Field>
       ))}
       <antd.Divider />
       <antd.Button htmlType="submit" onSubmit={handleSubmit} disabled={isSubmitting}>
@@ -180,6 +201,7 @@ interface GroupEasyFormProps extends ValuesFormProps {
   // initialValues(props): any;
   onSubmit: (values: any) => Promise<any>;
   onClear: () => Promise<any>;
+  onDestroy?: () => Promise<any>;
 }
 
 const GroupInnerForm = (props: GroupEasyFormProps & formik.FormikProps<formik.FormikValues>) => {
@@ -195,6 +217,7 @@ const GroupInnerForm = (props: GroupEasyFormProps & formik.FormikProps<formik.Fo
     values,
     fieldValues,
     onClear,
+    onDestroy,
   } = props;
   return (
     <antd.Row gutter={16}>
@@ -238,6 +261,18 @@ const GroupInnerForm = (props: GroupEasyFormProps & formik.FormikProps<formik.Fo
           {/*<antd.Button type="danger" onClick={onClear} disabled={isSubmitting}>*/}
           {/*  {isSubmitting ? 'Clearing' : 'Clear'}*/}
           {/*</antd.Button>*/}
+          {onDestroy && (
+            <Popconfirm
+              title="Are you sure?"
+              onConfirm={onDestroy}
+              // onCancel={cancel}
+              okText="Yes"
+              cancelText="No"
+              disabled={isSubmitting}
+            >
+              <antd.Button type="danger">{isSubmitting ? 'Destroying' : 'Destroy'}</antd.Button>
+            </Popconfirm>
+          )}
         </formik.Form>
       </antd.Col>
       <antd.Col span={6}>

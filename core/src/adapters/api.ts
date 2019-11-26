@@ -10,13 +10,13 @@ import { AxiosRequestConfig, AxiosResponse } from 'axios';
 
 export interface IApiService {
   upload(
-    param: { token: string | null },
+    auth: { token: string | null },
     file: any,
     options: { bucket?: string },
     requestConfig?: AxiosRequestConfig,
   ): Promise<AxiosResponse<Asuna.Schema.UploadResponse[]>>;
 
-  getVersion(param: { token: string | null }): Promise<AxiosResponse>;
+  getVersion(auth: { token: string | null }): Promise<AxiosResponse>;
 
   /**
    * 申请 token
@@ -37,20 +37,26 @@ export interface IApiService {
   releaseOperationToken(opts: { payload: { token: string } }): Promise<AxiosResponse>;
 
   getExcelModel(
-    param: { token: string | null },
+    auth: { token: string | null },
     data: { modelName },
     options?: { requestConfig?: AxiosRequestConfig },
   ): Promise<AxiosResponse>;
 
   importExcel(
-    param: { token: string | null },
+    auth: { token: string | null },
     data: { file },
     options?: { requestConfig?: AxiosRequestConfig },
   ): Promise<AxiosResponse>;
 
   exportExcel(
-    param: { token: string | null },
+    auth: { token: string | null },
     data: { modelName },
+    options?: { requestConfig?: AxiosRequestConfig },
+  ): Promise<AxiosResponse>;
+
+  destroyKv(
+    auth: { token: string | null },
+    data: { collection: string; key: string },
     options?: { requestConfig?: AxiosRequestConfig },
   ): Promise<AxiosResponse>;
 }
@@ -81,14 +87,17 @@ export const apiProxy = {
   releaseOperationToken(token: string): Promise<AxiosResponse> {
     return AppContext.ctx.api.releaseOperationToken(token);
   },
-  getExcelModel(param, data, options): Promise<AxiosResponse> {
-    return AppContext.ctx.api.getExcelModel(param, data, options);
+  getExcelModel(auth, data, options): Promise<AxiosResponse> {
+    return AppContext.ctx.api.getExcelModel(auth, data, options);
   },
-  importExcel(param, data, options): Promise<AxiosResponse> {
-    return AppContext.ctx.api.importExcel(param, data, options);
+  importExcel(auth, data, options): Promise<AxiosResponse> {
+    return AppContext.ctx.api.importExcel(auth, data, options);
   },
-  exportExcel(param, data, options): Promise<AxiosResponse> {
-    return AppContext.ctx.api.exportExcel(param, data, options);
+  exportExcel(auth, data, options): Promise<AxiosResponse> {
+    return AppContext.ctx.api.exportExcel(auth, data, options);
+  },
+  destroyKv(data): Promise<AxiosResponse> {
+    return AppContext.ctx.api.destroyKv(data);
   },
 };
 
@@ -131,5 +140,9 @@ export class ApiAdapter {
   };
   exportExcel = (param, data, options): Promise<AxiosResponse> => {
     return this.service.exportExcel(param, data, options);
+  };
+  destroyKv = (data): Promise<AxiosResponse> => {
+    const auth = AppContext.fromStore('auth');
+    return this.service.destroyKv(auth, data);
   };
 }
