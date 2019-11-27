@@ -23,9 +23,10 @@ export default ({ children, hideCharacteristics }) => (
         font-size: 0.65rem;
       }
       .row-published {
-        background-color: palegreen;
+        /*background-color: lavender;*/
       }
       .row-unpublished {
+        color: darkred;
       }
     `}</style>
   </div>

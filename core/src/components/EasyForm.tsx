@@ -324,6 +324,6 @@ export const EasyGroupForm = formik.withFormik<GroupEasyFormProps, any>({
   },
 
   handleSubmit: (values, { props, setSubmitting }) => {
-    props.onSubmit(values).finally(() => setSubmitting(false));
+    props.onSubmit({ ...props.fieldValues, ...values }).finally(() => setSubmitting(false));
   },
 })(GroupInnerForm);

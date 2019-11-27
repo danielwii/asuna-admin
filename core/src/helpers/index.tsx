@@ -18,7 +18,7 @@ import React from 'react';
 
 import { castModelKey } from './cast';
 import { WithDebugInfo } from './debug';
-import { removePreAndSuf } from './func';
+import { extractValue, removePreAndSuf } from './func';
 
 const logger = createLogger('helpers');
 
@@ -249,14 +249,18 @@ export const columnHelper = {
       },
     };
   },
-  generate: (key, title, opts: { transformer?; searchType?: ConditionType } = {}): ColumnProps<any> => ({
+  generate: (
+    key,
+    title,
+    opts: { transformer?: ((record) => string) | string; searchType?: ConditionType } = {},
+  ): ColumnProps<any> => ({
     key,
     title,
     dataIndex: key,
     sorter: true,
     ...generateSearchColumnProps(key, opts.searchType),
     render: record => {
-      const value = _.isFunction(opts.transformer) ? opts.transformer(record) : record;
+      const value = extractValue(record, opts.transformer);
       let component = _.isObject(value) ? util.inspect(value) : value;
       if (typeof value === 'string' && value.length > 20) {
         component = <Tooltip title={value}>{`${value.slice(0, 20)}...`}</Tooltip>;

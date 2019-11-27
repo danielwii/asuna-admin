@@ -31,7 +31,7 @@ const LightForm = Form.create<ILightForm>({
 
 export interface IFormModalProps {
   title: string;
-  openButton;
+  openButton: (showModal: () => void) => React.ReactChild;
   fields?: { [key: string]: DynamicFormField };
   body?: React.ReactNode;
   footer?: ({ loading, operations, params }) => React.ReactNode;
@@ -140,13 +140,15 @@ export class FormModalButton extends React.Component<IFormModalProps, IState> {
           {...renderFooterOpts}
         >
           {body}
-          <LightForm
-            wrappedComponentRef={inst => (this.form = idx(inst, _ => _.props.form) as any)}
-            delegate
-            fields={fields}
-            onSubmit={this.handleOk}
-            onChange={this.handleFormChange}
-          />
+          {fields && (
+            <LightForm
+              wrappedComponentRef={inst => (this.form = idx(inst, _ => _.props.form) as any)}
+              delegate
+              fields={fields}
+              onSubmit={this.handleOk}
+              onChange={this.handleFormChange}
+            />
+          )}
         </Modal>
       </React.Fragment>
     );

@@ -23,3 +23,13 @@ export function parseJSONIfCould(value: string) {
     return value;
   }
 }
+
+export function extractValue(o: any, extractor?: ((o: any) => any) | string): any {
+  if (_.isFunction(extractor)) {
+    return extractor(o);
+  }
+  if (_.isString(extractor)) {
+    return _.get(o, extractor);
+  }
+  return o;
+}
