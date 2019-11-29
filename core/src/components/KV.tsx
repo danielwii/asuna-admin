@@ -1,7 +1,7 @@
 import { EasyForm, EasyGroupForm, ErrorInfo, FormFields, GroupFormFields } from '@asuna-admin/components';
 import { ComponentsHelper } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
-import { Button, Col, Divider, Icon, Row, Typography } from 'antd';
+import { Col, Divider, Icon, Row, Typography } from 'antd';
 
 import 'highlight.js/styles/default.css';
 
@@ -42,7 +42,15 @@ export function GroupFormKVComponent(props: {
   info: React.ReactChild;
   fields: (state) => GroupFormFields;
 }) {
-  const { kvCollection: collection, kvKey: key, info, initialState: preInitialState, fields } = props;
+  const {
+    kvCollection: collection,
+    kvKey: key,
+    info,
+    initialState: preInitialState,
+    fields,
+    enableClear,
+    enableDestroy,
+  } = props;
   const initialState = !preInitialState && !fields ? { body: { form: {}, values: {} } } : preInitialState;
 
   const [state, setState] = useState(initialState);
@@ -73,8 +81,8 @@ export function GroupFormKVComponent(props: {
         fields={state.body.form}
         fieldValues={state.body.values}
         onSubmit={values => ComponentsHelper.save({ key, collection }, { form: state.body.form, values }, refetch)}
-        onClear={() => ComponentsHelper.clear({ key, collection }, refetch)}
-        onDestroy={() => ComponentsHelper.destroy({ key, collection }, refetch)}
+        onClear={enableClear ? () => ComponentsHelper.clear({ key, collection }, refetch) : undefined}
+        onDestroy={enableDestroy ? () => ComponentsHelper.destroy({ key, collection }, refetch) : undefined}
       />
       <Divider />
       <Highlight language="json">{util.inspect(data, false, 10)}</Highlight>

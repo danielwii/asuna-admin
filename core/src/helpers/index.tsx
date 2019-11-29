@@ -42,6 +42,10 @@ export const authHeader = (token?) => {
   return { headers: { Authorization: `${schema} ${authToken}` } };
 };
 
+export const nullProtectRender = (fn: (record) => React.ReactChild) => (record): React.ReactChild => {
+  return record ? fn(record) : 'n/a';
+};
+
 type ConditionType = 'like' | 'boolean';
 type SwitchConditionExtras = {};
 
@@ -111,14 +115,14 @@ export const columnHelper = {
     title,
     dataIndex: key,
     sorter: true,
-    render: record => (transformer ? transformer(record) : record),
+    render: nullProtectRender(record => (transformer ? transformer(record) : record)),
   }),
   generateID: (key = 'id', title = 'ID', transformer?): ColumnProps<any> => ({
     key,
     title,
     dataIndex: key,
     sorter: true,
-    render: record => (transformer ? transformer(record) : record),
+    render: nullProtectRender(record => (transformer ? transformer(record) : record)),
   }),
   fpGenerateRelation: <RelationSchema extends any = object>(
     key: string,
@@ -177,14 +181,14 @@ export const columnHelper = {
       relation: ref,
       dataIndex: ref,
       ...filterProps,
-      render: record => {
-        const content = record ? (_.isFunction(transformer) ? transformer(record) : record[transformer]) : null;
+      render: nullProtectRender(record => {
+        const content = extractValue(record, transformer);
         return (
           <WithDebugInfo info={{ key, title, opts, record }}>
             {opts.render ? opts.render(content, record) : content}
           </WithDebugInfo>
         );
-      },
+      }),
     };
   },
   /**
@@ -243,10 +247,10 @@ export const columnHelper = {
       relation: ref,
       dataIndex: ref,
       ...filterProps,
-      render: record => {
-        const content = _.isFunction(opts.transformer) ? opts.transformer(record) : record[opts.transformer];
+      render: nullProtectRender(record => {
+        const content = extractValue(record, opts.transformer)[opts.transformer];
         return <WithDebugInfo info={{ key, title, opts, record }}>{content}</WithDebugInfo>;
-      },
+      }),
     };
   },
   generate: (
@@ -259,14 +263,14 @@ export const columnHelper = {
     dataIndex: key,
     sorter: true,
     ...generateSearchColumnProps(key, opts.searchType),
-    render: record => {
+    render: nullProtectRender(record => {
       const value = extractValue(record, opts.transformer);
       let component = _.isObject(value) ? util.inspect(value) : value;
       if (typeof value === 'string' && value.length > 20) {
         component = <Tooltip title={value}>{`${value.slice(0, 20)}...`}</Tooltip>;
       }
       return <WithDebugInfo info={{ key, title, record }}>{component}</WithDebugInfo>;
-    },
+    }),
   }),
   generateTag: (
     key,
@@ -295,14 +299,14 @@ export const columnHelper = {
     dataIndex: key,
     sorter: true,
     // ...generateSearchColumnProps(key, opts.searchType),
-    render: record => {
-      const value = _.isFunction(opts.transformer) ? opts.transformer(record) : record;
+    render: nullProtectRender(record => {
+      const value = extractValue(record, opts.transformer);
       return (
         <WithDebugInfo info={{ key, title, record }}>
           <Tag color={_.get(opts, `colorMap['${value}']`)}>{value}</Tag>
         </WithDebugInfo>
       );
-    },
+    }),
   }),
   generateNumber: (
     key,
@@ -316,64 +320,57 @@ export const columnHelper = {
     dataIndex: key,
     sorter: true,
     ...generateSearchColumnProps(key, opts.searchType),
-    render: record => {
-      const value = _.isFunction(opts.transformer) ? opts.transformer(record) : record;
+    render: nullProtectRender(record => {
+      const value = extractValue(record, opts.transformer);
       return opts.type === 'badge' ? (
         <Badge count={+value} overflowCount={Number.MAX_SAFE_INTEGER} style={{ backgroundColor: '#52c41a' }} />
       ) : (
         <Statistic value={+value} />
       );
-    },
+    }),
   }),
   generateLink: (key, title, opts: { transformer?; host?: string } = {}): ColumnProps<any> => ({
     key,
     title,
     dataIndex: key,
     sorter: true,
-    render: record => {
-      if (record) {
-        const value = _.isFunction(opts.transformer) ? opts.transformer(record) : record;
-        if (typeof value === 'string' && value.length > 30) {
-          // const host = Config.get('UPLOADS_ENDPOINT');
-          // const url = `${opts.host || host}${value}`;
-          // const url = joinUrl(Config.get('UPLOADS_ENDPOINT'), value);
-          const url = value;
-          return (
-            <React.Fragment>
-              <Tooltip title={url}>
-                <Button href={url} size="small" type="dashed" target="_blank">
-                  {`${url.slice(0, 30)}...`}
-                  <Icon type="link" />
-                </Button>
-              </Tooltip>
-              {/* language=CSS */}
-              <style jsx>{`
-                /* 用于修复 tooltip 最大宽度固定以致长文本显示异常的问题 */
-                :global(.ant-tooltip-inner) {
-                  max-width: inherit;
-                }
-              `}</style>
-            </React.Fragment>
-          );
-        }
+    render: nullProtectRender(record => {
+      const value = extractValue(record, opts.transformer);
+      if (typeof value === 'string' && value.length > 30) {
         return (
-          <Button href={value} size="small" type="dashed" target="_blank">
-            {value}
-            <Icon type="link" />
-          </Button>
+          <React.Fragment>
+            <Tooltip title={value}>
+              <Button href={value} size="small" type="dashed" target="_blank">
+                {`${value.slice(0, 30)}...`}
+                <Icon type="link" />
+              </Button>
+            </Tooltip>
+            {/* language=CSS */}
+            <style jsx>{`
+              /* 用于修复 tooltip 最大宽度固定以致长文本显示异常的问题 */
+              :global(.ant-tooltip-inner) {
+                max-width: inherit;
+              }
+            `}</style>
+          </React.Fragment>
         );
       }
-      return 'n/a';
-    },
+      return (
+        <Button href={value} size="small" type="dashed" target="_blank">
+          {value}
+          <Icon type="link" />
+        </Button>
+      );
+    }),
   }),
   generateCalendar: (key, title, transformer?): ColumnProps<any> => ({
     key: castModelKey(key),
     title,
     dataIndex: castModelKey(key),
     sorter: true,
-    render: record => {
-      if (record) {
-        const value = transformer ? transformer(record) : record;
+    render: nullProtectRender(record => {
+      const value = extractValue(record, transformer);
+      if (value) {
         const content = moment(record).calendar();
         return (
           <Tooltip title={value}>
@@ -382,8 +379,8 @@ export const columnHelper = {
           </Tooltip>
         );
       }
-      return 'n/a';
-    },
+      return record;
+    }),
   }),
   /**
    * 生成动作按钮
@@ -407,60 +404,35 @@ export const columnHelper = {
     title,
     dataIndex: key,
     sorter: true,
-    render: record => {
-      if (record) {
-        try {
-          const value = _.isFunction(opts.transformer) ? opts.transformer(record) : record;
-          if (value) {
-            const images = valueToArrays(value);
-            // const host = Config.get('UPLOADS_ENDPOINT', '');
-            // return _.map(images, image => <AssetPreview key={image} host={host} url={image} />);
-            return <AssetsPreview key={key} urls={images} />;
-          }
-        } catch (e) {
-          logger.error('[generateImage]', e, { key, title, record });
-          return record;
-        }
-      }
-      return 'n/a';
-    },
+    render: nullProtectRender(record => {
+      const value = extractValue(record, opts.transformer);
+      return value ? <AssetsPreview key={key} urls={valueToArrays(value)} /> : record;
+    }),
   }),
   generateVideo: (key, title, opts: { transformer?; host?: string } = {}): ColumnProps<any> => ({
     key,
     title,
     dataIndex: key,
     sorter: true,
-    render: record => {
-      if (record) {
-        try {
-          const value = _.isFunction(opts.transformer) ? opts.transformer(record) : record;
-          if (value) {
-            const videoJsOptions = {
-              width: '100%',
-              height: 160,
-              autoplay: false,
-              controls: true,
-              sources: [
-                {
-                  src: value,
-                  // type: 'video/mp4',
-                },
-              ],
-            };
-            return (
-              <>
-                <VideoPlayer key={key} {...videoJsOptions} />
-                {value}
-              </>
-            );
-          }
-        } catch (e) {
-          logger.error('[generateVideo]', e, { key, title, record });
-          return record;
-        }
+    render: nullProtectRender(record => {
+      const value = extractValue(record, opts.transformer);
+      if (value) {
+        const videoJsOptions = {
+          width: '100%',
+          height: 160,
+          autoplay: false,
+          controls: true,
+          sources: [{ src: value /*type: 'video/mp4',*/ }],
+        };
+        return (
+          <>
+            <VideoPlayer key={key} {...videoJsOptions} />
+            {value}
+          </>
+        );
       }
-      return 'n/a';
-    },
+      return record;
+    }),
   }),
   /**
    * 生成切换按钮

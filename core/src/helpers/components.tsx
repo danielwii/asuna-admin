@@ -31,6 +31,8 @@ export const ComponentsHelper = {
       gql`
       {
         kv(collection: "${collection}", key: "${key}") {
+          collection
+          key
           updatedAt
           name
           value

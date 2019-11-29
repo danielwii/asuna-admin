@@ -200,7 +200,7 @@ export type GroupFormFields = { [groupKey: string]: FormFieldsGroup };
 interface GroupEasyFormProps extends ValuesFormProps {
   // initialValues(props): any;
   onSubmit: (values: any) => Promise<any>;
-  onClear: () => Promise<any>;
+  onClear?: () => Promise<any>;
   onDestroy?: () => Promise<any>;
 }
 
@@ -255,9 +255,9 @@ const GroupInnerForm = (props: GroupEasyFormProps & formik.FormikProps<formik.Fo
           <antd.Button htmlType="submit" onSubmit={handleSubmit} disabled={isSubmitting}>
             {isSubmitting ? 'Submitting' : 'Submit'}
           </antd.Button>{' '}
-          <antd.Button onClick={handleReset} disabled={isSubmitting}>
+          {/*<antd.Button onClick={handleReset} disabled={isSubmitting}>
             {isSubmitting ? 'Resetting' : 'Reset'}
-          </antd.Button>{' '}
+          </antd.Button>{' '}*/}
           {/*<antd.Button type="danger" onClick={onClear} disabled={isSubmitting}>*/}
           {/*  {isSubmitting ? 'Clearing' : 'Clear'}*/}
           {/*</antd.Button>*/}
