@@ -6,7 +6,7 @@ import { createLogger } from '@asuna-admin/logger';
 import { contentActions, modelsActions, panesActions, RootState } from '@asuna-admin/store';
 import { Asuna } from '@asuna-admin/types';
 
-import { Button, Divider, Modal, Table } from 'antd';
+import { Button, Divider, Dropdown, Menu, Modal, Switch, Table } from 'antd';
 import { PaginationConfig } from 'antd/es/pagination';
 import { ColumnProps, SorterResult } from 'antd/es/table';
 import idx from 'idx';
@@ -37,7 +37,7 @@ interface IState {
   creatable: Asuna.Schema.TableColumnOptCreatable;
   editable: boolean;
   deletable: boolean;
-  columns?: (ColumnProps<any> & { relation: any })[];
+  columns: (ColumnProps<any> & { relation: any })[];
   pagination?: PaginationConfig;
   filters?: Record<any, string[]>;
   sorter?: Partial<SorterResult<any>>;
@@ -95,6 +95,7 @@ class ContentIndex extends React.Component<IProps, IState> {
       extraName,
       modelName,
       creatable,
+      columns: [],
       editable,
       deletable,
       rowClassName,
@@ -179,8 +180,9 @@ class ContentIndex extends React.Component<IProps, IState> {
     const { activeKey } = nextProps;
     const samePane = key === activeKey;
     const propsDiff = diff(this.props, nextProps);
-    const shouldUpdate = samePane && propsDiff.isDifferent;
-    logger.debug('[shouldComponentUpdate]', { key, activeKey, samePane, shouldUpdate, propsDiff });
+    const stateDiff = diff(this.state, nextState);
+    const shouldUpdate = samePane && (propsDiff.isDifferent || stateDiff.isDifferent);
+    logger.debug('[shouldComponentUpdate]', { key, activeKey, samePane, shouldUpdate, propsDiff, stateDiff });
     return shouldUpdate;
   }
 
@@ -274,11 +276,27 @@ class ContentIndex extends React.Component<IProps, IState> {
     // AppContext.adapters.api.export();
   };
 
+  _pinActions = () => {
+    const { columns } = this.state;
+    const column = _.find(columns, column => column.key === 'action');
+    if (column) {
+      if (_.has(column, 'fixed')) {
+        delete column['fixed'];
+        delete column['width'];
+      } else {
+        column['fixed'] = 'right';
+        column['width'] = 250;
+      }
+    }
+    this.setState({ columns: [] }, () => this.setState({ columns }));
+  };
+
   render() {
     const { extraName, modelName, columns, creatable, opts, rowClassName } = this.state;
 
     const { models } = this.props;
 
+    const actionColumn = _.find(columns, column => column.key === 'action');
     const response = R.pathOr([], [modelName, 'data'])(models);
     const loading = R.pathOr(false, [modelName, 'loading'])(models);
 
@@ -310,6 +328,23 @@ class ContentIndex extends React.Component<IProps, IState> {
 
         <Divider type="vertical" />
 
+        <Dropdown
+          overlay={
+            <Menu>
+              <Menu.Item onClick={this._pinActions}>
+                <Switch size={'small'} checked={!!_.get(actionColumn, 'fixed')} />
+                <Divider type="vertical" />
+                固定 Actions
+              </Menu.Item>
+            </Menu>
+          }
+          placement="bottomCenter"
+        >
+          <Button>布局</Button>
+        </Dropdown>
+
+        <Divider type="vertical" />
+
         {opts && opts.renderActions && (
           <>
             {opts.renderActions({ modelName, callRefresh: this._refresh })}
@@ -338,7 +373,7 @@ class ContentIndex extends React.Component<IProps, IState> {
             rowKey={this.state.primaryKey}
             loading={loading}
             columns={columns}
-            pagination={pagination}
+            pagination={{ ...pagination, position: 'both' }}
             onChange={this._handleTableChange}
             rowClassName={rowClassName}
           />

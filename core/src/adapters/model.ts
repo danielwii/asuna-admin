@@ -291,20 +291,13 @@ export class ModelAdapter {
     // dev 模式下提示模型 schema 中不包含的字段，在 production 中隐藏该字段
     if (AppContext.isDevMode) {
       return _.map(columns, (column: ColumnProps<any> & { relation: any }) => {
-        // todo antd 当前的屏幕宽度处理存在问题。
-        let fixed;
-        if (column.key === 'id') {
-          // fixed = { fixed: 'left', width: 60 };
-        } else if (column.key === 'action') {
-          fixed = { fixed: 'right', width: 250 };
-        }
         // 不检测不包含在 schema 中且不属于模型的列名
         const isRelationKey = (column.key as string).includes('.');
         const isActionKey = _.includes(['action'], column.key);
         return column.key && !formSchema[column.key] && !isActionKey && !isRelationKey
           ? // 标记 schema 中不存在的列
             { ...column, title: `${column.title}(miss)` }
-          : { ...column, ...fixed };
+          : column;
       });
     }
     return _.filter<any>(
