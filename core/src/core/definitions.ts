@@ -70,7 +70,8 @@ export class AsunaDefinitions<T extends Asuna.Schema.ModelOpts = {}> {
   setupExtraTableColumns<EntitySchema>(key: string, opts: Asuna.Schema.TableColumnOpts<EntitySchema>): void {
     const withStylesOpts = {
       ...opts,
-      rowClassName: record => (record.isPublished ? 'row-published' : 'row-unpublished'),
+      rowClassName: record =>
+        _.has(record, 'isPublished') ? (record.isPublished ? 'row-published' : 'row-unpublished') : '',
     };
     this._tableColumnOpts[key] = withStylesOpts;
     this._extraTableColumns = extend(this._extraTableColumns, this.wrapTableColumns(key, withStylesOpts));
@@ -79,7 +80,8 @@ export class AsunaDefinitions<T extends Asuna.Schema.ModelOpts = {}> {
   setupTableColumns<EntitySchema>(entity: keyof T, opts: Asuna.Schema.TableColumnOpts<EntitySchema>): void {
     const withStylesOpts = {
       ...opts,
-      rowClassName: record => (record.isPublished ? 'row-published' : 'row-unpublished'),
+      rowClassName: record =>
+        _.has(record, 'isPublished') ? (record.isPublished ? 'row-published' : 'row-unpublished') : '',
     };
     this._tableColumnOpts[entity as string] = withStylesOpts;
     this._tableColumns = extend(this._tableColumns, this.wrapTableColumns(entity as string, withStylesOpts));

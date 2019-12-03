@@ -10,3 +10,4 @@ services/*
 components/*
 bff/*
 /config.js
+/schema.json
