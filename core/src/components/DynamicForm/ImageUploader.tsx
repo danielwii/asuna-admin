@@ -181,7 +181,7 @@ export class ImageUploader extends React.Component<IProps, IState> {
           <img style={{ width: '100%' }} src={previewImage} alt="" />
         </Modal>
         <Input.TextArea
-          value={_.isString(value) ? value : JSON.stringify(value)}
+          value={typeof value === 'string' ? value : value ? JSON.stringify(value) : ''}
           autoSize={{ minRows: 2, maxRows: 6 }}
           onChange={event => {
             logger.debug('[onChange]', event);

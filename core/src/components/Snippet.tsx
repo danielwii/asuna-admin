@@ -2,11 +2,14 @@ import { joinUrl, valueToUrl } from '@asuna-admin/core/url-rewriter';
 
 import { Icon } from 'antd';
 import * as _ from 'lodash';
+import dynamic from 'next/dynamic';
 import React, { useState } from 'react';
 import { Document, Page } from 'react-pdf';
+import { ImageDecorator } from 'react-viewer/lib/ViewerProps';
+import { FlexCenterBox, ThumbImage } from './Styled';
 // import { Document, Page } from "react-pdf/dist/entry.webpack";
 
-import { FlexCenterBox, ThumbImage } from './Styled';
+const Viewer = dynamic(import('react-viewer'), { ssr: false });
 
 interface IAssetsPreviewProps {
   host?: string;
@@ -14,11 +17,36 @@ interface IAssetsPreviewProps {
   showPdf?: boolean;
 }
 
+export function ReactViewer({
+  images,
+  index,
+  children,
+}: { images: ImageDecorator[]; index: number } & { children?: React.ReactNode }) {
+  const [visible, setVisible] = React.useState(false);
+
+  return (
+    <>
+      <a onClick={() => setVisible(true)}>{children}</a>
+      <Viewer
+        activeIndex={index}
+        visible={visible}
+        onClose={() => setVisible(false)}
+        onMaskClick={() => setVisible(false)}
+        images={images}
+        downloadable
+        downloadInNewWindow
+      />
+    </>
+  );
+}
+
 export function AssetsPreview({ host, urls, showPdf }: IAssetsPreviewProps) {
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', maxWidth: '400px' }}>
-      {_.map(urls, image => (
-        <AssetPreview key={image} host={host} url={image} showPdf={showPdf} />
+      {_.map(urls, (url, index) => (
+        <ReactViewer index={index} images={urls.map(url => ({ src: url, downloadUrl: url }))}>
+          <AssetPreview key={url} host={host} url={url} showPdf={showPdf} />
+        </ReactViewer>
       ))}
     </div>
   );
@@ -89,13 +117,10 @@ export function AssetPreview({ host, url, showPdf, fullWidth }: IAssetPreviewPro
   }
   return (
     <FlexCenterBox key={url}>
-      <a href={href} target="_blank">
-        {/*<ThumbImage src={`${host}${url}?thumbnail/x80_cover`} />*/}
-        <ThumbImage
-          width={fullWidth ? '100%' : ''}
-          src={valueToUrl(url, { type: 'image', thumbnail: { height: 200, width: 200 } })}
-        />
-      </a>
+      <ThumbImage
+        width={fullWidth ? '100%' : ''}
+        src={valueToUrl(url, { type: 'image', thumbnail: { height: 200, width: 200 } })}
+      />
     </FlexCenterBox>
   );
 }

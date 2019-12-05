@@ -86,7 +86,7 @@ export const generateComponent = (
     logger.debug('[generateComponent]', options);
     const decorator = form.getFieldDecorator(fieldName, opts || {});
     return (
-      <Form.Item key={fieldName} {...formItemLayout} label={labelName || fieldName} help={help}>
+      <Form.Item key={fieldName} {...formItemLayout} label={`${labelName || fieldName} / ${fieldName}`} help={help}>
         {decorator(Component)}
       </Form.Item>
     );
@@ -154,10 +154,14 @@ export const generateInput = (
   let component;
   if (iconType) {
     component = (
-      <Input prefix={<Icon type={iconType} style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder={placeholder} />
+      <Input
+        prefix={<Icon type={iconType} style={{ color: 'rgba(0,0,0,.25)' }} />}
+        placeholder={placeholder}
+        allowClear
+      />
     );
   } else {
-    component = <Input placeholder={placeholder} />;
+    component = <Input placeholder={placeholder} allowClear />;
   }
 
   return generateComponent(
@@ -183,7 +187,12 @@ export const generateTextArea = (form: WrappedFormUtils, options, formItemLayout
 
   const fieldName = key || name;
   const labelName = label || name || key;
-  return generateComponent(form, { fieldName, labelName, ...options }, <Input.TextArea autoSize />, formItemLayout);
+  return generateComponent(
+    form,
+    { fieldName, labelName, ...options },
+    <Input.TextArea autoSize={{ minRows: 3 }} allowClear />,
+    formItemLayout,
+  );
 };
 
 /**

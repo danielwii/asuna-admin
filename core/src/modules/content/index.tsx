@@ -234,15 +234,16 @@ class ContentIndex extends React.Component<IProps, IState> {
     });
   };
 
-  _handleTableChange = (pagination, filters, sorter) => {
+  _handleTableChange = (pagination, filters, sorter?: Partial<SorterResult<any>>) => {
     logger.debug('[handleTableChange]', { pagination, filters, sorter });
     const { modelName, relations } = this.state;
     const { dispatch } = this.props;
     // using state sorter if no sorter found in parameters
-    const availableSorter = _.isEmpty(sorter) ? this.state.sorter : sorter;
-    const transformedSorter = !_.isEmpty(availableSorter)
-      ? ({ [availableSorter.field]: availableSorter.order.slice(0, -3) } as Sorter)
-      : null;
+    const availableSorter = sorter && _.isEmpty(sorter) ? this.state.sorter : sorter;
+    const transformedSorter =
+      availableSorter && !_.isEmpty(availableSorter)
+        ? ({ [availableSorter.field as string]: _.slice(availableSorter.order, 0, -3).join('') } as Sorter)
+        : null;
 
     logger.debug('[handleTableChange]', { availableSorter, transformedSorter });
     dispatch(

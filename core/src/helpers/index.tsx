@@ -406,7 +406,11 @@ export const columnHelper = {
     sorter: true,
     render: nullProtectRender(record => {
       const value = extractValue(record, opts.transformer);
-      return value ? <AssetsPreview key={key} urls={valueToArrays(value)} /> : record;
+      return (
+        <WithDebugInfo info={{ key, title, opts, record }}>
+          {value ? <AssetsPreview key={key} urls={valueToArrays(value)} /> : record}
+        </WithDebugInfo>
+      );
     }),
   }),
   generateVideo: (key, title, opts: { transformer?; host?: string } = {}): ColumnProps<any> => ({
