@@ -44,7 +44,7 @@ export function AssetsPreview({ host, urls, showPdf }: IAssetsPreviewProps) {
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', maxWidth: '400px' }}>
       {_.map(urls, (url, index) => (
-        <ReactViewer index={index} images={urls.map(url => ({ src: url, downloadUrl: url }))}>
+        <ReactViewer key={`viewer-${index}`} index={index} images={urls.map(url => ({ src: url, downloadUrl: url }))}>
           <AssetPreview key={url} host={host} url={url} showPdf={showPdf} />
         </ReactViewer>
       ))}

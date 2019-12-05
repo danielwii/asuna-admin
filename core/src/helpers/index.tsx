@@ -494,7 +494,7 @@ export const commonColumns = {
   name: columnHelper.generate('name', '名称', { searchType: 'like' }),
   ordinal: columnHelper.generate('ordinal', '序号'),
   description: columnHelper.generate('description', '描述', { searchType: 'like' }),
-  title: columnHelper.generate('title', '标题', { searchType: 'like' }),
+  title: columnHelper.generate('title', 'Title', { searchType: 'like' }),
   nameCn: columnHelper.generate('nameCn', '中文名称', { searchType: 'like' }),
   nameEn: columnHelper.generate('nameEn', '英文名称', { searchType: 'like' }),
   email: columnHelper.generate('email', 'Email', { searchType: 'like' }),

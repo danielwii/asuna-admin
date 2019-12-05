@@ -52,12 +52,7 @@ type AssociationField = {
 };
 
 const extractItemsBy = primaryKey =>
-  R.compose(
-    R.uniqBy(R.prop(primaryKey)),
-    R.flatten,
-    R.map(R.path(['data', 'items'])),
-    R.flatten,
-  );
+  R.compose(R.uniqBy(R.prop(primaryKey)), R.flatten, R.map(R.path(['data', 'items'])), R.flatten);
 
 /**
  * 异步加载所有的关联对象，用于下拉菜单提示
@@ -129,10 +124,7 @@ export const asyncLoadAssociationsDecorator = async ({
           try {
             const results = await bluebird.props({
               itemsResponse: AppContext.adapters.models.loadAssociation(selectable),
-              existItemsResponse: AppContext.adapters.models.loadAssociationByIds(
-                selectable,
-                field.value,
-              ),
+              existItemsResponse: AppContext.adapters.models.loadAssociationByIds(selectable, field.value),
             });
 
             // 当前方法只处理了单个外键的情况，没有考虑如联合主键的处理
@@ -161,14 +153,12 @@ export const asyncLoadAssociationsDecorator = async ({
       const primaryKey = AppContext.adapters.models.getPrimaryKey(association.name);
       let value;
 
-      if (_.isArrayLike(association.value)) {
+      if (_.isArray(association.value)) {
         value = association.value
           ? R.map(entity => R.propOr(entity, primaryKey, entity))(association.value)
           : undefined;
       } else {
-        value = association.value
-          ? R.propOr(association.value, primaryKey, association.value)
-          : undefined;
+        value = association.value ? R.propOr(association.value, primaryKey, association.value) : undefined;
       }
       logger.debug(TAG, 'handle association', { association, value, primaryKey });
       return { ...association, value };
