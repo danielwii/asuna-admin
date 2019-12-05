@@ -11367,10 +11367,10 @@ no-case@^2.2.0:
   dependencies:
     lower-case "^1.1.1"
 
-node-buffs@^0.6.17:
-  version "0.6.17"
-  resolved "https://registry.yarnpkg.com/node-buffs/-/node-buffs-0.6.17.tgz#fe60b2f5acf7a328dfbbae9e74a4a68d79f949a9"
-  integrity sha512-yQ7b7fX9FhE/lpfAsYCw5Qlzmeq8djfNbWYWwtaCG3Rv4KaOErtsvZ5bZIRPVpmv5fAfzUoJKNMRaxkfJXRuwA==
+node-buffs@^0.6.19:
+  version "0.6.19"
+  resolved "https://registry.yarnpkg.com/node-buffs/-/node-buffs-0.6.19.tgz#967f196b89ed58e7687ec094680e114bdf4db4eb"
+  integrity sha512-loV/dB9L6QIbCJiV01+0cpFCGgHpkhlf82O4sW8iuN09/RMLhRoigphYmOgbQdwUgPiaWF3sIGBa4zWxmWCsUQ==
   dependencies:
     dotenv "^8.2.0"
     lodash "^4.17.15"
@@ -15861,7 +15861,12 @@ typescript-tuple@^2.2.1:
   dependencies:
     typescript-compare "^0.0.2"
 
-typescript@^3.7.2, typescript@~3.7.2:
+typescript@^3.7.3:
+  version "3.7.3"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.7.3.tgz#b36840668a16458a7025b9eabfad11b66ab85c69"
+  integrity sha512-Mcr/Qk7hXqFBXMN7p7Lusj1ktCBydylfQM/FZCk5glCNQJrCUKPkMHdo9R0MTFWsC/4kPFvDS0fDPvukfCkFsw==
+
+typescript@~3.7.2:
   version "3.7.2"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.7.2.tgz#27e489b95fa5909445e9fef5ee48d81697ad18fb"
   integrity sha512-ml7V7JfiN2Xwvcer+XAf2csGO1bPBdRbFCkYBczNZggrBZ9c7G3riSUeJmqEU5uOtXNPMhE3n+R4FA/3YOAWOQ==
