@@ -136,10 +136,7 @@ export const columnHelper = {
     opts: {
       ref?: string;
       transformer?: keyof RelationSchema | ((record) => React.ReactChild);
-      filterType?:
-        | 'list'
-        /** FIXME not implemented */
-        | 'search';
+      filterType?: 'list' | 'search';
       relationField?: string;
       render?: (content, record?) => React.ReactChild;
     } = {},
@@ -181,7 +178,6 @@ export const columnHelper = {
         }
         break;
       case 'search':
-        // fixme not implemented
         filterProps = generateSearchColumnProps(`${ref}.${opts.relationField || 'name'}`, 'like');
         break;
     }

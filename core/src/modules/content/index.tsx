@@ -235,13 +235,20 @@ class ContentIndex extends React.Component<IProps, IState> {
     });
   };
 
-  _transformFilters = (filters?: Record<keyof any, string[]>) =>
-    _.chain(filters)
-      .mapKeys((filterArr, key) => (key.includes('.') ? _.get(parseJSONIfCould(_.head(filterArr)), 'key') : key))
+  // key 包括 . 时表示是关联查询，filterArr 中的参数如果不是字符串表示不是通过 list 选择
+  // 这里主要是处理关联时通过 list 选择需要转换 key 为主键
+  _transformFilters = (filters?: Record<keyof any, string[]>) => {
+    return _.chain(filters)
+      .mapKeys((filterArr, key) =>
+        key.includes('.') && _.isString(_.head(filterArr)) ? _.get(parseJSONIfCould(_.head(filterArr)), 'key') : key,
+      )
       .mapValues((filterArr, key) =>
-        key.includes('.') ? _.get(parseJSONIfCould(_.head(filterArr)), 'value') : filterArr,
+        key.includes('.') && _.isString(_.head(filterArr))
+          ? _.get(parseJSONIfCould(_.head(filterArr)), 'value')
+          : filterArr,
       )
       .value();
+  };
 
   _handleTableChange = (
     pagination?: PaginationConfig,
