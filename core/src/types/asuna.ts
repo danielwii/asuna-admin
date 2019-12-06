@@ -53,10 +53,13 @@ export declare module Asuna {
   module Schema {
     interface UploadResponse {
       bucket: string;
+      extension: string;
       filename: string;
-      mode: 'local' | 'qiniu';
-      prefix: string;
       fullpath: string;
+      mimetype: string;
+      mode: 'local' | 'qiniu';
+      path: string;
+      prefix: string;
     }
 
     // type EntityMetaInfoOptions = {

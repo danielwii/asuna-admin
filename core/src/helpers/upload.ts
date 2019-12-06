@@ -17,17 +17,31 @@ export async function getBase64(image): Promise<string | ArrayBuffer | null> {
 }
 
 export function validateFile(file: { type: string; size: number }): boolean {
-  // console.log(file);
+  console.log(file);
   const isImage = ['image/jpeg', 'image/png', 'image/gif'].indexOf(file.type) > -1;
+  const isVideo = ['video/mp4'].indexOf(file.type) > -1;
   const isLt20M = file.size / 1024 / 1024 < 20;
-  logger.log('[validateFile]', file, { isImage, isLt20M });
-  if (!isImage) {
-    message.error('You can only upload JPG/PNG/GIF file!');
+  const isLt100M = file.size / 1024 / 1024 < 100;
+  logger.log('[validateFile]', file, { isImage, isVideo, isLt100M });
+
+  if (isImage) {
+    if (!isLt20M) {
+      message.error('Image must smaller than 20MB!');
+      return false;
+    }
+    return true;
   }
-  if (!isLt20M) {
-    message.error('Image must smaller than 20MB!');
+
+  if (isVideo) {
+    if (!isLt100M) {
+      message.error('Video must smaller than 100MB!');
+      return false;
+    }
+    return true;
   }
-  return isImage && isLt20M;
+
+  message.error('You can only upload JPG/PNG/GIF or MP4 file!');
+  return false;
 }
 
 export async function upload(

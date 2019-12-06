@@ -6,6 +6,7 @@ import { Asuna } from '@asuna-admin/types';
 
 import { Icon, Input, Modal, Upload } from 'antd';
 import { RcFile, UploadChangeParam, UploadFile, UploadFileStatus } from 'antd/es/upload/interface';
+import { RcCustomRequestOptions } from 'antd/lib/upload/interface';
 import _ from 'lodash';
 import React from 'react';
 
@@ -118,21 +119,17 @@ export class ImageUploader extends React.Component<IProps, IState> {
     if (!this.props.jsonMode) {
       images = images.join(',');
     }
-    logger.log('[ImageUploader][customRequest]', { images, uploadedImages });
+    logger.log('[ImageUploader][valueToSubmit]', { images, uploadedImages });
     return images;
   };
 
-  customRequest = (option: any): void => {
+  customRequest = (option: RcCustomRequestOptions): void => {
     logger.log('[ImageUploader][customRequest]', option);
     const { onChange, urlHandler, bucket, jsonMode } = this.props;
     upload(option.file, {}, { bucket }).then(uploaded => {
       if (uploaded) {
         logger.log('[ImageUploader][customRequest]', { props: this.props, state: this.state });
         const resolvedUrl = urlHandler ? urlHandler(uploaded[0]) : `${uploaded[0]}`;
-        // let image = resolvedUrl;
-        // if (!resolvedUrl.startsWith('http') && !resolvedUrl.startsWith(prefix || '')) {
-        //   image = join(prefix || '', resolvedUrl);
-        // }
         const images = this.valueToSubmit(this.props.value, resolvedUrl);
         logger.log('[ImageUploader][customRequest]', { uploaded, images });
         onChange!(images);

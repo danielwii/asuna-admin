@@ -10,11 +10,12 @@ import { Badge, Button, Checkbox, Icon, Input, Popconfirm, Statistic, Tag, Toolt
 import { ColumnProps } from 'antd/es/table';
 import * as deepDiff from 'deep-diff';
 import idx from 'idx';
-import _ from 'lodash';
+import * as _ from 'lodash';
 import moment from 'moment';
 import * as R from 'ramda';
-import * as util from 'util';
 import React from 'react';
+import * as util from 'util';
+import { VideoJsPlayerOptions } from 'video.js';
 
 import { castModelKey } from './cast';
 import { WithDebugInfo } from './debug';
@@ -265,11 +266,11 @@ export const columnHelper = {
     ...generateSearchColumnProps(key, opts.searchType),
     render: nullProtectRender(record => {
       const value = extractValue(record, opts.transformer);
-      let component = _.isObject(value) ? util.inspect(value) : value;
-      if (typeof value === 'string' && value.length > 20) {
-        component = <Tooltip title={value}>{`${value.slice(0, 20)}...`}</Tooltip>;
-      }
-      return <WithDebugInfo info={{ key, title, record }}>{component}</WithDebugInfo>;
+      return (
+        <WithDebugInfo info={{ key, title, record }}>
+          <TooltipContent value={value} />
+        </WithDebugInfo>
+      );
     }),
   }),
   generateTag: (
@@ -421,8 +422,8 @@ export const columnHelper = {
     render: nullProtectRender(record => {
       const value = extractValue(record, opts.transformer);
       if (value) {
-        const videoJsOptions = {
-          width: '100%',
+        const videoJsOptions: VideoJsPlayerOptions = {
+          width: '100%' as any,
           height: 160,
           autoplay: false,
           controls: true,
@@ -431,7 +432,7 @@ export const columnHelper = {
         return (
           <>
             <VideoPlayer key={key} {...videoJsOptions} />
-            {value}
+            <TooltipContent value={value} link />
           </>
         );
       }
@@ -534,3 +535,24 @@ export const isJson = (value): boolean => {
     return false;
   }
 };
+
+function TooltipContent({ value, link }: { value: any; link?: boolean }) {
+  let component = _.isObject(value) ? util.inspect(value) : value;
+  if (typeof value === 'string' && value.length > 20) {
+    const shortValue = `${value.slice(0, 20)}...`;
+    if (link) {
+      return <TextLink url={value} text={shortValue} />;
+    }
+    component = <Tooltip title={value}>{shortValue}</Tooltip>;
+    return component;
+  }
+  return link ? <TextLink url={component} text={component} /> : component;
+}
+
+function TextLink({ url, text }: { url: string; text?: string }) {
+  return (
+    <a href={url} target={'_blank'}>
+      {text || url}
+    </a>
+  );
+}

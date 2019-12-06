@@ -1,58 +1,29 @@
-import { apiProxy } from '@asuna-admin/adapters';
+import { valueToArrays, valueToUrl } from '@asuna-admin/core/url-rewriter';
+import { upload, validateFile } from '@asuna-admin/helpers/upload';
 import { createLogger } from '@asuna-admin/logger';
+import { Asuna } from '@asuna-admin/types';
 
-import { Button, Icon, message, Upload } from 'antd';
+import { Button, Icon, Upload } from 'antd';
+import { RcFile, UploadChangeParam, UploadFile, UploadFileStatus } from 'antd/es/upload/interface';
+import { RcCustomRequestOptions } from 'antd/lib/upload/interface';
 import _ from 'lodash';
-import * as R from 'ramda';
+import fp from 'lodash/fp';
 import React from 'react';
 import videojs from 'video.js';
 
 const logger = createLogger('components:dynamic-form:video');
 
 // --------------------------------------------------------------
-// Function
-// --------------------------------------------------------------
-
-function beforeUpload(file) {
-  logger.log('[beforeUpload]', 'file is', file);
-  const isMP4 = file.type === 'video/mp4';
-  if (!isMP4) {
-    message.error('You can only upload MP4 file!');
-  }
-  const isLt100M = file.size / 1024 / 1024 < 100;
-  if (!isLt100M) {
-    message.error('Video must smaller than 100MB!');
-  }
-  return isMP4 && isLt100M;
-}
-
-async function upload(onChange, files, args?) {
-  logger.log('[upload]', args);
-  const response = await apiProxy.upload(args.file);
-  logger.log('[upload]', 'response is', response);
-
-  if (/^20\d$/.test(response.status as any)) {
-    message.success('upload successfully.');
-    args.onSuccess();
-
-    onChange(response.data);
-  } else {
-    message.error('upload failed.');
-    args.onError();
-  }
-}
-
-// --------------------------------------------------------------
 // Uploader
 // --------------------------------------------------------------
 
 export interface IProps {
-  host?: string;
-  prefix?: string;
+  bucket?: string;
   value?: string;
   multi?: boolean;
   onChange?: (value: any) => void;
-  urlHandler?: (value: any) => void;
+  urlHandler?: (res: Asuna.Schema.UploadResponse) => string;
+  jsonMode?: boolean;
 }
 
 export class VideoUploader extends React.Component<IProps> {
@@ -61,47 +32,69 @@ export class VideoUploader extends React.Component<IProps> {
   };
 
   state = {
-    fileList: [],
+    fileList: VideoUploader.wrapVideosToFileList(this.props.value),
   };
 
-  handleChange = info => {
-    const { multi } = this.props;
-
-    let { fileList } = info;
-
-    // 1. Limit the number of uploaded files
-    //    this old ones will be replaced by the new
-
-    if (multi) {
-      fileList = fileList.slice(-3);
-    } else {
-      fileList = fileList.slice(-1);
+  handleChange = (info: UploadChangeParam): void => {
+    logger.log('[VideoUploader][handleChange]', { info });
+    const { onChange, jsonMode } = this.props;
+    // const images = _.compact(info.fileList.map(file => file.url)).join(',');
+    // 这里只有 status 为 done 的 image 包含 url
+    let videos: string | string[] = _.compact(_.flatten(info.fileList.map(file => file.url)));
+    if (!jsonMode) {
+      videos = videos.join(',');
     }
-
-    // 2. read from response and show file link
-    fileList = fileList.map(file => {
-      if (file.response) {
-        // Component will show file.url as link
-        return { ...file, url: file.response.url };
-      }
-      return file;
-    });
-
-    // 3. filter successfully uploaded files according to response from server
-    fileList = fileList.filter(file => {
-      if (file.response) {
-        return file.response.status === 'success';
-      }
-      return true;
-    });
-
-    this.setState({ fileList });
+    logger.log('[VideoUploader][handleChange]', { videos });
+    onChange!(videos);
+    this.setState({ fileList: VideoUploader.wrapVideosToFileList(videos) });
   };
 
-  renderPlayer = video => {
-    logger.debug('[VideoUploader][renderPlayer]', video);
+  static wrapVideosToFileList = (videosInfo?: string | string[]): UploadFile[] => {
+    const videos = valueToArrays(videosInfo);
+    const fileList = _.flow([
+      fp.filter(video => typeof video !== 'object'),
+      fp.map((video, index) => ({
+        uid: `${index}`,
+        status: 'done' as UploadFileStatus,
+        name: valueToUrl(video, { type: 'video' }),
+        url: valueToUrl(video, { type: 'video' }),
+        // thumbUrl: valueToUrl(video, { type: 'video' }),
+      })),
+    ])(videos);
+    logger.log('[wrapVideosToFileList]', 'fileList is', fileList);
+    return fileList;
+  };
 
-    const { host, prefix } = this.props;
+  valueToSubmit = (value?: string | string[], extra?: string): string | string[] => {
+    const uploadedVideos = valueToArrays(value);
+    let videos: string | string[] = _.compact(_.flattenDeep([uploadedVideos, extra]));
+    if (!this.props.multi) {
+      videos = _.tail(videos);
+    }
+    if (!this.props.jsonMode) {
+      videos = videos.join(',');
+    }
+    logger.log('[VideoUploader][valueToSubmit]', { videos, uploadedVideos });
+    return videos;
+  };
+
+  customRequest = (option: RcCustomRequestOptions): void => {
+    logger.log('[VideoUploader][customRequest]', option);
+    const { onChange, urlHandler, bucket, jsonMode } = this.props;
+    upload(option.file, {}, { bucket }).then(uploaded => {
+      if (uploaded) {
+        logger.log('[VideoUploader][customRequest]', { props: this.props, state: this.state });
+        const resolvedUrl = urlHandler ? urlHandler(uploaded[0]) : `${uploaded[0]}`;
+        const videos = this.valueToSubmit(this.props.value, resolvedUrl);
+        logger.log('[VideoUploader][customRequest]', { uploaded, videos });
+        onChange!(videos);
+        this.setState({ fileList: VideoUploader.wrapVideosToFileList(videos) });
+      }
+    });
+  };
+
+  renderPlayer = (video?: string) => {
+    logger.debug('[VideoUploader][renderPlayer]', video);
 
     if (video) {
       const videoJsOptions = {
@@ -109,14 +102,9 @@ export class VideoUploader extends React.Component<IProps> {
         // height  : 320,
         autoplay: false,
         controls: true,
-        sources: [
-          {
-            src: `${host}/${prefix}/${video.prefix}/${video.filename}`,
-            type: 'video/mp4',
-          },
-        ],
+        sources: [{ src: valueToUrl(video, { type: 'video' }), type: 'video/mp4' }],
       };
-      return <VideoPlayer key={video.filename} {...videoJsOptions} />;
+      return <VideoPlayer key={video} {...videoJsOptions} />;
     }
     return null;
   };
@@ -128,9 +116,9 @@ export class VideoUploader extends React.Component<IProps> {
     const props = {
       onChange: this.handleChange,
       multiple: false,
-      customRequest: (...args) => upload(onChange, [], ...args),
+      customRequest: this.customRequest,
       supportServerRender: true,
-      beforeUpload,
+      beforeUpload: (file: RcFile, rcFiles: RcFile[]) => validateFile(file),
     };
 
     return (
@@ -140,7 +128,7 @@ export class VideoUploader extends React.Component<IProps> {
             <Icon type="upload" /> upload
           </Button>
         </Upload>
-        {R.type(videos) === 'Array' && _.map(videos || [], this.renderPlayer)}
+        {_.isArray(videos) ? _.map(videos || [], this.renderPlayer) : this.renderPlayer(videos)}
       </div>
     );
   }
@@ -179,7 +167,7 @@ export class VideoPlayer extends React.Component {
           {`
             div[data-vjs-player] {
               width: 100%;
-              height: 20rem;
+              max-height: 20rem;
             }
           `}
         </style>
