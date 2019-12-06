@@ -61,11 +61,7 @@ export class Panes extends React.Component<IPanesProps, IState> {
     }
   };
 
-  shouldComponentUpdate(
-    nextProps: Readonly<IPanesProps>,
-    nextState: Readonly<IState>,
-    nextContext: any,
-  ): boolean {
+  shouldComponentUpdate(nextProps: Readonly<IPanesProps>, nextState: Readonly<IState>, nextContext: any): boolean {
     const propsDiff = diff(nextProps, this.props);
     const stateDiff = diff(nextState, this.state);
     logger.log('[shouldComponentUpdate]', { propsDiff, stateDiff });
@@ -87,12 +83,12 @@ export class Panes extends React.Component<IPanesProps, IState> {
     const operations = (
       <React.Fragment>
         {panes && <Button icon="close-square" onClick={() => onCloseWithout()} />}
-        {panes && R.keys(panes).length > 1 && (
+        {panes && R.keys(panes).length > 0 && (
           <React.Fragment>
             <Divider type="vertical" />
             <Button icon="minus-square" onClick={() => onCloseWithout(activeKey)} />
             <Divider type="vertical" />
-            <Button onClick={() => onCloseCurrent(activeKey)} >Close Current</Button>
+            <Button onClick={() => onCloseCurrent(activeKey)}>Close Current</Button>
           </React.Fragment>
         )}
       </React.Fragment>

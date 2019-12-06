@@ -1,4 +1,4 @@
-import { AssetsPreview } from '@asuna-admin/components';
+import { AssetsPreview, Content } from '@asuna-admin/components';
 import { VideoPlayer } from '@asuna-admin/components/DynamicForm/Videos';
 import { Config } from '@asuna-admin/config';
 import { AppContext } from '@asuna-admin/core';
@@ -6,8 +6,9 @@ import { valueToArrays } from '@asuna-admin/core/url-rewriter';
 import { createLogger } from '@asuna-admin/logger';
 import { Asuna } from '@asuna-admin/types';
 
-import { Badge, Button, Checkbox, Icon, Input, Popconfirm, Statistic, Tag, Tooltip } from 'antd';
+import { Badge, Button, Checkbox, Divider, Icon, Input, Popconfirm, Statistic, Tag, Tooltip } from 'antd';
 import { ColumnProps } from 'antd/es/table';
+import { FilterDropdownProps } from 'antd/es/table/interface';
 import * as deepDiff from 'deep-diff';
 import idx from 'idx';
 import * as _ from 'lodash';
@@ -67,7 +68,7 @@ function generateSearchColumnProps(
     }
   };
   const getSelectedKey = selectedKeys => {
-    if (selectedKeys[0]) {
+    if (_.get(selectedKeys, '[0]')) {
       switch (conditionType) {
         case 'like':
           return removePreAndSuf(selectedKeys[0].$like, '%', '%');
@@ -89,22 +90,23 @@ function generateSearchColumnProps(
   }
 
   return {
-    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }: any) => (
-      <div>
+    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }: FilterDropdownProps) => (
+      <Content>
         <Input
           addonBefore={conditionType}
-          placeholder={`Search ${dataIndex}`}
+          placeholder={`Search '${dataIndex}' ...`}
           value={getSelectedKey(selectedKeys)}
-          onChange={e => setSelectedKeys(e.target.value ? getSelectedValue(e.target.value) : [])}
+          onChange={e => setSelectedKeys && setSelectedKeys(e.target.value ? getSelectedValue(e.target.value) : [])}
           onPressEnter={confirm}
         />
+        <Divider type="horizontal" style={{ margin: '0.2rem 0' }} />
         <Button type="primary" onClick={confirm} icon="search" size="small">
           Search
-        </Button>
+        </Button>{' '}
         <Button onClick={clearFilters} size="small">
           Reset
         </Button>
-      </div>
+      </Content>
     ),
     filterIcon: filtered => <Icon type="search" style={{ color: filtered ? '#1890ff' : 'inherit' }} />,
   };
@@ -123,7 +125,10 @@ export const columnHelper = {
     title,
     dataIndex: key,
     sorter: true,
-    render: nullProtectRender(record => (transformer ? transformer(record) : record)),
+    ...generateSearchColumnProps(key, 'like'),
+    render: nullProtectRender(record => (
+      <WithDebugInfo info={{ key, title, record }}>{transformer ? transformer(record) : record}</WithDebugInfo>
+    )),
   }),
   fpGenerateRelation: <RelationSchema extends any = object>(
     key: string,
@@ -154,6 +159,7 @@ export const columnHelper = {
     switch (opts.filterType) {
       case 'list':
         const modelName = extras.modelName;
+        const primaryKey = AppContext.adapters.models.getPrimaryKey(modelName);
         const relation = AppContext.adapters.models.getFormSchema(modelName)[ref];
         const relationName = idx(relation, _ => _.options.selectable) as any;
         if (relationName) {
@@ -166,7 +172,11 @@ export const columnHelper = {
           });
           filterProps = {
             filterMultiple: false,
-            filters: _.map(items, item => ({ text: item[field], value: item['id'] })),
+            // 关联筛选时的搜索 key 为了区别同一个关联的不同字段，所以会包含非主键信息，这里传递整个包括主键的搜索信息
+            filters: _.map(items, item => ({
+              text: `${item[primaryKey]} / ${item[field]}`,
+              value: JSON.stringify({ key: [`${ref}.${primaryKey}`], value: [item[primaryKey]] }),
+            })),
           };
         }
         break;

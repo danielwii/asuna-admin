@@ -1,14 +1,15 @@
 import { responseProxy } from '@asuna-admin/adapters';
 import { Config } from '@asuna-admin/config';
 import { ActionEvent, AppContext, EventBus, EventType } from '@asuna-admin/core';
-import { castModelKey, diff } from '@asuna-admin/helpers';
+import { castModelKey, diff, parseJSONIfCould } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 import { contentActions, modelsActions, panesActions, RootState } from '@asuna-admin/store';
 import { Asuna } from '@asuna-admin/types';
 
-import { Button, Divider, Dropdown, Menu, Modal, Switch, Table } from 'antd';
+import { Button, Divider, Dropdown, Menu, Modal, Switch, Table, Tag } from 'antd';
 import { PaginationConfig } from 'antd/es/pagination';
 import { ColumnProps, SorterResult } from 'antd/es/table';
+import { TableCurrentDataSource } from 'antd/lib/table/interface';
 import idx from 'idx';
 import _ from 'lodash';
 import * as R from 'ramda';
@@ -40,7 +41,7 @@ interface IState {
   columns: (ColumnProps<any> & { relation: any })[];
   pagination?: PaginationConfig;
   filters?: Record<any, string[]>;
-  sorter?: Partial<SorterResult<any>>;
+  sorter?: SorterResult<any>;
   subscription: Subscription;
   busSubscription: Subscription;
   hasGraphAPI?: string;
@@ -80,11 +81,11 @@ class ContentIndex extends React.Component<IProps, IState> {
       { modelConfig, modelName, primaryKeys, extraName, tableColumnOpts },
       { creatable, editable, deletable },
     );
-    const sorter: Partial<SorterResult<any>> = {
-      columnKey: _.first(primaryKeys),
-      field: _.first(primaryKeys),
+    const sorter: SorterResult<any> = {
+      columnKey: _.first(primaryKeys) as string,
+      field: _.first(primaryKeys) as string,
       order: 'descend',
-    };
+    } as any;
     const orderBy = Config.get('TABLE_DEFAULT_ORDER_BY');
     if (!_.isEmpty(orderBy) && orderBy !== 'byPrimaryKey') {
       sorter['columnKey'] = castModelKey(orderBy);
@@ -234,8 +235,21 @@ class ContentIndex extends React.Component<IProps, IState> {
     });
   };
 
-  _handleTableChange = (pagination, filters, sorter?: Partial<SorterResult<any>>) => {
-    logger.debug('[handleTableChange]', { pagination, filters, sorter });
+  _transformFilters = (filters?: Record<keyof any, string[]>) =>
+    _.chain(filters)
+      .mapKeys((filterArr, key) => (key.includes('.') ? _.get(parseJSONIfCould(_.head(filterArr)), 'key') : key))
+      .mapValues((filterArr, key) =>
+        key.includes('.') ? _.get(parseJSONIfCould(_.head(filterArr)), 'value') : filterArr,
+      )
+      .value();
+
+  _handleTableChange = (
+    pagination?: PaginationConfig,
+    filters?: Record<keyof any, string[]>,
+    sorter?: SorterResult<any>,
+    extra?: TableCurrentDataSource<any>,
+  ) => {
+    logger.debug('[handleTableChange]', { pagination, filters, sorter, extra });
     const { modelName, relations } = this.state;
     const { dispatch } = this.props;
     // using state sorter if no sorter found in parameters
@@ -244,15 +258,17 @@ class ContentIndex extends React.Component<IProps, IState> {
       availableSorter && !_.isEmpty(availableSorter)
         ? ({ [availableSorter.field as string]: _.slice(availableSorter.order, 0, -3).join('') } as Sorter)
         : null;
+    // { 'ref.name': '{ 'ref.id': 'idxxxx' }' } -> { 'ref.id': 'idxxxxx' }
+    const transformedFilters = this._transformFilters(filters);
 
-    logger.debug('[handleTableChange]', { availableSorter, transformedSorter });
+    logger.debug('[handleTableChange]', { availableSorter, transformedSorter, transformedFilters });
     dispatch(
       contentActions.loadModels(modelName, {
         relations,
-        filters,
+        filters: transformedFilters,
         pagination,
         sorter: transformedSorter,
-      }),
+      } as any),
     );
     this.setState({
       pagination,
@@ -309,21 +325,21 @@ class ContentIndex extends React.Component<IProps, IState> {
       <>
         {creatable && (
           <React.Fragment>
-            <Button onClick={() => (_.isFunction(creatable) ? creatable(extraName) : this._create())}>Create</Button>
+            <Button onClick={() => (_.isFunction(creatable) ? creatable(extraName) : this._create())}>创建</Button>
             <Divider type="vertical" />
           </React.Fragment>
         )}
-        <Button onClick={this._refresh}>Refresh</Button>
+        <Button onClick={this._refresh}>刷新</Button>
 
         <Divider type="vertical" />
 
         {/* TODO 导入导出按钮，目前接口已经实现，但是暂未集成 */}
         <Button.Group>
           <Button onClick={this._import} disabled={true}>
-            Import
+            导入
           </Button>
           <Button onClick={this._export} disabled={true}>
-            Export
+            导出
           </Button>
         </Button.Group>
 
@@ -363,7 +379,33 @@ class ContentIndex extends React.Component<IProps, IState> {
           />
         )}
 
-        <hr />
+        <Divider type="horizontal" style={{ margin: '0.5rem 0' }} />
+
+        {!_.isEmpty(this.state.filters) && (
+          <>
+            {_.map(this._transformFilters(this.state.filters), (filter, key) =>
+              !_.isEmpty(filter) ? (
+                <Tag
+                  key={`tag-${key}`}
+                  // fixme onClose 目前没有更新 table header 位置的搜索信息
+                  // closable
+                  color="geekblue"
+                  onClose={() => {
+                    // 重置 filteredValue 用于刷新 table
+                    const column = _.find(this.state.columns, column => column.key === key);
+                    if (column) column.filteredValue = null;
+
+                    const filters = _.omit(this.state.filters, key);
+                    this.setState({ filters }, this._refresh);
+                  }}
+                >
+                  {key}: {JSON.stringify(filter)}
+                </Tag>
+              ) : null,
+            )}
+            <Divider type="horizontal" style={{ margin: '0.5rem 0' }} />
+          </>
+        )}
 
         {columns && (
           <Table

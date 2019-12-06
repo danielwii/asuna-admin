@@ -29,3 +29,8 @@ interface IHighlightTitle {
 export const Title = (styled.span`
   font-weight: ${(props: IHighlightTitle) => (props.highlight ? 'bold' : 'inherit')};
 ` as any) as ComponentClass<IHighlightTitle & React.HTMLAttributes<{}>>;
+
+export const Content = (styled.div`
+  padding: 0.2rem;
+  margin: 0.2rem;
+` as any) as ComponentClass<{} & React.HTMLAttributes<{}>>;
