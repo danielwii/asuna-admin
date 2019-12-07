@@ -1,4 +1,9 @@
+import preloadAll from 'jest-next-dynamic';
 import { diff } from './';
+
+beforeAll(async () => {
+  await preloadAll();
+});
 
 describe('diff', () => {
   it('should detect deep difference', () => {

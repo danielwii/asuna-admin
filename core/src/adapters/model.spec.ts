@@ -1,7 +1,12 @@
+import preloadAll from 'jest-next-dynamic';
 import { IModelService, ModelAdapter } from './model';
 import { DynamicFormTypes } from '../components/DynamicForm';
 import { AppContext, AsunaDefinitions } from '../core';
 import { storeConnector } from '../store';
+
+beforeAll(async () => {
+  await preloadAll();
+});
 
 describe('identify types', () => {
   const adapter = new ModelAdapter({} as IModelService, new AsunaDefinitions());
@@ -96,11 +101,7 @@ describe('getFormSchema', () => {
       },
     });
     const adapter = new ModelAdapter({} as IModelService, definitions);
-    AppContext.regStore(
-      storeConnector,
-      { models: { schemas: { users: [{ name: 'password' }] } } },
-      true,
-    );
+    AppContext.regStore(storeConnector, { models: { schemas: { users: [{ name: 'password' }] } } }, true);
     const fields = adapter.getFormSchema('users', {});
     expect(fields).toEqual({
       password: {

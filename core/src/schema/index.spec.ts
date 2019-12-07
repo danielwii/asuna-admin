@@ -1,4 +1,9 @@
+import preloadAll from 'jest-next-dynamic';
 import * as schemaHelper from './';
+
+beforeAll(async () => {
+  await preloadAll();
+});
 
 describe('schemaHelper.enumDecorator', () => {
   test('schemaHelper.enumDecorator', async () => {
