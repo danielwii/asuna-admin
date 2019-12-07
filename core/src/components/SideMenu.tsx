@@ -34,23 +34,44 @@ export class SideMenu extends React.Component<ISideMenuProps, IState> {
     onOpen({ key, model, title, linkTo: link, component });
   };
 
-  buildSubMenu(menu: Asuna.Schema.Menu) {
-    return (
-      <SubMenu key={menu.key} title={menu.title}>
-        {_.map(menu.subMenus, (subMenu: Asuna.Schema.ComponentSubMenu /* 统一按照通用组件处理 */) => (
-          <MenuItem
-            key={`${menu.key}::${subMenu.key}`}
-            model={subMenu.model}
-            title={subMenu.title}
-            link={subMenu.linkTo}
-            component={subMenu.component}
-          >
-            {subMenu.title}
-          </MenuItem>
-        ))}
-      </SubMenu>
-    );
-  }
+  buildSubMenu = (menu: Asuna.Schema.Menu) => (
+    <SubMenu key={menu.key} title={menu.title}>
+      {_.map(
+        _.groupBy(menu.subMenus, (subMenu: Asuna.Schema.ComponentSubMenu) => subMenu.group || 'default'),
+        (groupMenus: Asuna.Schema.ComponentSubMenu, groupName: string) => {
+          const subMenusComponent = _.map(groupMenus, (
+            groupMenu: Asuna.Schema.ComponentSubMenu /* 统一按照通用组件处理 */,
+          ) => (
+            <MenuItem
+              key={`${menu.key}::${groupMenu.key}`}
+              model={groupMenu.model}
+              title={groupMenu.title}
+              link={groupMenu.linkTo}
+              component={groupMenu.component}
+            >
+              {groupMenu.title}
+            </MenuItem>
+          ));
+
+          if (groupName === 'default') {
+            if (_.keys(_.groupBy(menu.subMenus, 'group')).length > 1) {
+              return (
+                <Menu.ItemGroup key={`${menu.key}::${groupName}`} title={'---'}>
+                  {subMenusComponent}
+                </Menu.ItemGroup>
+              );
+            }
+            return subMenusComponent;
+          }
+          return (
+            <Menu.ItemGroup key={`${menu.key}::${groupName}`} title={groupName}>
+              {subMenusComponent}
+            </Menu.ItemGroup>
+          );
+        },
+      )}
+    </SubMenu>
+  );
 
   render() {
     const { menus } = this.props;

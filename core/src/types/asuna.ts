@@ -202,6 +202,7 @@ export declare module Asuna {
     type ComponentSubMenu = {
       key: string;
       model?: string;
+      group?: string;
       title: string;
       linkTo: string;
       component?: string;

@@ -332,7 +332,9 @@ class ContentIndex extends React.Component<IProps, IState> {
       <>
         {creatable && (
           <React.Fragment>
-            <Button onClick={() => (_.isFunction(creatable) ? creatable(extraName) : this._create())}>创建</Button>
+            <Button type={'primary'} onClick={() => (_.isFunction(creatable) ? creatable(extraName) : this._create())}>
+              Create
+            </Button>
             <Divider type="vertical" />
           </React.Fragment>
         )}

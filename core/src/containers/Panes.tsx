@@ -12,7 +12,4 @@ const mapDispatchToProps = dispatch => ({
   onCloseCurrent: key => dispatch(panesActions.onCloseCurrent(key)),
 });
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(Panes);
+export default connect(mapStateToProps, mapDispatchToProps)(Panes);

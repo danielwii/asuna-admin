@@ -107,7 +107,7 @@ export class AsunaDefinitions<T extends Asuna.Schema.ModelOpts = {}> {
   }
 
   setupSideMenus(key: string, title: string, subMenus: Asuna.Schema.SubMenus<T>): void {
-    this._sideMenus = [...this._sideMenus, { key: key as string, title, subMenus } as any];
+    this._sideMenus = [...this._sideMenus, { key, title, subMenus } as any];
   }
 
   /**

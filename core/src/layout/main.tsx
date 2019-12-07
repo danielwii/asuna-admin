@@ -9,6 +9,7 @@ import styled from 'styled-components';
 import WithStyles from './with-styles';
 
 const logger = createLogger('layout:main');
+const { Sider } = Layout;
 
 const StyledContentDiv = styled.div`
   background: #fff;
@@ -26,8 +27,18 @@ export default ({ loading, heartbeat, auth, appInfo, hideCharacteristics }) => {
         <ProgressBar />
         <HeaderContainer {...{ hideLogo: hideCharacteristics }} />
         <Layout>
-          <SideMenuContainer />
-          <Layout style={{ padding: '1rem' }}>
+          <Sider
+            theme={'light'}
+            style={{
+              overflow: 'auto',
+              height: '100vh',
+              position: 'fixed',
+              left: 0,
+            }}
+          >
+            <SideMenuContainer />
+          </Sider>
+          <Layout style={{ marginLeft: 200, padding: '1rem' }}>
             <StyledContentDiv>
               <PanesContainer />
             </StyledContentDiv>

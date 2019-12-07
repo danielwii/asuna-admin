@@ -10,7 +10,4 @@ const mapDispatchToProps = dispatch => ({
   onOpen: (pane: Asuna.Schema.Pane) => dispatch(panesActions.open(pane)),
 });
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(SideMenu);
+export default connect(mapStateToProps, mapDispatchToProps)(SideMenu);
