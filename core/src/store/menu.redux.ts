@@ -1,6 +1,7 @@
 import { menuProxy } from '@asuna-admin/adapters';
 import { createLogger } from '@asuna-admin/logger';
 import { RootState } from '@asuna-admin/store';
+import { Asuna } from '@asuna-admin/types';
 
 import _ from 'lodash';
 import * as R from 'ramda';
@@ -97,7 +98,11 @@ const menuSagas = [
 // action = { payload: any? }
 // --------------------------------------------------------------
 
-const initialState = {
+export interface MenuState {
+  menus: Asuna.Schema.Menu[];
+}
+
+const initialState: MenuState = {
   // openKey  : null,
   // activeKey: null,
   menus: [],

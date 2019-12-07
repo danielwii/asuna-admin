@@ -6,14 +6,7 @@ import { MakeStoreOptions } from 'next-redux-wrapper';
 import { reduxAction } from 'node-buffs';
 import * as R from 'ramda';
 
-import {
-  AnyAction,
-  applyMiddleware,
-  combineReducers,
-  createStore,
-  DeepPartial,
-  Store,
-} from 'redux';
+import { AnyAction, applyMiddleware, combineReducers, createStore, DeepPartial, Store } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import { createLogger as createReduxLogger } from 'redux-logger';
 import { combineEpics, createEpicMiddleware } from 'redux-observable';
@@ -23,13 +16,13 @@ import { all } from 'redux-saga/effects';
 
 import { appEpics, appReducer, appSagas, AppState } from './app.redux';
 import { authReducer, authSagas, AuthState } from './auth.redux';
-import { contentReducer, contentSagas } from './content.redux';
-import { menuReducer, menuSagas } from './menu.redux';
+import { contentReducer, contentSagas, ContentState } from './content.redux';
+import { menuReducer, menuSagas, MenuState } from './menu.redux';
 import { createStoreConnectorMiddleware, storeConnector } from './middlewares';
 import { modelsCleaner, modelsReducer, modelsSagas, ModelsState } from './models.redux';
-import { panesCleaner, panesReducer, panesSagas } from './panes.redux';
-import { routerReducer, routerSagas } from './router.redux';
-import { securityReducer, securitySagas } from './security.redux';
+import { panesCleaner, panesReducer, panesSagas, PanesState } from './panes.redux';
+import { routerReducer, routerSagas, RouterState } from './router.redux';
+import { securityReducer, securitySagas, SecurityState } from './security.redux';
 
 export { storeConnector };
 
@@ -43,16 +36,22 @@ export * from './models.redux';
 export * from './content.redux';
 export * from './middlewares';
 
+interface GlobalState {
+  type: string;
+  payload: object;
+  key: string;
+}
+
 export interface RootState {
   auth: AuthState;
-  router: object;
-  panes: object;
-  menu: object;
+  router: RouterState;
+  panes: PanesState;
+  menu: MenuState;
   models: ModelsState;
-  content: object;
-  security: object;
+  content: ContentState;
+  security: SecurityState;
   app: AppState;
-  global: object;
+  global: GlobalState;
 }
 
 const logger = createLogger('store');
@@ -80,9 +79,7 @@ export class AsunaStore {
 
   private constructor() {
     if (!this.storeConnectorMiddleware) {
-      this.storeConnectorMiddleware = createStoreConnectorMiddleware(action =>
-        AppContext.actionHandler(action),
-      );
+      this.storeConnectorMiddleware = createStoreConnectorMiddleware(action => AppContext.actionHandler(action));
     }
     if (!this.epicMiddleware) {
       this.epicMiddleware = createEpicMiddleware();
@@ -131,10 +128,7 @@ export class AsunaStore {
 
     const crossSliceReducer = (preloadedState, action) => {
       if (action.type === actionTypes.CLEAN) {
-        const cleanedState = R.compose(
-          modelsCleaner,
-          panesCleaner,
-        )(preloadedState);
+        const cleanedState = R.compose(modelsCleaner, panesCleaner)(preloadedState);
         logger.log('[crossSliceReducer]', { preloadedState, action, cleanedState });
         return cleanedState;
       }
@@ -155,10 +149,7 @@ export class AsunaStore {
       store = createStore<RootState, AnyAction, any, any>(
         this.rootReducers,
         preloadedState,
-        applyMiddleware(
-          this.sagaMiddleware,
-          /*this.epicMiddleware, */ this.storeConnectorMiddleware,
-        ),
+        applyMiddleware(this.sagaMiddleware, /*this.epicMiddleware, */ this.storeConnectorMiddleware),
       );
     } else {
       // enable persistence in client side

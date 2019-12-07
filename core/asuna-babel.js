@@ -17,6 +17,7 @@ module.exports = api => {
     plugins: [
       'babel-plugin-idx',
       '@babel/plugin-syntax-dynamic-import',
+      '@babel/plugin-proposal-optional-chaining',
       // fix Error: StyleSheet: `insertRule` accepts only strings
       // ['styled-components', { ssr: true, displayName: true, preprocess: false }],
       ['import', { libraryName: 'antd', style: false }, 'import-antd'],

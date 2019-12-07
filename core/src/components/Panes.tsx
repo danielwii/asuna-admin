@@ -15,10 +15,7 @@ export type Pane = {
   key: string;
   linkTo: string;
   title: string;
-  data: {
-    modelName: string;
-    record: any;
-  };
+  data: { modelName: string; record: any };
   component?;
   // composed: {
   //   component: object;
@@ -27,9 +24,7 @@ export type Pane = {
 };
 
 export interface IPanesProps {
-  panes?: {
-    [key: string]: Pane;
-  };
+  panes?: { [key: string]: Pane };
   activeKey?: string;
   onActive: (key: string) => void;
   onClose: (key: string) => void;

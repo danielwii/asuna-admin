@@ -89,9 +89,14 @@ const contentSagas = [
 // action = { payload: any? }
 // --------------------------------------------------------------
 
-const initialState = {};
+export interface ContentState {
+  name?: string;
+  models?: { [key: string]: { extras: ModelListConfig; loading: true } };
+}
 
-const contentReducer = (previousState: any = initialState, action) => {
+const initialState: ContentState = {};
+
+const contentReducer = (previousState = initialState, action) => {
   if (isContentModule(action)) {
     return {
       name: action.payload.name,

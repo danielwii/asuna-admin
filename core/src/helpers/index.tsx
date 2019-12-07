@@ -29,6 +29,7 @@ export * from './components';
 export * from './error';
 export * from './func';
 export * from './message-box';
+export * from './models';
 export * from './register';
 
 /**
@@ -83,8 +84,8 @@ function generateSearchColumnProps(
     return {
       filterMultiple: false,
       filters: [
-        { text: 'True', value: JSON.stringify({ $eq: true }) },
-        { text: 'False', value: JSON.stringify({ $or: [{ $eq: false }, { $isNull: true }] }) },
+        { text: 'True / Y', value: JSON.stringify({ $eq: true }) },
+        { text: 'False / N', value: JSON.stringify({ $or: [{ $eq: false }, { $isNull: true }] }) },
       ],
     };
   }

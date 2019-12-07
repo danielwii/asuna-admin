@@ -40,7 +40,7 @@ interface FormProps<FieldsType> {
 interface EasyFormProps extends FormProps<FormFields> {
   // initialValues(props): any;
   onSubmit: (values: any) => Promise<any>;
-  onClear: () => Promise<any>;
+  onClear?: () => Promise<any>;
 }
 
 function RenderInputComponent({
@@ -126,7 +126,7 @@ const InnerForm = (props: EasyFormProps & formik.FormikProps<formik.FormikValues
         </formik.Field>
       ))}
       <antd.Divider />
-      <antd.Button htmlType="submit" onSubmit={handleSubmit} disabled={isSubmitting}>
+      <antd.Button type="primary" htmlType="submit" onSubmit={handleSubmit} disabled={isSubmitting}>
         {isSubmitting ? 'Submitting' : 'Submit'}
       </antd.Button>{' '}
       <antd.Button onClick={handleReset} disabled={isSubmitting}>
@@ -252,7 +252,7 @@ const GroupInnerForm = (props: GroupEasyFormProps & formik.FormikProps<formik.Fo
             </antd.Card>
           ))}
           <antd.Divider />
-          <antd.Button htmlType="submit" onSubmit={handleSubmit} disabled={isSubmitting}>
+          <antd.Button type="primary" htmlType="submit" onSubmit={handleSubmit} disabled={isSubmitting}>
             {isSubmitting ? 'Submitting' : 'Submit'}
           </antd.Button>{' '}
           {/*<antd.Button onClick={handleReset} disabled={isSubmitting}>

@@ -184,7 +184,11 @@ const modelsSagas = [
 // --------------------------------------------------------------
 
 export interface ModelsState {
-  schemas?;
+  modelName?: string;
+  data?: object;
+  models?: { [key: string]: object };
+  loading?: { [key: string]: boolean };
+  schemas?: { [key: string]: Asuna.Schema.ModelSchema[] };
 }
 
 const initialState: ModelsState = {};

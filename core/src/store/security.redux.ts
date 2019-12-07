@@ -105,7 +105,12 @@ const securitySagas = [
 // action = { payload: any? }
 // --------------------------------------------------------------
 
-const initialState = {};
+export interface SecurityState {
+  user?: object;
+  roles?: object[];
+}
+
+const initialState: SecurityState = {};
 
 const securityReducer = (previousState = initialState, action) => {
   if (isSecurityModule(action)) {

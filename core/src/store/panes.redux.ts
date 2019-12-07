@@ -1,3 +1,4 @@
+import { Pane } from '@asuna-admin/components';
 import _ from 'lodash';
 import * as R from 'ramda';
 
@@ -19,9 +20,9 @@ const panesSagas = [
 // action = { payload: any? }
 // --------------------------------------------------------------
 
-interface PanesState {
+export interface PanesState {
   activeKey: string | null;
-  panes: object;
+  panes: { [key: string]: Pane };
 }
 
 const initialState: PanesState = {
@@ -33,10 +34,7 @@ const panesCleaner = rootState => ({ ...rootState, panes: initialState });
 
 const panesReducer = (previousState = initialState, action) => {
   function popToNext(activeKey, panes, key) {
-    const index = R.compose(
-      R.indexOf(activeKey),
-      R.keys,
-    )(panes);
+    const index = R.compose(R.indexOf(activeKey), R.keys)(panes);
     const nextPanes = _.omit(panes, key);
 
     const nextKeys = _.keys(nextPanes);

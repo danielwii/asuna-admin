@@ -1,11 +1,11 @@
-import { DebugSettings } from '@asuna-admin/components';
+import { DebugSettings, Pane } from '@asuna-admin/components';
 import { withDebugSettingsProps } from '@asuna-admin/containers/DebugSettings';
 import { AppContext } from '@asuna-admin/core';
 import { createLogger } from '@asuna-admin/logger';
 
 import _ from 'lodash';
 import dynamic from 'next/dynamic';
-import React from 'react';
+import React, { ReactNode } from 'react';
 
 const logger = createLogger('modules:index');
 
@@ -35,12 +35,22 @@ export class ModuleRegister {
 
 const components = {
   'content::index': dynamic(() => import('./content/index')),
+  'content::search': dynamic(() => import('./content/search')),
   'content::upsert': dynamic(() => import('./content/upsert')),
   'content::blank': dynamic(() => import('./content/blank')),
   default: dynamic(() => import('./undefined')),
 };
 
-export default function(props) {
+export interface ModulesLoaderProps {
+  module: string;
+  activeKey: string;
+  onClose: () => void;
+  basis: { pane: Pane };
+  onTitleChange: (newTitle: string) => void;
+  component?: any;
+}
+
+export default function(props: ModulesLoaderProps & { children?: ReactNode }) {
   logger.log({ props });
   const { module, component } = props as any;
 

@@ -52,7 +52,11 @@ const routerSagas = [
 // action = { payload: any? }
 // --------------------------------------------------------------
 
-const initialState = {
+export interface RouterState {
+  path: string | null;
+}
+
+const initialState: RouterState = {
   path: null,
 };
 

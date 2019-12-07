@@ -41,7 +41,7 @@ export function valueToUrl(
 
     let url = value;
     if (thumbnail) {
-      const template = _.get(AppContext.serverSettings['settings.url-resolver'], 'value.uploads', '');
+      const template = _.get(AppContext.serverSettings?.['settings.url-resolver'], 'value.uploads', '');
       if (!(_.isString(template) && template.includes('{{ url }}'))) {
         logger.log('template for settings.url-resolver/value.uploads dose not exists or valid.');
         return url;
