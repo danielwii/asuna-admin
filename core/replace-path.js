@@ -76,7 +76,7 @@ opts.roots.forEach(root => {
 
   // console.log({ opts, paths: compilerOptions.paths, absoluteBaseUrl, search: `./${root}/**/*.{js,jsx,ts,tsx}` });
 
-  project.addSourceFilesAtPaths(`${root}/**/*.{js,jsx,ts,tsx}`);
+  project.addExistingSourceFiles(`${root}/**/*.{js,jsx,ts,tsx}`);
   const sourceFiles = project.getSourceFiles();
 
   console.log(`root is ${root}`);
