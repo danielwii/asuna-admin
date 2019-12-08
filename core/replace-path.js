@@ -1,8 +1,6 @@
-/* eslint-disable import/no-extraneous-dependencies,no-console */
 const { join, relative, resolve } = require('path');
-// const paths = require('tsconfig-paths');
 const tsconfig = require('tsconfig-extends');
-const { Project, SourceFile } = require('ts-morph');
+const { Project } = require('ts-morph');
 const _ = require('lodash');
 
 const opts = {
@@ -78,7 +76,7 @@ opts.roots.forEach(root => {
 
   // console.log({ opts, paths: compilerOptions.paths, absoluteBaseUrl, search: `./${root}/**/*.{js,jsx,ts,tsx}` });
 
-  project.addSourceFileAtPathIfExists(`${root}/**/*.{js,jsx,ts,tsx}`);
+  project.addSourceFilesAtPaths(`${root}/**/*.{js,jsx,ts,tsx}`);
   const sourceFiles = project.getSourceFiles();
 
   console.log(`root is ${root}`);
