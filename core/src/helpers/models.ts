@@ -1,7 +1,10 @@
 import { Pane } from '@asuna-admin/components';
 import { AppContext } from '@asuna-admin/core';
+import { createLogger } from '@asuna-admin/logger';
 import { Asuna } from '@asuna-admin/types';
 import _ from 'lodash';
+
+const logger = createLogger('helpers:models');
 
 export function extractModelNameFromPane(pane: Pane): { modelName: string; extraName: string } {
   const matched = _.get(pane, 'key').match(/^\w+::(\w+).*$/);
@@ -10,7 +13,7 @@ export function extractModelNameFromPane(pane: Pane): { modelName: string; extra
   if (!modelName || !extraName) {
     throw new Error(`modelName must exists in pane ${JSON.stringify(pane)}`);
   }
-  if (modelName !== extraName) console.log({ modelName, extraName });
+  if (modelName !== extraName) logger.log({ pane, modelName, extraName });
   return { modelName, extraName };
 }
 
@@ -26,15 +29,25 @@ export function resolveModelInPane(
 ): {
   modelName: string;
   modelConfig: Asuna.Schema.ModelConfig;
-  tableColumnOpts: Asuna.Schema.TableColumnOpts<any> | null;
+  columnOpts: Asuna.Schema.ColumnOpts<any> | null;
   primaryKey: string;
-  schema: Asuna.Schema.FormSchemas;
+  schemas: Asuna.Schema.FormSchemas;
 } {
   const modelConfig = AppContext.adapters.models.getModelConfig(modelName);
-  const tableColumnOpts = AppContext.adapters.models.getTableColumnOpts(extraName || modelName);
+  const columnOpts = AppContext.adapters.models.getColumnOpts(extraName || modelName);
   const primaryKeys = AppContext.adapters.models.getPrimaryKeys(modelName);
   const primaryKey = _.head(primaryKeys) || 'id';
-  const schema = AppContext.adapters.models.getFormSchema(modelName);
+  const schemas = AppContext.adapters.models.getFormSchema(modelName);
 
-  return { modelName, modelConfig, tableColumnOpts, primaryKey, schema };
+  logger.log({
+    modelName,
+    extraName,
+    modelConfig,
+    columnOpts,
+    primaryKey,
+    schemas,
+    allTableColumnOpts: AppContext.adapters.models.columnOpts,
+    resolved: AppContext.adapters.models.columnOpts[extraName || modelName],
+  });
+  return { modelName, modelConfig, columnOpts, primaryKey, schemas };
 }

@@ -39,7 +39,7 @@ interface FormProps<FieldsType> {
 
 interface EasyFormProps extends FormProps<FormFields> {
   // initialValues(props): any;
-  onSubmit: (values: any) => Promise<any>;
+  onSubmit: (values: any) => Promise<any> | void;
   onClear?: () => Promise<any>;
 }
 
@@ -129,9 +129,11 @@ const InnerForm = (props: EasyFormProps & formik.FormikProps<formik.FormikValues
       <antd.Button type="primary" htmlType="submit" onSubmit={handleSubmit} disabled={isSubmitting}>
         {isSubmitting ? 'Submitting' : 'Submit'}
       </antd.Button>{' '}
-      <antd.Button onClick={handleReset} disabled={isSubmitting}>
-        {isSubmitting ? 'Resetting' : 'Reset'}
-      </antd.Button>{' '}
+      {onClear && (
+        <antd.Button onClick={handleReset} disabled={isSubmitting}>
+          {isSubmitting ? 'Resetting' : 'Reset'}
+        </antd.Button>
+      )}{' '}
       {/*<div>
         Preview:
         <Highlight language="json">{JSON.stringify(state.body, null, 2)}</Highlight>
@@ -179,7 +181,8 @@ export const EasyForm = formik.withFormik<EasyFormProps, any>({
   },
 
   handleSubmit: (values, { props, setSubmitting }) => {
-    props.onSubmit(values).finally(() => setSubmitting(false));
+    const submitted = props.onSubmit(values);
+    if (submitted && submitted.then) submitted.finally(() => setSubmitting(false));
   },
 })(InnerForm);
 

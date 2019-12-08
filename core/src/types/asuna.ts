@@ -1,3 +1,4 @@
+import { DataViewColumnProps, DynamicFormTypes } from '@asuna-admin/components';
 import { ColumnProps } from 'antd/es/table';
 import React from 'react';
 import { MetaInfoOptions } from './meta';
@@ -100,7 +101,7 @@ export declare module Asuna {
     interface FormSchema {
       name: string;
       ref?: string;
-      type: string | null;
+      type?: DynamicFormTypes;
       value: any | null | undefined;
       options: MetaInfoOptions & {
         length: number | null;
@@ -141,6 +142,12 @@ export declare module Asuna {
     type Associations = { [key: string]: Association };
 
     type TableColumnOptCreatable = boolean | ((key: string, actions?, extras?) => void);
+
+    type ColumnOpts<EntitySchema> = TableColumnOpts<EntitySchema> & ViewColumnProps<EntitySchema>;
+
+    type ViewColumnProps<EntitySchema> = {
+      columnProps?: { dataView?: DataViewColumnProps<EntitySchema> };
+    };
 
     type TableColumnOpts<EntitySchema> = {
       creatable?: TableColumnOptCreatable;
@@ -229,7 +236,7 @@ export declare module Asuna {
           key: string;
           model?: string;
           title: string;
-          linkTo: 'content::upsert' | 'content::insert';
+          linkTo: 'content::upsert' | 'content::insert' | 'content::query';
           data?: { modelName; record } | any;
         }
       | {

@@ -35,7 +35,7 @@ export class ModuleRegister {
 
 const components = {
   'content::index': dynamic(() => import('./content/index')),
-  'content::search': dynamic(() => import('./content/search')),
+  'content::query': dynamic(() => import('./content/query')),
   'content::upsert': dynamic(() => import('./content/upsert')),
   'content::blank': dynamic(() => import('./content/blank')),
   default: dynamic(() => import('./undefined')),

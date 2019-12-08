@@ -23,6 +23,7 @@ interface IProps extends ReduxProps {
 interface IState {
   key: string;
   modelName: string;
+  extraName?: string;
   /**
    * 不为 true 时页面不显示新建按钮
    */
@@ -43,19 +44,19 @@ class ContentIndex extends React.Component<IProps, IState> {
     logger.debug('[constructor]', { basis });
 
     const { modelName, extraName } = extractModelNameFromPane(basis.pane);
-    const { modelConfig, primaryKey, tableColumnOpts } = resolveModelInPane(modelName, extraName);
+    const { modelConfig, primaryKey, columnOpts } = resolveModelInPane(modelName, extraName);
 
-    const creatableOpt = tableColumnOpts?.creatable;
-    const rowClassName = tableColumnOpts?.rowClassName;
+    const creatableOpt = columnOpts?.creatable;
+    const rowClassName = columnOpts?.rowClassName;
     const creatable = _.isFunction(creatableOpt)
       ? creatableOpt
       : modelConfig.creatable !== false && creatableOpt !== false;
-    const deletable = tableColumnOpts?.deletable !== false;
-    const editable = tableColumnOpts?.editable !== false;
+    const deletable = columnOpts?.deletable !== false;
+    const editable = columnOpts?.editable !== false;
 
     logger.debug(
       '[constructor]',
-      { modelConfig, modelName, primaryKey, tableColumnOpts },
+      { modelConfig, modelName, primaryKey, columnOpts },
       { creatable, editable, deletable },
     );
     const sorter: SorterResult<any> = {
@@ -70,6 +71,7 @@ class ContentIndex extends React.Component<IProps, IState> {
     }
     this.state = {
       modelName,
+      extraName,
       creatable,
       editable,
       deletable,
@@ -114,7 +116,7 @@ class ContentIndex extends React.Component<IProps, IState> {
   }
 
   render() {
-    const { modelName, creatable, editable, deletable, rowClassName } = this.state;
+    const { modelName, extraName, creatable, editable, deletable, rowClassName } = this.state;
 
     const { models } = this.props;
 
@@ -124,6 +126,7 @@ class ContentIndex extends React.Component<IProps, IState> {
         editable={editable}
         deletable={deletable}
         modelName={modelName}
+        extraName={extraName}
         models={models}
         rowClassName={rowClassName}
       />

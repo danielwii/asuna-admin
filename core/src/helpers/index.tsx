@@ -3,6 +3,7 @@ import { VideoPlayer } from '@asuna-admin/components/DynamicForm/Videos';
 import { Config } from '@asuna-admin/config';
 import { AppContext } from '@asuna-admin/core';
 import { valueToArrays } from '@asuna-admin/core/url-rewriter';
+import { RelationColumnProps } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 import { Asuna } from '@asuna-admin/types';
 
@@ -28,6 +29,8 @@ export * from './cast';
 export * from './components';
 export * from './error';
 export * from './func';
+export * from './hooks';
+export * from './interfaces';
 export * from './message-box';
 export * from './models';
 export * from './register';
@@ -145,7 +148,7 @@ export const columnHelper = {
     laterKey: string,
     actions: Asuna.Schema.RecordRenderActions,
     extras: Asuna.Schema.RecordRenderExtras,
-  ): Promise<ColumnProps<any> & { relation: any }> => {
+  ): Promise<RelationColumnProps> => {
     let ref, transformer;
     if (!opts.ref && !opts.transformer) {
       [ref, transformer] = key.split('.');
@@ -192,7 +195,7 @@ export const columnHelper = {
       render: nullProtectRender(record => {
         const content = extractValue(record, transformer);
         return (
-          <WithDebugInfo info={{ key, title, opts, record }}>
+          <WithDebugInfo info={{ key, title, opts, record, content, transformer }}>
             {opts.render ? opts.render(content, record) : content}
           </WithDebugInfo>
         );
@@ -221,7 +224,7 @@ export const columnHelper = {
       actions;
       extras;
     },
-  ): Promise<ColumnProps<any> & { relation: any }> {
+  ): Promise<RelationColumnProps> {
     const ref = (opts.ref || key) as string;
     let filterProps = {};
     switch (opts.filterType) {

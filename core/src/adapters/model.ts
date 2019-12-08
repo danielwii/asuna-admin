@@ -1,14 +1,20 @@
 import { DynamicFormTypes } from '@asuna-admin/components';
 import { Config } from '@asuna-admin/config';
 import { AppContext, AsunaDefinitions } from '@asuna-admin/core';
-import { castModelKey, defaultColumns, defaultColumnsByPrimaryKey, parseJSONIfCould } from '@asuna-admin/helpers';
+import {
+  castModelKey,
+  defaultColumns,
+  defaultColumnsByPrimaryKey,
+  parseJSONIfCould,
+  RelationColumnProps,
+} from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 import { AuthState } from '@asuna-admin/store';
 import { Asuna } from '@asuna-admin/types';
 import { Condition, WhereConditions } from '@asuna-admin/types/meta';
+import { message } from 'antd';
 
 import { PaginationConfig } from 'antd/es/pagination';
-import { ColumnProps } from 'antd/es/table';
 import { AxiosResponse } from 'axios';
 import bluebird from 'bluebird';
 import idx from 'idx';
@@ -126,9 +132,9 @@ export interface ModelListConfig {
 export class ModelAdapter {
   private service: IModelService;
   private allModels: string[];
-  private readonly modelConfigs: { [K: string]: Asuna.Schema.ModelConfig };
-  private readonly associations: { [key: string]: Asuna.Schema.Association };
-  private readonly tableColumnOpts: { [key: string]: Asuna.Schema.TableColumnOpts<any> };
+  readonly modelConfigs: { [K: string]: Asuna.Schema.ModelConfig };
+  readonly associations: { [key: string]: Asuna.Schema.Association };
+  readonly columnOpts: { [key: string]: Asuna.Schema.ColumnOpts<any> };
 
   /**
    * @param service
@@ -145,7 +151,7 @@ export class ModelAdapter {
     this.allModels = Object.keys(definitions.modelOpts);
     this.modelConfigs = definitions.modelConfigs;
     this.associations = definitions.associations;
-    this.tableColumnOpts = definitions.tableColumnOpts;
+    this.columnOpts = definitions.columnOpts;
 
     logger.log('[ModelAdapter]', '[constructor]', this.modelConfigs);
     _.map(this.modelConfigs, (config, name) => {
@@ -155,17 +161,17 @@ export class ModelAdapter {
     });
   }
 
-  public identifyType = (modelName: string, field: Asuna.Schema.ModelSchema): string | null => {
+  public identifyType = (modelName: string, field: Asuna.Schema.ModelSchema): DynamicFormTypes | undefined => {
     const primaryKeys = this.getPrimaryKeys(modelName);
     const plainKeys = _.map(primaryKeys.concat('created_at', 'updated_at'), castModelKey);
     const basicType = idx(field, _ => _.config.type) || '';
     const advanceType = idx(field, _ => _.config.info.type) as any;
-    const notFound = () => {
+    const notFound = (): undefined => {
       const info = { field, plainKeys, basicType, advanceType };
       logger.warn('[identifyType]', 'type cannot identified.', info);
-      return null;
+      return undefined;
     };
-    return _.cond<Asuna.Schema.ModelSchema, string | null>([
+    return _.cond<Asuna.Schema.ModelSchema, DynamicFormTypes | undefined>([
       // --------------------------------------------------------------
       // plain types
       // --------------------------------------------------------------
@@ -216,22 +222,28 @@ export class ModelAdapter {
    * @param modelName
    * @param data
    */
-  public fetch = (modelName: string, data: { endpoint?: string; id: number; profile?: Asuna.Profile }) => {
+  public fetch = (
+    modelName: string,
+    data: { endpoint?: string; id: number; profile?: Asuna.Profile; relations?: string[] },
+  ): Promise<AxiosResponse> => {
     logger.log('[fetch]', { modelName, data });
+    if (!data?.id) {
+      message.error(`id must be provided.`);
+      return Promise.reject(`id must be provided.`);
+    }
+
     const auth = AppContext.fromStore('auth');
     const modelConfig = this.getModelConfig(modelName);
     const schema = this.getFormSchema(modelName);
-    const relations = _.chain(schema)
+    const selectableRelations = _.chain(schema)
       .pickBy(fp.get('options.selectable'))
       // .pickBy(_.flow([fp.get('options.accessible'), fp.negate(fp.eq('hidden'))]))
       .pickBy(opts => !_.includes(_.get(opts, 'options.accessible'), ['hidden']))
       .keys()
       .value();
-    return this.service.fetch(
-      auth,
-      modelName,
-      Object.assign(data, modelConfig, { relations: _.join(relations || [], ',') }),
-    );
+    const relations = _.flow(_.flattenDeep, _.uniq, fp.join(','))([selectableRelations, data.relations]);
+    logger.log({ schema, selectableRelations, data, relations });
+    return this.service.fetch(auth, modelName, Object.assign(data, modelConfig, { relations }));
   };
 
   public remove = (modelName: string, data) => {
@@ -288,7 +300,7 @@ export class ModelAdapter {
     modelName: string,
     opts: { callRefresh: () => void; actions: (text, record, extras) => any },
     extraName?: string,
-  ): Promise<(ColumnProps<any> & { relation: any })[]> => {
+  ): Promise<RelationColumnProps[]> => {
     logger.log('[getColumns]', { modelName, extraName, opts });
     const formSchema = this.getFormSchema(modelName);
     const { table: columnsRender } = this.getModelConfig(extraName || modelName);
@@ -298,7 +310,7 @@ export class ModelAdapter {
 
     // dev 模式下提示模型 schema 中不包含的字段，在 production 中隐藏该字段
     if (AppContext.isDevMode) {
-      return _.map(columns, (column: ColumnProps<any> & { relation: any }) => {
+      return _.map(columns, (column: RelationColumnProps) => {
         // 不检测不包含在 schema 中且不属于模型的列名
         const isRelationKey = (column.key as string).includes('.');
         const isActionKey = _.includes(['action'], column.key);
@@ -310,12 +322,11 @@ export class ModelAdapter {
     }
     return _.filter<any>(
       columns,
-      (column: ColumnProps<any> & { relation: any }) =>
-        !(column.key && !formSchema[column.key] && !_.includes(['action'], column.key)),
+      (column: RelationColumnProps) => !(column.key && !formSchema[column.key] && !_.includes(['action'], column.key)),
     );
   };
 
-  public getTableColumnOpts = (key: string): Asuna.Schema.TableColumnOpts<any> | null => this.tableColumnOpts[key];
+  public getColumnOpts = (key: string): Asuna.Schema.ColumnOpts<any> | null => this.columnOpts[key];
 
   public getModelConfig = (modelName: string): Asuna.Schema.ModelConfig => {
     const TAG = '[getModelConfig]';

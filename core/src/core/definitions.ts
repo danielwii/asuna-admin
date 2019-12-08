@@ -42,7 +42,7 @@ export class AsunaDefinitions<T extends Asuna.Schema.ModelOpts = {}> {
    * @type {*[]}
    */
   private _sideMenus: Asuna.Schema.Menu<T>[] = [];
-  private _tableColumnOpts: { [key: string]: Asuna.Schema.TableColumnOpts<any> } = {};
+  private _columnOpts: { [key: string]: Asuna.Schema.TableColumnOpts<any> } = {};
   private _customActions: { [key in keyof T]?: React.Component[] } = {};
 
   private wrapTableColumns(
@@ -67,23 +67,23 @@ export class AsunaDefinitions<T extends Asuna.Schema.ModelOpts = {}> {
     this._modelOpts = extend(this._modelOpts, modelOpts); // { ...this.modelOpts, ...modelOpts };
   }
 
-  setupExtraTableColumns<EntitySchema>(key: string, opts: Asuna.Schema.TableColumnOpts<EntitySchema>): void {
+  setupExtraTableColumns<EntitySchema>(key: string, opts: Asuna.Schema.ColumnOpts<EntitySchema>): void {
     const withStylesOpts = {
       ...opts,
       rowClassName: record =>
         _.has(record, 'isPublished') ? (record.isPublished ? 'row-published' : 'row-unpublished') : '',
     };
-    this._tableColumnOpts[key] = withStylesOpts;
+    this._columnOpts[key] = withStylesOpts;
     this._extraTableColumns = extend(this._extraTableColumns, this.wrapTableColumns(key, withStylesOpts));
   }
 
-  setupTableColumns<EntitySchema>(entity: keyof T, opts: Asuna.Schema.TableColumnOpts<EntitySchema>): void {
+  setupTableColumns<EntitySchema>(entity: keyof T, opts: Asuna.Schema.ColumnOpts<EntitySchema>): void {
     const withStylesOpts = {
       ...opts,
       rowClassName: record =>
         _.has(record, 'isPublished') ? (record.isPublished ? 'row-published' : 'row-unpublished') : '',
     };
-    this._tableColumnOpts[entity as string] = withStylesOpts;
+    this._columnOpts[entity as string] = withStylesOpts;
     this._tableColumns = extend(this._tableColumns, this.wrapTableColumns(entity as string, withStylesOpts));
   }
 
@@ -148,8 +148,8 @@ export class AsunaDefinitions<T extends Asuna.Schema.ModelOpts = {}> {
     return this._associations;
   }
 
-  get tableColumnOpts(): { [key: string]: Asuna.Schema.TableColumnOpts<any> } {
-    return this._tableColumnOpts;
+  get columnOpts(): { [key: string]: Asuna.Schema.ColumnOpts<any> } {
+    return this._columnOpts;
   }
 
   get sideMenus(): Asuna.Schema.Menu<T>[] {

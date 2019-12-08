@@ -1,6 +1,6 @@
 import { responseProxy } from '@asuna-admin/adapters';
-import { AppContext, useAsunaModels } from '@asuna-admin/core';
-import { castModelKey, parseJSONIfCould, resolveModelInPane } from '@asuna-admin/helpers';
+import { AppContext } from '@asuna-admin/core';
+import { castModelKey, parseJSONIfCould, resolveModelInPane, useAsunaModels } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 import { contentActions, modelsActions, panesActions } from '@asuna-admin/store';
 import { Asuna } from '@asuna-admin/types';
@@ -22,6 +22,7 @@ export interface AsunaDataTableProps {
   rowClassName?: (record: any, index: number) => string;
   models: any;
   modelName: string;
+  extraName?: string;
   onView?: (text: any, record: any) => void;
 }
 
@@ -34,6 +35,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
     rowClassName,
     models,
     modelName,
+    extraName,
     onView,
   } = props;
   const [queryCondition, setQueryCondition] = useState<{
@@ -70,11 +72,15 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
     </span>
   );
 
-  const { columns, relations } = useAsunaModels(modelName, { callRefresh: _refresh, extraName: modelName, actions });
+  const { columnProps, relations } = useAsunaModels(modelName, {
+    callRefresh: _refresh,
+    extraName: extraName || modelName,
+    actions,
+  });
 
-  const { modelConfig, primaryKey, tableColumnOpts } = resolveModelInPane(modelName);
+  const { modelConfig, primaryKey, columnOpts } = resolveModelInPane(modelName, extraName);
   const _pinActions = () => {
-    const column = _.find(columns, column => column.key === 'action');
+    const column = _.find(columnProps, column => column.key === 'action');
     if (column) {
       if (_.has(column, 'fixed')) {
         delete column['fixed'];
@@ -175,7 +181,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
     });
   };
 
-  const actionColumn = _.find(columns, column => column.key === 'action');
+  const actionColumn = _.find(columnProps, column => column.key === 'action');
   const response = R.pathOr([], [modelName, 'data'])(models);
   const loading = R.pathOr(false, [modelName, 'loading'])(models);
 
@@ -270,7 +276,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
         </>
       )}
 
-      {columns && (
+      {columnProps && (
         <Table
           key={`table-${flag}`}
           size={'small'}
@@ -279,7 +285,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
           dataSource={dataSource}
           rowKey={primaryKey}
           loading={loading}
-          columns={columns}
+          columns={columnProps}
           pagination={{ ...pagination, position: 'both' }}
           onChange={_handleTableChange}
           rowClassName={rowClassName}

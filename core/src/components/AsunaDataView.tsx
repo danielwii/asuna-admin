@@ -1,11 +1,13 @@
-import { AssetsPreview } from '@asuna-admin/components';
-import { AppContext, useAsunaModels } from '@asuna-admin/core';
-import { resolveModelInPane } from '@asuna-admin/helpers';
-import moment from 'moment';
-import React from 'react';
-import { Button, Collapse, Descriptions, Empty, PageHeader, Statistic, Switch, Tabs, Tag, Tooltip } from 'antd';
-import util from 'util';
+import { AssetsPreview, DynamicFormTypes } from '@asuna-admin/components';
+import { resolveModelInPane, useAsunaModels } from '@asuna-admin/helpers';
+import { WithDebugInfo } from '@asuna-admin/helpers/debug';
+import { Collapse, Descriptions, Empty, PageHeader, Tabs, Tag, Tooltip } from 'antd';
 import _ from 'lodash';
+import moment from 'moment';
+import { useAsync } from 'react-use';
+import bluebird from 'bluebird';
+import React, { Suspense } from 'react';
+import util from 'util';
 
 const { Panel } = Collapse;
 const { TabPane } = Tabs;
@@ -17,21 +19,53 @@ const text = (
   </p>
 );
 
+export interface DataViewColumnProps<EntitySchema> {
+  title?: keyof EntitySchema;
+  cover?: keyof EntitySchema;
+}
+
 export interface AsunaDataViewProps {
-  modelName: string;
-  cover?: string;
   data: JSON;
+  modelName: string;
+  extraName?: string;
+  title?: string;
+  cover?: string;
   onBack?: () => void;
 }
 
 export const AsunaDataView: React.FC<AsunaDataViewProps> = props => {
-  const { cover = 'cover', modelName, onBack, data } = props;
+  const { cover, title, modelName, extraName, onBack, data } = props;
 
   if (!data) {
     return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />;
   }
 
-  const { columns, relations, schemas } = useAsunaModels(modelName);
+  const actions = null;
+  // const actions = (text, record, extras) => (
+  //   <span>
+  //     {/*{extras && extras(auth)}*/}
+  //     {/*{editable ? (*/}
+  //     {/*  <Button size="small" type="dashed" onClick={() => _edit(text, record)}>*/}
+  //     {/*    Edit*/}
+  //     {/*  </Button>*/}
+  //     {/*) : (*/}
+  //     {/*  <Button size="small" type="dashed" onClick={() => onView!(text, record)} disabled={!onView}>*/}
+  //     {/*    View*/}
+  //     {/*  </Button>*/}
+  //     {/*)}{' '}*/}
+  //     {/*{isDeletableSystemRecord(record) && deletable && (*/}
+  //     {/*  <>*/}
+  //     {/*    <Divider type="vertical" />*/}
+  //     {/*    <Button size="small" type="danger" onClick={() => _remove(text, record)}>*/}
+  //     {/*      Delete*/}
+  //     {/*    </Button>*/}
+  //     {/*  </>*/}
+  //     {/*)}*/}
+  //   </span>
+  // );
+
+  const { columnProps, relations, originSchemas } = useAsunaModels(modelName, { actions, extraName });
+  const actionColumn = _.find(columnProps, column => column.key === 'action');
   const Content = ({ children, extra }) => {
     return (
       <div className="content" style={{ display: 'flex' }}>
@@ -41,50 +75,88 @@ export const AsunaDataView: React.FC<AsunaDataViewProps> = props => {
     );
   };
 
-  const { modelConfig, primaryKey, tableColumnOpts, schema } = resolveModelInPane(modelName);
+  const { modelConfig, primaryKey, columnOpts, schemas } = resolveModelInPane(modelName, extraName);
   const vars = {
-    title: _.get(data, 'title'),
+    title: _.get(data, title || columnOpts?.columnProps?.dataView?.title || 'title'),
     id: _.get(data, primaryKey),
-    cover: _.get(data, cover),
+    cover: _.get(data, cover || columnOpts?.columnProps?.dataView?.cover || 'cover'),
     createdAt: _.get(data, 'createdAt'),
     updatedAt: _.get(data, 'updatedAt'),
     updatedBy: _.get(data, 'updatedBy'),
   };
-  const leftVars = _.omit(data, [primaryKey, cover, 'title', 'createdAt', 'updatedAt', 'updatedBy']);
+  const leftVars = _.omit(data, _.flatten([_.keys(vars), primaryKey, relations] as string[]));
   const publishedTag = _.has(data, 'isPublished')
-    ? renderValue(data['isPublished'], value => (value ? '已发布' : '未发布'))
+    ? renderValue({ value: data['isPublished'], textFn: value => (value ? '已发布' : '未发布') })
     : null;
+
+  const customColumnOpts = useAsync(
+    async () => await bluebird.props(_.mapValues(columnOpts?.customColumns, columnOpt => (columnOpt as any)())),
+    [columnOpts?.customColumns],
+  );
+
+  /*
+  const CustomColumnsFuture = React.lazy(
+    () =>
+      new Promise(resolve => {
+        bluebird.props(_.mapValues(columnOpts?.customColumns, columnOpt => (columnOpt as any)())).then(columnOpts => {
+          resolve({
+            default: () =>
+              _.map(columnOpts, (columnOpt, label) => {
+                return (
+                  <Descriptions.Item key={columnOpt.key} label={columnOpt.title}>
+                    <WithDebugInfo info={{ label, columnOpt }}>
+                      <div>value: {_.get(data, columnOpt.key)}</div>
+                      <pre>{util.inspect({ label, columnOpt })}</pre>
+                    </WithDebugInfo>
+                    {/!*{renderValue({ value, type: schemas[label]?.type })}*!/}
+                  </Descriptions.Item>
+                );
+              }),
+          } as any);
+        });
+      }),
+  );
+
+  <Suspense fallback={<div>Loading...</div>}>
+    <CustomColumnsFuture />
+  </Suspense>
+*/
 
   return (
     <div>
-      <pre>{util.inspect(_.omit(schemas, 'columns'), { depth: 10 })}</pre>
-      {/*<pre>{util.inspect({ data, schema, columns, relations })}</pre>*/}
+      {/*<pre>{util.inspect(_.omit(originSchemas, 'columns'), { depth: 10 })}</pre>*/}
+      {/*<pre>{util.inspect(data)}</pre>*/}
+      {/*<pre>{util.inspect(schemas)}</pre>*/}
+      {/*<pre>{util.inspect(relations)}</pre>*/}
+      {/*<pre>{util.inspect(columnOpts)}</pre>*/}
+      {/*<pre>{util.inspect(customColumnOpts)}</pre>*/}
 
       <PageHeader
         style={{ border: '1px solid rgb(235, 237, 240)' }}
         onBack={onBack && data ? () => onBack() : undefined}
         title={vars.title}
         subTitle={`#${vars.id}`}
-        tags={[<>{publishedTag}</>]}
+        tags={publishedTag as any}
+        // tags={[<>{publishedTag}</>]}
         {...(vars.cover ? { avatar: { src: vars.cover, size: 'large' } } : null)}
-        extra={[
-          <Button key="3">Operation</Button>,
-          <Button key="2">Operation</Button>,
-          <Button key="1" type="primary">
-            Primary
-          </Button>,
-        ]}
-        footer={
-          <Tabs>
-            {_.map(schemas?.oneToManyRelations, relation => (
-              <TabPane tab={relation.name} key={relation.name}>
-                <pre>{util.inspect(relation)}</pre>
-              </TabPane>
-            ))}
-            {/*<TabPane tab="Details" key="1">details</TabPane>*/}
-            {/*<TabPane tab="Rule" key="2">rule</TabPane>*/}
-          </Tabs>
-        }
+        extra={actionColumn?.render?.(data, data, 0)}
+        // extra={[
+        //   actionColumn?.render?.(data, data, 0),
+        //   // <Button key="3">Operation</Button>,
+        //   // <Button key="2">Operation</Button>,
+        //   // <Button key="1" type="primary">Primary</Button>,
+        // ]}
+        // footer={
+        //   <Tabs>
+        //     {_.map(originSchemas?.oneToManyRelations, relation => (
+        //       <TabPane tab={relation.name} key={relation.name}>
+        //         <pre>{util.inspect(relation)}</pre>
+        //       </TabPane>
+        //     ))}
+        //     {/*<TabPane tab="Details" key="1">details</TabPane>*/}
+        //     {/*<TabPane tab="Rule" key="2">rule</TabPane>*/}
+        //   </Tabs>
+        // }
       >
         <Content
           extra={
@@ -97,6 +169,7 @@ export const AsunaDataView: React.FC<AsunaDataViewProps> = props => {
                   justifyContent: 'flex-end',
                 }}
               >
+                {/*<pre>{util.inspect(columnOpts)}</pre>*/}
                 {/*<Statistic title="isPublished" value="Pending" style={{ marginRight: 32 }} />*/}
                 {/*<Statistic title="Price" prefix="$" value={568.08} />*/}
               </div>
@@ -104,29 +177,46 @@ export const AsunaDataView: React.FC<AsunaDataViewProps> = props => {
           }
         >
           <Descriptions size="small" column={2}>
-            <Descriptions.Item label="创建时间">
+            <Descriptions.Item label="创建时间" key="createdAt">
               <Tooltip title={vars.createdAt}>
                 {moment(vars.createdAt).calendar()}
                 <div>{moment(vars.createdAt).fromNow()}</div>
               </Tooltip>
             </Descriptions.Item>
-            <Descriptions.Item label="更新时间">
+            <Descriptions.Item label="更新时间" key="updatedAt">
               <Tooltip title={vars.updatedAt}>
                 {moment(vars.updatedAt).calendar()}
                 <div>{moment(vars.updatedAt).fromNow()}</div>
               </Tooltip>
             </Descriptions.Item>
             {_.map(leftVars, (value, label: string) => {
-              const schemaLabel = _.get(schema, `${label}.options.label`, '') || label;
+              const schemaLabel = _.get(schemas, `${label}.options.label`, '') || label;
               return (
                 <Descriptions.Item
                   key={label}
                   label={schemaLabel === label ? label : `${schemaLabel || label} / ${label}`}
                 >
-                  {renderValue(value)}
+                  {renderValue({ value, type: schemas[label]?.type })}
                 </Descriptions.Item>
               );
             })}
+
+            {customColumnOpts.loading ? (
+              <div>Loading...</div>
+            ) : (
+              _.map(customColumnOpts.value, (columnOpt, label) => {
+                return (
+                  <Descriptions.Item key={columnOpt.key} label={columnOpt.title}>
+                    {columnOpt.render(data[columnOpt.relation], data[columnOpt.relation], 0)}
+                    <WithDebugInfo info={{ label, columnOpt }}>
+                      {/*<div>value: {_.get(data, columnOpt.key)}</div>*/}
+                      {/*<pre>{util.inspect({ label, columnOpt })}</pre>*/}
+                      {columnOpt.render(data, data, 0)}
+                    </WithDebugInfo>
+                  </Descriptions.Item>
+                );
+              })
+            )}
           </Descriptions>
         </Content>
         <Collapse bordered={false}>
@@ -139,7 +229,15 @@ export const AsunaDataView: React.FC<AsunaDataViewProps> = props => {
   );
 };
 
-function renderValue(value: any, textFn?: (value) => string): React.ReactChild {
+function renderValue({
+  value,
+  textFn,
+  type,
+}: {
+  value: any;
+  textFn?: (value) => string;
+  type?: DynamicFormTypes;
+}): React.ReactChild {
   const text = textFn ? textFn(value) : value;
   if (typeof value === 'boolean') {
     // return <Switch checked={value} onClick={undefined} size="small" />;
@@ -154,8 +252,17 @@ function renderValue(value: any, textFn?: (value) => string): React.ReactChild {
       </>
     );
 */
+  } else if (_.isDate(value) || type === DynamicFormTypes.Date || type === DynamicFormTypes.DateTime) {
+    return (
+      <Tooltip title={value}>
+        {moment(value).calendar()}
+        <div>{moment(value).fromNow()}</div>
+      </Tooltip>
+    );
   } else if (_.isNull(value)) {
     return <Tag>null</Tag>;
+  } else if (_.isObject(value)) {
+    return <pre>{util.inspect(value)}</pre>;
   }
   return value;
 }
