@@ -46,7 +46,15 @@ export interface IModelService {
     } & Asuna.Schema.ModelConfig,
   ): Promise<AxiosResponse>;
 
+  /**
+   * @deprecated {@see loadOriginSchema}
+   * @param auth
+   * @param modelName
+   * @param data
+   */
   loadSchema(auth: { token: string | null }, modelName: string, data): Promise<AxiosResponse>;
+
+  loadOriginSchema(auth: { token: string | null }, modelName: string, data): Promise<AxiosResponse>;
 
   fetch(
     auth: { token: string | null },
@@ -481,9 +489,18 @@ export class ModelAdapter {
     });
   };
 
+  /**
+   * @deprecated {@see loadOriginSchema}
+   * @param modelName
+   */
   async loadSchema(modelName: string) {
     const auth = AppContext.fromStore('auth');
     return this.service.loadSchema(auth, modelName, this.getModelConfig(modelName));
+  }
+
+  async loadOriginSchema(modelName: string) {
+    const auth = AppContext.fromStore('auth');
+    return this.service.loadOriginSchema(auth, modelName, this.getModelConfig(modelName));
   }
 
   async loadSchemas() {

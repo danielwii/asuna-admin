@@ -1,61 +1,48 @@
 import { responseProxy } from '@asuna-admin/adapters';
-import { AppContext } from '@asuna-admin/core';
+import { AppContext, useAsunaModels } from '@asuna-admin/core';
 import { castModelKey, parseJSONIfCould, resolveModelInPane } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 import { contentActions, modelsActions, panesActions } from '@asuna-admin/store';
 import { Asuna } from '@asuna-admin/types';
 import { Button, Divider, Dropdown, Menu, Modal, Switch, Table, Tag } from 'antd';
 import { PaginationConfig } from 'antd/es/pagination';
-import { ColumnProps, SorterResult } from 'antd/es/table';
+import { SorterResult } from 'antd/es/table';
 import { TableCurrentDataSource } from 'antd/lib/table/interface';
 import _ from 'lodash';
 import * as R from 'ramda';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 const logger = createLogger('components:data-table');
 
-function useAsunaModels(
-  modelName: string,
-  { extraName, callRefresh, actions },
-): { columns: (ColumnProps<any> & { relation: any })[]; relations?: string[] } {
-  const [columns, setColumns] = useState<(ColumnProps<any> & { relation: any })[]>([]);
-
-  useEffect(() => {
-    // todo ???
-    // const hasGraphAPI = _.find(await AppContext.ctx.graphql.loadGraphs(), schema => schema === `sys_${modelName}`);
-    AppContext.adapters.models
-      .getColumns(modelName, { callRefresh, actions }, extraName || modelName)
-      .then(columns => setColumns(columns));
-  }, [modelName]);
-
-  const relations = R.compose(
-    R.filter(R.compose(R.not, R.isEmpty)),
-    R.map(R.values),
-    R.map(R.pick(['relation'])),
-  )(columns);
-
-  return { columns, relations };
-}
-
-export interface DataTableProps {
+export interface AsunaDataTableProps {
   creatable?: Asuna.Schema.TableColumnOptCreatable;
   editable?: boolean;
   deletable?: boolean;
   opts?: Asuna.Schema.TableColumnOpts<any>;
-  // columns: (ColumnProps<any> & { relation: any })[];
   rowClassName?: (record: any, index: number) => string;
   models: any;
   modelName: string;
+  onView?: (text: any, record: any) => void;
 }
 
-export function DataTable(props: DataTableProps) {
-  const { creatable = false, editable = false, deletable = false, opts, rowClassName, models, modelName } = props;
+export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
+  const {
+    creatable = false,
+    editable = false,
+    deletable = false,
+    opts,
+    rowClassName,
+    models,
+    modelName,
+    onView,
+  } = props;
   const [queryCondition, setQueryCondition] = useState<{
     pagination?: PaginationConfig;
     filters?: Record<any, string[]>;
     sorter?: SorterResult<any>;
   }>({});
-  const [count, setCount] = useState(0);
+  // 用于刷新页面的一个标记
+  const [flag, updateFlag] = useState(0);
 
   const _refresh = () => {
     _handleTableChange(queryCondition.pagination, queryCondition.filters, queryCondition.sorter);
@@ -68,7 +55,7 @@ export function DataTable(props: DataTableProps) {
           Edit
         </Button>
       ) : (
-        <Button size="small" type="dashed" onClick={() => /*view*/ _edit(text, record)} disabled={true}>
+        <Button size="small" type="dashed" onClick={() => onView!(text, record)} disabled={!onView}>
           View
         </Button>
       )}{' '}
@@ -97,8 +84,7 @@ export function DataTable(props: DataTableProps) {
         column['width'] = 250;
       }
     }
-    setCount(count + 1);
-    // this.setState({ columns: [] }, () => this.setState({ columns }));
+    updateFlag(flag + 1);
   };
   const isDeletableSystemRecord = record => !record[castModelKey('isSystem')];
   const _create = () => {
@@ -273,7 +259,7 @@ export function DataTable(props: DataTableProps) {
                   const filters = _.omit(queryCondition.filters, key);
                   setQueryCondition({ pagination: queryCondition.pagination, filters, sorter: queryCondition.sorter });
                   _handleTableChange(queryCondition.pagination, filters);
-                  setCount(count + 1);
+                  updateFlag(flag + 1);
                 }}
               >
                 {key}: {JSON.stringify(filter)}
@@ -286,7 +272,7 @@ export function DataTable(props: DataTableProps) {
 
       {columns && (
         <Table
-          key={`table-${count}`}
+          key={`table-${flag}`}
           size={'small'}
           className="asuna-content-table"
           scroll={{ x: true }}
@@ -307,4 +293,4 @@ export function DataTable(props: DataTableProps) {
       `}</style>
     </>
   );
-}
+};

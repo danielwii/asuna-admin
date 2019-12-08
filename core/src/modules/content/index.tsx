@@ -1,4 +1,4 @@
-import { DataTable, Pane } from '@asuna-admin/components';
+import { AsunaDataTable, Pane } from '@asuna-admin/components';
 import { Config } from '@asuna-admin/config';
 import { ActionEvent, AppContext, EventBus, EventType } from '@asuna-admin/core';
 import { castModelKey, diff, extractModelNameFromPane, resolveModelInPane } from '@asuna-admin/helpers';
@@ -119,7 +119,7 @@ class ContentIndex extends React.Component<IProps, IState> {
     const { models } = this.props;
 
     return (
-      <DataTable
+      <AsunaDataTable
         creatable={creatable}
         editable={editable}
         deletable={deletable}

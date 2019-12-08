@@ -28,11 +28,13 @@ export function resolveModelInPane(
   modelConfig: Asuna.Schema.ModelConfig;
   tableColumnOpts: Asuna.Schema.TableColumnOpts<any> | null;
   primaryKey: string;
+  schema: Asuna.Schema.FormSchemas;
 } {
   const modelConfig = AppContext.adapters.models.getModelConfig(modelName);
   const tableColumnOpts = AppContext.adapters.models.getTableColumnOpts(extraName || modelName);
   const primaryKeys = AppContext.adapters.models.getPrimaryKeys(modelName);
   const primaryKey = _.head(primaryKeys) || 'id';
+  const schema = AppContext.adapters.models.getFormSchema(modelName);
 
-  return { modelName, modelConfig, tableColumnOpts, primaryKey };
+  return { modelName, modelConfig, tableColumnOpts, primaryKey, schema };
 }
