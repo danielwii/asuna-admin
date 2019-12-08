@@ -31,7 +31,7 @@ export const AsunaDataView: React.FC<AsunaDataViewProps> = props => {
     return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />;
   }
 
-  const { columns, relations } = useAsunaModels(modelName);
+  const { columns, relations, schemas } = useAsunaModels(modelName);
   const Content = ({ children, extra }) => {
     return (
       <div className="content" style={{ display: 'flex' }}>
@@ -57,7 +57,8 @@ export const AsunaDataView: React.FC<AsunaDataViewProps> = props => {
 
   return (
     <div>
-      <pre>{util.inspect({ data, schema, columns, relations })}</pre>
+      <pre>{util.inspect(_.omit(schemas, 'columns'), { depth: 10 })}</pre>
+      {/*<pre>{util.inspect({ data, schema, columns, relations })}</pre>*/}
 
       <PageHeader
         style={{ border: '1px solid rgb(235, 237, 240)' }}
@@ -65,7 +66,7 @@ export const AsunaDataView: React.FC<AsunaDataViewProps> = props => {
         title={vars.title}
         subTitle={`#${vars.id}`}
         tags={[<>{publishedTag}</>]}
-        {...(vars.cover ? { avatar: { src: vars.cover } } : null)}
+        {...(vars.cover ? { avatar: { src: vars.cover, size: 'large' } } : null)}
         extra={[
           <Button key="3">Operation</Button>,
           <Button key="2">Operation</Button>,
@@ -74,13 +75,14 @@ export const AsunaDataView: React.FC<AsunaDataViewProps> = props => {
           </Button>,
         ]}
         footer={
-          <Tabs defaultActiveKey="1">
-            <TabPane tab="Details" key="1">
-              details
-            </TabPane>
-            <TabPane tab="Rule" key="2">
-              rule
-            </TabPane>
+          <Tabs>
+            {_.map(schemas?.oneToManyRelations, relation => (
+              <TabPane tab={relation.name} key={relation.name}>
+                <pre>{util.inspect(relation)}</pre>
+              </TabPane>
+            ))}
+            {/*<TabPane tab="Details" key="1">details</TabPane>*/}
+            {/*<TabPane tab="Rule" key="2">rule</TabPane>*/}
           </Tabs>
         }
       >
@@ -127,16 +129,10 @@ export const AsunaDataView: React.FC<AsunaDataViewProps> = props => {
             })}
           </Descriptions>
         </Content>
-        <Collapse bordered={false} defaultActiveKey={['1']}>
-          <Panel header="This is panel header 1" key="1">
-            {text}
-          </Panel>
-          <Panel header="This is panel header 2" key="2">
-            {text}
-          </Panel>
-          <Panel header="This is panel header 3" key="3">
-            {text}
-          </Panel>
+        <Collapse bordered={false}>
+          {/*<Panel header="This is panel header 1" key="1">{text}</Panel>*/}
+          {/*<Panel header="This is panel header 2" key="2">{text}</Panel>*/}
+          {/*<Panel header="This is panel header 3" key="3">{text}</Panel>*/}
         </Collapse>
       </PageHeader>
     </div>
@@ -158,6 +154,8 @@ function renderValue(value: any, textFn?: (value) => string): React.ReactChild {
       </>
     );
 */
+  } else if (_.isNull(value)) {
+    return <Tag>null</Tag>;
   }
   return value;
 }

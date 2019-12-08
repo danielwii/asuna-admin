@@ -60,15 +60,9 @@ const ContentSearch: React.FC<ModulesLoaderProps & { rootState: RootState }> = p
       <AsunaDataTable
         modelName={modelName}
         models={content.models}
-        onView={(text, record) => {
-          console.log({ text, record });
-          setViewRecord(record);
-        }}
+        onView={(text, record) => setViewRecord(record)}
+        rowClassName={tableColumnOpts?.rowClassName}
       />
-
-      <Divider type="horizontal" style={{ margin: '0.5rem 0' }} />
-      <pre>{util.inspect({ modelConfig, modelName, primaryKey, tableColumnOpts })}</pre>
-      <pre>{util.inspect(props)}</pre>
     </>
   );
 };

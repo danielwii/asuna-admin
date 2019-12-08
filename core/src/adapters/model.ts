@@ -498,9 +498,16 @@ export class ModelAdapter {
     return this.service.loadSchema(auth, modelName, this.getModelConfig(modelName));
   }
 
-  async loadOriginSchema(modelName: string) {
+  async loadOriginSchema(
+    modelName: string,
+  ): Promise<{
+    columns: Asuna.Schema.ModelSchema[];
+    manyToManyRelations: Asuna.Schema.ModelSchema[];
+    manyToOneRelations: Asuna.Schema.ModelSchema[];
+    oneToManyRelations: Asuna.Schema.ModelSchema[];
+  }> {
     const auth = AppContext.fromStore('auth');
-    return this.service.loadOriginSchema(auth, modelName, this.getModelConfig(modelName));
+    return this.service.loadOriginSchema(auth, modelName, this.getModelConfig(modelName)).then(fp.get('data'));
   }
 
   async loadSchemas() {
