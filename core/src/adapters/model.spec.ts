@@ -106,7 +106,7 @@ describe('getFormSchema', () => {
     expect(fields).toEqual({
       password: {
         name: 'password',
-        type: null,
+        type: undefined,
         ref: 'password',
         options: {
           label: null,
@@ -134,7 +134,7 @@ describe('getFormSchema', () => {
     expect(fields).toEqual({
       test_name: {
         name: 'test_name',
-        type: null,
+        type: undefined,
         ref: 'test_name',
         options: { selectable: null, label: null, required: false, length: null },
         value: undefined,
