@@ -1,4 +1,4 @@
-import { AssetsPreview } from '@asuna-admin/components/Snippet';
+import { AssetsPreview } from '@asuna-admin/components';
 import { AppContext, useAsunaModels } from '@asuna-admin/core';
 import { resolveModelInPane } from '@asuna-admin/helpers';
 import moment from 'moment';
