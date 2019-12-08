@@ -14,10 +14,7 @@ let importExportCounts = 0;
 
 const handleSourceFile = root => async sourceFile => {
   // console.log({ sourceFile, importDeclarations: sourceFile.getImportDeclarations(), exportDeclarations: sourceFile.getExportDeclarations() });
-  const importExportDeclarations = [
-    ...sourceFile.getImportDeclarations(),
-    ...sourceFile.getExportDeclarations(),
-  ];
+  const importExportDeclarations = [...sourceFile.getImportDeclarations(), ...sourceFile.getExportDeclarations()];
   importExportCounts += importExportDeclarations.length;
   const sourceFileAbsolutePath = sourceFile.getFilePath();
   // console.log({ importExportDeclarations });
@@ -37,11 +34,7 @@ const handleSourceFile = root => async sourceFile => {
       if (value) {
         const prefix = _.findKey(opts.alias, (v, k) => value.startsWith(k));
         if (prefix) {
-          const relativePathToDepsModule = join(
-            root,
-            opts.alias[prefix],
-            value.slice(prefix.length + 1),
-          );
+          const relativePathToDepsModule = join(root, opts.alias[prefix], value.slice(prefix.length + 1));
           // console.log({
           //   prefix,
           //   sourceFileAbsolutePath,
@@ -85,7 +78,7 @@ opts.roots.forEach(root => {
 
   // console.log({ opts, paths: compilerOptions.paths, absoluteBaseUrl, search: `./${root}/**/*.{js,jsx,ts,tsx}` });
 
-  project.addExistingSourceFiles(`${root}/**/*.{js,jsx,ts,tsx}`);
+  project.addSourceFileAtPathIfExists(`${root}/**/*.{js,jsx,ts,tsx}`);
   const sourceFiles = project.getSourceFiles();
 
   console.log(`root is ${root}`);
