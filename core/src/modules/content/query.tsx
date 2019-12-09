@@ -3,7 +3,7 @@ import { extractModelNameFromPane, resolveModelInPane, useAsunaModels } from '@a
 import { RootState } from '@asuna-admin/store';
 import { Col, Divider, message, PageHeader, Row } from 'antd';
 import 'highlight.js/styles/default.css';
-import { AppContext } from 'asuna-admin';
+import { AppContext } from '@asuna-admin/core';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import Highlight from 'react-highlight';
