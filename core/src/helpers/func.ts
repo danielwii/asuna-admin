@@ -13,7 +13,7 @@ export function removeSuffix(value: string, suffix: string): string {
 }
 
 export function removePreAndSuf(value: string, prefix: string, suffix: string): string {
-  return _.flow([_.curry(removeSuffix)(_ as any, suffix), _.curry(removePrefix)(_ as any, prefix)])(value);
+  return _.flow([_.curryRight(removeSuffix)(suffix), _.curryRight(removePrefix)(prefix)])(value);
 }
 
 export function parseJSONIfCould(value?: string): any {
