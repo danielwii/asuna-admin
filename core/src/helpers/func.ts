@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import * as _ from 'lodash';
 
 export function extend<T, U>(first: T, second: U): T & U {
   return { ...first, ...second } as T & U;
@@ -13,7 +13,7 @@ export function removeSuffix(value: string, suffix: string): string {
 }
 
 export function removePreAndSuf(value: string, prefix: string, suffix: string): string {
-  return _.flow([_.curry(removeSuffix)(_, suffix), _.curry(removePrefix)(_, prefix)])(value);
+  return _.flow([_.curry(removeSuffix)(_ as any, suffix), _.curry(removePrefix)(_ as any, prefix)])(value);
 }
 
 export function parseJSONIfCould(value?: string): any {

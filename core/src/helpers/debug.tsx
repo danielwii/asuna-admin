@@ -1,8 +1,8 @@
 import { AppContext } from '@asuna-admin/core';
 
 import { Icon, Popover } from 'antd';
-import React from 'react';
-import util from 'util';
+import * as React from 'react';
+import * as util from 'util';
 
 interface IWithDebugInfoProps {
   info: any;

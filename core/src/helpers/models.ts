@@ -2,7 +2,7 @@ import { Pane } from '@asuna-admin/components';
 import { AppContext } from '@asuna-admin/core';
 import { createLogger } from '@asuna-admin/logger';
 import { Asuna } from '@asuna-admin/types';
-import _ from 'lodash';
+import * as _ from 'lodash';
 
 const logger = createLogger('helpers:models');
 

@@ -3,7 +3,7 @@ import { Button, Col, Input, Row } from 'antd';
 import { WrappedFormUtils } from 'antd/es/form/Form';
 
 import * as _ from 'lodash';
-import React from 'react';
+import * as React from 'react';
 
 import { defaultFormItemLayout, generateComponent, IFormItemLayout } from '.';
 

@@ -10,7 +10,7 @@ import { Input } from 'antd';
 import { ExtendControlType } from 'braft-editor';
 import { ContentUtils } from 'braft-utils';
 import * as React from 'react';
-import _ from 'lodash';
+import * as _ from 'lodash';
 
 const logger = createLogger('components:rich-editor');
 

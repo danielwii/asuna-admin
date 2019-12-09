@@ -8,9 +8,12 @@ import * as React from 'react';
 import { useEffect, useState } from 'react';
 import Highlight from 'react-highlight';
 import { connect } from 'react-redux';
-import util from 'util';
-import fp from 'lodash/fp';
+import * as util from 'util';
+import * as fp from 'lodash/fp';
 import { ModulesLoaderProps } from '..';
+import * as _ from 'lodash';
+
+export type QueryFieldsColumnProps<EntitySchema> = (keyof EntitySchema)[];
 
 const ContentSearch: React.FC<ModulesLoaderProps & { rootState: RootState }> = props => {
   const {
@@ -34,7 +37,12 @@ const ContentSearch: React.FC<ModulesLoaderProps & { rootState: RootState }> = p
     };
   }, [props.module]);
 
-  const fields = {
+  const fields = _.fromPairs(
+    _.map(columnOpts?.columnProps?.queryFields || [primaryKey], value => {
+      return [value, { name: value as string, type: FormFieldType.string }];
+    }),
+  );
+  /*{
     [primaryKey]: {
       name: primaryKey,
       type: FormFieldType.string,
@@ -42,18 +50,27 @@ const ContentSearch: React.FC<ModulesLoaderProps & { rootState: RootState }> = p
       // defaultValue: 'body.url',
       // help: '分享链接',
     },
-  };
+  };*/
 
   return (
     <>
+      {/*<pre>{util.inspect(columnOpts?.columnProps?.queryFields)}</pre>*/}
+      {/*<pre>{util.inspect(fields)}</pre>*/}
+
       <PageHeader title={pane.title}>
         <EasyForm
           fields={fields}
           onSubmit={async values => {
-            const record = await AppContext.ctx.models
-              .fetch(modelName, { id: values[primaryKey], relations })
-              .then(fp.get('data'));
-            setViewRecord(record);
+            const keys = _.keys(fields);
+            if (keys.length === 1 && keys.includes(primaryKey)) {
+              const record = await AppContext.ctx.models
+                .fetch(modelName, { id: values[primaryKey], relations })
+                .then(fp.get('data'));
+              setViewRecord(record);
+            } else {
+              const data = await AppContext.ctx.models.loadModels(modelName, { filters: values }).then(fp.get('data'));
+              setViewRecord(_.head(data.items));
+            }
           }}
           // onClear={() => ComponentsHelper.clear({ key, collection }, refetch)}
         />

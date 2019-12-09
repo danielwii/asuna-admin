@@ -3,7 +3,6 @@ import { Asuna } from '@asuna-admin/types';
 
 import { message } from 'antd';
 import { AxiosResponse } from 'axios';
-import idx from 'idx';
 import * as R from 'ramda';
 
 const logger = createLogger('helpers:errors');
@@ -37,7 +36,7 @@ export function safeCallback(cb, data) {
 export function toErrorMessage(e) {
   logger.log('toErrorMessage', { e, response: e.response });
   if (e.response) {
-    return JSON.stringify(idx(e, _ => _.response.data));
+    return JSON.stringify(e?.response?.data);
   }
   return e.message || JSON.stringify(e);
 }

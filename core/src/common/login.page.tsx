@@ -6,7 +6,7 @@ import { createLogger } from '@asuna-admin/logger';
 import { AppState, RootState } from '@asuna-admin/store';
 
 import * as R from 'ramda';
-import React from 'react';
+import * as React from 'react';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
 

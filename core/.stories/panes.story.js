@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { connect, Provider } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
@@ -46,9 +46,7 @@ const initialState = {
 };
 
 storiesOf('Panes', module)
-  .addDecorator(getStory => (
-    <Provider store={configureStore({ panes: initialState })}>{getStory()}</Provider>
-  ))
+  .addDecorator(getStory => <Provider store={configureStore({ panes: initialState })}>{getStory()}</Provider>)
   .add('container', () => {
     let counter = 4;
 

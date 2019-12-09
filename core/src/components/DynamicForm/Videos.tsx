@@ -6,9 +6,9 @@ import { Asuna } from '@asuna-admin/types';
 import { Button, Icon, Upload } from 'antd';
 import { RcFile, UploadChangeParam, UploadFile, UploadFileStatus } from 'antd/es/upload/interface';
 import { RcCustomRequestOptions } from 'antd/lib/upload/interface';
-import _ from 'lodash';
+import * as _ from 'lodash';
 import fp from 'lodash/fp';
-import React from 'react';
+import * as React from 'react';
 import videojs from 'video.js';
 
 const logger = createLogger('components:dynamic-form:video');

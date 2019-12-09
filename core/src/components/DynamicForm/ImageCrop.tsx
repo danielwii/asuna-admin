@@ -1,6 +1,6 @@
 import { getBase64 } from '@asuna-admin/helpers/upload';
 
-import React from 'react';
+import * as React from 'react';
 import ReactCrop, { Crop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
 import styled from 'styled-components';
@@ -76,11 +76,7 @@ export class ImageCrop extends React.PureComponent<IProps, IState> {
 
   async makeClientCrop(crop, pixelCrop) {
     if (this.imageRef && crop.width && crop.height) {
-      const croppedImageUrl = (await this.getCroppedImg(
-        this.imageRef,
-        pixelCrop,
-        'newFile.jpeg',
-      )) as string;
+      const croppedImageUrl = (await this.getCroppedImg(this.imageRef, pixelCrop, 'newFile.jpeg')) as string;
       this.setState({ croppedImageUrl });
     }
   }

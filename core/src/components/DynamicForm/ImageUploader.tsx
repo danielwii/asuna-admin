@@ -7,8 +7,8 @@ import { Asuna } from '@asuna-admin/types';
 import { Icon, Input, Modal, Upload } from 'antd';
 import { RcFile, UploadChangeParam, UploadFile, UploadFileStatus } from 'antd/es/upload/interface';
 import { RcCustomRequestOptions } from 'antd/lib/upload/interface';
-import _ from 'lodash';
-import React from 'react';
+import * as _ from 'lodash';
+import * as React from 'react';
 
 const logger = createLogger('components:dynamic-form:images');
 

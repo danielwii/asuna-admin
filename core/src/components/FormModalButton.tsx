@@ -4,10 +4,9 @@ import { createLogger } from '@asuna-admin/logger';
 import { Form, message, Modal } from 'antd';
 import { WrappedFormUtils } from 'antd/es/form/Form';
 import { AxiosResponse } from 'axios';
-import idx from 'idx';
-import _ from 'lodash';
+import * as _ from 'lodash';
 import * as R from 'ramda';
-import React from 'react';
+import * as React from 'react';
 
 import { DynamicForm, DynamicFormField } from './DynamicForm';
 
@@ -142,7 +141,7 @@ export class FormModalButton extends React.Component<IFormModalProps, IState> {
           {body}
           {fields && (
             <LightForm
-              wrappedComponentRef={inst => (this.form = idx(inst, _ => _.props.form) as any)}
+              wrappedComponentRef={inst => (this.form = inst?.props?.form)}
               delegate
               fields={fields}
               onSubmit={this.handleOk}

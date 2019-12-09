@@ -1,7 +1,7 @@
 import { createLogger } from '@asuna-admin/logger';
 
 import { Progress } from 'antd';
-import React from 'react';
+import * as React from 'react';
 import { fadeIn, fadeOut } from 'react-animations';
 import styled, { keyframes } from 'styled-components';
 

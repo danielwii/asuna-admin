@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { Provider } from 'react-redux';
 
 import { storiesOf } from '@storybook/react';
@@ -37,9 +37,7 @@ const initialState = {
 };
 
 storiesOf('MainLayout', module)
-  .addDecorator(getStory => (
-    <Provider store={configureStore({ panes: initialState })}>{getStory()}</Provider>
-  ))
+  .addDecorator(getStory => <Provider store={configureStore({ panes: initialState })}>{getStory()}</Provider>)
   .add('default', () => (
     <MainLayout>
       <div>^_^</div>

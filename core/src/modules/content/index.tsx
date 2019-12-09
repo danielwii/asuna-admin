@@ -6,8 +6,8 @@ import { createLogger } from '@asuna-admin/logger';
 import { RootState } from '@asuna-admin/store';
 import { Asuna } from '@asuna-admin/types';
 import { SorterResult } from 'antd/es/table';
-import _ from 'lodash';
-import React from 'react';
+import * as _ from 'lodash';
+import * as React from 'react';
 import { connect } from 'react-redux';
 import { Subscription } from 'rxjs';
 

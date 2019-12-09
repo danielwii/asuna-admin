@@ -3,7 +3,7 @@ import { createLogger } from '@asuna-admin/logger';
 
 import { Checkbox, Table } from 'antd';
 import * as R from 'ramda';
-import React from 'react';
+import * as React from 'react';
 
 const logger = createLogger('components:authorities');
 
@@ -32,10 +32,7 @@ export class Authorities extends React.Component<IProps, IState> {
         key: 'permission',
         render: ({ parent, menu, active }) => (
           <React.Fragment>
-            <Checkbox
-              checked={active}
-              onChange={e => this.updatePermission(parent, menu, e.target.checked)}
-            >
+            <Checkbox checked={active} onChange={e => this.updatePermission(parent, menu, e.target.checked)}>
               激活
             </Checkbox>
           </React.Fragment>
@@ -52,8 +49,7 @@ export class Authorities extends React.Component<IProps, IState> {
     return { dataSource };
   }
 
-  static transformToJson = authorities =>
-    R.is(String, authorities) ? JSON.parse(authorities) : authorities;
+  static transformToJson = authorities => (R.is(String, authorities) ? JSON.parse(authorities) : authorities);
 
   static updateDataSource = authorities => {
     const sideMenus = menuProxy.getSideMenus();

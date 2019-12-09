@@ -3,7 +3,7 @@ import { createLogger } from '@asuna-admin/logger';
 import { RootState } from '@asuna-admin/store';
 import { Asuna } from '@asuna-admin/types';
 
-import _ from 'lodash';
+import * as _ from 'lodash';
 import * as R from 'ramda';
 import { put, select, takeLatest } from 'redux-saga/effects';
 

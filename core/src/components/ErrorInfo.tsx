@@ -1,5 +1,5 @@
 import { Icon, Result, Typography } from 'antd';
-import React, { ReactNode } from 'react';
+import * as React from 'react';
 
 const { Paragraph, Text } = Typography;
 
@@ -9,7 +9,7 @@ export interface IErrorInfoProps {
   extra?: React.ReactNode;
 }
 
-export function ErrorInfo(props: IErrorInfoProps & { children?: ReactNode }) {
+export function ErrorInfo(props: IErrorInfoProps & { children?: React.ReactNode }) {
   const { title, subTitle, extra, children } = props;
   return (
     <Result status="error" title={title || 'Error'} subTitle={subTitle} extra={extra}>

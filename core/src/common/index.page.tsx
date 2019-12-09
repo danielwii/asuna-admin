@@ -5,7 +5,7 @@ import { appActions, AppState, AuthState, RootState } from '@asuna-admin/store';
 
 import 'moment/locale/zh-cn';
 import * as R from 'ramda';
-import React from 'react';
+import * as React from 'react';
 import { connect } from 'react-redux';
 
 const logger = createLogger('pages:index');

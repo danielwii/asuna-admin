@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import * as R from 'ramda';
 
 import { storiesOf } from '@storybook/react';

@@ -17,7 +17,6 @@ import { message } from 'antd';
 import { PaginationConfig } from 'antd/es/pagination';
 import { AxiosResponse } from 'axios';
 import bluebird from 'bluebird';
-import idx from 'idx';
 import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
 import * as R from 'ramda';
@@ -164,8 +163,8 @@ export class ModelAdapter {
   public identifyType = (modelName: string, field: Asuna.Schema.ModelSchema): DynamicFormTypes | undefined => {
     const primaryKeys = this.getPrimaryKeys(modelName);
     const plainKeys = _.map(primaryKeys.concat('created_at', 'updated_at'), castModelKey);
-    const basicType = idx(field, _ => _.config.type) || '';
-    const advanceType = idx(field, _ => _.config.info.type) as any;
+    const basicType = field?.config?.type || '';
+    const advanceType = field?.config?.info?.type as any;
     const notFound = (): undefined => {
       const info = { field, plainKeys, basicType, advanceType };
       logger.warn('[identifyType]', 'type cannot identified.', info);
@@ -180,8 +179,8 @@ export class ModelAdapter {
       // association types
       // --------------------------------------------------------------
       [
-        () => !!idx(field, _ => _.config.selectable),
-        () => (idx(field, _ => _.config.many) ? DynamicFormTypes.ManyToMany : DynamicFormTypes.Association),
+        () => !!field?.config?.selectable,
+        () => (field?.config?.many ? DynamicFormTypes.ManyToMany : DynamicFormTypes.Association),
       ],
       // --------------------------------------------------------------
       // identify advanced types
@@ -265,19 +264,14 @@ export class ModelAdapter {
     const primaryKey = AppContext.adapters.models.getPrimaryKey(modelName);
     logger.debug('[upsert]', 'fields is', fields);
 
-    const fixKeys = _.mapKeys(data.body, (value, key) => idx(fields, _ => _[key].ref) || key);
+    const fixKeys = _.mapKeys(data.body, (value, key) => fields?.[key]?.ref || key);
     const transformed = _.mapValues(fixKeys, (value, key) => {
       // json 用于描述该字段需要通过字符串转换处理，目前用于服务器端不支持 JSON 数据格式的情况
-      return _.eq(
-        idx(fields, _ => _[key].options.json),
-        'str',
-      )
-        ? JSON.stringify(value)
-        : value;
+      return _.eq(fields?.[key]?.options?.json, 'str') ? JSON.stringify(value) : value;
     });
     logger.debug('[upsert]', 'transformed is', transformed);
 
-    const id = idx(data, _ => _.body[primaryKey]) as any;
+    const id = data?.body?.[primaryKey] as any;
     if (id) {
       return this.service.update(auth, modelName, {
         id,
@@ -351,7 +345,7 @@ export class ModelAdapter {
     const { schemas } = AppContext.fromStore('models');
     const schema = R.prop(modelName)(schemas);
     if (schema != null) {
-      const primaryKeys = _.filter(schema, opts => !!idx(opts, o => o.config.primaryKey));
+      const primaryKeys = _.filter(schema, opts => !!opts?.config?.primaryKey);
       // logger.debug(TAG, modelName, 'primaryKeys is', primaryKeys);
       if (primaryKeys.length) {
         return _.map(primaryKeys, fp.get('name'));
@@ -381,33 +375,20 @@ export class ModelAdapter {
       R.map(
         (field: Asuna.Schema.ModelSchema): Asuna.Schema.FormSchema => {
           const ref = R.pathOr(field.name, ['config', 'info', 'ref'])(field);
-          const length = _.toNumber(idx(field, _ => _.config.length)) || null; // 0 || null is null
-          const isNullable = _.defaultTo(
-            idx(field, _ => _.config.nullable),
-            true,
-          );
-          const isRequired = _.defaultTo(
-            idx(field, _ => _.config.info.required),
-            false,
-          );
+          const length = _.toNumber(field?.config?.length) || null; // 0 || null is null
+          const isNullable = field?.config?.nullable ?? true;
+          const isRequired = field?.config?.info?.required ?? false;
           return {
             name: ref || field.name,
             ref,
             type: this.identifyType(name, field),
             options: {
               length,
-              label: _.defaultTo(
-                idx(field, _ => _.config.info.name),
-                null,
-              ),
-              // foreignKeys: idx(field, _ => _..config.foreignKeys), // @deprecated
-              selectable: _.defaultTo(
-                idx(field, _ => _.config.selectable),
-                null,
-              ),
+              label: field?.config?.info?.name ?? null,
+              selectable: field?.config?.selectable ?? null,
               required: !isNullable || isRequired,
-              ...idx(field, _ => _.config.info),
-              ...idx(this.getModelConfig(name), _ => _.model.settings[field.name]),
+              ...field?.config?.info,
+              ...this.getModelConfig(name)?.model?.settings?.[field.name],
             },
             // 不存在时返回 undefined，而不能返回 null
             // null 会被当作值在更新时被传递
@@ -433,26 +414,16 @@ export class ModelAdapter {
   });
 
   public loadModels = (modelName: string, configs: ModelListConfig = {}): Promise<AxiosResponse> => {
-    logger.debug('[loadModels]', {
-      modelName,
-      configs,
-      modelConfig: this.getModelConfig(modelName),
-    });
-    const page = _.defaultTo(
-      idx(configs, _ => _.pagination.current),
-      1,
-    );
-    const size = _.defaultTo(
-      idx(configs, _ => _.pagination.pageSize),
-      Config.get('DEFAULT_PAGE_SIZE') || 25,
-    );
+    logger.debug('[loadModels]', { modelName, configs, modelConfig: this.getModelConfig(modelName) });
+    const page = configs?.pagination?.current || 1;
+    const size = configs?.pagination?.pageSize || Config.get('DEFAULT_PAGE_SIZE') || 25;
     const auth = AppContext.fromStore('auth');
     return this.service.loadModels(auth, modelName, {
       pagination: { page, size },
       fields: configs.fields,
       filters: _.mapValues<Record<string, [Partial<Condition>]>, WhereConditions>(
         configs.filters,
-        _.flow(fp.get(0), parseJSONIfCould),
+        _.flow(filter => (_.isArray(filter) ? filter[0] : filter), parseJSONIfCould),
       ),
       sorter: configs.sorter,
       relations: configs.relations,

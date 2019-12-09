@@ -6,14 +6,13 @@ import { EnumFilterMetaInfoOptions, MetaInfoOptions } from '@asuna-admin/types/m
 
 import { Affix, Anchor, Button, Col, Form, Row, Tag } from 'antd';
 import { FormComponentProps } from 'antd/es/form';
-import idx from 'idx';
-import _ from 'lodash';
-import PropTypes from 'prop-types';
+import * as _ from 'lodash';
+import * as PropTypes from 'prop-types';
 import * as R from 'ramda';
-import React from 'react';
+import * as React from 'react';
 import { CircleLoader } from 'react-spinners';
 import styled from 'styled-components';
-import util from 'util';
+import * as util from 'util';
 
 import {
   generateAuthorities,
@@ -122,21 +121,17 @@ export type DynamicFormField = {
  *   },
  * }
  */
-export class DynamicForm extends React.Component<
-  DynamicFormProps & AntdFormOnChangeListener & FormComponentProps
-> {
+export class DynamicForm extends React.Component<DynamicFormProps & AntdFormOnChangeListener & FormComponentProps> {
   _buildField = (fields: FormField[], field: DynamicFormField, index: number) => {
     const { form } = this.props;
 
     field.options = field.options || {};
-    const options: DeepPartial<
-      DynamicFormField['options'] &
-        HiddenOptions &
-        PlainOptions &
-        InputOptions &
-        SelectOptions &
-        StringArrayOptions
-    > = {
+    const options: DeepPartial<DynamicFormField['options'] &
+      HiddenOptions &
+      PlainOptions &
+      InputOptions &
+      SelectOptions &
+      StringArrayOptions> = {
       ...field.options,
       // key: field.key || field.name,
       name: field.name,
@@ -151,7 +146,7 @@ export class DynamicForm extends React.Component<
     logger.log('[DynamicForm]', '[buildField]', { field, index, options });
 
     // all readonly or hidden field will rendered as plain component
-    if (_.includes(['readonly'], idx(field, _ => _.options.accessible))) {
+    if (_.includes(['readonly'], field?.options?.accessible)) {
       if (field.type === DynamicFormTypes.Images) {
         return (
           <PlainImages
@@ -167,7 +162,7 @@ export class DynamicForm extends React.Component<
         ...options,
       } as PlainOptions);
     }
-    if (_.includes(['hidden'], idx(field, _ => _.options.accessible))) {
+    if (_.includes(['hidden'], field?.options?.accessible)) {
       // return generatePlain({ text: <i>hidden</i>, ...(options as PlainOptions) });
       return null;
     }
@@ -218,7 +213,7 @@ export class DynamicForm extends React.Component<
 
           const items = R.path(['associations', modelName, 'items'])(field);
           const existItems = R.path(['associations', modelName, 'existItems'])(field);
-          const type = idx(field.options as EnumFilterMetaInfoOptions, _ => _.filterType);
+          const type = (field.options as EnumFilterMetaInfoOptions)?.filterType;
           return generateSelect(form, {
             ...(options as any),
             items,
@@ -250,9 +245,9 @@ export class DynamicForm extends React.Component<
         // EnumFilter|Enum / RelationShip
         // --------------------------------------------------------------
         logger.log('[DynamicForm]', '[buildField][EnumFilter|Enum]', { field });
-        const enumData = idx(field.options as EnumFilterMetaInfoOptions, _ => _.enumData) || {};
+        const enumData = (field.options as EnumFilterMetaInfoOptions)?.enumData || {};
         const items: Item[] = _.map(enumData, (value, key) => ({ key, value: [key, value] }));
-        const type = idx(field.options as EnumFilterMetaInfoOptions, _ => _.filterType);
+        const type = (field.options as EnumFilterMetaInfoOptions)?.filterType;
         logger.log('[DynamicForm]', '[buildField][EnumFilter|Enum]', { type, items });
         return generateSelect(form, { ...(options as any), items, getName: R.prop('key') });
       }
@@ -262,10 +257,7 @@ export class DynamicForm extends React.Component<
         // --------------------------------------------------------------
         logger.debug('[DynamicForm]', '[buildField][Association]', field);
         if (R.has('foreignOpts')(field)) {
-          const { modelName, association = defaultAssociation, onSearch } = R.path([
-            'foreignOpts',
-            0,
-          ])(field);
+          const { modelName, association = defaultAssociation, onSearch } = R.path(['foreignOpts', 0])(field);
 
           const items = R.path(['associations', modelName, 'items'])(field);
           const existItems = R.path(['associations', modelName, 'existItems'])(field);
@@ -325,12 +317,7 @@ export class DynamicForm extends React.Component<
 
     const typedFields = _.filter(fields, field => _.has(field, 'type'));
     const renderFields = _.map(typedFields, (field, index) => (
-      <EnhancedPureElement
-        key={index}
-        field={field}
-        index={index}
-        builder={_.curry(this._buildField)(fields)}
-      />
+      <EnhancedPureElement key={index} field={field} index={index} builder={_.curry(this._buildField)(fields)} />
     ));
 
     return (
@@ -412,7 +399,7 @@ class FormAnchor extends React.Component<IFormAnchorProps> {
         return <Anchor.Link key={field.name} title={title} href={`#dynamic-form-${field.name}`} />;
       }),
       R.filter(field => field.type),
-      R.filter(field => idx(field as DynamicFormField, _ => _.options.accessible) !== 'hidden'),
+      R.filter(field => (field as DynamicFormField)?.options?.accessible !== 'hidden'),
     )(fields);
 
     if (R.anyPass([R.isNil, R.isEmpty])(fields)) {
@@ -438,12 +425,7 @@ class EnhancedPureElement extends React.Component<IPureElementProps> {
     const propsDiff = diff(this.props, nextProps, { exclude: ['builder'] });
     const stateDiff = diff(this.state, nextState);
     const shouldUpdate = isRequired || propsDiff.isDifferent || stateDiff.isDifferent;
-    pureLogger.log(
-      '[EnhancedPureElement][shouldComponentUpdate]',
-      { isRequired },
-      propsDiff,
-      stateDiff,
-    );
+    pureLogger.log('[EnhancedPureElement][shouldComponentUpdate]', { isRequired }, propsDiff, stateDiff);
     if (shouldUpdate) {
       pureLogger.debug(
         '[EnhancedPureElement][shouldComponentUpdate]',
@@ -459,11 +441,7 @@ class EnhancedPureElement extends React.Component<IPureElementProps> {
         shouldUpdate,
       );
     }
-    pureLogger.log(
-      '[EnhancedPureElement][shouldComponentUpdate]',
-      { stateDiff, propsDiff, isRequired },
-      shouldUpdate,
-    );
+    pureLogger.log('[EnhancedPureElement][shouldComponentUpdate]', { stateDiff, propsDiff, isRequired }, shouldUpdate);
     return shouldUpdate;
   }
 
@@ -484,7 +462,7 @@ class EnhancedPureElement extends React.Component<IPureElementProps> {
     pureLogger.log('[EnhancedPureElement][render]', { props: this.props, state: this.state });
 
     // options.accessible = 'hidden' 时需要隐藏该元素
-    const hidden = idx(field as DynamicFormField, _ => _.options.accessible) === 'hidden';
+    const hidden = (field as DynamicFormField)?.options?.accessible === 'hidden';
 
     if (hidden) {
       return null;

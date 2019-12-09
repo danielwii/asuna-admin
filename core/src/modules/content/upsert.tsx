@@ -1,12 +1,7 @@
 import { Pane } from '@asuna-admin/components';
 import { DynamicForm, DynamicFormTypes } from '@asuna-admin/components/DynamicForm';
 import { AppContext, EventBus, EventType } from '@asuna-admin/core';
-import {
-  diff,
-  isErrorResponse,
-  reduxActionCallbackPromise,
-  toFormErrors,
-} from '@asuna-admin/helpers';
+import { diff, isErrorResponse, reduxActionCallbackPromise, toFormErrors } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 import * as schemaHelper from '@asuna-admin/schema';
 import { asyncLoadAssociationsDecorator } from '@asuna-admin/schema/async';
@@ -18,7 +13,7 @@ import idx from 'idx';
 import * as _ from 'lodash';
 import moment from 'moment';
 import * as R from 'ramda';
-import React from 'react';
+import * as React from 'react';
 import { connect } from 'react-redux';
 import { PropagateLoader } from 'react-spinners';
 
@@ -136,11 +131,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
     const { basis } = this.props;
 
     // content::create::name::timestamp => name
-    const modelName = R.compose(
-      R.nth(2),
-      R.split(/::/),
-      R.path(['pane', 'key']),
-    )(basis);
+    const modelName = R.compose(R.nth(2), R.split(/::/), R.path(['pane', 'key']))(basis);
     logger.log('[constructor]', 'model name is ', modelName);
 
     const isInsertMode = !R.path(['pane', 'data', 'record'])(basis);
@@ -167,11 +158,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
     const { isInsertMode, init } = this.state;
 
     // content::create::name::timestamp => name
-    const modelName = R.compose(
-      R.nth(2),
-      R.split(/::/),
-      R.path(['pane', 'key']),
-    )(basis);
+    const modelName = R.compose(R.nth(2), R.split(/::/), R.path(['pane', 'key']))(basis);
     logger.debug('[componentWillMount]', 'model name is ', modelName);
 
     // --------------------------------------------------------------
@@ -209,11 +196,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
       const { data: entity } = await this._reloadEntity(record);
       const models = this.props.models;
       originalFieldValues = R.pathOr(entity, [modelName, record.id])(models);
-      logger.debug(
-        '[componentWillMount]',
-        { modelName, record, entity },
-        diff(originalFieldValues, record),
-      );
+      logger.debug('[componentWillMount]', { modelName, record, entity }, diff(originalFieldValues, record));
     }
 
     await this.setState({
@@ -252,8 +235,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
     // const propsDiff = diff(this.props, nextProps);
     const stateDiff = diff(this.state, nextState, { include: ['fields', 'loadings'] });
     const samePane = key === activeKey;
-    const shouldUpdate =
-      samePane && (propsDiff.isDifferent || stateDiff.isDifferent || this.state.hasErrors);
+    const shouldUpdate = samePane && (propsDiff.isDifferent || stateDiff.isDifferent || this.state.hasErrors);
     logger.log(
       '[shouldComponentUpdate]',
       { nextProps, nextState, nextContext },
@@ -270,9 +252,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
       if (record) {
         logger.log('[_reloadEntity]', 'reload model...', record);
         const primaryKey = AppContext.adapters.models.getPrimaryKey(modelName);
-        dispatch(
-          modelsActions.fetch(modelName, { id: record[primaryKey], profile: 'ids' }, callback),
-        );
+        dispatch(modelsActions.fetch(modelName, { id: record[primaryKey], profile: 'ids' }, callback));
       }
     });
   };
@@ -308,9 +288,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
 
       const updateModeAtTheFirstTime = !isInsertMode && init;
 
-      const hasEnumFilter = !R.isEmpty(
-        R.filter(R.propEq('type', DynamicFormTypes.EnumFilter), changedFields),
-      );
+      const hasEnumFilter = !R.isEmpty(R.filter(R.propEq('type', DynamicFormTypes.EnumFilter), changedFields));
       const hasSelectable = !R.isEmpty(R.filter(R.path(['options', 'selectable']), changedFields));
 
       logger.debug('[handleFormChange]', {
@@ -327,9 +305,10 @@ class ContentUpsert extends React.Component<IProps, IState> {
           loadings: { ...this.state.loadings, ASSOCIATIONS: true },
         });
         logger.debug('[handleFormChange]', 'load async decorated fields');
-        const { fields: asyncDecoratedFields } = await R.pipeP(
-          ...this.asyncDecorators('ASSOCIATIONS'),
-        )({ modelName, fields: decoratedFields });
+        const { fields: asyncDecoratedFields } = await R.pipeP(...this.asyncDecorators('ASSOCIATIONS'))({
+          modelName,
+          fields: decoratedFields,
+        });
         const isDifferent = diff(asyncDecoratedFields, this.state.fields).isDifferent;
         if (isDifferent) {
           logger.debug('[handleFormChange]', {
@@ -381,34 +360,30 @@ class ContentUpsert extends React.Component<IProps, IState> {
     const id = R.prop(primaryKey)(originalFieldValues);
 
     dispatch(
-      modelsActions.upsert(
-        modelName,
-        { body: { ...fieldPairs, [primaryKey]: id } },
-        ({ response, error }) => {
-          if (isErrorResponse(error)) {
-            const errors = toFormErrors(error.response);
-            logger.warn('[upsert callback]', { response, error, errors });
-            // if (typeof errors === 'string') {
-            //   message.error(toErrorMessage(errors));
-            // } else {
-            // }
-            this._handleFormChange(errors);
-            this.setState({ hasErrors: true });
+      modelsActions.upsert(modelName, { body: { ...fieldPairs, [primaryKey]: id } }, ({ response, error }) => {
+        if (isErrorResponse(error)) {
+          const errors = toFormErrors(error.response);
+          logger.warn('[upsert callback]', { response, error, errors });
+          // if (typeof errors === 'string') {
+          //   message.error(toErrorMessage(errors));
+          // } else {
+          // }
+          this._handleFormChange(errors);
+          this.setState({ hasErrors: true });
+        } else {
+          this.setState({
+            hasErrors: false,
+            originalFieldValues: { ...originalFieldValues, ...fieldPairs },
+          });
+          // FIXME 当前页面暂未切换为 update 模式，临时关闭当前页面
+          if (isInsertMode) {
+            EventBus.sendEvent(EventType.MODEL_INSERT, { modelName });
+            onClose();
           } else {
-            this.setState({
-              hasErrors: false,
-              originalFieldValues: { ...originalFieldValues, ...fieldPairs },
-            });
-            // FIXME 当前页面暂未切换为 update 模式，临时关闭当前页面
-            if (isInsertMode) {
-              EventBus.sendEvent(EventType.MODEL_INSERT, { modelName });
-              onClose();
-            } else {
-              EventBus.sendEvent(EventType.MODEL_UPDATE, { modelName, id });
-            }
+            EventBus.sendEvent(EventType.MODEL_UPDATE, { modelName, id });
           }
-        },
-      ),
+        }
+      }),
     );
   };
 
@@ -438,14 +413,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
       );
     }
 
-    return (
-      <ContentForm
-        anchor
-        fields={fields}
-        onChange={this._handleFormChange}
-        onSubmit={this._handleFormSubmit}
-      />
-    );
+    return <ContentForm anchor fields={fields} onChange={this._handleFormChange} onSubmit={this._handleFormSubmit} />;
   }
 }
 

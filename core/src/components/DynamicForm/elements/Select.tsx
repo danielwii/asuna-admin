@@ -5,7 +5,7 @@ import { Select } from 'antd';
 import { WrappedFormUtils } from 'antd/es/form/Form';
 import * as _ from 'lodash';
 import * as R from 'ramda';
-import React from 'react';
+import * as React from 'react';
 import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc';
 
 import { generateComponent, IFormItemLayout } from '.';
@@ -148,96 +148,83 @@ export function generateSelect<T>(
     _renderSortTree = () => {
       const { selectedItems } = this.state;
 
-      const SortableItem = SortableElement<{ value: string; sortIndex: number }>(
-        ({ value, sortIndex }) => {
-          // TODO 目前只支持 ObjectItem 且通过 id 判断排序组件，理论上，该排序也可能应用在非 EnumFilter 下且不通过 id 判断的情况
-          const primaryKey = AppContext.adapters.models.getPrimaryKey(name);
-          const item = this._getAllItems().find(
-            (current: ObjectItem) => current[primaryKey] === value,
-          );
-          const optionName = this._extractName(item);
-          const optionValue = this._extractValue(item);
-          return (
-            <React.Fragment>
-              <li>
-                <span className="sort-index">No. {sortIndex}</span>
-                {/* prettier-ignore */}
-                <span>{'#'}{optionValue}{': '}{optionName}</span>
-              </li>
-              {/* language=CSS */}
-              <style jsx>{`
-                li {
-                  position: relative;
-                  display: block;
-                  padding: 0.5rem 0.5rem 0.5rem 3.5rem;
-                  margin: 0.5rem 0;
-                  /*height: 2rem;*/
-                  line-height: 1rem;
-                  color: #000;
-                  text-decoration: none;
-                  border-radius: 0.2rem;
-                  transition: all 0.1s ease-out;
-                  box-shadow: 0 0 0.5rem grey;
-                }
-
-                li .sort-index {
-                  position: absolute;
-                  left: -1.3rem;
-                  /*top: 50%;*/
-                  top: 1rem;
-                  margin-top: -1.3rem;
-                  width: 4rem;
-                  line-height: 2rem;
-                  border: 0.3rem solid #fff;
-                  text-align: center;
-                  border-radius: 0.2rem;
-                  background-color: white;
-                  box-shadow: 0 0 0.5rem grey;
-                }
-
-                li:hover {
-                  background: #d6d4d4;
-                  text-decoration: none;
-                  transform: scale(1.02);
-                }
-              `}</style>
-            </React.Fragment>
-          );
-        },
-      );
-      const SortableList = SortableContainer<{ selectedSortedItems: any[] }>(
-        ({ selectedSortedItems }) => (
+      const SortableItem = SortableElement<{ value: string; sortIndex: number }>(({ value, sortIndex }) => {
+        // TODO 目前只支持 ObjectItem 且通过 id 判断排序组件，理论上，该排序也可能应用在非 EnumFilter 下且不通过 id 判断的情况
+        const primaryKey = AppContext.adapters.models.getPrimaryKey(name);
+        const item = this._getAllItems().find((current: ObjectItem) => current[primaryKey] === value);
+        const optionName = this._extractName(item);
+        const optionValue = this._extractValue(item);
+        return (
           <React.Fragment>
-            <ul>
-              {selectedSortedItems.map((value, index) => (
-                <SortableItem
-                  key={`item-${Symbol(index).toString()}`}
-                  index={index}
-                  sortIndex={index}
-                  value={value}
-                />
-              ))}
-            </ul>
+            <li>
+              <span className="sort-index">No. {sortIndex}</span>
+              {/* prettier-ignore */}
+              <span>{'#'}{optionValue}{': '}{optionName}</span>
+            </li>
             {/* language=CSS */}
             <style jsx>{`
-              ul {
-                list-style: none;
-                padding: 0;
-                margin: 2rem;
+              li {
+                position: relative;
+                display: block;
+                padding: 0.5rem 0.5rem 0.5rem 3.5rem;
+                margin: 0.5rem 0;
+                /*height: 2rem;*/
+                line-height: 1rem;
+                color: #000;
+                text-decoration: none;
+                border-radius: 0.2rem;
+                transition: all 0.1s ease-out;
+                box-shadow: 0 0 0.5rem grey;
+              }
+
+              li .sort-index {
+                position: absolute;
+                left: -1.3rem;
+                /*top: 50%;*/
+                top: 1rem;
+                margin-top: -1.3rem;
+                width: 4rem;
+                line-height: 2rem;
+                border: 0.3rem solid #fff;
+                text-align: center;
+                border-radius: 0.2rem;
+                background-color: white;
+                box-shadow: 0 0 0.5rem grey;
+              }
+
+              li:hover {
+                background: #d6d4d4;
+                text-decoration: none;
+                transform: scale(1.02);
               }
             `}</style>
           </React.Fragment>
-        ),
-      );
+        );
+      });
+      const SortableList = SortableContainer<{ selectedSortedItems: any[] }>(({ selectedSortedItems }) => (
+        <React.Fragment>
+          <ul>
+            {selectedSortedItems.map((value, index) => (
+              <SortableItem key={`item-${Symbol(index).toString()}`} index={index} sortIndex={index} value={value} />
+            ))}
+          </ul>
+          {/* language=CSS */}
+          <style jsx>{`
+            ul {
+              list-style: none;
+              padding: 0;
+              margin: 2rem;
+            }
+          `}</style>
+        </React.Fragment>
+      ));
 
       return <SortableList selectedSortedItems={selectedItems} onSortEnd={this._onSortEnd} />;
     };
 
     _onChange = (value: any | any[]) => {
       logger.log('[MixedSelect]', '[onChange]', { value, items: this._getAllItems() });
-      const exists = value
-        ? R.filter(item => R.contains(R.prop('id')(item))(value))(this._getAllItems())
-        : undefined;
+      const exists = value ? R.filter(item => R.contains(R.prop('id')(item))(value))(this._getAllItems()) : undefined;
       logger.log('[MixedSelect]', '[onChange]', { exists });
 
       this.setState({ existItems: exists });

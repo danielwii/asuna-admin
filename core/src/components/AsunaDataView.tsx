@@ -2,12 +2,12 @@ import { AssetsPreview, DynamicFormTypes } from '@asuna-admin/components';
 import { resolveModelInPane, useAsunaModels } from '@asuna-admin/helpers';
 import { WithDebugInfo } from '@asuna-admin/helpers/debug';
 import { Collapse, Descriptions, Empty, PageHeader, Tabs, Tag, Tooltip } from 'antd';
-import _ from 'lodash';
-import moment from 'moment';
-import { useAsync } from 'react-use';
 import bluebird from 'bluebird';
-import React, { Suspense } from 'react';
-import util from 'util';
+import * as _ from 'lodash';
+import moment from 'moment';
+import * as React from 'react';
+import { useAsync } from 'react-use';
+import * as util from 'util';
 
 const { Panel } = Collapse;
 const { TabPane } = Tabs;

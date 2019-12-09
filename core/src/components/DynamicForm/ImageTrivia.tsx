@@ -5,14 +5,13 @@ import { createLogger } from '@asuna-admin/logger';
 import { Asuna } from '@asuna-admin/types';
 
 import { Button, Icon, Input, List } from 'antd';
-import idx from 'idx';
-import _ from 'lodash';
+import * as _ from 'lodash';
 import { join } from 'path';
 import * as R from 'ramda';
-import React from 'react';
+import * as React from 'react';
 import ReactCrop, { Crop, PixelCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
-import util from 'util';
+import * as util from 'util';
 
 const logger = createLogger('components:dynamic-form:image-trivia');
 
@@ -100,13 +99,12 @@ export class ImageTrivia extends React.Component<IProps, IState> {
   onCropComplete = (crop: Crop, pixelCrop: PixelCrop) => {
     const { value } = this.props;
     const { updateIndex } = this.state;
-    const tags = idx(value, _ => _.tags) || [];
+    const tags = value?.tags || [];
     if (_.isNil(updateIndex)) {
       const latest = tags.length;
       this.setState({ updateIndex: latest });
       this._updateTagInfo(latest, { positionInfo: { crop, pixelCrop } });
     } else {
-      //   this.setState({});
       this._updateTagInfo(updateIndex, { positionInfo: { crop, pixelCrop } });
     }
     logger.log('[onCropComplete]', { crop, pixelCrop, tags });
@@ -119,7 +117,7 @@ export class ImageTrivia extends React.Component<IProps, IState> {
   _add = () => {
     logger.log('_add', this.state);
     const { value, onChange } = this.props;
-    const tags = idx(value, _ => _.tags) || [];
+    const tags = value?.tags || [];
     onChange!(R.mergeDeepRight(value, { tags: tags.concat({} as any) }));
     this.setState({ updateIndex: tags.length, crop: DEFAULT_CROP });
   };
@@ -129,7 +127,7 @@ export class ImageTrivia extends React.Component<IProps, IState> {
     logger.log('_edit', { index });
     this.setState({
       updateIndex: index,
-      crop: idx(value, _ => _.tags[index].positionInfo.crop) || DEFAULT_CROP,
+      crop: value?.tags?.[index]?.positionInfo?.crop || DEFAULT_CROP,
     });
   };
 
@@ -162,19 +160,14 @@ export class ImageTrivia extends React.Component<IProps, IState> {
   render() {
     const { maxHeight, maxWidth, value } = this.props;
     const { crop, updateIndex } = this.state;
-    const url = valueToUrl(idx(value, _ => _.url), { type: 'image', thumbnail: {} });
+    const url = valueToUrl(value?.url, { type: 'image', thumbnail: {} });
 
     logger.log('[render]', { value, crop });
 
     return (
       <div>
         <Button onClick={() => this.uploadElement!.click()}>
-          <input
-            hidden
-            type="file"
-            ref={input => (this.uploadElement = input)}
-            onChange={this.onSelectFile}
-          />
+          <input hidden type="file" ref={input => (this.uploadElement = input)} onChange={this.onSelectFile} />
           <Icon type="upload" /> Click to Upload
         </Button>
         <div className="asuna-image-crop">
@@ -216,7 +209,7 @@ export class ImageTrivia extends React.Component<IProps, IState> {
                   title={
                     <Title highlight={updateIndex === index}>
                       <pre>
-                        {index}::{util.inspect(idx(item, _ => _.positionInfo))}
+                        {index}::{util.inspect(item?.positionInfo)}
                       </pre>
                     </Title>
                   }

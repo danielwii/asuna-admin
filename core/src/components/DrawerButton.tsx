@@ -1,5 +1,5 @@
 import { Button, Drawer, Empty, Icon, Skeleton, Timeline } from 'antd';
-import _ from 'lodash';
+import * as _ from 'lodash';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 

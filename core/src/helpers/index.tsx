@@ -15,7 +15,7 @@ import idx from 'idx';
 import * as _ from 'lodash';
 import moment from 'moment';
 import * as R from 'ramda';
-import React from 'react';
+import * as React from 'react';
 import * as util from 'util';
 import { VideoJsPlayerOptions } from 'video.js';
 

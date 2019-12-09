@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { Provider } from 'react-redux';
 
 import { storiesOf } from '@storybook/react';
@@ -44,7 +44,5 @@ const initialState = {
 };
 
 storiesOf('SideMenu', module)
-  .addDecorator(getStory => (
-    <Provider store={store.configureStore({ menu: initialState }, {})}>{getStory()}</Provider>
-  ))
+  .addDecorator(getStory => <Provider store={store.configureStore({ menu: initialState }, {})}>{getStory()}</Provider>)
   .add('container', () => <SideMenuContainer />);

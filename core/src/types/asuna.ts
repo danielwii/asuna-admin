@@ -1,6 +1,7 @@
 import { DataViewColumnProps, DynamicFormTypes } from '@asuna-admin/components';
+import { QueryFieldsColumnProps } from '../modules/content/query';
 import { ColumnProps } from 'antd/es/table';
-import React from 'react';
+import * as React from 'react';
 import { MetaInfoOptions } from './meta';
 
 export declare module Asuna {
@@ -146,7 +147,10 @@ export declare module Asuna {
     type ColumnOpts<EntitySchema> = TableColumnOpts<EntitySchema> & ViewColumnProps<EntitySchema>;
 
     type ViewColumnProps<EntitySchema> = {
-      columnProps?: { dataView?: DataViewColumnProps<EntitySchema> };
+      columnProps?: {
+        dataView?: DataViewColumnProps<EntitySchema>;
+        queryFields?: QueryFieldsColumnProps<EntitySchema>;
+      };
     };
 
     type TableColumnOpts<EntitySchema> = {

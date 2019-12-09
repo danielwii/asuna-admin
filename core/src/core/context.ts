@@ -16,8 +16,6 @@ import { GraphqlAdapter } from '@asuna-admin/adapters/graphql';
 import { Config } from '@asuna-admin/config';
 import { AsunaDefinitions } from '@asuna-admin/core/definitions';
 import { IStoreConnector, RootState } from '@asuna-admin/store';
-
-import idx from 'idx';
 import * as React from 'react';
 import { AnyAction, Dispatch } from 'redux';
 import { Subject } from 'rxjs';
@@ -185,7 +183,7 @@ class AppContext {
   }
 
   public static get isDevMode() {
-    return idx(AppContext.nextConfig.publicRuntimeConfig, _ => _.env) !== 'production';
+    return AppContext.nextConfig.publicRuntimeConfig?.env !== 'production';
   }
 
   public static get publicConfig() {

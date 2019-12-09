@@ -3,7 +3,7 @@ import { HeaderContainer, PanesContainer, SideMenuContainer } from '@asuna-admin
 import { createLogger } from '@asuna-admin/logger';
 
 import { Layout } from 'antd';
-import React from 'react';
+import * as React from 'react';
 import styled from 'styled-components';
 
 import WithStyles from './with-styles';

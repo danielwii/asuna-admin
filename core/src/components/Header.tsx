@@ -2,7 +2,7 @@ import { AppState, AuthState } from '@asuna-admin/store';
 
 import { Button, Dropdown, Icon, Layout, Menu, Modal } from 'antd';
 import getConfig from 'next/config';
-import React from 'react';
+import * as React from 'react';
 import styled from 'styled-components';
 
 import { DebugSettings, IDebugSettingsProps } from './DebugSettings';
@@ -56,9 +56,7 @@ export class Header extends React.Component<IHeaderProps> {
       {this.props.isSuperAdmin && <Menu.Divider />}
       {this.props.env !== 'production' && (
         <Menu.Item>
-          <a onClick={() => this.props.handleAction('set-logger-level', DebugSettings.name)}>
-            Debug Settings
-          </a>
+          <a onClick={() => this.props.handleAction('set-logger-level', DebugSettings.name)}>Debug Settings</a>
         </Menu.Item>
       )}
       {this.props.env !== 'production' && <Menu.Divider />}

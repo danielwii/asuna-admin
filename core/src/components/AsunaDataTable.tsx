@@ -8,7 +8,7 @@ import { Button, Divider, Dropdown, Menu, Modal, Switch, Table, Tag } from 'antd
 import { PaginationConfig } from 'antd/es/pagination';
 import { SorterResult } from 'antd/es/table';
 import { TableCurrentDataSource } from 'antd/lib/table/interface';
-import _ from 'lodash';
+import * as _ from 'lodash';
 import * as R from 'ramda';
 import React, { useState } from 'react';
 

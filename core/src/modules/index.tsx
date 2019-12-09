@@ -3,9 +3,9 @@ import { withDebugSettingsProps } from '@asuna-admin/containers/DebugSettings';
 import { AppContext } from '@asuna-admin/core';
 import { createLogger } from '@asuna-admin/logger';
 
-import _ from 'lodash';
+import * as _ from 'lodash';
 import dynamic from 'next/dynamic';
-import React, { ReactNode } from 'react';
+import * as React from 'react';
 
 const logger = createLogger('modules:index');
 
@@ -50,7 +50,7 @@ export interface ModulesLoaderProps {
   component?: any;
 }
 
-export default function(props: ModulesLoaderProps & { children?: ReactNode }) {
+export default function(props: ModulesLoaderProps & { children?: React.ReactNode }) {
   logger.log({ props });
   const { module, component } = props as any;
 

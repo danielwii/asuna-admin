@@ -1,6 +1,5 @@
 import preloadAll from 'jest-next-dynamic';
 // import * as _ from 'lodash';
-// import _ from 'lodash';
 import { uniqueItems } from './Select';
 
 beforeAll(async () => {

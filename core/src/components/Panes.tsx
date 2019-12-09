@@ -3,9 +3,9 @@ import { createLogger } from '@asuna-admin/logger';
 import ModulesLoader from '@asuna-admin/modules';
 
 import { Button, Divider, Tabs } from 'antd';
-import _ from 'lodash';
+import * as _ from 'lodash';
 import * as R from 'ramda';
-import React from 'react';
+import * as React from 'react';
 
 const logger = createLogger('components:panes');
 

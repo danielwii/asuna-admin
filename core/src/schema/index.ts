@@ -2,9 +2,7 @@ import { DynamicFormTypes } from '@asuna-admin/components';
 import { AppContext } from '@asuna-admin/core';
 import { castModelKey, castModelName, diff } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
-
-import idx from 'idx';
-import _ from 'lodash';
+import * as _ from 'lodash';
 import * as R from 'ramda';
 
 const logger = createLogger('helpers:schema');
@@ -87,10 +85,7 @@ export const dynamicTypeDecorator = ({
   const { columns } = AppContext.ctx.models.getModelConfig(modelName);
   logger.log(TAG, { fields, columns });
 
-  const typePairs = Object.assign(
-    {},
-    ..._.map(columns, (column, key) => ({ [key]: { type: column.editor(fields) } })),
-  );
+  const typePairs = Object.assign({}, ..._.map(columns, (column, key) => ({ [key]: { type: column.editor(fields) } })));
 
   logger.log(TAG, { typePairs });
 
@@ -199,10 +194,7 @@ export const enumDecorator = ({
     const [, enumFilterField] = R.toPairs(enumFilterFields)[0];
     logger.debug(TAG, { enumFilterField });
 
-    const enums = _.map(
-      _.keys(idx(enumFilterField as EnumField, _ => _.options.enumData)),
-      castModelName,
-    );
+    const enums = _.map(_.keys((enumFilterField as EnumField)?.options?.enumData), castModelName);
     const current = castModelName(R.pathOr('', ['value'])(enumFilterField));
     logger.debug(TAG, { enums, current });
 

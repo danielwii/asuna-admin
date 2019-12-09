@@ -1,7 +1,7 @@
 import { RelationColumnProps } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 import { Asuna } from '@asuna-admin/types';
-import _ from 'lodash';
+import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
 import { useEffect, useState } from 'react';
 import { AppContext } from '../core/context';

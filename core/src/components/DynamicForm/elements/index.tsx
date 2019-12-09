@@ -4,7 +4,7 @@ import { createLogger } from '@asuna-admin/logger';
 
 import { Checkbox, DatePicker, Form, Icon, Input, InputNumber, Switch, TimePicker } from 'antd';
 import { GetFieldDecoratorOptions, WrappedFormUtils } from 'antd/es/form/Form';
-import React from 'react';
+import * as React from 'react';
 
 import { Authorities } from '../Authorities';
 import { VideoUploader } from '../Videos';

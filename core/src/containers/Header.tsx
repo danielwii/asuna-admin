@@ -2,7 +2,7 @@ import { Header, IHeaderProps } from '@asuna-admin/components';
 import { AppContext } from '@asuna-admin/core';
 import { appActions, authActions, panesActions, RootState } from '@asuna-admin/store';
 
-import React from 'react';
+import * as React from 'react';
 import { connect } from 'react-redux';
 
 import { withDebugSettingsProps } from './DebugSettings';

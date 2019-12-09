@@ -1,5 +1,5 @@
 import { Icon, notification, Timeline } from 'antd';
-import _ from 'lodash';
+import * as _ from 'lodash';
 import nanoid from 'nanoid';
 import { differenceInSeconds } from 'date-fns';
 import * as React from 'react';
