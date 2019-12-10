@@ -236,7 +236,7 @@ const GroupInnerForm = (props: GroupEasyFormProps & formik.FormikProps<formik.Fo
                   <formik.Field key={fieldDef.name} name={formField.name}>
                     {({ field, form }: formik.FieldProps<formik.FormikValues>) => {
                       const hasError = !!(form.touched[formField.name] && form.errors[formField.name]);
-                      const value = _.defaultTo(field.value, fieldValues[formField.name] || formField.defaultValue);
+                      const value = field.value || _.get(fieldValues, formField.name) || formField.defaultValue;
                       return (
                         <FormControl error={hasError} fullWidth={true}>
                           <InputLabel htmlFor={field.name}>
