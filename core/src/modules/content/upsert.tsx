@@ -9,7 +9,6 @@ import { modelsActions, RootState } from '@asuna-admin/store';
 
 import { Form } from 'antd';
 import { AxiosResponse } from 'axios';
-import idx from 'idx';
 import * as _ from 'lodash';
 import moment from 'moment';
 import * as R from 'ramda';
@@ -192,7 +191,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
       }));
     } else {
       // 非新增模式尝试再次拉取数据 TODO record must have property id
-      const record = idx(this.props, _ => _.basis.pane.data.record) as any;
+      const record = this.props?.basis?.pane?.data?.record;
       const { data: entity } = await this._reloadEntity(record);
       const models = this.props.models;
       originalFieldValues = R.pathOr(entity, [modelName, record.id])(models);

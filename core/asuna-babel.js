@@ -1,3 +1,4 @@
+// eslint-disable-next-line eslint-comments/disable-enable-pair
 /* eslint-disable no-restricted-syntax */
 module.exports = api => {
   api.cache.never();
@@ -15,7 +16,6 @@ module.exports = api => {
       ],
     ],
     plugins: [
-      'babel-plugin-idx',
       '@babel/plugin-syntax-dynamic-import',
       '@babel/plugin-proposal-optional-chaining',
       '@babel/plugin-proposal-nullish-coalescing-operator',
@@ -47,9 +47,7 @@ module.exports = api => {
                     const current = currentFile.slice(currentFile.indexOf(root) + root.length + 1);
                     const distance = current.match(/\//g).length;
 
-                    const relatedPrefix = Array(distance)
-                      .fill('../')
-                      .join('');
+                    const relatedPrefix = new Array(distance).fill('../').join('');
 
                     const resolved = relatedPrefix + sourcePath.slice(prefix.length + 1);
 

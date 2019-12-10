@@ -10,7 +10,7 @@ const logger = createLogger('adapters::response');
 
 export const responseProxy = {
   extract(apiResponse: object): { items: object[]; pagination: PaginationConfig } {
-    return AppContext.ctx.response.extract(apiResponse);
+    return AppContext.ctx.response.extract(apiResponse || {});
   },
 };
 
@@ -18,16 +18,7 @@ export class ResponseAdapter {
   extractPageable = (apiResponse): Asuna.Pageable & { total: number } => {
     switch (Config.get('API_RESPONSE_PAGE_MODE')) {
       case 'SpringJPA': {
-        const names = [
-          'first',
-          'last',
-          'number',
-          'numberOfElements',
-          'size',
-          'sort',
-          'totalElements',
-          'totalPages',
-        ];
+        const names = ['first', 'last', 'number', 'numberOfElements', 'size', 'sort', 'totalElements', 'totalPages'];
 
         const { size, number, totalElements } = _.pick(apiResponse, names);
         return { page: number, size, total: totalElements };

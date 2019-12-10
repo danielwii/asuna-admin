@@ -9,8 +9,9 @@ import { PaginationConfig } from 'antd/es/pagination';
 import { SorterResult } from 'antd/es/table';
 import { TableCurrentDataSource } from 'antd/lib/table/interface';
 import * as _ from 'lodash';
-import * as R from 'ramda';
+import * as fp from 'lodash/fp';
 import React, { useState } from 'react';
+import { useAsync } from 'react-use';
 
 const logger = createLogger('components:data-table');
 
@@ -148,14 +149,15 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
     // TODO not implemented
     // AppContext.adapters.api.export();
   };
-  const _handleTableChange = (
-    pagination?: PaginationConfig,
-    filters?: Record<keyof any, string[]>,
-    sorter?: SorterResult<any>,
-    extra?: TableCurrentDataSource<any>,
-  ): void => {
-    logger.debug('[handleTableChange]', { pagination, filters, sorter, extra });
-    // using state sorter if no sorter found in parameters
+  const _transformQueryCondition = ({
+    sorter,
+    pagination,
+    filters,
+  }: {
+    pagination?: PaginationConfig;
+    filters?: Record<keyof any, string[]>;
+    sorter?: SorterResult<any>;
+  }) => {
     const availableSorter = sorter && _.isEmpty(sorter) ? queryCondition.sorter : sorter;
     const transformedSorter =
       availableSorter && !_.isEmpty(availableSorter)
@@ -163,6 +165,16 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
         : null;
     // { 'ref.name': '{ 'ref.id': 'idxxxx' }' } -> { 'ref.id': 'idxxxxx' }
     const transformedFilters = _transformFilters(filters);
+    return { transformedFilters, availableSorter, transformedSorter };
+  };
+  const _handleTableChange = (
+    pagination?: PaginationConfig,
+    filters?: Record<keyof any, string[]>,
+    sorter?: SorterResult<any>,
+    extra?: TableCurrentDataSource<any>,
+  ): void => {
+    logger.debug('[handleTableChange]', { pagination, filters, sorter, extra });
+    const { availableSorter, transformedFilters, transformedSorter } = _transformQueryCondition(queryCondition);
 
     logger.debug('[handleTableChange]', { availableSorter, transformedSorter, transformedFilters });
     AppContext.dispatch(
@@ -182,10 +194,21 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
   };
 
   const actionColumn = _.find(columnProps, column => column.key === 'action');
-  const response = R.pathOr([], [modelName, 'data'])(models);
-  const loading = R.pathOr(false, [modelName, 'loading'])(models);
 
-  const { items: dataSource, pagination } = responseProxy.extract(response);
+  // 直接从 remote 拉取，未来需要将 models 中缓存的数据清除
+  const { value: data, loading } = useAsync(async () => {
+    const { transformedFilters, transformedSorter } = _transformQueryCondition(queryCondition);
+    return await AppContext.adapters.models
+      .loadModels(modelName, {
+        relations,
+        filters: transformedFilters,
+        pagination,
+        sorter: transformedSorter,
+      })
+      .then(fp.get('data'));
+  }, [queryCondition]);
+
+  const { items: dataSource, pagination } = responseProxy.extract(data);
 
   return (
     <>

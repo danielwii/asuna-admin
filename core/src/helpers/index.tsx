@@ -11,7 +11,6 @@ import { Badge, Button, Checkbox, Divider, Icon, Input, Popconfirm, Statistic, T
 import { ColumnProps } from 'antd/es/table';
 import { FilterDropdownProps } from 'antd/es/table/interface';
 import * as deepDiff from 'deep-diff';
-import idx from 'idx';
 import * as _ from 'lodash';
 import moment from 'moment';
 import * as R from 'ramda';
@@ -162,7 +161,7 @@ export const columnHelper = {
         const modelName = extras.modelName;
         const primaryKey = AppContext.adapters.models.getPrimaryKey(modelName);
         const relation = AppContext.adapters.models.getFormSchema(modelName)[ref];
-        const relationName = idx(relation, _ => _.options.selectable) as any;
+        const relationName = relation?.options?.selectable;
         if (relationName) {
           const field = opts.relationField || 'name';
           const {
@@ -229,9 +228,9 @@ export const columnHelper = {
     let filterProps = {};
     switch (opts.filterType) {
       case 'list':
-        const modelName = idx(opts, _ => _.extras.modelName) as any;
+        const modelName = opts?.extras?.modelName;
         const relation = AppContext.adapters.models.getFormSchema(modelName)[ref];
-        const relationName = idx(relation, _ => _.options.selectable) as any;
+        const relationName = relation?.options?.selectable;
         if (relationName) {
           const field = opts.relationField || 'name';
           const {

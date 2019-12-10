@@ -1,7 +1,5 @@
 import { apiProxy } from '@asuna-admin/adapters';
 import { createLogger } from '@asuna-admin/logger';
-
-import idx from 'idx';
 import * as R from 'ramda';
 import { REHYDRATE } from 'redux-persist';
 import { call, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
@@ -81,8 +79,8 @@ function* sync() {
 function* rehydrateWatcher(action) {
   logger.log('[rehydrateWatcher]', action);
   yield put(appActions.restored());
-  const token = idx(action, _ => _.payload.auth.token);
-  const path = idx(action, _ => _.payload.router.path);
+  const token = action?.payload?.auth?.token;
+  const path = action?.payload?.router?.path;
   logger.log('[rehydrateWatcher]', !!token, path);
   if (token) {
     yield put(routerActions.toIndex());

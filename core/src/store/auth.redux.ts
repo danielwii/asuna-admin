@@ -3,7 +3,6 @@ import { toErrorMessage } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 
 import { message } from 'antd';
-import idx from 'idx';
 import * as R from 'ramda';
 import { REHYDRATE } from 'redux-persist';
 import { call, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
@@ -77,7 +76,7 @@ function* tokenWatcher(action) {
     logger.log('[tokenWatcher]', 'REHYDRATE found, wait to restore...');
     const restoredAction = yield take(appActionTypes.RESTORED);
     logger.log('[tokenWatcher]', 'waiting for app restored', restoredAction);
-    if (!idx(restoredAction, _ => _.payload.auth.token)) {
+    if (!restoredAction?.payload?.auth?.token) {
       yield put(routerActions.toLogin());
     }
   } else if (action.type === authActionTypes.LOGOUT) {
