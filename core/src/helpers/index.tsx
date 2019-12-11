@@ -140,7 +140,7 @@ export const columnHelper = {
       ref?: string;
       transformer?: keyof RelationSchema | ((record) => React.ReactChild);
       filterType?: 'list' | 'search';
-      relationField?: string;
+      relationSearchField?: string;
       render?: (content, record?) => React.ReactChild;
     } = {},
   ) => async (
@@ -163,7 +163,7 @@ export const columnHelper = {
         const relation = AppContext.adapters.models.getFormSchema(modelName)[ref];
         const relationName = relation?.options?.selectable;
         if (relationName) {
-          const field = opts.relationField || 'name';
+          const field = opts.relationSearchField || 'name';
           const {
             data: { items },
           } = await AppContext.adapters.models.loadModels(relationName, {
@@ -181,7 +181,7 @@ export const columnHelper = {
         }
         break;
       case 'search':
-        filterProps = generateSearchColumnProps(`${ref}.${opts.relationField || 'name'}`, 'like');
+        filterProps = generateSearchColumnProps(`${ref}.${opts.relationSearchField || 'name'}`, 'like');
         break;
     }
 

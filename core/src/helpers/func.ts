@@ -24,6 +24,9 @@ export function parseJSONIfCould(value?: string): any {
 }
 
 export function extractValue(o: any, extractor?: ((o: any) => any) | string): any {
+  if (_.isArray(o)) {
+    return _.map(o, i => extractValue(i, extractor));
+  }
   if (_.isFunction(extractor)) {
     return extractor(o);
   }

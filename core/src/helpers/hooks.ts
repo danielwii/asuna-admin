@@ -3,7 +3,8 @@ import { createLogger } from '@asuna-admin/logger';
 import { Asuna } from '@asuna-admin/types';
 import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useAsync } from 'react-use';
 import { AppContext } from '../core/context';
 
 const logger = createLogger('helpers:hooks');
@@ -12,6 +13,7 @@ export function useAsunaModels(
   modelName: string,
   { extraName, callRefresh, actions }: { actions?; extraName?; callRefresh? } = {},
 ): {
+  loading: boolean;
   columnProps: RelationColumnProps[];
   relations?: string[];
   originSchemas: {
@@ -21,29 +23,28 @@ export function useAsunaModels(
     oneToManyRelations: Asuna.Schema.ModelSchema[];
   };
 } {
-  const [columnProps, setColumnProps] = useState<RelationColumnProps[]>([]);
-  useEffect(() => {
+  const [state, setState] = useState<{ columnProps: RelationColumnProps[]; schemas; loading: boolean }>({
+    columnProps: [],
+    schemas: {},
+    loading: true,
+  });
+  useAsync(async () => {
     logger.log('useAsunaModels getColumns ...');
     // const hasGraphAPI = _.find(await AppContext.ctx.graphql.loadGraphs(), schema => schema === `sys_${modelName}`);
-    AppContext.adapters.models
-      .getColumns(modelName, { callRefresh, actions }, extraName || modelName)
-      .then(columnProps => {
-        logger.log({ columnProps });
-        setColumnProps(columnProps);
-      });
-  }, [modelName]);
+    const columnProps = await AppContext.adapters.models.getColumns(
+      modelName,
+      { callRefresh, actions },
+      extraName || modelName,
+    );
 
-  const [originSchemas, setOriginSchemas] = useState();
-  useEffect(() => {
     logger.log('useAsunaModels loadOriginSchema ...');
-    AppContext.adapters.models.loadOriginSchema(modelName).then(schemas => {
-      logger.log({ schemas });
-      setOriginSchemas(schemas);
-    });
+    const schemas = await AppContext.adapters.models.loadOriginSchema(modelName);
+
+    setState({ columnProps, schemas, loading: false });
   }, [modelName]);
 
-  const relations = _.flow([fp.mapValues(fp.get('relation')), _.values, _.compact, _.uniq])(columnProps);
+  const relations = _.flow([fp.mapValues(fp.get('relation')), _.values, _.compact, _.uniq])(state.columnProps);
 
-  logger.log('useAsunaModels', modelName, { columnProps, relations, originSchemas });
-  return { columnProps, relations, originSchemas };
+  logger.log('useAsunaModels', modelName, state, { relations });
+  return { loading: state.loading, columnProps: state.columnProps, relations, originSchemas: state.schemas };
 }

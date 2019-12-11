@@ -1,6 +1,7 @@
 import { responseProxy } from '@asuna-admin/adapters';
 import { AppContext } from '@asuna-admin/core';
 import { castModelKey, parseJSONIfCould, resolveModelInPane, useAsunaModels } from '@asuna-admin/helpers';
+import { WithDebugInfo } from '@asuna-admin/helpers/debug';
 import { createLogger } from '@asuna-admin/logger';
 import { contentActions, modelsActions, panesActions } from '@asuna-admin/store';
 import { Asuna } from '@asuna-admin/types';
@@ -9,6 +10,7 @@ import { PaginationConfig } from 'antd/es/pagination';
 import { SorterResult } from 'antd/es/table';
 import { TableCurrentDataSource } from 'antd/lib/table/interface';
 import * as _ from 'lodash';
+import * as util from 'util';
 import * as fp from 'lodash/fp';
 import React, { useState } from 'react';
 import { useAsync } from 'react-use';
@@ -51,29 +53,31 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
     _handleTableChange(queryCondition.pagination, queryCondition.filters, queryCondition.sorter);
   };
   const actions = (text, record, extras) => (
-    <span>
-      {/*{extras && extras(auth)}*/}
-      {editable ? (
-        <Button size="small" type="dashed" onClick={() => _edit(text, record)}>
-          Edit
-        </Button>
-      ) : (
-        <Button size="small" type="dashed" onClick={() => onView!(text, record)} disabled={!onView}>
-          View
-        </Button>
-      )}{' '}
-      {isDeletableSystemRecord(record) && deletable && (
-        <>
-          <Divider type="vertical" />
-          <Button size="small" type="danger" onClick={() => _remove(text, record)}>
-            Delete
+    <WithDebugInfo info={{ text, record, extras }}>
+      <span>
+        {/*{extras && extras(auth)}*/}
+        {editable ? (
+          <Button size="small" type="dashed" onClick={() => _edit(text, record)}>
+            Edit
           </Button>
-        </>
-      )}
-    </span>
+        ) : (
+          <Button size="small" type="dashed" onClick={() => onView!(text, record)} disabled={!onView}>
+            View
+          </Button>
+        )}{' '}
+        {isDeletableSystemRecord(record) && deletable && (
+          <>
+            <Divider type="vertical" />
+            <Button size="small" type="danger" onClick={() => _remove(text, record)}>
+              Delete
+            </Button>
+          </>
+        )}
+      </span>
+    </WithDebugInfo>
   );
 
-  const { columnProps, relations } = useAsunaModels(modelName, {
+  const { loading: loadingAsunaModels, columnProps, relations } = useAsunaModels(modelName, {
     callRefresh: _refresh,
     extraName: extraName || modelName,
     actions,
@@ -197,6 +201,10 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
 
   // 直接从 remote 拉取，未来需要将 models 中缓存的数据清除
   const { value: data, loading } = useAsync(async () => {
+    if (loadingAsunaModels) {
+      return {};
+    }
+
     const { transformedFilters, transformedSorter } = _transformQueryCondition(queryCondition);
     return await AppContext.adapters.models
       .loadModels(modelName, {
@@ -206,13 +214,17 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
         sorter: transformedSorter,
       })
       .then(fp.get('data'));
-  }, [queryCondition]);
+  }, [queryCondition, loadingAsunaModels]);
+
+  if (loading) {
+    return <div>loading...</div>;
+  }
 
   const { items: dataSource, pagination } = responseProxy.extract(data);
 
   return (
     <>
-      {/*<pre>{util.inspect(columns)}</pre>*/}
+      {/*<pre>{util.inspect({ relations })}</pre>*/}
 
       {creatable && (
         <React.Fragment>

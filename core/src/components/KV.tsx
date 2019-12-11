@@ -1,7 +1,7 @@
 import { EasyForm, EasyGroupForm, ErrorInfo, FormFields, GroupFormFields } from '@asuna-admin/components';
 import { ComponentsHelper } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
-import { Col, Divider, Icon, Row, Typography } from 'antd';
+import { Button, Col, Divider, Icon, Row, Typography } from 'antd';
 
 import 'highlight.js/styles/default.css';
 
@@ -57,13 +57,15 @@ export function GroupFormKVComponent(props: {
   const { loading, error, data, refetch, networkStatus } = ComponentsHelper.loadByKey(key, collection);
   useEffect(() => setState({ body: _.get(data, 'kv.value', {}) }), [JSON.stringify(data)]);
 
-  // const refresh = () => refetch().then(({ data }) => setState({ body: _.get(data, 'kv.value', {}) }));
   if (loading) return <p>Loading...</p>;
   if (error)
     return (
-      <ErrorInfo>
-        <pre>{util.inspect(error)}</pre>
-      </ErrorInfo>
+      <>
+        <Button onClick={() => refetch()}>Reload</Button>
+        <ErrorInfo>
+          <pre>{util.inspect(error)}</pre>
+        </ErrorInfo>
+      </>
     );
 
   logger.log('render', { state, data });
@@ -71,6 +73,7 @@ export function GroupFormKVComponent(props: {
   return (
     <>
       <Typography>
+        <Button onClick={() => refetch()}>Reload</Button>
         <Typography.Paragraph>
           <Icon type="info-circle" style={{ margin: '0 0.2rem' }} />
           {info}
