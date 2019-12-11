@@ -164,7 +164,7 @@ class AppContext {
         AppContext._context = {
           ...AppContext._context,
           auth: new AuthAdapter(register.createAuthService()),
-          // ws: new WsAdapter(),
+          ws: new WsAdapter(),
         };
       } else {
         this.registerIndex(register);
@@ -235,7 +235,7 @@ class AppContext {
       api: new ApiAdapter(register.createApiService()),
       security: new SecurityAdapter(register.createSecurityService()),
       models: new ModelAdapter(register.modelService, register.definitions),
-      // ws: new WsAdapter(),
+      ws: new WsAdapter(),
       components: register.componentService,
       graphql: new GraphqlAdapter(Config.get('GRAPHQL_HOST')),
     };
