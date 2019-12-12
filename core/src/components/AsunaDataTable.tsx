@@ -1,5 +1,5 @@
 import { responseProxy } from '@asuna-admin/adapters';
-import { AppContext } from '@asuna-admin/core';
+import { ActionEvent, AppContext, EventBus, EventType } from '@asuna-admin/core';
 import { castModelKey, parseJSONIfCould, resolveModelInPane, useAsunaModels } from '@asuna-admin/helpers';
 import { WithDebugInfo } from '@asuna-admin/helpers/debug';
 import { createLogger } from '@asuna-admin/logger';
@@ -12,8 +12,8 @@ import { TableCurrentDataSource } from 'antd/lib/table/interface';
 import * as _ from 'lodash';
 import * as util from 'util';
 import * as fp from 'lodash/fp';
-import React, { useState } from 'react';
-import { useAsync } from 'react-use';
+import React, { useEffect, useState } from 'react';
+import { useAsync, useLogger } from 'react-use';
 
 const logger = createLogger('components:data-table');
 
@@ -77,6 +77,24 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
     </WithDebugInfo>
   );
 
+  useLogger('AsunaDataTable', props, { flag });
+  useEffect(() => {
+    // 收到更新事件时更新对应的模型
+    const subscription = EventBus.observable.subscribe({
+      next: (action: ActionEvent) => {
+        if (
+          _.includes([EventType.MODEL_INSERT, EventType.MODEL_UPDATE], action.type) &&
+          action.payload.modelName === modelName
+        ) {
+          _refresh();
+        }
+      },
+    });
+    return () => {
+      logger.log('unsubscribe', subscription);
+      subscription.unsubscribe();
+    };
+  });
   const { loading: loadingAsunaModels, columnProps, relations } = useAsunaModels(modelName, {
     callRefresh: _refresh,
     extraName: extraName || modelName,
