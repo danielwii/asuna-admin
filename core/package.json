@@ -55,7 +55,7 @@
     "date-fns": "^2.8.1",
     "debug": "^4.1.1",
     "deep-diff": "1.0.2",
-    "formik": "^2.0.8",
+    "formik": "2.0.7",
     "graphql": "^14.5.8",
     "http-proxy": "1.18.0",
     "koa": "^2.11.0",
