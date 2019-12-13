@@ -3,6 +3,7 @@ import { LogoCanvas, Snow, Sun } from '@asuna-admin/components';
 import { Config } from '@asuna-admin/config';
 import { LoginContainer } from '@asuna-admin/containers';
 import { AppContext, IIndexRegister, ILoginRegister, INextConfig } from '@asuna-admin/core';
+import { diff } from '@asuna-admin/helpers';
 import { WithStyles } from '@asuna-admin/layout';
 import { createLogger } from '@asuna-admin/logger';
 import { AppState, authActions, RootState } from '@asuna-admin/store';
@@ -93,30 +94,35 @@ type AdminLoginEvent =
   | { type: 'unactivated' }
   | { type: 'invalid' };
 
-export class LoginPage extends React.Component<ILoginPageProps, { subscription: Subscription; message?: string }> {
+export class LoginPage extends React.Component<
+  ILoginPageProps,
+  { subscription: Subscription; message?: string; weChatLoginEnable?: boolean }
+> {
   constructor(props) {
     super(props);
 
-    const { dispatch, register } = this.props;
+    const { dispatch, register, weChatLoginEnable } = this.props;
     AppContext.setup(register);
     AppContext.regDispatch(dispatch);
 
     const subscription = WsAdapter.subject.subscribe(({ id, socket }: { id: string; socket: typeof io.Socket }) => {
       socket.on('admin-login', value => {
         const event = JSON.parse(value) as AdminLoginEvent;
+        let message;
         logger.log(`[admin-login]`, event);
         if (event.type === 'invalid') {
-          this.setState({ message: '请先关注服务号' });
+          message = '请先关注服务号';
         } else if (event.type === 'unactivated') {
-          this.setState({ message: '请先关注服务号或联系管理员查询对应的权限' });
+          message = '请先关注服务号或联系管理员查询对应的权限';
         } else {
           subscription.unsubscribe();
           dispatch(authActions.loginSuccess(event.username, event.token.accessToken));
           dispatch(routerActions.toIndex());
         }
+        this.setState({ weChatLoginEnable: this.state.weChatLoginEnable || weChatLoginEnable, message });
       });
     });
-    this.setState({ subscription });
+    this.state = { subscription };
   }
 
   static async getInitialProps({ req }: NextPageContext) {
@@ -168,7 +174,7 @@ export class LoginPage extends React.Component<ILoginPageProps, { subscription: 
     nextContext: any,
   ): boolean {
     // 通过 userAgent 判断 getInitialProps 有效性。
-    return !!nextProps.userAgent && !nextState;
+    return !!nextProps.userAgent || diff(this.state, nextState).isDifferent;
   }
 
   componentDidCatch(error, info) {
@@ -177,6 +183,7 @@ export class LoginPage extends React.Component<ILoginPageProps, { subscription: 
 
   render() {
     const { hideCharacteristics, weChatLoginEnable, clientId } = this.props;
+    const { message } = this.state;
 
     logger.log(`render ...`, this.props, this.state);
 
@@ -193,7 +200,7 @@ export class LoginPage extends React.Component<ILoginPageProps, { subscription: 
             </>
           )}
           {/*<pre>{util.inspect({ clientId })}</pre>*/}
-          {weChatLoginEnable ? (
+          {weChatLoginEnable || this.state.weChatLoginEnable ? (
             <StyledLoginWrapper
               style={{
                 display: 'flex',
@@ -203,14 +210,11 @@ export class LoginPage extends React.Component<ILoginPageProps, { subscription: 
               }}
             >
               <LoginContainer {...this.props} />
-              {weChatLoginEnable && (
-                <>
-                  <Divider type="vertical" />
-                  <React.Suspense fallback={<PacmanLoader />}>
-                    <WeChatQrCodeFuture />
-                  </React.Suspense>
-                </>
-              )}
+              <Divider type="vertical" />
+              <React.Suspense fallback={<PacmanLoader />}>
+                <WeChatQrCodeFuture />
+              </React.Suspense>
+              {message}
             </StyledLoginWrapper>
           ) : (
             <StyledLoginWrapper>
@@ -223,8 +227,7 @@ export class LoginPage extends React.Component<ILoginPageProps, { subscription: 
   }
 }
 
-const mapStateToProps = (state: RootState) => ({
-  global: state.global,
+const mapStateToProps = (state: RootState): { app: AppState } => ({
   app: state.app,
 });
 

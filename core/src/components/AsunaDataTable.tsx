@@ -5,7 +5,7 @@ import { WithDebugInfo } from '@asuna-admin/helpers/debug';
 import { createLogger } from '@asuna-admin/logger';
 import { contentActions, modelsActions, panesActions } from '@asuna-admin/store';
 import { Asuna } from '@asuna-admin/types';
-import { Button, Divider, Dropdown, Menu, Modal, Switch, Table, Tag } from 'antd';
+import { Button, Divider, Dropdown, Menu, Modal, Switch, Table, Tag, Skeleton } from 'antd';
 import { PaginationConfig } from 'antd/es/pagination';
 import { SorterResult } from 'antd/es/table';
 import { TableCurrentDataSource } from 'antd/lib/table/interface';
@@ -235,7 +235,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
   }, [queryCondition, loadingAsunaModels]);
 
   if (loading) {
-    return <div>loading...</div>;
+    return <Skeleton active avatar />;
   }
 
   const { items: dataSource, pagination } = responseProxy.extract(data);
