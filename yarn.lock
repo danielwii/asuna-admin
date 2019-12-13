@@ -11443,10 +11443,10 @@ no-case@^2.2.0:
   dependencies:
     lower-case "^1.1.1"
 
-node-buffs@^0.6.21:
-  version "0.6.21"
-  resolved "https://registry.yarnpkg.com/node-buffs/-/node-buffs-0.6.21.tgz#effc0b6127730108dd228f5b5ca60e49c9529d1c"
-  integrity sha512-idPnuZNpbpiMoKzPXz+h66nC2fUWQnpgQ8oeyCIMKbMrXlLKcjTbZjUmJkfs9NqeMZv6QI6qnd/UWzhjeCgTWw==
+node-buffs@^0.6.22:
+  version "0.6.22"
+  resolved "https://registry.yarnpkg.com/node-buffs/-/node-buffs-0.6.22.tgz#a07818f35f0e328ea5ef70f6415c67cdae3077fb"
+  integrity sha512-cnEFuHbKSTibxnPFsgOaq+LgZQYYs3+WZpDDplK/vwjUC/pHunVa8GKLx++94f4SYUochVM1DtLQnDU4usPrZA==
   dependencies:
     dotenv "^8.2.0"
     lodash "^4.17.15"
