@@ -111,7 +111,7 @@ export class LoginPage extends React.Component<ILoginPageProps, { subscription: 
           this.setState({ message: '请先关注服务号或联系管理员查询对应的权限' });
         } else {
           subscription.unsubscribe();
-          dispatch(authActions.loginSuccess(event.username, event.token));
+          dispatch(authActions.loginSuccess(event.username, event.token.accessToken));
           dispatch(routerActions.toIndex());
         }
       });

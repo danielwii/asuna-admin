@@ -18,14 +18,14 @@ export const isAuthModule = action => action.type.startsWith('auth::') && !actio
 // --------------------------------------------------------------
 
 export const authActions = {
-  login: (username, password, callback) => ({
+  login: (username: string, password: string, callback) => ({
     transient: true,
     type: authActionTypes.LOGIN,
     payload: { username, password },
     callback,
   }),
   logout: () => reduxAction(authActionTypes.LOGOUT, { token: null, loginTime: null }),
-  loginSuccess: (username, token) =>
+  loginSuccess: (username: string, token: string) =>
     reduxAction(authActionTypes.LOGIN_SUCCESS, {
       username,
       token,

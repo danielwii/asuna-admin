@@ -77,7 +77,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
     </WithDebugInfo>
   );
 
-  useLogger('AsunaDataTable', props, { flag });
+  // useLogger('AsunaDataTable', props, { flag });
   useEffect(() => {
     // 收到更新事件时更新对应的模型
     const subscription = EventBus.observable.subscribe({
