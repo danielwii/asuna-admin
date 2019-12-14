@@ -2,7 +2,7 @@ import { AssetsPreview, DynamicFormTypes } from '@asuna-admin/components';
 import { resolveModelInPane, useAsunaModels } from '@asuna-admin/helpers';
 import { WithDebugInfo } from '@asuna-admin/helpers/debug';
 import { Collapse, Descriptions, Empty, PageHeader, Tabs, Tag, Tooltip } from 'antd';
-import bluebird from 'bluebird';
+import { Promise } from 'bluebird';
 import * as _ from 'lodash';
 import moment from 'moment';
 import * as React from 'react';
@@ -90,7 +90,7 @@ export const AsunaDataView: React.FC<AsunaDataViewProps> = props => {
     : null;
 
   const customColumnOpts = useAsync(
-    async () => await bluebird.props(_.mapValues(columnOpts?.customColumns, columnOpt => (columnOpt as any)())),
+    async () => await Promise.props(_.mapValues(columnOpts?.customColumns, columnOpt => (columnOpt as any)())),
     [columnOpts?.customColumns],
   );
 

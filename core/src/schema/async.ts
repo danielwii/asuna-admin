@@ -3,7 +3,7 @@ import { AppContext } from '@asuna-admin/core';
 import { createLogger } from '@asuna-admin/logger';
 import { Asuna } from '@asuna-admin/types';
 
-import bluebird from 'bluebird';
+import { Promise } from 'bluebird';
 import * as _ from 'lodash';
 import * as R from 'ramda';
 
@@ -121,7 +121,7 @@ export const asyncLoadAssociationsDecorator = async ({
           logger.debug(TAG, { fieldsOfAssociations, foreignOpts });
 
           try {
-            const results = await bluebird.props({
+            const results = await Promise.props({
               itemsResponse: AppContext.adapters.models.loadAssociation(selectable),
               existItemsResponse: AppContext.adapters.models.loadAssociationByIds(selectable, field.value),
             });

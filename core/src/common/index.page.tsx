@@ -63,12 +63,11 @@ export class IndexPage extends React.Component<IIndexPageProps> {
   }
 }
 
-const mapStateToProps = (state: RootState) => ({
+const mapStateToProps = (state: RootState): { auth: AuthState; app: AppState } => ({
   auth: state.auth,
   app: state.app,
 });
 
-// prettier-ignore
 export const renderIndexPage = (props: Partial<IIndexPageProps>, nextConfig: INextConfig) => {
   AppContext.init(nextConfig);
   return connect(R.compose(R.merge(props), mapStateToProps))(IndexPage);

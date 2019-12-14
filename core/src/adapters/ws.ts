@@ -10,6 +10,8 @@ import io from 'socket.io-client';
 
 const logger = createLogger('adapters:ws');
 
+export type NextSocketType = { id: string; socket: typeof io.Socket };
+
 export class WsAdapter {
   private static socket: typeof io.Socket;
   private port?: number;
@@ -29,7 +31,7 @@ export class WsAdapter {
       WsAdapter.socket.on('connect', () => {
         logger.log('[connect]', { id: WsAdapter.socket.id, AppContext });
         WsAdapter.id = WsAdapter.socket.id;
-        WsAdapter.subject.next({ id: WsAdapter.id, socket: WsAdapter.socket });
+        WsAdapter.subject.next({ id: WsAdapter.id, socket: WsAdapter.socket } as NextSocketType);
         AppContext.dispatch(appActions.heartbeat());
       });
       WsAdapter.socket.on('reconnect', () => {

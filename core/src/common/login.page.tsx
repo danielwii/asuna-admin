@@ -1,4 +1,4 @@
-import { WsAdapter } from '@asuna-admin/adapters';
+import { WsAdapter, NextSocketType } from '@asuna-admin/adapters';
 import { LogoCanvas, Snow, Sun } from '@asuna-admin/components';
 import { Config } from '@asuna-admin/config';
 import { LoginContainer } from '@asuna-admin/containers';
@@ -14,13 +14,11 @@ import * as _ from 'lodash';
 import { NextPageContext } from 'next';
 import fetch from 'node-fetch';
 import QRCode from 'qrcode.react';
-import * as R from 'ramda';
 import * as React from 'react';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { PacmanLoader } from 'react-spinners';
 import { Subscription } from 'rxjs';
 import styled from 'styled-components';
-import io from 'socket.io-client';
 import * as uuid from 'uuid';
 
 const logger = createLogger('pages:login');
@@ -50,15 +48,17 @@ const StyledLogoWrapper = styled.div`
   left: 1rem;
 `;
 
-export interface ILoginPageProps extends ReduxProps {
+export type LoginInitialProps = Partial<{
+  weChatLoginEnable: boolean;
+  clientId: string;
+  userAgent: string;
+}>;
+
+export type ILoginPageProps = ReduxProps & {
   app: AppState;
   register: ILoginRegister & IIndexRegister;
   hideCharacteristics: boolean;
-  weChatLoginEnable: boolean;
-  // weChatLoginUrl: string;
-  clientId: string;
-  userAgent: string;
-}
+} & LoginInitialProps;
 
 const WeChatQrCodeFuture = React.lazy(
   () =>
@@ -105,7 +105,7 @@ export class LoginPage extends React.Component<
     AppContext.setup(register);
     AppContext.regDispatch(dispatch);
 
-    const subscription = WsAdapter.subject.subscribe(({ id, socket }: { id: string; socket: typeof io.Socket }) => {
+    const subscription = WsAdapter.subject.subscribe(({ socket }: NextSocketType) => {
       socket.on('admin-login', value => {
         const event = JSON.parse(value) as AdminLoginEvent;
         let message;
@@ -125,47 +125,9 @@ export class LoginPage extends React.Component<
     this.state = { subscription };
   }
 
-  static async getInitialProps({ req }: NextPageContext) {
-    if (Config.isServer) {
-      const clientId = uuid.v4();
-
-      if (req) {
-        try {
-          const userAgent = req ? req.headers['user-agent'] : navigator.userAgent;
-          const host = Config.get('GRAPHQL_HOST') || 'localhost';
-          const port = process.env.PORT || 3000;
-          logger.log(`call http://${host}:${port}/s-graphql`);
-          const client = new ApolloClient({
-            uri: `http://${host}:${port}/s-graphql`,
-            headers: { 'X-ApiKey': 'todo:app-key-001' }, // todo temp auth
-            fetch: fetch as any,
-          });
-          const { data } = await client.query({
-            query: gql`
-              {
-                kv(collection: "wechat.settings", key: "config") {
-                  key
-                  name
-                  type
-                  value
-                }
-              }
-            `,
-          });
-
-          const weChatLoginEnable = _.get(data, 'kv.value.values.wechat.login');
-          return { userAgent, weChatLoginEnable, clientId };
-        } catch (e) {
-          logger.error(e);
-        }
-      }
-    }
-    return {};
-  }
-
   componentWillUnmount() {
     logger.log('[componentWillUnmount]', 'destroy subscriptions');
-    this.state?.subscription?.unsubscribe();
+    this.state.subscription?.unsubscribe();
   }
 
   shouldComponentUpdate(
@@ -182,7 +144,7 @@ export class LoginPage extends React.Component<
   }
 
   render() {
-    const { hideCharacteristics, weChatLoginEnable, clientId } = this.props;
+    const { hideCharacteristics, weChatLoginEnable } = this.props;
     const { message } = this.state;
 
     logger.log(`render ...`, this.props, this.state);
@@ -227,11 +189,48 @@ export class LoginPage extends React.Component<
   }
 }
 
-const mapStateToProps = (state: RootState): { app: AppState } => ({
-  app: state.app,
-});
+export const wechatLoginGetInitial = async (ctx: NextPageContext): Promise<LoginInitialProps> => {
+  if (Config.isServer) {
+    const clientId = uuid.v4();
 
-export const renderLoginPage = (props: Partial<ILoginPageProps>, nextConfig: INextConfig) => {
-  AppContext.init(nextConfig);
-  return connect(R.compose(R.merge(props), mapStateToProps))(LoginPage);
+    try {
+      const userAgent = ctx.req ? ctx.req.headers['user-agent'] : navigator.userAgent;
+      const host = Config.get('GRAPHQL_HOST') || 'localhost';
+      const port = process.env.PORT || 3000;
+      logger.log(`call http://${host}:${port}/s-graphql`);
+      const client = new ApolloClient({
+        uri: `http://${host}:${port}/s-graphql`,
+        headers: { 'X-ApiKey': 'todo:app-key-001' }, // todo temp auth
+        fetch: fetch as any,
+      });
+      const { data } = await client.query({
+        query: gql`
+          {
+            kv(collection: "wechat.settings", key: "config") {
+              key
+              name
+              type
+              value
+            }
+          }
+        `,
+      });
+
+      const weChatLoginEnable = _.get(data, 'kv.value.values.wechat.login');
+      return { userAgent, weChatLoginEnable, clientId };
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  return {};
+};
+
+export const LoginPageRender: React.FC<Omit<ILoginPageProps, 'app' | 'dispatch'> & {
+  nextConfig: INextConfig;
+}> = props => {
+  AppContext.init(props.nextConfig);
+  const appState = useSelector<RootState, AppState>(state => state.app);
+  const dispatch = useDispatch();
+
+  return <LoginPage {...props} app={appState} dispatch={dispatch} />;
 };

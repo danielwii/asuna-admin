@@ -2,7 +2,7 @@ import { AppContext } from '@asuna-admin/core';
 import { createLogger } from '@asuna-admin/logger';
 
 import localForage from 'localforage';
-import { MakeStoreOptions } from 'next-redux-wrapper';
+import { MakeStore, MakeStoreOptions } from 'next-redux-wrapper';
 import { reduxAction } from 'node-buffs';
 import * as R from 'ramda';
 
@@ -141,7 +141,7 @@ export class AsunaStore {
 
   private rootEpics = combineEpics(...appEpics);
 
-  public configureStore = (preloadedState = this.initialState, opts: MakeStoreOptions): Store => {
+  public configureStore: MakeStore = (preloadedState = this.initialState, opts: MakeStoreOptions): Store => {
     logger.log('configureStore', opts);
     AppContext.isServer = opts.isServer;
     let store;

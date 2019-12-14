@@ -16,7 +16,7 @@ import { message } from 'antd';
 
 import { PaginationConfig } from 'antd/es/pagination';
 import { AxiosResponse } from 'axios';
-import bluebird from 'bluebird';
+import { Promise } from 'bluebird';
 import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
 import * as R from 'ramda';
@@ -501,7 +501,7 @@ export class ModelAdapter {
         {},
         ...this.allModels.map(modelName => ({ [modelName]: this.loadSchema(modelName) })),
       );
-      const allResponse = await bluebird.props(callable);
+      const allResponse = await Promise.props(callable);
       return Object.assign({}, ..._.map(allResponse, (response, name) => ({ [name]: (response as any).data })));
     }
   }
