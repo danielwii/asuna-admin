@@ -2,8 +2,8 @@ import { Config } from '@asuna-admin/config';
 import { AppContext } from '@asuna-admin/core';
 import { createLogger } from '@asuna-admin/logger';
 import { FormControl, FormHelperText, Input, InputLabel } from '@material-ui/core';
-import { Popconfirm, Switch } from 'antd';
 import * as antd from 'antd';
+import { Divider, Popconfirm, Switch } from 'antd';
 import * as formik from 'formik';
 import { FieldInputProps } from 'formik';
 import * as _ from 'lodash';
@@ -17,6 +17,7 @@ export enum FormFieldType {
   string = 'string',
   number = 'number',
   image = 'image',
+  text = 'text',
   boolean = 'boolean',
 }
 
@@ -24,7 +25,7 @@ export type FormField = {
   name: string;
   type: FormFieldType;
   validate?: (value) => string | null;
-  help?: string;
+  help?: React.ReactChild;
   required?: boolean;
   defaultValue?: boolean | number | string;
 };
@@ -44,16 +45,16 @@ interface EasyFormProps extends FormProps<FormFields> {
 }
 
 function RenderInputComponent({
-  type,
+  formField,
   field,
   value,
 }: {
-  type: FormFieldType;
+  formField: FormField;
   field: FieldInputProps<any>;
   value: any;
 }) {
-  logger.log('[RenderInputComponent]', field, { type, value });
-  switch (type) {
+  logger.log('[RenderInputComponent]', field, { formField, value });
+  switch (formField.type) {
     case FormFieldType.boolean: {
       return (
         <div>
@@ -84,18 +85,36 @@ function RenderInputComponent({
             urlHandler={Config.get('IMAGE_RES_HANDLER')}
             value={value}
             onChange={newValue => {
-              logger.log('[RenderInputComponent]', { type, value, newValue });
+              logger.log('[RenderInputComponent]', { formField, value, newValue });
               field.onChange({ target: { id: field.name, name: field.name, value: newValue } });
             }}
           />
         </>
       );
     }
+    case FormFieldType.text: {
+      return (
+        <>
+          <span>
+            {field.name} / {formField.name}
+          </span>
+          <antd.Input.TextArea id={field.name} {...field} autoSize rows={4} value={value} />
+        </>
+      );
+    }
     default: {
       return (
         <>
-          <InputLabel htmlFor={field.name}>{field.name}</InputLabel>
-          <Input id={field.name} type={type} {...field} value={value} />
+          <InputLabel htmlFor={field.name}>
+            {field.name === formField.name ? (
+              field.name
+            ) : (
+              <>
+                {field.name} / {formField.name}
+              </>
+            )}
+          </InputLabel>
+          <Input id={field.name} type={formField.type} {...field} value={value} />
         </>
       );
     }
@@ -109,17 +128,18 @@ const InnerForm = (props: EasyFormProps & formik.FormikProps<formik.FormikValues
     <formik.Form>
       {message && <h1>{message}</h1>}
       {_.map(fields, (formField: FormField, key: string) => (
-        <formik.Field key={key} name={formField.name}>
+        <formik.Field key={key} name={key}>
           {({ field, form }: formik.FieldProps<formik.FormikValues>) => {
             const hasError = !!(form.touched[formField.name] && form.errors[formField.name]);
             const value = _.defaultTo(field.value, formField.defaultValue);
             logger.log('render field', field, { hasError, value });
             return (
               <FormControl key={field.name} error={hasError} fullWidth={true}>
-                <RenderInputComponent type={formField.type} field={field} value={value} />
+                <RenderInputComponent formField={formField} field={field} value={value} />
                 {/*<Input id={field.name} type={formField.type} {...field} value={value} />*/}
                 {formField.help && <FormHelperText>{formField.help}</FormHelperText>}
                 {hasError && <FormHelperText>{form.errors[formField.name]}</FormHelperText>}
+                <Divider dashed={true} style={{ margin: '0.5rem 0' }} />
               </FormControl>
             );
           }}
@@ -163,17 +183,18 @@ const InnerForm = (props: EasyFormProps & formik.FormikProps<formik.FormikValues
   },*/
 export const EasyForm = formik.withFormik<EasyFormProps, any>({
   // Transform outer props into form values
-  mapPropsToValues: props => Object.assign({}, ..._.map(props.fields, field => ({ [field.name]: field.defaultValue }))),
+  mapPropsToValues: props =>
+    Object.assign({}, ..._.map(props.fields, (field: FormField, name: string) => ({ [name]: field.defaultValue }))),
 
   validate: (values: formik.FormikValues, props) => {
     const errors: formik.FormikErrors<formik.FormikValues> = {};
 
-    _.forEach(props.fields, (field: FormField) => {
-      if (field.required && !values[field.name]) {
-        errors[field.name] = 'Required';
+    _.forEach(props.fields, (field: FormField, name: string) => {
+      if (field.required && !values[name]) {
+        errors[name] = 'Required';
       } else if (field.validate) {
-        const error = field.validate(values[field.name]);
-        if (error) errors[field.name] = error;
+        const error = field.validate(values[name]);
+        if (error) errors[name] = error;
       }
     });
 
@@ -243,7 +264,7 @@ const GroupInnerForm = (props: GroupEasyFormProps & formik.FormikProps<formik.Fo
                             {field.name} / {fieldDef.name}
                           </InputLabel>
                           {/*<Input id={field.name} type={formField.type} {...field} value={value} />*/}
-                          <RenderInputComponent type={formField.type} field={field} value={value} />
+                          <RenderInputComponent formField={formField} field={field} value={value} />
                           {formField.help && <FormHelperText>{formField.help}</FormHelperText>}
                           {hasError && <FormHelperText>{form.errors[formField.name]}</FormHelperText>}
                         </FormControl>

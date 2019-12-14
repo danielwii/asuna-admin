@@ -31,7 +31,7 @@ export default ({ loading, heartbeat, auth, appInfo, hideCharacteristics }) => {
             theme={'light'}
             style={{
               overflow: 'auto',
-              height: '100vh',
+              height: '90vh',
               position: 'fixed',
               left: 0,
             }}
