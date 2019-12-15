@@ -135,6 +135,7 @@ export class DynamicForm extends React.Component<DynamicFormProps & AntdFormOnCh
       ...field.options,
       // key: field.key || field.name,
       name: field.name,
+      label: field.options.name || field.name,
       help: field.options.tooltip || field.options.help,
     };
     const defaultAssociation = {
