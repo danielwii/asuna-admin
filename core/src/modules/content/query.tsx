@@ -61,15 +61,20 @@ const ContentSearch: React.FC<ModulesLoaderProps & { rootState: RootState }> = p
         <EasyForm
           fields={fields}
           onSubmit={async values => {
-            const keys = _.keys(fields);
-            if (keys.length === 1 && keys.includes(primaryKey)) {
-              const record = await AppContext.ctx.models
-                .fetch(modelName, { id: values[primaryKey], relations })
-                .then(fp.get('data'));
-              setViewRecord(record);
-            } else {
-              const data = await AppContext.ctx.models.loadModels(modelName, { filters: values }).then(fp.get('data'));
-              setViewRecord(_.head(data.items));
+            const hasFields = _.filter(values, value => !(_.isUndefined(value) || _.isNull(value)));
+            if (!_.isEmpty(hasFields)) {
+              const keys = _.keys(fields);
+              if (keys.length === 1 && keys.includes(primaryKey)) {
+                const record = await AppContext.ctx.models
+                  .fetch(modelName, { id: values[primaryKey], relations })
+                  .then(fp.get('data'));
+                setViewRecord(record);
+              } else {
+                const data = await AppContext.ctx.models
+                  .loadModels(modelName, { filters: values, relations })
+                  .then(fp.get('data'));
+                setViewRecord(_.head(data.items));
+              }
             }
           }}
           // onClear={() => ComponentsHelper.clear({ key, collection }, refetch)}

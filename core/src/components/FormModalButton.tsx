@@ -29,7 +29,7 @@ const LightForm = Form.create<ILightForm>({
 })(DynamicForm) as any;
 
 export interface IFormModalProps {
-  title: string;
+  title: React.ReactNode;
   openButton: (showModal: () => void) => React.ReactChild;
   fields?: { [key: string]: DynamicFormField };
   body?: React.ReactNode;

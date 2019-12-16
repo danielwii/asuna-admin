@@ -266,7 +266,11 @@ export const columnHelper = {
   generate: (
     key,
     title,
-    opts: { transformer?: ((record) => string) | string; searchType?: ConditionType } = {},
+    opts: {
+      transformer?: ((record) => string) | string;
+      searchType?: ConditionType;
+      render?: (content, record?) => React.ReactChild;
+    } = {},
   ): ColumnProps<any> => ({
     key,
     title,
@@ -274,10 +278,10 @@ export const columnHelper = {
     sorter: true,
     ...generateSearchColumnProps(key, opts.searchType),
     render: nullProtectRender(record => {
-      const value = extractValue(record, opts.transformer);
+      const content = extractValue(record, opts.transformer);
       return (
         <WithDebugInfo info={{ key, title, record }}>
-          <TooltipContent value={value} />
+          {opts.render ? opts.render(content, record) : <TooltipContent value={content} />}
         </WithDebugInfo>
       );
     }),
