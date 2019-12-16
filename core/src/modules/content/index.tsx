@@ -54,11 +54,7 @@ class ContentIndex extends React.Component<IProps, IState> {
     const deletable = columnOpts?.deletable !== false;
     const editable = columnOpts?.editable !== false;
 
-    logger.debug(
-      '[constructor]',
-      { modelConfig, modelName, primaryKey, columnOpts },
-      { creatable, editable, deletable },
-    );
+    logger.debug('[constructor]', { modelConfig, modelName, primaryKey, columnOpts, creatable });
     const sorter: SorterResult<any> = {
       columnKey: primaryKey,
       field: primaryKey,

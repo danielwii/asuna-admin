@@ -1,5 +1,6 @@
 import { ProgressBar } from '@asuna-admin/components';
 import { HeaderContainer, PanesContainer, SideMenuContainer } from '@asuna-admin/containers';
+import { HeaderRender } from '@asuna-admin/containers/Header';
 import { createLogger } from '@asuna-admin/logger';
 
 import { Layout } from 'antd';
@@ -25,7 +26,7 @@ export default ({ loading, heartbeat, auth, appInfo, hideCharacteristics }) => {
       <Layout>
         {/*{loading && <LivingLoading heartbeat={heartbeat} />}*/}
         <ProgressBar />
-        <HeaderContainer {...{ hideLogo: hideCharacteristics }} />
+        <HeaderRender hideLogo={hideCharacteristics} />
         <Layout>
           <Sider
             theme={'light'}

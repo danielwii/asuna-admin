@@ -4,6 +4,7 @@ import { AppContext } from '@asuna-admin/core';
 import { createLogger } from '@asuna-admin/logger';
 
 import * as _ from 'lodash';
+import * as util from 'util';
 import dynamic from 'next/dynamic';
 import * as React from 'react';
 
@@ -57,19 +58,15 @@ export default function(props: ModulesLoaderProps & { children?: React.ReactNode
   if (component) {
     const moduleRender = ModuleRegister.renders[component];
 
-    if (moduleRender) {
-      // console.log('loader', { moduleRender, props });
-      return moduleRender(props);
-    }
+    if (moduleRender) return moduleRender(props);
 
     const fc = AppContext.ctx.components.load(component);
-    // console.log('loader', { fc, props });
     return fc ? (
       fc(props)
     ) : (
       <>
-        <b>404 not exists.</b>
-        <pre>{JSON.stringify(props, null, 2)}</pre>
+        <b>Component '{component}' not found.</b>
+        <pre>{util.inspect(props)}</pre>
       </>
     );
   }

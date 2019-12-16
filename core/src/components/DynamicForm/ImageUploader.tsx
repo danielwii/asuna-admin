@@ -4,9 +4,14 @@ import { upload, validateFile } from '@asuna-admin/helpers/upload';
 import { createLogger } from '@asuna-admin/logger';
 import { Asuna } from '@asuna-admin/types';
 
-import { Icon, Input, Modal, Upload } from 'antd';
-import { RcFile, UploadChangeParam, UploadFile, UploadFileStatus } from 'antd/es/upload/interface';
-import { RcCustomRequestOptions } from 'antd/lib/upload/interface';
+import { Button, Icon, Input, Modal, Upload } from 'antd';
+import {
+  RcCustomRequestOptions,
+  RcFile,
+  UploadChangeParam,
+  UploadFile,
+  UploadFileStatus,
+} from 'antd/es/upload/interface';
 import * as _ from 'lodash';
 import * as React from 'react';
 
@@ -116,7 +121,7 @@ export class ImageUploader extends React.Component<IProps, IState> {
   valueToSubmit = (value?: string | string[], extra?: string): string | string[] => {
     const uploadedImages = valueToArrays(value);
     let images: string | string[] = _.compact(_.flattenDeep([uploadedImages, extra]));
-    if (!this.props.jsonMode) {
+    if (!this.props.jsonMode && _.isArray(images)) {
       images = images.join(',');
     }
     logger.log('[ImageUploader][valueToSubmit]', { images, uploadedImages });
@@ -145,10 +150,9 @@ export class ImageUploader extends React.Component<IProps, IState> {
     logger.debug('[render]', { fileList, value });
 
     const uploadButton = (
-      <div>
-        <Icon type="plus" />
-        <div className="ant-upload-text">Upload</div>
-      </div>
+      <Button>
+        <Icon type="upload" /> upload
+      </Button>
     );
 
     // 多文件上传在使用 customRequest 时第二次只会上传第一个文件。

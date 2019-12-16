@@ -1,19 +1,17 @@
 import { responseProxy } from '@asuna-admin/adapters';
 import { ActionEvent, AppContext, EventBus, EventType } from '@asuna-admin/core';
-import { castModelKey, parseJSONIfCould, resolveModelInPane, useAsunaModels } from '@asuna-admin/helpers';
+import { castModelKey, ModelsHelper, parseJSONIfCould, resolveModelInPane, useAsunaModels } from '@asuna-admin/helpers';
 import { WithDebugInfo } from '@asuna-admin/helpers/debug';
 import { createLogger } from '@asuna-admin/logger';
 import { contentActions, modelsActions, panesActions } from '@asuna-admin/store';
 import { Asuna } from '@asuna-admin/types';
-import { Button, Divider, Dropdown, Menu, Modal, Switch, Table, Tag, Skeleton } from 'antd';
+import { Button, Divider, Dropdown, Menu, Modal, Skeleton, Switch, Table, Tag } from 'antd';
 import { PaginationConfig } from 'antd/es/pagination';
-import { SorterResult } from 'antd/es/table';
-import { TableCurrentDataSource } from 'antd/lib/table/interface';
+import { SorterResult, TableCurrentDataSource } from 'antd/es/table';
 import * as _ from 'lodash';
-import * as util from 'util';
 import * as fp from 'lodash/fp';
 import React, { useEffect, useState } from 'react';
-import { useAsync, useLogger } from 'react-use';
+import { useAsync } from 'react-use';
 
 const logger = createLogger('components:data-table');
 
@@ -116,15 +114,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
     updateFlag(flag + 1);
   };
   const isDeletableSystemRecord = record => !record[castModelKey('isSystem')];
-  const _create = () => {
-    AppContext.dispatch(
-      panesActions.open({
-        key: `content::upsert::${modelName}::${Date.now()}`,
-        title: `new - ${modelName}`,
-        linkTo: 'content::upsert',
-      }),
-    );
-  };
+  const _create = () => ModelsHelper.openCreatePane(modelName);
   const _edit = (text, record) => {
     logger.log('[edit]', { text, record });
     AppContext.dispatch(
@@ -234,7 +224,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
       .then(fp.get('data'));
   }, [queryCondition, loadingAsunaModels]);
 
-  if (loading) {
+  if (loading || loadingAsunaModels) {
     return <Skeleton active avatar />;
   }
 

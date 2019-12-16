@@ -3,9 +3,14 @@ import { upload, validateFile } from '@asuna-admin/helpers/upload';
 import { createLogger } from '@asuna-admin/logger';
 import { Asuna } from '@asuna-admin/types';
 
-import { Button, Icon, Upload } from 'antd';
-import { RcFile, UploadChangeParam, UploadFile, UploadFileStatus } from 'antd/es/upload/interface';
-import { RcCustomRequestOptions } from 'antd/lib/upload/interface';
+import { Button, Icon, Input, Upload } from 'antd';
+import {
+  RcCustomRequestOptions,
+  RcFile,
+  UploadChangeParam,
+  UploadFile,
+  UploadFileStatus,
+} from 'antd/es/upload/interface';
 import * as _ from 'lodash';
 import fp from 'lodash/fp';
 import * as React from 'react';
@@ -66,15 +71,16 @@ export class VideoUploader extends React.Component<IProps> {
   };
 
   valueToSubmit = (value?: string | string[], extra?: string): string | string[] => {
+    const { multi, jsonMode } = this.props;
     const uploadedVideos = valueToArrays(value);
     let videos: string | string[] = _.compact(_.flattenDeep([uploadedVideos, extra]));
-    if (!this.props.multi) {
-      videos = _.tail(videos);
+    if (!multi) {
+      videos = _.takeRight(videos);
     }
-    if (!this.props.jsonMode) {
+    if (!jsonMode && _.isArray(videos)) {
       videos = videos.join(',');
     }
-    logger.log('[VideoUploader][valueToSubmit]', { videos, uploadedVideos });
+    logger.log('[VideoUploader][valueToSubmit]', { value, extra, videos, multi, jsonMode, uploadedVideos });
     return videos;
   };
 
@@ -129,6 +135,15 @@ export class VideoUploader extends React.Component<IProps> {
           </Button>
         </Upload>
         {_.isArray(videos) ? _.map(videos || [], this.renderPlayer) : this.renderPlayer(videos)}
+        <Input.TextArea
+          value={typeof videos === 'string' ? videos : videos ? JSON.stringify(videos) : ''}
+          autoSize={{ minRows: 2, maxRows: 6 }}
+          onChange={event => {
+            logger.debug('[onChange]', event);
+            this.props.onChange!(this.valueToSubmit(event.target.value));
+            this.setState({ fileList: VideoUploader.wrapVideosToFileList(event.target.value) });
+          }}
+        />
       </div>
     );
   }

@@ -47,11 +47,21 @@ export class Header extends React.Component<IHeaderProps> {
           <a>Settings</a>
         </Menu.Item>
       )}
-      {this.props.isAdmin && <Menu.Divider />}
-      {this.props.isSuperAdmin && (
+      {this.props.isAdmin && (
         <Menu.Item>
-          <a>Administrations</a>
+          <a>Is Admin</a>
         </Menu.Item>
+      )}
+      {this.props.isSuperAdmin && (
+        <>
+          <Menu.Item>
+            <a>Is SuperAdmin</a>
+          </Menu.Item>
+          <Menu.Item>
+            {/* 开启 WithDebugInfo 及 KV 中的 json 预览功能等 */}
+            <a>Enable Debug Mode</a>
+          </Menu.Item>
+        </>
       )}
       {this.props.isSuperAdmin && <Menu.Divider />}
       {this.props.env !== 'production' && (

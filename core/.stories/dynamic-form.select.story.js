@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as R from 'ramda';
 
 import { storiesOf } from '@storybook/react';
-import { Form } from 'antd/lib/index';
+import { Form } from 'antd/es';
 
 import { generateSelect } from '../src/components/DynamicForm/elements/Select';
 

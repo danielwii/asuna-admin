@@ -29,25 +29,25 @@ export class WsAdapter {
       WsAdapter.socket = io.connect('/admin', { secure: true, reconnectionDelay: 10e3, reconnectionDelayMax: 60e3 });
 
       WsAdapter.socket.on('connect', () => {
-        logger.log('[connect]', { id: WsAdapter.socket.id, AppContext });
+        logger.log('[connect]', WsAdapter.socket.id);
         WsAdapter.id = WsAdapter.socket.id;
         WsAdapter.subject.next({ id: WsAdapter.id, socket: WsAdapter.socket } as NextSocketType);
         AppContext.dispatch(appActions.heartbeat());
       });
       WsAdapter.socket.on('reconnect', () => {
-        logger.log('[reconnect]', { id: WsAdapter.socket.id, AppContext });
+        logger.log('[reconnect]', WsAdapter.socket.id);
         AppContext.dispatch(appActions.heartbeat());
       });
       WsAdapter.socket.on('disconnect', () => {
         const { heartbeat } = AppContext.store.select(state => state.app);
-        logger.error('[disconnect]', { id: WsAdapter.socket.id, heartbeat });
+        logger.error('[disconnect]', WsAdapter.socket.id, { heartbeat });
         if (heartbeat) {
           AppContext.dispatch(appActions.heartbeatStop());
         }
       });
       WsAdapter.socket.on('error', error => {
         const { heartbeat } = AppContext.store.select(state => state.app);
-        logger.error('[error]', { id: WsAdapter.socket.id, heartbeat, error });
+        logger.error('[error]', WsAdapter.socket.id, { heartbeat, error });
         if (heartbeat) {
           AppContext.dispatch(appActions.heartbeatStop());
         }

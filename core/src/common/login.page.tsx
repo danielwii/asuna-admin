@@ -57,7 +57,7 @@ export type LoginInitialProps = Partial<{
 export type ILoginPageProps = ReduxProps & {
   app: AppState;
   register: ILoginRegister & IIndexRegister;
-  hideCharacteristics: boolean;
+  hideCharacteristics?: boolean;
 } & LoginInitialProps;
 
 const WeChatQrCodeFuture = React.lazy(
@@ -217,6 +217,7 @@ export const wechatLoginGetInitial = async (ctx: NextPageContext): Promise<Login
       });
 
       const weChatLoginEnable = _.get(data, 'kv.value.values.wechat.login');
+      console.log({ userAgent, weChatLoginEnable, clientId });
       return { userAgent, weChatLoginEnable, clientId };
     } catch (e) {
       console.error(e);

@@ -1,6 +1,7 @@
 import { Pane } from '@asuna-admin/components';
 import { AppContext } from '@asuna-admin/core';
 import { createLogger } from '@asuna-admin/logger';
+import { panesActions } from '@asuna-admin/store';
 import { Asuna } from '@asuna-admin/types';
 import * as _ from 'lodash';
 
@@ -50,4 +51,16 @@ export function resolveModelInPane(
     resolved: AppContext.adapters.models.columnOpts[extraName || modelName],
   });
   return { modelName, modelConfig, columnOpts, primaryKey, schemas };
+}
+
+export class ModelsHelper {
+  static openCreatePane(modelName: string): void {
+    AppContext.dispatch(
+      panesActions.open({
+        key: `content::upsert::${modelName}::${Date.now()}`,
+        title: `new - ${modelName}`,
+        linkTo: 'content::upsert',
+      }),
+    );
+  }
 }

@@ -4,8 +4,7 @@ import { createLogger } from '@asuna-admin/logger';
 import { Asuna } from '@asuna-admin/types';
 
 import { Button, Icon, Input, message, Upload } from 'antd';
-import { UploadFile, UploadFileStatus } from 'antd/es/upload/interface';
-import { UploadChangeParam, UploadProps } from 'antd/lib/upload';
+import { UploadChangeParam, UploadFile, UploadFileStatus, UploadProps } from 'antd/es/upload/interface';
 import * as _ from 'lodash';
 import React, { useState } from 'react';
 
@@ -53,8 +52,8 @@ export const FileUploader = (props: IFilesUploaderProps) => {
     // 构造一个已上传文件的列表，最新的放在最后面
     let files: string | string[] = _.compact(_.flattenDeep([uploadedFiles, extra]));
     // 当当前模式是单文件上传模式时，取最后一个文件为当前文件
-    files = props.many ? files : [_.last(files) || ''];
-    if (!props.jsonMode) {
+    files = props.many ? files : _.takeRight(files);
+    if (!props.jsonMode && _.isArray(files)) {
       // cast to string
       files = files.join(',');
     }
@@ -119,7 +118,7 @@ export const FileUploader = (props: IFilesUploaderProps) => {
     <div key={props.key}>
       <Upload {...uploadProps} fileList={state.uploadFiles as UploadFile[]}>
         <Button>
-          <Icon type="upload" /> Click to Upload
+          <Icon type="upload" /> upload
         </Button>
       </Upload>
       <Input.TextArea
