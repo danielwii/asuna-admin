@@ -1,4 +1,4 @@
-import { ErrorInfo } from '@asuna-admin/components/ErrorInfo';
+import { ErrorInfo } from '@asuna-admin/components';
 import { diff, TenantHelper } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 import ModulesLoader from '@asuna-admin/modules';
