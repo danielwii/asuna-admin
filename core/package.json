@@ -51,6 +51,7 @@
     "bluebird": "^3.7.2",
     "braft-editor": "^2.3.8",
     "braft-utils": "^3.0.12",
+    "class-transformer": "^0.2.3",
     "colors": "^1.4.0",
     "date-fns": "^2.8.1",
     "debug": "^4.1.1",
