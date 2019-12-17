@@ -33,6 +33,7 @@ export * from './interfaces';
 export * from './message-box';
 export * from './models';
 export * from './register';
+export * from './tenant';
 
 /**
  * used by services

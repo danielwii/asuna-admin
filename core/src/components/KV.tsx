@@ -1,4 +1,5 @@
 import { EasyForm, EasyGroupForm, ErrorInfo, FormFields, GroupFormFields } from '@asuna-admin/components';
+import { AppContext } from '@asuna-admin/core';
 import { ComponentsHelper } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 import { Button, Col, Divider, Icon, Row, Typography } from 'antd';
@@ -8,6 +9,7 @@ import 'highlight.js/styles/default.css';
 import * as _ from 'lodash';
 import React, { useEffect, useState } from 'react';
 import Highlight from 'react-highlight';
+import { FoldingCube } from 'styled-spinkit';
 import * as util from 'util';
 
 const logger = createLogger('components:kv-form');
@@ -57,7 +59,8 @@ export function GroupFormKVComponent(props: {
   const { loading, error, data, refetch, networkStatus } = ComponentsHelper.loadByKey(key, collection);
   useEffect(() => setState({ body: _.get(data, 'kv.value', {}) }), [JSON.stringify(data)]);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <FoldingCube />;
+
   if (error)
     return (
       <>
@@ -87,8 +90,12 @@ export function GroupFormKVComponent(props: {
         onClear={enableClear ? () => ComponentsHelper.clear({ key, collection }, refetch) : undefined}
         onDestroy={enableDestroy ? () => ComponentsHelper.destroy({ key, collection }, refetch) : undefined}
       />
-      <Divider />
-      <Highlight language="json">{util.inspect(data, false, 10)}</Highlight>
+      {AppContext.isDebugMode && (
+        <>
+          <Divider />
+          <Highlight language="json">{util.inspect(data, false, 10)}</Highlight>
+        </>
+      )}
     </>
   );
 }
@@ -125,7 +132,8 @@ export function FormKVComponent(props: {
   const { loading, error, data, refetch } = ComponentsHelper.loadByKey(key, collection);
   useEffect(() => setBody(_.get(data, 'kv.value', {})), [JSON.stringify(data)]);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <FoldingCube />;
+
   if (error)
     return (
       <>
@@ -154,15 +162,21 @@ export function FormKVComponent(props: {
             onClear={() => ComponentsHelper.clear({ key, collection }, refetch)}
           />
         </Col>
-        <Col span={6}>
-          <div>
-            <h3>Preview:</h3>
-            <Highlight language="json">{JSON.stringify(body, null, 2)}</Highlight>
-          </div>
-        </Col>
+        {AppContext.isDebugMode && (
+          <Col span={6}>
+            <div>
+              <h3>Preview:</h3>
+              <Highlight language="json">{JSON.stringify(body, null, 2)}</Highlight>
+            </div>
+          </Col>
+        )}
       </Row>
-      <Divider />
-      <Highlight language="json">{util.inspect(data, false, 10)}</Highlight>
+      {AppContext.isDebugMode && (
+        <>
+          <Divider />
+          <Highlight language="json">{util.inspect(data, false, 10)}</Highlight>
+        </>
+      )}
     </>
   );
 }

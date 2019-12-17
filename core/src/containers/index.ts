@@ -1,13 +1,11 @@
-import HeaderContainer from './Header';
-import LoginContainer from './Login';
+export * from './Header';
+export * from './Login';
 import PanesContainer from './Panes';
-import SideMenuContainer from './SideMenu';
+
+export * from './SideMenu';
 // import DebugSettingsContainer from './DebugSettings';
 
 export {
-  SideMenuContainer,
   PanesContainer,
-  LoginContainer,
-  HeaderContainer,
   // DebugSettingsContainer,
 };

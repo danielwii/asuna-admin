@@ -3,6 +3,7 @@ import { createLogger } from '@asuna-admin/logger';
 import { Button, Form, Icon, Input } from 'antd';
 import { FormComponentProps } from 'antd/es/form/Form';
 import * as React from 'react';
+import { FoldingCube } from 'styled-spinkit';
 
 const logger = createLogger('components:login');
 
@@ -59,9 +60,7 @@ class NormalLoginForm extends React.Component<ILoginProps & FormComponentProps, 
     const { form } = this.props;
     const { loading } = this.state;
 
-    if (loading) {
-      return <div>login... &gt;__________,.&lt;</div>;
-    }
+    if (loading) return <FoldingCube />;
 
     const usernameInput = generateInput(
       form,
@@ -98,6 +97,4 @@ class NormalLoginForm extends React.Component<ILoginProps & FormComponentProps, 
   }
 }
 
-const Login = Form.create<ILoginProps>()(NormalLoginForm) as any;
-
-export { Login };
+export const Login = Form.create<ILoginProps>()(NormalLoginForm) as any;

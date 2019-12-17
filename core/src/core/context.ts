@@ -1,6 +1,9 @@
 import {
+  AdminAdapter,
+  AdminAdapterImpl,
   ApiAdapter,
   AuthAdapter,
+  IAdminService,
   IApiService,
   IAuthService,
   IMenuService,
@@ -9,7 +12,7 @@ import {
   MenuAdapter,
   ModelAdapter,
   ResponseAdapter,
-  SecurityAdapter,
+  SecurityAdapterImpl,
   WsAdapter,
 } from '@asuna-admin/adapters';
 import { GraphqlAdapter } from '@asuna-admin/adapters/graphql';
@@ -40,6 +43,8 @@ export interface IIndexRegister extends ILoginRegister {
   createMenuService(): IMenuService;
 
   createApiService(): IApiService;
+
+  createAdminService(): IAdminService;
 
   createSecurityService(): ISecurityService;
 
@@ -80,7 +85,8 @@ class AppContext {
     response: ResponseAdapter;
     menu: MenuAdapter;
     api: ApiAdapter;
-    security: SecurityAdapter;
+    admin: AdminAdapter;
+    security: SecurityAdapterImpl;
     models: ModelAdapter;
     ws: WsAdapter;
     components: IComponentService;
@@ -183,7 +189,11 @@ class AppContext {
   }
 
   public static get isDevMode() {
-    return AppContext.nextConfig.publicRuntimeConfig?.env !== 'production';
+    return this.isDebugMode || AppContext.nextConfig.publicRuntimeConfig?.env !== 'production';
+  }
+
+  public static get isDebugMode() {
+    return (global as any).DEBUG_MODE;
   }
 
   public static get publicConfig() {
@@ -233,7 +243,8 @@ class AppContext {
       response: new ResponseAdapter(),
       menu: new MenuAdapter(register.createMenuService(), register.definitions.sideMenus),
       api: new ApiAdapter(register.createApiService()),
-      security: new SecurityAdapter(register.createSecurityService()),
+      admin: new AdminAdapterImpl(register.createAdminService()),
+      security: new SecurityAdapterImpl(register.createSecurityService()),
       models: new ModelAdapter(register.modelService, register.definitions),
       ws: new WsAdapter(),
       components: register.componentService,

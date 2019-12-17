@@ -23,6 +23,12 @@ export interface ISecurityService {
   ): Promise<AxiosResponse>;
 }
 
+export class Role {}
+
+export interface SecurityAdapter {
+  roles(configs?: IRequestConfig): Promise<Role[]>;
+}
+
 // --------------------------------------------------------------
 // Main
 // --------------------------------------------------------------
@@ -46,7 +52,7 @@ export const securityProxy = {
   },
 };
 
-export class SecurityAdapter {
+export class SecurityAdapterImpl {
   private service: ISecurityService;
 
   constructor(service: ISecurityService) {
@@ -63,10 +69,7 @@ export class SecurityAdapter {
     return this.service.roles(auth, configs);
   };
 
-  updatePassword = (
-    data: { body: { email: string; password: string } },
-    configs?: IRequestConfig,
-  ) => {
+  updatePassword = (data: { body: { email: string; password: string } }, configs?: IRequestConfig) => {
     const auth = AppContext.fromStore('auth');
     return this.service.updatePassword(auth, data, configs);
   };

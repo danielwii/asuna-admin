@@ -3,7 +3,7 @@ import { Provider } from 'react-redux';
 
 import { storiesOf } from '@storybook/react';
 
-import SideMenuContainer from '../src/containers/SideMenu';
+import { SideMenuRender } from '../src/containers/SideMenu';
 import { AsunaStore } from '../src/store';
 
 const store = AsunaStore.instance;
@@ -45,4 +45,4 @@ const initialState = {
 
 storiesOf('SideMenu', module)
   .addDecorator(getStory => <Provider store={store.configureStore({ menu: initialState }, {})}>{getStory()}</Provider>)
-  .add('container', () => <SideMenuContainer />);
+  .add('container', () => <SideMenuRender />);

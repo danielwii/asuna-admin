@@ -206,7 +206,7 @@ export const wechatLoginGetInitial = async (ctx: NextPageContext): Promise<Login
       const { data } = await client.query({
         query: gql`
           {
-            kv(collection: "wechat.settings", key: "config") {
+            kv(collection: "system.wechat", key: "config") {
               key
               name
               type

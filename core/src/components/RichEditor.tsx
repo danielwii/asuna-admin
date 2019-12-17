@@ -11,6 +11,7 @@ import { ExtendControlType } from 'braft-editor';
 import { ContentUtils } from 'braft-utils';
 import * as React from 'react';
 import * as _ from 'lodash';
+import { FoldingCube } from 'styled-spinkit';
 
 const logger = createLogger('components:rich-editor');
 
@@ -83,7 +84,7 @@ export class BraftRichEditor extends React.Component<IProps, IState> {
     const { host } = this.props;
     const { loading, editorState } = this.state;
 
-    if (loading) return <p>loading editor...</p>;
+    if (loading) return <FoldingCube />;
 
     if (AppContext.isServer) {
       return <div />;

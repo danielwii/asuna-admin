@@ -1,11 +1,15 @@
-import { diff } from '@asuna-admin/helpers';
+import { ErrorInfo } from '@asuna-admin/components/ErrorInfo';
+import { diff, TenantHelper } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 import ModulesLoader from '@asuna-admin/modules';
+import { TenantWelcome } from '@asuna-admin/tenant';
 
 import { Button, Divider, Tabs } from 'antd';
 import * as _ from 'lodash';
 import * as R from 'ramda';
 import * as React from 'react';
+import { Async } from 'react-async';
+import { FoldingCube } from 'styled-spinkit';
 
 const logger = createLogger('components:panes');
 
@@ -69,7 +73,16 @@ export class Panes extends React.Component<IPanesProps, IState> {
     const { activeKey, panes, onActive, onCloseWithout, onCloseCurrent } = this.props;
 
     if (!activeKey) {
-      return <div>welcome</div>;
+      return (
+        <Async promise={TenantHelper.reloadInfo()}>
+          {({ data, error, isPending }) => {
+            if (isPending) return <FoldingCube />;
+            if (error) return <ErrorInfo>Something went wrong: {error.message}</ErrorInfo>;
+            if (data?.config?.enabled && !_.isEmpty(data?.hasTenantRoles)) return <TenantWelcome tenantInfo={data} />;
+            return <div>welcome</div>;
+          }}
+        </Async>
+      );
     }
 
     const title = titles[activeKey];

@@ -299,18 +299,16 @@ const GroupInnerForm = (props: GroupEasyFormProps & formik.FormikProps<formik.Fo
           )}
         </formik.Form>
       </antd.Col>
-      <antd.Col span={6}>
-        <div>
-          <h3>Preview:</h3>
-          <Highlight language="json">
-            {JSON.stringify(
-              AppContext.isDevMode ? { touched, errors, isSubmitting, message, body, values, fieldValues } : values,
-              null,
-              2,
-            )}
-          </Highlight>
-        </div>
-      </antd.Col>
+      {AppContext.isDebugMode && (
+        <antd.Col span={6}>
+          <div>
+            <h3>Preview:</h3>
+            <Highlight language="json">
+              {JSON.stringify({ touched, errors, isSubmitting, message, body, values, fieldValues }, null, 2)}
+            </Highlight>
+          </div>
+        </antd.Col>
+      )}
     </antd.Row>
   );
 };

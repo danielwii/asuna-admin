@@ -3,10 +3,11 @@ import { AppContext } from '@asuna-admin/core';
 import { appActions, authActions, panesActions, RootState } from '@asuna-admin/store';
 
 import * as React from 'react';
-import { connect, useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { withDebugSettingsProps } from './DebugSettings';
 
+/*
 const mapStateToProps = (state: RootState): Partial<IHeaderProps> => ({
   auth: state.auth,
   app: state.app,
@@ -30,7 +31,7 @@ const mapDispatchToProps = (dispatch): Partial<IHeaderProps> => ({
   },
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Header);
+export default connect(mapStateToProps, mapDispatchToProps)(Header);*/
 
 export const HeaderRender: React.FC<Pick<IHeaderProps, 'hideLogo'>> = props => {
   const states = useSelector<RootState, Pick<IHeaderProps, 'auth' | 'app' | 'env' | 'version'>>(state => ({

@@ -1,5 +1,5 @@
 import { ProgressBar } from '@asuna-admin/components';
-import { HeaderContainer, PanesContainer, SideMenuContainer } from '@asuna-admin/containers';
+import { PanesContainer, SideMenuRender } from '@asuna-admin/containers';
 import { HeaderRender } from '@asuna-admin/containers/Header';
 import { createLogger } from '@asuna-admin/logger';
 
@@ -28,16 +28,8 @@ export default ({ loading, heartbeat, auth, appInfo, hideCharacteristics }) => {
         <ProgressBar />
         <HeaderRender hideLogo={hideCharacteristics} />
         <Layout>
-          <Sider
-            theme={'light'}
-            style={{
-              overflow: 'auto',
-              height: '90vh',
-              position: 'fixed',
-              left: 0,
-            }}
-          >
-            <SideMenuContainer />
+          <Sider theme={'light'} style={{ overflow: 'auto', height: '90vh', position: 'fixed', left: 0 }}>
+            <SideMenuRender />
           </Sider>
           <Layout style={{ marginLeft: 200, padding: '1rem' }}>
             <StyledContentDiv>
