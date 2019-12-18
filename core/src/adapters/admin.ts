@@ -14,11 +14,13 @@ export class TenantInfo {
     firstModelName: string;
     firstDisplayName: string;
   }>;
-  tenant?: any;
+  tenant?: Tenant;
   hasTenantRoles: string[];
 }
 
-export class Tenant {}
+export class Tenant {
+  id: string;
+}
 
 export interface AdminAdapter {
   tenantInfo(): Promise<TenantInfo>;
@@ -39,7 +41,7 @@ export class AdminAdapterImpl implements AdminAdapter {
 
   ensureTenant(): Promise<Tenant> {
     const auth = AppContext.fromStore('auth');
-    return this.service.ensureTenant(auth).then(res => plainToClass(TenantInfo, res.data));
+    return this.service.ensureTenant(auth).then(res => plainToClass(Tenant, res.data));
   }
 }
 

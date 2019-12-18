@@ -1,4 +1,4 @@
-import { WsAdapter, NextSocketType } from '@asuna-admin/adapters';
+import { NextSocketType, WsAdapter } from '@asuna-admin/adapters';
 import { LogoCanvas, Snow, Sun } from '@asuna-admin/components';
 import { Config } from '@asuna-admin/config';
 import { LoginContainer } from '@asuna-admin/containers';
@@ -18,8 +18,8 @@ import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { PacmanLoader } from 'react-spinners';
 import { Subscription } from 'rxjs';
+import * as shortid from 'shortid';
 import styled from 'styled-components';
-import * as uuid from 'uuid';
 
 const logger = createLogger('pages:login');
 
@@ -50,7 +50,7 @@ const StyledLogoWrapper = styled.div`
 
 export type LoginInitialProps = Partial<{
   weChatLoginEnable: boolean;
-  clientId: string;
+  tempId: string;
   userAgent: string;
 }>;
 
@@ -190,40 +190,43 @@ export class LoginPage extends React.Component<
 }
 
 export const wechatLoginGetInitial = async (ctx: NextPageContext): Promise<LoginInitialProps> => {
-  if (Config.isServer) {
-    const clientId = uuid.v4();
-
-    try {
-      const userAgent = ctx.req ? ctx.req.headers['user-agent'] : navigator.userAgent;
-      const host = Config.get('GRAPHQL_HOST') || 'localhost';
-      const port = process.env.PORT || 3000;
-      logger.log(`call http://${host}:${port}/s-graphql`);
-      const client = new ApolloClient({
-        uri: `http://${host}:${port}/s-graphql`,
-        headers: { 'X-ApiKey': 'todo:app-key-001' }, // todo temp auth
-        fetch: fetch as any,
-      });
-      const { data } = await client.query({
-        query: gql`
-          {
-            kv(collection: "system.wechat", key: "config") {
-              key
-              name
-              type
-              value
-            }
-          }
-        `,
-      });
-
-      const weChatLoginEnable = _.get(data, 'kv.value.values.wechat.login');
-      console.log({ userAgent, weChatLoginEnable, clientId });
-      return { userAgent, weChatLoginEnable, clientId };
-    } catch (e) {
-      console.error(e);
-    }
+  if ((process as any).browser) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // @ts-ignore
+    return __NEXT_DATA__.props.pageProps;
   }
-  return {};
+
+  const tempId = shortid.generate();
+  // try {
+  const userAgent = ctx.req ? ctx.req.headers['user-agent'] : navigator.userAgent;
+  const host = Config.get('GRAPHQL_HOST') || 'localhost';
+  const port = process.env.PORT || 3000;
+  logger.log(`call http://${host}:${port}/s-graphql`);
+  const client = new ApolloClient({
+    uri: `http://${host}:${port}/s-graphql`,
+    headers: { 'X-ApiKey': 'todo:app-key-001' }, // todo temp auth
+    fetch: fetch as any,
+  });
+  const { data } = await client.query({
+    query: gql`
+      {
+        kv(collection: "system.wechat", key: "config") {
+          key
+          name
+          type
+          value
+        }
+      }
+    `,
+  });
+
+  const weChatLoginEnable = _.get(data, 'kv.value.values.wechat.login');
+  // console.log({ userAgent, weChatLoginEnable, tempId });
+  return { userAgent, weChatLoginEnable, tempId };
+  // } catch (e) {
+  //   console.error(e);
+  // }
+  // return {};
 };
 
 export const LoginPageRender: React.FC<Omit<ILoginPageProps, 'app' | 'dispatch'> & {
