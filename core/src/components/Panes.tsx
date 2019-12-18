@@ -78,7 +78,7 @@ export class Panes extends React.Component<IPanesProps, IState> {
           {({ data, error, isPending }) => {
             if (isPending) return <FoldingCube />;
             if (error) return <ErrorInfo>Something went wrong: {error.message}</ErrorInfo>;
-            if (data?.config?.enabled && !_.isEmpty(data?.hasTenantRoles)) return <TenantWelcome tenantInfo={data} />;
+            if (data?.config?.enabled && !_.isEmpty(data?.hasTenantRoles)) return <TenantWelcome />;
             return <div>welcome</div>;
           }}
         </Async>
