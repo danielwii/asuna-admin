@@ -2,7 +2,7 @@ import { createLogger } from '@asuna-admin/logger';
 import { Asuna } from '@asuna-admin/types';
 
 import { message } from 'antd';
-import { AxiosResponse } from 'axios';
+import { AxiosResponse, AxiosError } from 'axios';
 import * as R from 'ramda';
 
 const logger = createLogger('helpers:errors');
@@ -31,6 +31,10 @@ export function safeCallback(cb, data) {
   } catch (e) {
     logger.warn('callback error', e, { e });
   }
+}
+
+export function parseResponseError(e: Partial<AxiosError>): any {
+  return e.response?.data || e.message || e;
 }
 
 export function toErrorMessage(e) {

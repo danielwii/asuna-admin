@@ -1,6 +1,6 @@
 import { ModelListConfig } from '@asuna-admin/adapters';
 import { AppContext } from '@asuna-admin/core';
-import { TimelineMessageBox, toErrorMessage } from '@asuna-admin/helpers';
+import { parseResponseError, TimelineMessageBox } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 import { RootState } from '@asuna-admin/store';
 
@@ -74,7 +74,7 @@ function* loadModels({ payload: { name, models } }: LoadModelsParams) {
     } catch (e) {
       logger.warn('[loadModels]', { e });
       // message.error(toErrorMessage(e));
-      TimelineMessageBox.push({ key: boxId, type: 'error', message: toErrorMessage(e) });
+      TimelineMessageBox.push({ key: boxId, type: 'error', message: parseResponseError(e) });
     }
   }
 }

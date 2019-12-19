@@ -3,12 +3,10 @@ import { Config } from '@asuna-admin/config';
 import { ActionEvent, AppContext, EventBus, EventType } from '@asuna-admin/core';
 import { castModelKey, diff, extractModelNameFromPane, resolveModelInPane } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
-import { RootState } from '@asuna-admin/store';
 import { Asuna } from '@asuna-admin/types';
 import { SorterResult } from 'antd/es/table';
 import * as _ from 'lodash';
 import * as React from 'react';
-import { connect } from 'react-redux';
 import { Subscription } from 'rxjs';
 
 const logger = createLogger('modules:content:index');
@@ -16,7 +14,7 @@ const logger = createLogger('modules:content:index');
 interface IProps extends ReduxProps {
   basis: { pane: Pane };
   activeKey: string;
-  models: object;
+  // models: object;
   nextGetConfig: any;
 }
 
@@ -114,7 +112,7 @@ class ContentIndex extends React.Component<IProps, IState> {
   render() {
     const { modelName, extraName, creatable, editable, deletable, rowClassName } = this.state;
 
-    const { models } = this.props;
+    // const { models } = this.props;
 
     return (
       <AsunaDataTable
@@ -123,13 +121,14 @@ class ContentIndex extends React.Component<IProps, IState> {
         deletable={deletable}
         modelName={modelName}
         extraName={extraName}
-        models={models}
+        // models={models}
         rowClassName={rowClassName}
       />
     );
   }
 }
 
-const mapStateToProps = (state: RootState): any => state.content;
+// const mapStateToProps = (state: RootState): any => state.content;
 
-export default connect(mapStateToProps)(ContentIndex);
+// export default connect(mapStateToProps)(ContentIndex);
+export default ContentIndex;

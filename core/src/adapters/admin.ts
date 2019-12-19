@@ -4,7 +4,7 @@ import { plainToClass } from 'class-transformer';
 
 export interface IAdminService {
   tenantInfo(auth: { token: string | null }): Promise<AxiosResponse>;
-  ensureTenant(auth: { token: string | null }): Promise<AxiosResponse>;
+  registerTenant(auth: { token: string | null }, data: { name: string; description?: string }): Promise<AxiosResponse>;
 }
 
 export class TenantInfo {
@@ -15,16 +15,20 @@ export class TenantInfo {
     firstDisplayName: string;
   }>;
   tenant?: Tenant;
-  hasTenantRoles: string[];
+  tenantRoles: string[];
+  recordCounts: { [name: string]: number };
 }
 
 export class Tenant {
   id: string;
+  name: string;
+  description?: string;
+  isPublished?: boolean;
 }
 
 export interface AdminAdapter {
   tenantInfo(): Promise<TenantInfo>;
-  ensureTenant(): Promise<Tenant>;
+  registerTenant(data: { name: string; description?: string }): Promise<Tenant>;
 }
 
 export class AdminAdapterImpl implements AdminAdapter {
@@ -39,9 +43,9 @@ export class AdminAdapterImpl implements AdminAdapter {
     return this.service.tenantInfo(auth).then(res => plainToClass(TenantInfo, res.data));
   }
 
-  ensureTenant(): Promise<Tenant> {
+  registerTenant(data: { name: string; description?: string }): Promise<Tenant> {
     const auth = AppContext.fromStore('auth');
-    return this.service.ensureTenant(auth).then(res => plainToClass(Tenant, res.data));
+    return this.service.registerTenant(auth, data).then(res => plainToClass(Tenant, res.data));
   }
 }
 

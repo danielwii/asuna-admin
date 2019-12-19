@@ -1,16 +1,16 @@
-import { TenantInfo } from '@asuna-admin/adapters';
 import { ISideMenuProps, SideMenu } from '@asuna-admin/components';
 import { StoreContext } from '@asuna-admin/context/store';
 import { AppContext } from '@asuna-admin/core';
+import { TenantHelper } from '@asuna-admin/helpers';
 import { panesActions, RootState } from '@asuna-admin/store';
 import { Asuna } from '@asuna-admin/types';
 import { Divider } from 'antd';
+import * as _ from 'lodash';
 import * as React from 'react';
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { CubeGrid } from 'styled-spinkit';
 import * as util from 'util';
-import * as _ from 'lodash';
 
 export const SideMenuRender: React.FC = props => {
   // const [tenantInfo, setTenantInfo] = useState<TenantInfo>();
@@ -28,16 +28,17 @@ export const SideMenuRender: React.FC = props => {
   });
 */
 
-  const boundTenant = store.tenantInfo?.tenant;
-  const hasTenantRoles = !_.isEmpty(store.tenantInfo?.hasTenantRoles);
-  if (store.tenantInfo?.config?.enabled && !boundTenant && hasTenantRoles)
+  const isTenantEnabled = store.tenantInfo?.config?.enabled;
+  const hasTenantRoles = !_.isEmpty(store.tenantInfo?.tenantRoles);
+  const authorized = TenantHelper.authorized(store.tenantInfo);
+  if (isTenantEnabled && hasTenantRoles && !authorized)
     return (
       <>
         <CubeGrid />{' '}
         {AppContext.isDebugMode && (
           <>
             <Divider />
-            <pre>{util.inspect(store.tenantInfo, { depth: 10 })}</pre>
+            <pre>{util.inspect({ tenantInfo: store.tenantInfo, isTenantEnabled, authorized }, { depth: 10 })}</pre>
           </>
         )}
       </>

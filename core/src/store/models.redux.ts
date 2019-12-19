@@ -1,10 +1,9 @@
-import { AppContext } from '@asuna-admin/core';
-import { ReduxCallback, safeCallback, TimelineMessageBox, toErrorMessage } from '@asuna-admin/helpers';
+import { AppContext, EventBus, EventType } from '@asuna-admin/core';
+import { parseResponseError, ReduxCallback, safeCallback, TimelineMessageBox } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
-import { contentActions, RootState } from '@asuna-admin/store';
+import { RootState } from '@asuna-admin/store';
 import { Asuna } from '@asuna-admin/types';
 import { AxiosResponse } from 'axios';
-import * as _ from 'lodash';
 import { reduxAction } from 'node-buffs';
 import * as R from 'ramda';
 import { call, put, select, takeLatest } from 'redux-saga/effects';
@@ -92,7 +91,7 @@ const modelsSagaFunctions = {
       } catch (e) {
         logger.warn('[fetch]', e, { e });
         safeCallback(callback, { error: e });
-        TimelineMessageBox.push({ key: boxId, type: 'error', message: toErrorMessage(e) });
+        TimelineMessageBox.push({ key: boxId, type: 'error', message: parseResponseError(e) });
       }
     }
   },
@@ -119,7 +118,7 @@ const modelsSagaFunctions = {
         } catch (e) {
           logger.warn('[upsert] callback error', e, { e });
         }
-        TimelineMessageBox.push({ key: boxId, type: 'error', message: toErrorMessage(error) });
+        TimelineMessageBox.push({ key: boxId, type: 'error', message: parseResponseError(error) });
       }
     }
   },
@@ -137,8 +136,9 @@ const modelsSagaFunctions = {
         // save model data when remove is success
         yield put(modelsActions.fetchSuccess(modelName, response.data));
         // refresh models in content index
-        const { models } = yield select((state: RootState) => state.content);
-        yield put(contentActions.loadModels(modelName, _.get(models, `${modelName}.extras`)));
+        EventBus.sendEvent(EventType.MODEL_DELETE, { modelName, data });
+        // const { models } = yield select((state: RootState) => state.content);
+        // yield put(contentActions.loadModels(modelName, _.get(models, `${modelName}.extras`)));
       } catch (error) {
         logger.warn('[remove]', error, { error });
         try {
@@ -146,7 +146,7 @@ const modelsSagaFunctions = {
         } catch (e) {
           logger.warn('[upsert] callback error', e, { e });
         }
-        TimelineMessageBox.push({ key: boxId, type: 'error', message: toErrorMessage(error) });
+        TimelineMessageBox.push({ key: boxId, type: 'error', message: parseResponseError(error) });
       }
     }
   },
@@ -164,7 +164,7 @@ const modelsSagaFunctions = {
         logger.log('[loadAllSchemas]', 'load all model schemas', schemas);
       } catch (e) {
         logger.warn('[loadAllSchemas]', e, { e });
-        TimelineMessageBox.push({ key: boxId, type: 'error', message: toErrorMessage(e) });
+        TimelineMessageBox.push({ key: boxId, type: 'error', message: parseResponseError(e) });
       }
     }
   },

@@ -1,5 +1,5 @@
 import { securityProxy } from '@asuna-admin/adapters';
-import { TimelineMessageBox, toErrorMessage } from '@asuna-admin/helpers';
+import { parseResponseError, TimelineMessageBox } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 
 import { reduxAction } from 'node-buffs';
@@ -66,7 +66,7 @@ const securitySagaFunctions = {
       } catch (e) {
         logger.warn('[loadAllRoles]', 'CATCH -> load all roles error', e);
         // message.error(toErrorMessage(e));
-        TimelineMessageBox.push({ key: boxId, type: 'error', message: toErrorMessage(e) });
+        TimelineMessageBox.push({ key: boxId, type: 'error', message: parseResponseError(e) });
       }
     }
   },
@@ -87,7 +87,7 @@ const securitySagaFunctions = {
       } catch (e) {
         logger.warn('[getCurrentUser]', 'CATCH -> get current user error', e);
         // message.error(toErrorMessage(e));
-        TimelineMessageBox.push({ key: boxId, type: 'error', message: toErrorMessage(e) });
+        TimelineMessageBox.push({ key: boxId, type: 'error', message: parseResponseError(e) });
         yield put(authActions.logout());
       }
     }

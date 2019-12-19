@@ -1,8 +1,9 @@
 import { Icon, notification, Timeline } from 'antd';
+import { differenceInSeconds } from 'date-fns';
 import * as _ from 'lodash';
 import nanoid from 'nanoid';
-import { differenceInSeconds } from 'date-fns';
 import * as React from 'react';
+import * as util from 'util';
 
 export type MessageBoxType = 'open' | 'success' | 'error' | 'info' | 'warning' | 'warn';
 
@@ -14,7 +15,7 @@ export class MessageBox {
       message: null,
       description: message,
       placement: 'bottomRight',
-      duration: 2,
+      duration: 60,
     });
     return id;
   }
@@ -35,11 +36,11 @@ export class TimelineMessageBox {
         {TimelineMessageBox.messages.map(message =>
           message.type !== 'loading' ? (
             <Timeline.Item key={message.key} color={message.type === 'done' ? 'green' : 'red'}>
-              <p>{message.content}</p>
+              <div>{_.isObject(message.content) ? <pre>{util.inspect(message.content)}</pre> : message.content}</div>
             </Timeline.Item>
           ) : (
             <Timeline.Item key={message.key} dot={<Icon type="loading" style={{ fontSize: '16px' }} />}>
-              <p>{message.content}</p>
+              <div>{_.isObject(message.content) ? <pre>{util.inspect(message.content)}</pre> : message.content}</div>
             </Timeline.Item>
           ),
         )}

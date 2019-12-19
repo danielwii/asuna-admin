@@ -1,10 +1,11 @@
 import { StoreContext } from '@asuna-admin/context/store';
-import { AppState, AuthState } from '@asuna-admin/store';
+import { AppState, AuthState, RootState } from '@asuna-admin/store';
 
 import { Badge, Button, Dropdown, Icon, Layout, Menu, Modal, Tag } from 'antd';
 import getConfig from 'next/config';
 import * as React from 'react';
 import { useContext } from 'react';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import { DebugSettings, IDebugSettingsProps } from './DebugSettings';
@@ -38,6 +39,7 @@ export interface IHeaderProps {
 export const Header: React.FC<IHeaderProps> = props => {
   const { auth, app, env, version, hideLogo, onSync, isAdmin, isSuperAdmin, handleAction, logout } = props;
   const { store, updateStore } = useContext(StoreContext);
+  const appState = useSelector<RootState, AppState>(state => state.app);
 
   const _renderMenu = () => (
     <Menu>
@@ -124,7 +126,7 @@ export const Header: React.FC<IHeaderProps> = props => {
       >
         Environment Info
       </Button>
-      <Badge status="processing" text="Online" color="green" />
+      {appState.heartbeat ? <Badge status="processing" color="green" /> : <Badge status="processing" color="red" />}
       {/*
         <Menu
           theme="dark"
@@ -138,17 +140,16 @@ export const Header: React.FC<IHeaderProps> = props => {
       <div className="header-user">
         {auth.username ? (
           <div>
+            {store.tenantInfo?.tenant && (
+              <Tag>
+                {store.tenantInfo?.tenant?.id} / {store.tenantInfo?.tenant?.name}
+              </Tag>
+            )}{' '}
             Welcome,&nbsp;
             <Dropdown overlay={_renderMenu()}>
               <a>{auth.username}</a>
             </Dropdown>
             .
-            {store.tenantInfo?.tenant && (
-              <>
-                {' '}
-                <Tag>{store.tenantInfo?.tenant?.id}</Tag>
-              </>
-            )}
           </div>
         ) : (
           <Icon type="loading" style={{ marginLeft: 8, fontSize: 24 }} spin />

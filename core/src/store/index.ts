@@ -33,7 +33,7 @@ export * from './app.actions';
 export * from './auth.redux';
 export * from './auth.actions';
 export * from './models.redux';
-export * from './content.redux';
+// export * from './content.redux';
 export * from './middlewares';
 
 interface GlobalState {
@@ -48,7 +48,7 @@ export interface RootState {
   panes: PanesState;
   menu: MenuState;
   models: ModelsState;
-  content: ContentState;
+  // content: ContentState;
   security: SecurityState;
   app: AppState;
   global: GlobalState;
@@ -116,7 +116,7 @@ export class AsunaStore {
       panes: panesReducer,
       menu: menuReducer,
       models: modelsReducer,
-      content: contentReducer,
+      // content: contentReducer,
       // mod_models   : modModelsReducer,
       security: securityReducer,
       app: appReducer,

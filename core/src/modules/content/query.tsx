@@ -1,23 +1,18 @@
-import { AsunaDataTable, AsunaDataView, EasyForm, FormFieldType } from '@asuna-admin/components';
-import { extractModelNameFromPane, resolveModelInPane, useAsunaModels } from '@asuna-admin/helpers';
-import { RootState } from '@asuna-admin/store';
-import { Col, Divider, message, PageHeader, Row } from 'antd';
-import 'highlight.js/styles/default.css';
+import { AsunaDataView, EasyForm, FormFieldType } from '@asuna-admin/components';
 import { AppContext } from '@asuna-admin/core';
+import { extractModelNameFromPane, resolveModelInPane, useAsunaModels } from '@asuna-admin/helpers';
+import { Divider, PageHeader } from 'antd';
+import 'highlight.js/styles/default.css';
+import * as _ from 'lodash';
+import * as fp from 'lodash/fp';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import Highlight from 'react-highlight';
-import { connect } from 'react-redux';
-import * as util from 'util';
-import * as fp from 'lodash/fp';
 import { ModulesLoaderProps } from '..';
-import * as _ from 'lodash';
 
 export type QueryFieldsColumnProps<EntitySchema> = (keyof EntitySchema)[];
 
-const ContentSearch: React.FC<ModulesLoaderProps & { rootState: RootState }> = props => {
+const ContentSearch: React.FC<ModulesLoaderProps> = props => {
   const {
-    rootState: { content },
     basis: { pane },
   } = props;
   const [isOnline, setIsOnline] = useState<boolean | null>(null);
@@ -100,6 +95,7 @@ const ContentSearch: React.FC<ModulesLoaderProps & { rootState: RootState }> = p
   );
 };
 
-const mapStateToProps = (rootState: RootState): { rootState: RootState } => ({ rootState });
-
-export default connect(mapStateToProps)(ContentSearch);
+// const mapStateToProps = (rootState: RootState): { rootState: RootState } => ({ rootState });
+//
+// export default connect(mapStateToProps)(ContentSearch);
+export default ContentSearch;

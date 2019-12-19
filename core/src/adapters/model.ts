@@ -480,16 +480,24 @@ export class ModelAdapter {
     return this.service.loadSchema(auth, modelName, this.getModelConfig(modelName));
   }
 
-  async loadOriginSchema(
-    modelName: string,
-  ): Promise<{
-    columns: Asuna.Schema.ModelSchema[];
-    manyToManyRelations: Asuna.Schema.ModelSchema[];
-    manyToOneRelations: Asuna.Schema.ModelSchema[];
-    oneToManyRelations: Asuna.Schema.ModelSchema[];
-  }> {
+  async loadOriginSchema(modelName: string): Promise<Asuna.Schema.OriginSchema> {
     const auth = AppContext.fromStore('auth');
+    console.log('loadOriginSchema', modelName);
     return this.service.loadOriginSchema(auth, modelName, this.getModelConfig(modelName)).then(fp.get('data'));
+  }
+
+  async loadOriginSchemas(): Promise<{ [name: string]: Asuna.Schema.OriginSchema }> {
+    if (AppContext.ctx.graphql.serverClient) {
+      const allResponse = await AppContext.ctx.graphql.loadSchemas();
+      return Object.assign({}, ..._.map(allResponse, ({ name, schema }) => ({ [name]: schema })));
+    } else {
+      const callable = Object.assign(
+        {},
+        ...this.allModels.map(modelName => ({ [modelName]: this.loadOriginSchema(modelName) })),
+      );
+      const allResponse = await Promise.props(callable);
+      return Object.assign({}, ..._.map(allResponse, (response, name) => ({ [name]: (response as any).data })));
+    }
   }
 
   async loadSchemas() {

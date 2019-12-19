@@ -3,6 +3,7 @@ import { AppContext } from '@asuna-admin/core';
 import { diff } from '@asuna-admin/helpers/index';
 import { createLogger } from '@asuna-admin/logger';
 import { panesActions } from '@asuna-admin/store';
+import * as _ from 'lodash';
 import * as Rx from 'rxjs';
 
 const logger = createLogger('helpers:tenant');
@@ -29,5 +30,11 @@ export class TenantHelper {
         linkTo: 'content::upsert',
       }),
     );
+  }
+
+  static authorized(tenantInfo?: TenantInfo): boolean {
+    const boundTenant = tenantInfo?.tenant;
+    const hasTenantRoles = !_.isEmpty(tenantInfo?.tenantRoles);
+    return (boundTenant && hasTenantRoles && tenantInfo?.tenant?.isPublished) ?? false;
   }
 }

@@ -30,14 +30,8 @@ class EventBus {
   }
 
   public static sendEvent(type: EventType.MODEL_INSERT, payload: { modelName: string }): void;
-  public static sendEvent(
-    type: EventType.MODEL_UPDATE,
-    payload: { modelName: string; id: number | string },
-  ): void;
-  public static sendEvent(
-    type: EventType.MODEL_DELETE,
-    payload: { modelName: string; id: number | string },
-  ): void;
+  public static sendEvent(type: EventType.MODEL_UPDATE, payload: { modelName: string; id: number | string }): void;
+  public static sendEvent(type: EventType.MODEL_DELETE, payload: { modelName: string; data: any }): void;
   public static sendEvent(type: EventType, payload: object, extras?: object): void {
     if (!AppContext.isServer) {
       EventBus.subject.next({ type, payload, extras });

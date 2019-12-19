@@ -133,6 +133,19 @@ export declare module Asuna {
       };
     }
 
+    interface EntityInfo {
+      name: string;
+      displayName?: string;
+    }
+
+    interface OriginSchema {
+      info?: EntityInfo;
+      columns: ModelSchema[];
+      manyToManyRelations: ModelSchema[];
+      manyToOneRelations: ModelSchema[];
+      oneToManyRelations: ModelSchema[];
+    }
+
     interface Association {
       name?: string;
       value?: string;
@@ -207,8 +220,8 @@ export declare module Asuna {
     // 单个模型设置，用于定义非 app 模块外的模型的访问端点
     type ModelOpts = { [key: string]: ModelOpt<any> | undefined };
 
-    type SubMenus<T extends Asuna.Schema.ModelOpts = {}> = Asuna.Schema.SubMenu<T>[];
-    type SubMenu<T extends Asuna.Schema.ModelOpts = {}> = ComponentSubMenu | NormalSubMenu<T> | ModelSubMenu<T>;
+    type SubMenus<T extends ModelOpts = {}> = SubMenu<T>[];
+    type SubMenu<T extends ModelOpts = {}> = ComponentSubMenu | NormalSubMenu<T> | ModelSubMenu<T>;
 
     type ComponentSubMenu = {
       key: string;
@@ -219,7 +232,7 @@ export declare module Asuna {
       component?: string;
     };
 
-    type NormalSubMenu<T extends Asuna.Schema.ModelOpts = {}> = {
+    type NormalSubMenu<T extends ModelOpts = {}> = {
       key: keyof T;
       title: string;
       linkTo: 'content::index' | 'content::graph.index';
@@ -228,7 +241,7 @@ export declare module Asuna {
     /*
      * 用于模型可能重复时的定义
      */
-    type ModelSubMenu<T extends Asuna.Schema.ModelOpts = {}> = {
+    type ModelSubMenu<T extends ModelOpts = {}> = {
       key: keyof T;
       model?: string;
       title: string;
@@ -252,7 +265,7 @@ export declare module Asuna {
           component: string;
         };
 
-    interface Menu<T extends Asuna.Schema.ModelOpts = {}> {
+    interface Menu<T extends ModelOpts = {}> {
       key: string;
       title: string;
       subMenus: SubMenus<T>;

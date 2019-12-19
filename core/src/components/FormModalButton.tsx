@@ -35,7 +35,7 @@ export interface IFormModalProps {
   body?: React.ReactNode;
   footer?: ({ loading, operations, params }) => React.ReactNode;
   onChange?: (value) => void;
-  onSubmit?: (value?: any) => Promise<AxiosResponse>;
+  onSubmit?: (value?: any) => Promise<any>;
   onOperations?: ({ loading, updateState, handleCancel }) => any;
   onRefresh?: () => any;
 }

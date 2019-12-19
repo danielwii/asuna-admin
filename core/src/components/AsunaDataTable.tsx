@@ -3,7 +3,7 @@ import { ActionEvent, AppContext, EventBus, EventType } from '@asuna-admin/core'
 import { castModelKey, ModelsHelper, parseJSONIfCould, resolveModelInPane, useAsunaModels } from '@asuna-admin/helpers';
 import { WithDebugInfo } from '@asuna-admin/helpers/debug';
 import { createLogger } from '@asuna-admin/logger';
-import { contentActions, modelsActions, panesActions } from '@asuna-admin/store';
+import { modelsActions, panesActions } from '@asuna-admin/store';
 import { Asuna } from '@asuna-admin/types';
 import { Button, Divider, Dropdown, Menu, Modal, Skeleton, Switch, Table, Tag } from 'antd';
 import { PaginationConfig } from 'antd/es/pagination';
@@ -21,7 +21,7 @@ export interface AsunaDataTableProps {
   deletable?: boolean;
   opts?: Asuna.Schema.TableColumnOpts<any>;
   rowClassName?: (record: any, index: number) => string;
-  models: any;
+  // models: any;
   modelName: string;
   extraName?: string;
   onView?: (text: any, record: any) => void;
@@ -34,7 +34,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
     deletable = false,
     opts,
     rowClassName,
-    models,
+    // models,
     modelName,
     extraName,
     onView,
@@ -81,7 +81,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
     const subscription = EventBus.observable.subscribe({
       next: (action: ActionEvent) => {
         if (
-          _.includes([EventType.MODEL_INSERT, EventType.MODEL_UPDATE], action.type) &&
+          _.includes([EventType.MODEL_INSERT, EventType.MODEL_UPDATE, EventType.MODEL_DELETE], action.type) &&
           action.payload.modelName === modelName
         ) {
           _refresh();
@@ -189,6 +189,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
     const { availableSorter, transformedFilters, transformedSorter } = _transformQueryCondition(queryCondition);
 
     logger.debug('[handleTableChange]', { availableSorter, transformedSorter, transformedFilters });
+    /*
     AppContext.dispatch(
       contentActions.loadModels(modelName, {
         relations,
@@ -197,6 +198,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
         sorter: transformedSorter,
       } as any),
     );
+*/
     setQueryCondition({
       pagination,
       filters,
