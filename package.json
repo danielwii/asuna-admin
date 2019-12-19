@@ -7,6 +7,7 @@
   "scripts": {
     "test": "yarn workspace asuna-admin test",
     "clean": "yarn workspace asuna-admin clean",
+    "build": "yarn workspace asuna-admin build",
     "outdated": "yarn workspaces run outdated"
   },
   "devDependencies": {
