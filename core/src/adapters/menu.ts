@@ -1,7 +1,6 @@
 import { AppContext } from '@asuna-admin/core';
 import { createLogger } from '@asuna-admin/logger';
 import { Asuna } from '@asuna-admin/types';
-
 import * as R from 'ramda';
 
 // --------------------------------------------------------------
@@ -25,23 +24,23 @@ export class MenuAdapter {
   private service: IMenuService;
   private sideMenus: Asuna.Schema.Menu[];
 
-  constructor(service: IMenuService, sideMenus: Asuna.Schema.Menu[]) {
-    this.service = service;
+  constructor(/*service: IMenuService, */ sideMenus: Asuna.Schema.Menu[]) {
+    // this.service = service;
     this.sideMenus = sideMenus;
   }
 
   getSideMenus = (): Asuna.Schema.Menu[] => this.sideMenus;
 
-  init = (isSysAdmin, authorities) => {
-    logger.log('[MenuAdapter][init]', 'isSysAdmin', isSysAdmin, 'authorities', authorities);
+  init = (isSysAdmin, authorities: { [authority: string]: boolean }) => {
+    logger.log('[MenuAdapter][init]', { isSysAdmin, authorities });
 
     // 系统管理员默认显示所有菜单项
     if (isSysAdmin) return this.getSideMenus();
 
     const includedSubMenus = (menu: Asuna.Schema.Menu): Asuna.Schema.SubMenu[] =>
-      R.filter((subMenu: Asuna.Schema.SubMenu) =>
-        R.propOr(false, `${menu.key}::${subMenu.key}`)(authorities),
-      )(menu.subMenus);
+      R.filter((subMenu: Asuna.Schema.SubMenu) => R.propOr(false, `${menu.key}::${subMenu.key}`)(authorities))(
+        menu.subMenus,
+      );
 
     const menus = R.compose(
       R.filter(menu => R.not(R.isEmpty(R.prop('subMenus', menu)))),

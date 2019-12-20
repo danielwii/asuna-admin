@@ -7,6 +7,8 @@ import * as R from 'ramda';
 
 const logger = createLogger('helpers:schema');
 
+export * from './helper';
+
 export const peek = (message, callback?) => fields => {
   if (callback) callback();
   logger.log('[peek]', { message, fields });

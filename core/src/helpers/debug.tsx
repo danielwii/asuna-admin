@@ -1,7 +1,9 @@
 import { AppContext } from '@asuna-admin/core';
 
-import { Icon, Popover } from 'antd';
+import { Button, Divider, Icon, Popover } from 'antd';
 import * as React from 'react';
+import { useState } from 'react';
+import JSONTree from 'react-json-tree';
 import * as util from 'util';
 
 interface IWithDebugInfoProps {
@@ -24,3 +26,18 @@ export class WithDebugInfo extends React.PureComponent<IWithDebugInfoProps> {
     return children || '';
   }
 }
+
+export const DebugInfo: React.FC<{ data: any; divider?: boolean }> = ({ data, divider }) => {
+  const [lv, setLevel] = useState(3);
+
+  return (
+    AppContext.isDebugMode && (
+      <>
+        {divider && <Divider type="horizontal" style={{ margin: '1rem 0' }} />}
+        <Button type="dashed" size="small" onClick={() => setLevel(lv + 1)} children="+" />{' '}
+        <Button type="dashed" size="small" onClick={() => setLevel(lv - 1)} children="-" />
+        <JSONTree data={data} hideRoot shouldExpandNode={(keyPath, data, level) => level < lv} />
+      </>
+    )
+  );
+};

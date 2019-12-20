@@ -320,7 +320,7 @@ export class ModelAdapter {
     );
   };
 
-  public getColumnOpts = (key: string): Asuna.Schema.ColumnOpts<any> | null => this.columnOpts[key];
+  public getColumnOpts = (key: string): Asuna.Schema.ColumnOpts<any> => this.columnOpts[key];
 
   public getModelConfig = (modelName: string): Asuna.Schema.ModelConfig => {
     const TAG = '[getModelConfig]';
@@ -482,7 +482,6 @@ export class ModelAdapter {
 
   async loadOriginSchema(modelName: string): Promise<Asuna.Schema.OriginSchema> {
     const auth = AppContext.fromStore('auth');
-    console.log('loadOriginSchema', modelName);
     return this.service.loadOriginSchema(auth, modelName, this.getModelConfig(modelName)).then(fp.get('data'));
   }
 

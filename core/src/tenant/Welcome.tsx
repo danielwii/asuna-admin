@@ -2,10 +2,11 @@ import { adminProxyCaller, TenantInfo } from '@asuna-admin/adapters';
 import { DynamicFormTypes, ErrorInfo, FormModalButton } from '@asuna-admin/components';
 import { StoreContext } from '@asuna-admin/context/store';
 import { AppContext } from '@asuna-admin/core';
-import { ModelsHelper, parseResponseError, TenantHelper, toErrorMessage } from '@asuna-admin/helpers';
+import { ModelsHelper, parseResponseError, TenantHelper } from '@asuna-admin/helpers';
+import { DebugInfo } from '@asuna-admin/helpers/debug';
 import { createLogger } from '@asuna-admin/logger';
 import { Asuna } from '@asuna-admin/types';
-import { Button, Descriptions, Divider, Popconfirm } from 'antd';
+import { Button, Col, Descriptions, Divider, Popconfirm, Row, Statistic } from 'antd';
 import { Promise } from 'bluebird';
 import * as _ from 'lodash';
 import React, { useContext, useState } from 'react';
@@ -29,7 +30,9 @@ export const TenantWelcome: React.FC = props => {
     return Promise.props({
       // tenantInfo: adminProxyCaller().tenantInfo(),
       schemas: Promise.props<{ [name: string]: Asuna.Schema.OriginSchema }>(
-        _.mapValues(store.tenantInfo?.recordCounts, (count, name) => AppContext.adapters.models.loadOriginSchema(name)),
+        _.mapValues(store.tenantInfo?.tenantRecordCounts, (count, name) =>
+          AppContext.adapters.models.loadOriginSchema(name),
+        ),
       ),
     });
   });
@@ -100,11 +103,54 @@ export const TenantWelcome: React.FC = props => {
         const limit = store.tenantInfo?.config?.[`limit.${key}`];
         const displayName = schema.info?.displayName;
         const title = displayName ? `${displayName} / ${key}` : key;
-        const recordCount = store.tenantInfo?.recordCounts?.[key] ?? Number.NaN;
-        const disable = recordCount >= limit || !store.tenantInfo?.tenant || !authorized;
+        const recordCount = store.tenantInfo?.tenantRecordCounts?.[key] ?? { total: 0 };
+        const disable = recordCount.total >= limit || !store.tenantInfo?.tenant || !authorized;
         return (
           <Descriptions.Item label={title} key={title}>
-            {limit ? `${recordCount} / ${limit}` : recordCount}
+            <Row gutter={8} type="flex">
+              {_.has(recordCount, 'published') ? (
+                <>
+                  <Col>
+                    <Statistic
+                      title="Published"
+                      valueStyle={{ color: '#3f8600' }}
+                      // prefix={recordCount.published}
+                      value={recordCount.published}
+                      // suffix={`/ ${recordCount.total}`}
+                    />
+                  </Col>
+                  <Col>
+                    <Statistic
+                      title="Unpublished"
+                      valueStyle={{ color: '#8e8e8e' }}
+                      // prefix={recordCount.published}
+                      value={recordCount.total - (recordCount.published ?? 0)}
+                      // suffix={`/ ${recordCount.total}`}
+                    />
+                  </Col>
+                </>
+              ) : (
+                recordCount.total
+              )}
+              {limit ? (
+                <Col>
+                  <Statistic
+                    title="Total / Limit"
+                    valueStyle={recordCount.total >= limit ? { color: '#cf1322' } : {}}
+                    value={recordCount.total}
+                    suffix={`/ ${limit}`}
+                  />
+                </Col>
+              ) : (
+                <Col>
+                  <Statistic
+                    title="Total"
+                    // valueStyle={recordCount.total >= limit ? { color: '#cf1322' } : {}}
+                    value={recordCount.total}
+                  />
+                </Col>
+              )}
+            </Row>
             <Divider dashed={true} style={{ margin: '0.5rem 0' }} />
             {key === store.tenantInfo?.config?.firstModelName ? (
               <Popconfirm
@@ -144,12 +190,7 @@ export const TenantWelcome: React.FC = props => {
       {contactInfo}
       <Divider type="horizontal" />
       {recordsInfo}
-      {AppContext.isDebugMode && (
-        <>
-          <Divider />
-          <pre>{util.inspect({ store }, { depth: 10 })}</pre>
-        </>
-      )}
+      <DebugInfo data={{ store, value }} divider />
     </div>
   );
 };

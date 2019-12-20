@@ -1,5 +1,6 @@
 import { ErrorInfo } from '@asuna-admin/components';
 import { diff, TenantHelper } from '@asuna-admin/helpers';
+import { DebugInfo } from '@asuna-admin/helpers/debug';
 import { createLogger } from '@asuna-admin/logger';
 import ModulesLoader from '@asuna-admin/modules';
 import { TenantWelcome } from '@asuna-admin/tenant';
@@ -81,8 +82,8 @@ export class Panes extends React.Component<IPanesProps, IState> {
             if (data?.config?.enabled && !_.isEmpty(data?.tenantRoles)) return <TenantWelcome />;
             return (
               <div>
-                welcome
-                <pre>{JSON.stringify(data, null, 2)}</pre>
+                Welcome
+                <DebugInfo data={data} divider />
               </div>
             );
           }}

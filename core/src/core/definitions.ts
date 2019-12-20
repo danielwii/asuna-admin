@@ -46,14 +46,15 @@ export class AsunaDefinitions<T extends Asuna.Schema.ModelOpts = {}> {
   private _customActions: { [key in keyof T]?: React.Component[] } = {};
 
   private wrapTableColumns(
-    key: string,
+    entity: string,
     opts: Asuna.Schema.TableColumnOpts<any>,
   ): { [key: string]: Asuna.Schema.FRecordRender } {
+    const columns = _.isFunction(opts.columns) ? opts.columns(entity) : opts.columns;
     return {
-      [key]: (actions, extras) =>
+      [entity]: (actions, extras) =>
         _.compact([
           commonColumns.primaryKeyByExtra(extras),
-          ...Object.values(_.map(opts.columns, (func, key) => func(key, actions, extras))),
+          ...Object.values(_.map(columns, (func, key) => func(key, actions, extras))),
           ...Object.values(_.map(opts.customColumns, (func, key) => func(key, actions, extras))),
           commonColumns.updatedAt,
           commonColumns.createdAt,
@@ -70,8 +71,9 @@ export class AsunaDefinitions<T extends Asuna.Schema.ModelOpts = {}> {
   setupExtraTableColumns<EntitySchema>(key: string, opts: Asuna.Schema.ColumnOpts<EntitySchema>): void {
     const withStylesOpts = {
       ...opts,
-      rowClassName: record =>
-        _.has(record, 'isPublished') ? (record.isPublished ? 'row-published' : 'row-unpublished') : '',
+      rowClassName:
+        opts.rowClassName ??
+        (record => (_.has(record, 'isPublished') ? (record.isPublished ? 'row-published' : 'row-unpublished') : '')),
     };
     this._columnOpts[key] = withStylesOpts;
     this._extraTableColumns = extend(this._extraTableColumns, this.wrapTableColumns(key, withStylesOpts));
@@ -80,8 +82,9 @@ export class AsunaDefinitions<T extends Asuna.Schema.ModelOpts = {}> {
   setupTableColumns<EntitySchema>(entity: keyof T, opts: Asuna.Schema.ColumnOpts<EntitySchema>): void {
     const withStylesOpts = {
       ...opts,
-      rowClassName: record =>
-        _.has(record, 'isPublished') ? (record.isPublished ? 'row-published' : 'row-unpublished') : '',
+      rowClassName:
+        opts.rowClassName ??
+        (record => (_.has(record, 'isPublished') ? (record.isPublished ? 'row-published' : 'row-unpublished') : '')),
     };
     this._columnOpts[entity as string] = withStylesOpts;
     this._tableColumns = extend(this._tableColumns, this.wrapTableColumns(entity as string, withStylesOpts));

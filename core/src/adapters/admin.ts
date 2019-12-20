@@ -16,7 +16,7 @@ export class TenantInfo {
   }>;
   tenant?: Tenant;
   tenantRoles: string[];
-  recordCounts: { [name: string]: number };
+  tenantRecordCounts: { [name: string]: { total: number; published?: number } };
 }
 
 export class Tenant {

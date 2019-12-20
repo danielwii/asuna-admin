@@ -40,7 +40,7 @@ export interface IIndexRegister extends ILoginRegister {
 
   modelService: IModelService;
 
-  createMenuService(): IMenuService;
+  // createMenuService(): IMenuService;
 
   createApiService(): IApiService;
 
@@ -241,7 +241,7 @@ class AppContext {
       ...AppContext._context,
       auth: new AuthAdapter(register.createAuthService()),
       response: new ResponseAdapter(),
-      menu: new MenuAdapter(register.createMenuService(), register.definitions.sideMenus),
+      menu: new MenuAdapter(register.definitions.sideMenus),
       api: new ApiAdapter(register.createApiService()),
       admin: new AdminAdapterImpl(register.createAdminService()),
       security: new SecurityAdapterImpl(register.createSecurityService()),

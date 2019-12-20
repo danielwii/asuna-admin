@@ -5,6 +5,7 @@ import { AppContext } from '@asuna-admin/core';
 import { valueToArrays } from '@asuna-admin/core/url-rewriter';
 import { RelationColumnProps } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
+import { SchemaHelper } from '@asuna-admin/schema';
 import { Asuna } from '@asuna-admin/types';
 
 import { Badge, Button, Checkbox, Divider, Icon, Input, Popconfirm, Statistic, Tag, Tooltip } from 'antd';
@@ -26,6 +27,7 @@ const logger = createLogger('helpers');
 
 export * from './cast';
 export * from './components';
+export * from './debug';
 export * from './error';
 export * from './func';
 export * from './hooks';
@@ -48,8 +50,8 @@ export const authHeader = (token?) => {
   return { headers: { Authorization: `${schema} ${authToken}` } };
 };
 
-export const nullProtectRender = (fn: (record) => React.ReactChild) => (record): React.ReactChild => {
-  return record ? fn(record) : 'n/a';
+export const nullProtectRender = (fn: (value, record) => React.ReactChild) => (value, record): React.ReactChild => {
+  return record ? fn(value, record) : 'n/a';
 };
 
 type ConditionType = 'like' | 'boolean';
@@ -116,14 +118,55 @@ function generateSearchColumnProps(
   };
 }
 
+type ModelOpts = { model: string; title?: string };
+type TextColumnOpts = {
+  transformer?: ((record) => string) | string;
+  searchType?: ConditionType;
+  render?: (content, record?) => React.ReactChild;
+};
+type CommonColumnOpts = { transformer? };
+
+export const columnHelper2 = {
+  generate: async (key, { model, title }: ModelOpts, opts: TextColumnOpts = {}): Promise<ColumnProps<any>> => {
+    const columnInfo = model ? await SchemaHelper.getColumnInfo(model, key) : undefined;
+    return {
+      key,
+      title: title ?? columnInfo?.config?.info?.name ?? key,
+      dataIndex: key,
+      sorter: true,
+      ...generateSearchColumnProps(key, opts.searchType),
+      render: nullProtectRender((value, record) => {
+        const extracted = extractValue(value, opts.transformer);
+        return (
+          <WithDebugInfo info={{ key, title, model, value, record, extracted, opts, columnInfo }}>
+            {opts.render ? opts.render(extracted, value) : <TooltipContent value={extracted} />}
+          </WithDebugInfo>
+        );
+      }),
+    };
+  },
+  /**
+   * 生成预览小图
+   */
+  generateImage: async (key, { model, title }: ModelOpts, opts: CommonColumnOpts = {}): Promise<ColumnProps<any>> => {
+    const columnInfo = model ? await SchemaHelper.getColumnInfo(model, key) : undefined;
+    return {
+      key,
+      title: title ?? columnInfo?.config?.info?.name ?? key,
+      dataIndex: key,
+      sorter: true,
+      render: nullProtectRender(record => {
+        const value = extractValue(record, opts.transformer);
+        return (
+          <WithDebugInfo info={{ key, title, opts, record }}>
+            {value ? <AssetsPreview key={key} urls={valueToArrays(value)} /> : record}
+          </WithDebugInfo>
+        );
+      }),
+    };
+  },
+};
 export const columnHelper = {
-  generateOriginal: (key, title, transformer?): ColumnProps<any> => ({
-    key,
-    title,
-    dataIndex: key,
-    sorter: true,
-    render: nullProtectRender(record => (transformer ? transformer(record) : record)),
-  }),
   generateID: (key = 'id', title = 'ID', transformer?): ColumnProps<any> => ({
     key,
     title,
@@ -264,6 +307,9 @@ export const columnHelper = {
       }),
     };
   },
+  /**
+   * @deprecated {@see columnHelper2.generate}
+   */
   generate: (
     key,
     title,
@@ -278,11 +324,11 @@ export const columnHelper = {
     dataIndex: key,
     sorter: true,
     ...generateSearchColumnProps(key, opts.searchType),
-    render: nullProtectRender(record => {
-      const content = extractValue(record, opts.transformer);
+    render: nullProtectRender((value, record) => {
+      const extracted = extractValue(value, opts.transformer);
       return (
-        <WithDebugInfo info={{ key, title, record }}>
-          {opts.render ? opts.render(content, record) : <TooltipContent value={content} />}
+        <WithDebugInfo info={{ key, title, value, record, extracted, opts }}>
+          {opts.render ? opts.render(extracted, value) : <TooltipContent value={extracted} />}
         </WithDebugInfo>
       );
     }),
@@ -409,10 +455,7 @@ export const columnHelper = {
   }),
   /**
    * 生成预览小图
-   * TODO feat 增加预览大图功能
-   * @param key
-   * @param title
-   * @param opts
+   * @deprecated {@see columnHelper2.generate}
    */
   generateImage: (key, title, opts: { transformer?; host?: string } = {}): ColumnProps<any> => ({
     key,
@@ -460,19 +503,20 @@ export const columnHelper = {
    * @param {any} readonly
    * @param {any} modelName
    * @param {any} callRefresh
+   * @param {any} tips
    * @returns {{title: any; dataIndex: string | any; key: string | any; render: (isActive, record) => any}}
    */
   generateSwitch: (
     key,
     title,
-    { readonly, modelName, callRefresh }: { readonly?; modelName?; callRefresh? },
+    { readonly, modelName, callRefresh, tips }: { readonly?; modelName?; callRefresh?; tips?: string },
   ): ColumnProps<any> => ({
     title,
     dataIndex: castModelKey(key),
     key: castModelKey(key),
     ...generateSearchColumnProps(castModelKey(key), 'boolean', {}),
     render: function(isActive, record) {
-      return readonly ? (
+      const component = readonly ? (
         <Checkbox checked={isActive} disabled={true} />
       ) : (
         <Popconfirm
@@ -491,6 +535,7 @@ export const columnHelper = {
           <Checkbox checked={isActive} />
         </Popconfirm>
       );
+      return tips ? <Tooltip title={tips}>{component}</Tooltip> : component;
     },
   }),
 };

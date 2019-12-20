@@ -30,7 +30,7 @@ export function resolveModelInPane(
 ): {
   modelName: string;
   modelConfig: Asuna.Schema.ModelConfig;
-  columnOpts: Asuna.Schema.ColumnOpts<any> | null;
+  columnOpts?: Asuna.Schema.ColumnOpts<any>;
   primaryKey: string;
   schemas: Asuna.Schema.FormSchemas;
 } {

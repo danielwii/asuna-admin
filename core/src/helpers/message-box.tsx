@@ -15,7 +15,7 @@ export class MessageBox {
       message: null,
       description: message,
       placement: 'bottomRight',
-      duration: 60,
+      duration: 2,
     });
     return id;
   }

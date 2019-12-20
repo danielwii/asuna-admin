@@ -28,6 +28,7 @@ interface IState {
   creatable: Asuna.Schema.TableColumnOptCreatable;
   editable: boolean;
   deletable: boolean;
+  opts?: Asuna.Schema.TableColumnOpts<any>;
   subscription: Subscription;
   busSubscription: Subscription;
   rowClassName?: (record: any, index: number) => string;
@@ -69,6 +70,7 @@ class ContentIndex extends React.Component<IProps, IState> {
       creatable,
       editable,
       deletable,
+      opts: columnOpts,
       rowClassName,
       key: activeKey,
       subscription: AppContext.subject.subscribe({
@@ -110,17 +112,19 @@ class ContentIndex extends React.Component<IProps, IState> {
   }
 
   render() {
-    const { modelName, extraName, creatable, editable, deletable, rowClassName } = this.state;
+    const { modelName, extraName, creatable, editable, deletable, rowClassName, opts } = this.state;
 
     // const { models } = this.props;
 
     return (
       <AsunaDataTable
+        modelName={modelName}
+        extraName={extraName}
         creatable={creatable}
         editable={editable}
         deletable={deletable}
-        modelName={modelName}
-        extraName={extraName}
+        renderActions={opts?.renderActions}
+        renderHelp={opts?.renderHelp}
         // models={models}
         rowClassName={rowClassName}
       />

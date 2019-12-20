@@ -1,7 +1,7 @@
 import { DataViewColumnProps, DynamicFormTypes } from '@asuna-admin/components';
-import { QueryFieldsColumnProps } from '../modules/content/query';
 import { ColumnProps } from 'antd/es/table';
 import * as React from 'react';
+import { QueryFieldsColumnProps } from '../modules/content/query';
 import { MetaInfoOptions } from './meta';
 
 export declare module Asuna {
@@ -166,6 +166,12 @@ export declare module Asuna {
       };
     };
 
+    type ColumnPropsCreator = (
+      key: string,
+      actions: RecordRenderActions,
+      extras: RecordRenderExtras,
+    ) => ColumnProps<any> | Promise<ColumnProps<any>>;
+
     type TableColumnOpts<EntitySchema> = {
       creatable?: TableColumnOptCreatable;
       editable?: boolean;
@@ -175,20 +181,10 @@ export declare module Asuna {
       renderActions?: (extras: RecordRenderExtras) => React.ReactChild;
       recordActions?: (actions: RecordRenderActions, extras: RecordRenderExtras) => void;
       rowClassName?: (record: any, index: number) => string;
-      customColumns?: {
-        [key: string]: (
-          key: string,
-          actions: RecordRenderActions,
-          extras: RecordRenderExtras,
-        ) => ColumnProps<any> | Promise<ColumnProps<any>>;
-      };
-      columns: {
-        [key in keyof EntitySchema]: (
-          key: string,
-          actions: RecordRenderActions,
-          extras: RecordRenderExtras,
-        ) => ColumnProps<any> | Promise<ColumnProps<any>>;
-      };
+      customColumns?: { [key: string]: ColumnPropsCreator };
+      columns:
+        | { [key in keyof EntitySchema]: ColumnPropsCreator }
+        | ((model: string) => { [key in keyof EntitySchema]: ColumnPropsCreator });
     };
 
     interface ModelColumn {

@@ -5,7 +5,7 @@ import { WithDebugInfo } from '@asuna-admin/helpers/debug';
 import { createLogger } from '@asuna-admin/logger';
 import { modelsActions, panesActions } from '@asuna-admin/store';
 import { Asuna } from '@asuna-admin/types';
-import { Button, Divider, Dropdown, Menu, Modal, Skeleton, Switch, Table, Tag } from 'antd';
+import { Button, Divider, Dropdown, Menu, Modal, Skeleton, Switch, Table, Tag, Tooltip } from 'antd';
 import { PaginationConfig } from 'antd/es/pagination';
 import { SorterResult, TableCurrentDataSource } from 'antd/es/table';
 import * as _ from 'lodash';
@@ -19,7 +19,8 @@ export interface AsunaDataTableProps {
   creatable?: Asuna.Schema.TableColumnOptCreatable;
   editable?: boolean;
   deletable?: boolean;
-  opts?: Asuna.Schema.TableColumnOpts<any>;
+  renderHelp?: React.ReactChild;
+  renderActions?: (extras: Asuna.Schema.RecordRenderExtras) => React.ReactChild;
   rowClassName?: (record: any, index: number) => string;
   // models: any;
   modelName: string;
@@ -32,7 +33,8 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
     creatable = false,
     editable = false,
     deletable = false,
-    opts,
+    renderActions,
+    renderHelp,
     rowClassName,
     // models,
     modelName,
@@ -277,20 +279,22 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
 
       <Divider type="vertical" />
 
-      {opts && opts.renderActions && (
+      {renderActions && (
         <>
-          {opts.renderActions({ modelName, callRefresh: _refresh })}
+          {renderActions({ modelName, callRefresh: _refresh })}
           <Divider type="vertical" />
         </>
       )}
-      {opts && opts.renderHelp && (
-        <Button
-          type="dashed"
-          shape="circle"
-          icon="info"
-          size="small"
-          onClick={() => Modal.info({ width: '60%', content: opts.renderHelp })}
-        />
+      {renderHelp && (
+        <Tooltip title="info">
+          <Button
+            type="dashed"
+            shape="circle"
+            icon="info"
+            size="small"
+            onClick={() => Modal.info({ width: '60%', content: renderHelp })}
+          />
+        </Tooltip>
       )}
       <Divider type="horizontal" style={{ margin: '0.5rem 0' }} />
 
