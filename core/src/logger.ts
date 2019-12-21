@@ -1,11 +1,10 @@
 import debug from 'debug';
-import { Storage } from './core/storage';
+import { StorageHelper } from './core/storageHelper';
 
 export const modules: { [key: string]: keyof typeof lv } = {};
 
 let initialized = false;
-const storage = new Storage().instance;
-storage.getItem('debug.modules').then(stored => {
+StorageHelper.getItem('debug.modules').then(stored => {
   initialized = true;
   Object.assign(modules, stored);
 });
@@ -20,7 +19,7 @@ export const lv = {
 
 export const updateLoggerLevel = (module, level: keyof typeof lv) => {
   modules[module] = level;
-  storage.setItem('debug.modules', modules);
+  StorageHelper.setItem('debug.modules', modules);
 };
 
 export const createLogger = (module, level: keyof typeof lv = 'warn') => {
@@ -29,7 +28,7 @@ export const createLogger = (module, level: keyof typeof lv = 'warn') => {
   }
 
   if (initialized && level !== 'warn') {
-    storage.setItem('debug.modules', modules);
+    StorageHelper.setItem('debug.modules', modules);
   }
 
   const error = debug(`${module}:error`);

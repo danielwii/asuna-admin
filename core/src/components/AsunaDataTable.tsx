@@ -101,7 +101,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
     actions,
   });
 
-  const { modelConfig, primaryKey, columnOpts } = resolveModelInPane(modelName, extraName);
+  const { primaryKey } = resolveModelInPane(modelName, extraName);
   const _pinActions = () => {
     const column = _.find(columnProps, column => column.key === 'action');
     if (column) {

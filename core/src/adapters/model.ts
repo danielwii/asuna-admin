@@ -19,6 +19,7 @@ import { AxiosResponse } from 'axios';
 import { Promise } from 'bluebird';
 import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
+import NodeCache, { NodeCacheLegacyCallbacks } from 'node-cache';
 import * as R from 'ramda';
 
 // --------------------------------------------------------------
@@ -129,6 +130,7 @@ export interface ModelListConfig {
 }
 
 export class ModelAdapter {
+  private readonly cache: NodeCacheLegacyCallbacks = new NodeCache({ stdTTL: 100, checkperiod: 120 });
   private service: IModelService;
   private allModels: string[];
   readonly modelConfigs: { [K: string]: Asuna.Schema.ModelConfig };

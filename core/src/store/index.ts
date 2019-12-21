@@ -16,7 +16,6 @@ import { all } from 'redux-saga/effects';
 
 import { appEpics, appReducer, appSagas, AppState } from './app.redux';
 import { authReducer, authSagas, AuthState } from './auth.redux';
-import { contentReducer, contentSagas, ContentState } from './content.redux';
 import { menuReducer, menuSagas, MenuState } from './menu.redux';
 import { createStoreConnectorMiddleware, storeConnector } from './middlewares';
 import { modelsCleaner, modelsReducer, modelsSagas, ModelsState } from './models.redux';
@@ -102,7 +101,7 @@ export class AsunaStore {
       ...panesSagas,
       ...menuSagas,
       ...modelsSagas,
-      ...contentSagas,
+      // ...contentSagas,
       // ...modModelsSagas,
       ...securitySagas,
       ...appSagas,
