@@ -1,6 +1,8 @@
-import { takeLatest } from 'redux-saga/effects';
-import Router from 'next/router';
+import { createLogger } from '@asuna-admin/logger';
 import * as R from 'ramda';
+import { takeLatest } from 'redux-saga/effects';
+
+const logger = createLogger('store:router');
 
 // --------------------------------------------------------------
 // Module routerActionTypes
@@ -35,8 +37,10 @@ const routerActions = {
 // }
 // --------------------------------------------------------------
 
-function goto({ payload: { path } }) {
-  Router.replace(path);
+function* goto({ payload: { path } }) {
+  logger.log('goto', path);
+  // yield Router.replace(path);
+  if (window && window.location.pathname !== path) window.location.pathname = path;
 }
 
 const routerSagas = [

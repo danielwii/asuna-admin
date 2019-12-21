@@ -77,6 +77,7 @@ function* tokenWatcher(action) {
     const restoredAction = yield take(appActionTypes.RESTORED);
     logger.log('[tokenWatcher]', 'waiting for app restored', restoredAction);
     if (!restoredAction?.payload?.auth?.token) {
+      logger.log('[tokenWatcher]', 'invalid auth token, back to login');
       yield put(routerActions.toLogin());
     }
   } else if (action.type === authActionTypes.LOGOUT) {
