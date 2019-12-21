@@ -76,7 +76,8 @@ function* tokenWatcher(action) {
     logger.log('[tokenWatcher]', 'REHYDRATE found, wait to restore...');
     const restoredAction = yield take(appActionTypes.RESTORED);
     logger.log('[tokenWatcher]', 'waiting for app restored', restoredAction);
-    if (!restoredAction?.payload?.auth?.token) {
+    const auth: AuthState = yield select((state: RootState) => state.auth);
+    if (!auth?.token) {
       logger.log('[tokenWatcher]', 'invalid auth token, back to login');
       yield put(routerActions.toLogin());
     }

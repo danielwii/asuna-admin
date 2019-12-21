@@ -38,9 +38,10 @@ const routerActions = {
 // --------------------------------------------------------------
 
 function* goto({ payload: { path } }) {
-  logger.log('goto', path);
+  const isCurrent = window.location.pathname !== path;
+  logger.log('goto', { from: window.location.pathname, to: path, isCurrent });
   // yield Router.replace(path);
-  if (window && window.location.pathname !== path) window.location.pathname = path;
+  if (isCurrent) window.location.pathname = path;
 }
 
 const routerSagas = [
