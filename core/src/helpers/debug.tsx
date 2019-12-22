@@ -30,14 +30,16 @@ export class WithDebugInfo extends React.PureComponent<IWithDebugInfoProps> {
 export const DebugInfo: React.FC<{ data: any; divider?: boolean }> = ({ data, divider }) => {
   const [lv, setLevel] = useState(3);
 
+  if (AppContext.isDebugMode) {
+    return null;
+  }
+
   return (
-    AppContext.isDebugMode && (
-      <>
-        {divider && <Divider type="horizontal" style={{ margin: '1rem 0' }} />}
-        <Button type="dashed" size="small" onClick={() => setLevel(lv + 1)} children="+" />{' '}
-        <Button type="dashed" size="small" onClick={() => setLevel(lv - 1)} children="-" />
-        <JSONTree data={data} hideRoot shouldExpandNode={(keyPath, data, level) => level < lv} />
-      </>
-    )
+    <>
+      {divider && <Divider type="horizontal" style={{ margin: '1rem 0' }} />}
+      <Button type="dashed" size="small" onClick={() => setLevel(lv + 1)} children="+" />{' '}
+      <Button type="dashed" size="small" onClick={() => setLevel(lv - 1)} children="-" />
+      <JSONTree data={data} hideRoot shouldExpandNode={(keyPath, data, level) => level < lv} />
+    </>
   );
 };
