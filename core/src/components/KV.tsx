@@ -22,7 +22,7 @@ export function GroupFormKVComponent(props: {
   initialState?: { body: GroupFormBody };
   enableClear?: boolean;
   enableDestroy?: boolean;
-  info: React.ReactChild;
+  info?: React.ReactChild;
 });
 
 export function GroupFormKVComponent(props: {
@@ -31,7 +31,7 @@ export function GroupFormKVComponent(props: {
   initialState: { body: any };
   enableClear?: boolean;
   enableDestroy?: boolean;
-  info: React.ReactChild;
+  info?: React.ReactChild;
   fields: (state) => GroupFormFields;
 });
 
@@ -41,7 +41,7 @@ export function GroupFormKVComponent(props: {
   initialState: { body: GroupFormBody | any };
   enableClear?: boolean;
   enableDestroy?: boolean;
-  info: React.ReactChild;
+  info?: React.ReactChild;
   fields: (state) => GroupFormFields;
 }) {
   const {
