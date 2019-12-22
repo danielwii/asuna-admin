@@ -93,7 +93,7 @@ export function GroupFormKVComponent(props: {
       {AppContext.isDebugMode && (
         <>
           <Divider />
-          <Highlight language="json">{util.inspect(data, false, 10)}</Highlight>
+          <Highlight className="json">{util.inspect(data, false, 10)}</Highlight>
         </>
       )}
     </>
@@ -166,7 +166,7 @@ export function FormKVComponent(props: {
           <Col span={6}>
             <div>
               <h3>Preview:</h3>
-              <Highlight language="json">{JSON.stringify(body, null, 2)}</Highlight>
+              <Highlight className="json">{JSON.stringify(body, null, 2)}</Highlight>
             </div>
           </Col>
         )}
@@ -174,7 +174,7 @@ export function FormKVComponent(props: {
       {AppContext.isDebugMode && (
         <>
           <Divider />
-          <Highlight language="json">{util.inspect(data, false, 10)}</Highlight>
+          <Highlight className="json">{util.inspect(data, false, 10)}</Highlight>
         </>
       )}
     </>

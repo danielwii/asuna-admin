@@ -156,7 +156,7 @@ const InnerForm = (props: EasyFormProps & formik.FormikProps<formik.FormikValues
       )}{' '}
       {/*<div>
         Preview:
-        <Highlight language="json">{JSON.stringify(state.body, null, 2)}</Highlight>
+        <Highlight className="json">{JSON.stringify(state.body, null, 2)}</Highlight>
       </div>*/}
     </formik.Form>
   );
@@ -303,7 +303,7 @@ const GroupInnerForm = (props: GroupEasyFormProps & formik.FormikProps<formik.Fo
         <antd.Col span={6}>
           <div>
             <h3>Preview:</h3>
-            <Highlight language="json">
+            <Highlight className="json">
               {JSON.stringify({ touched, errors, isSubmitting, message, body, values, fieldValues }, null, 2)}
             </Highlight>
           </div>

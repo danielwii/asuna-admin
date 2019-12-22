@@ -156,7 +156,7 @@ export const TenantWelcome: React.FC = props => {
               <Popconfirm
                 title={
                   <>
-                    创建 <b>{store.tenantInfo.config.firstDisplayName}</b> 后该 <b>微信号</b> 将与其绑定，是否确认？
+                    创建 <b>{store.tenantInfo?.config?.firstDisplayName}</b> 后该 <b>微信号</b> 将与其绑定，是否确认？
                   </>
                 }
                 disabled={disable}

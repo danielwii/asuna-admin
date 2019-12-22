@@ -46,7 +46,7 @@ export class VideoUploader extends React.Component<IProps> {
     // const images = _.compact(info.fileList.map(file => file.url)).join(',');
     // 这里只有 status 为 done 的 image 包含 url
     let videos: string | string[] = _.compact(_.flatten(info.fileList.map(file => file.url)));
-    if (!jsonMode) {
+    if (!jsonMode && _.isArray(videos)) {
       videos = videos.join(',');
     }
     logger.log('[VideoUploader][handleChange]', { videos });
