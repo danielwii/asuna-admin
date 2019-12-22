@@ -196,37 +196,37 @@ export const wechatLoginGetInitial = async (ctx: NextPageContext): Promise<Login
     return __NEXT_DATA__.props.pageProps;
   }
 
-  const tempId = shortid.generate();
-  // try {
-  const userAgent = ctx.req ? ctx.req.headers['user-agent'] : navigator.userAgent;
-  const host = Config.get('GRAPHQL_HOST') || 'localhost';
-  const port = process.env.PORT || 3000;
-  logger.log(`call http://${host}:${port}/s-graphql`);
-  const client = new ApolloClient({
-    uri: `http://${host}:${port}/s-graphql`,
-    headers: { 'X-ApiKey': 'todo:app-key-001' }, // todo temp auth
-    fetch: fetch as any,
-  });
-  const { data } = await client.query({
-    query: gql`
-      {
-        kv(collection: "system.wechat", key: "config") {
-          key
-          name
-          type
-          value
+  try {
+    const tempId = shortid.generate();
+    const userAgent = ctx.req ? ctx.req.headers['user-agent'] : navigator.userAgent;
+    const host = Config.get('GRAPHQL_HOST') || 'localhost';
+    const port = process.env.PORT || 3000;
+    logger.log(`call http://${host}:${port}/s-graphql`);
+    const client = new ApolloClient({
+      uri: `http://${host}:${port}/s-graphql`,
+      headers: { 'X-ApiKey': 'todo:app-key-001' }, // todo temp auth
+      fetch: fetch as any,
+    });
+    const { data } = await client.query({
+      query: gql`
+        {
+          kv(collection: "system.wechat", key: "config") {
+            key
+            name
+            type
+            value
+          }
         }
-      }
-    `,
-  });
+      `,
+    });
 
-  const weChatLoginEnable = _.get(data, 'kv.value.values.wechat.login');
-  // console.log({ userAgent, weChatLoginEnable, tempId });
-  return { userAgent, weChatLoginEnable, tempId };
-  // } catch (e) {
-  //   console.error(e);
-  // }
-  // return {};
+    const weChatLoginEnable = _.get(data, 'kv.value.values.wechat.login');
+    // console.log({ userAgent, weChatLoginEnable, tempId });
+    return { userAgent, weChatLoginEnable, tempId };
+  } catch (e) {
+    console.error(e);
+  }
+  return {};
 };
 
 export const LoginPageRender: React.FC<Omit<ILoginPageProps, 'app' | 'dispatch'> & {
