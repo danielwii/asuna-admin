@@ -1,10 +1,10 @@
 import { DebugSettings, Pane } from '@asuna-admin/components';
 import { withDebugSettingsProps } from '@asuna-admin/containers/DebugSettings';
 import { AppContext } from '@asuna-admin/core';
+import { DebugInfo } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 
 import * as _ from 'lodash';
-import * as util from 'util';
 import dynamic from 'next/dynamic';
 import * as React from 'react';
 
@@ -66,7 +66,7 @@ export default function(props: ModulesLoaderProps & { children?: React.ReactNode
     ) : (
       <>
         <b>Component '{component}' not found.</b>
-        <pre>{util.inspect(props)}</pre>
+        <DebugInfo data={{ props, components: AppContext.ctx.components }} divider />
       </>
     );
   }
