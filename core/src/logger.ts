@@ -47,16 +47,16 @@ export const createLogger = (module, level: keyof typeof lv = 'warn') => {
       if (lv[modules[module]] < 1) (trace as any)(...args);
     },
     debug: (...args) => {
-      if (lv[modules[module]] < 2) (info as any)(...args);
+      if ((global as any).DEBUG_MODE || lv[modules[module]] < 2) (info as any)(...args);
     },
     log: (...args) => {
-      if (lv[modules[module]] < 3) (log as any)(...args);
+      if ((global as any).DEBUG_MODE || lv[modules[module]] < 3) (log as any)(...args);
     },
     warn: (...args) => {
-      if (lv[modules[module]] < 4) (warn as any)(...args);
+      (warn as any)(...args);
     },
     error: (...args) => {
-      if (lv[modules[module]] < 5) (error as any)(...args);
+      (error as any)(...args);
     },
   };
 };

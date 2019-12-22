@@ -167,7 +167,7 @@ export class AsunaStore {
       store = createStore<RootState, AnyAction, any, any>(
         persistedReducer,
         preloadedState,
-        composeWithDevTools(
+        composeWithDevTools({ trace: true, traceLimit: 25 })(
           applyMiddleware(
             this.sagaMiddleware,
             this.epicMiddleware,
