@@ -1,14 +1,6 @@
 import { lv } from '@asuna-admin/logger';
 
-import {
-  Button,
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  Radio,
-  RadioGroup,
-  TextField,
-} from '@material-ui/core';
+import { Button, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField } from '@material-ui/core';
 import * as _ from 'lodash';
 import React, { useState } from 'react';
 import styled from 'styled-components';
@@ -33,7 +25,7 @@ interface IDebugSettingsState {
   filter?: string;
 }
 
-export function DebugSettings(props: IDebugSettingsProps) {
+export const DebugSettings: React.FC<IDebugSettingsProps> = props => {
   const { modules, updateLoggerLevel } = props;
   const [state, setState] = useState<IDebugSettingsState>({});
 
@@ -81,4 +73,4 @@ export function DebugSettings(props: IDebugSettingsProps) {
       </Flex>
     </Container>
   );
-}
+};

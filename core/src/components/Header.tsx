@@ -73,7 +73,7 @@ export const Header: React.FC<IHeaderProps> = props => {
       {isSuperAdmin && <Menu.Divider />}
       {env !== 'production' && (
         <Menu.Item>
-          <a onClick={() => handleAction('set-logger-level', DebugSettings.name)}>Debug Settings</a>
+          <a onClick={() => handleAction('set-logger-level', 'DebugSettings')}>Debug Settings</a>
         </Menu.Item>
       )}
       {env !== 'production' && <Menu.Divider />}
