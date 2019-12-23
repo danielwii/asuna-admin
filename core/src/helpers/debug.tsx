@@ -30,7 +30,7 @@ export class WithDebugInfo extends React.PureComponent<IWithDebugInfoProps> {
 export const DebugInfo: React.FC<{ data: any; divider?: boolean }> = ({ data, divider }) => {
   const [lv, setLevel] = useState(3);
 
-  if (AppContext.isDebugMode) {
+  if (!AppContext.isDebugMode) {
     return null;
   }
 

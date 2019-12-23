@@ -18,7 +18,7 @@ import {
 import { GraphqlAdapter } from '@asuna-admin/adapters/graphql';
 import { Config } from '@asuna-admin/config';
 import { AsunaDefinitions } from '@asuna-admin/core/definitions';
-import { IStoreConnector, RootState } from '@asuna-admin/store';
+import { AuthState, IStoreConnector, RootState } from '@asuna-admin/store';
 import * as React from 'react';
 import { AnyAction, Dispatch } from 'redux';
 import { Subject } from 'rxjs';
@@ -234,6 +234,10 @@ class AppContext {
     }
     console.error('store is not available or getState not defined on state.');
     return {} as any;
+  }
+
+  public static withAuth<T>(func: (auth: AuthState) => T): T {
+    return func(AppContext.fromStore('auth'));
   }
 
   private static registerIndex(register: IIndexRegister) {
