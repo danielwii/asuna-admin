@@ -43,7 +43,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
   } = props;
   const [queryCondition, setQueryCondition] = useState<{
     pagination?: PaginationConfig;
-    filters?: Record<any, string[]>;
+    filters?: Partial<Record<keyof any, string[]>>;
     sorter?: SorterResult<any>;
   }>({});
   // 用于刷新页面的一个标记
@@ -143,7 +143,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
         ),
     });
   };
-  const _transformFilters = (filters?: Record<keyof any, string[]>) => {
+  const _transformFilters = (filters?: Partial<Record<keyof any, string[]>>) => {
     return _.chain(filters)
       .mapKeys((filterArr, key) =>
         key.includes('.') && _.isString(_.head(filterArr)) ? _.get(parseJSONIfCould(_.head(filterArr)), 'key') : key,
@@ -169,7 +169,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
     filters,
   }: {
     pagination?: PaginationConfig;
-    filters?: Record<keyof any, string[]>;
+    filters?: Partial<Record<keyof any, string[]>>;
     sorter?: SorterResult<any>;
   }) => {
     const availableSorter = sorter && _.isEmpty(sorter) ? queryCondition.sorter : sorter;
@@ -183,7 +183,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
   };
   const _handleTableChange = (
     pagination?: PaginationConfig,
-    filters?: Record<keyof any, string[]>,
+    filters?: Partial<Record<keyof any, string[]>>,
     sorter?: SorterResult<any>,
     extra?: TableCurrentDataSource<any>,
   ): void => {
