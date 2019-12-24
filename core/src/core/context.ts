@@ -6,7 +6,6 @@ import {
   IAdminService,
   IApiService,
   IAuthService,
-  IMenuService,
   IModelService,
   ISecurityService,
   MenuAdapter,

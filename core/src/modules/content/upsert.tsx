@@ -1,7 +1,7 @@
-import { Pane } from '@asuna-admin/components';
+import { DynamicFormProps, Pane } from '@asuna-admin/components';
 import { DynamicForm, DynamicFormTypes } from '@asuna-admin/components/DynamicForm';
 import { AppContext, EventBus, EventType } from '@asuna-admin/core';
-import { diff, isErrorResponse, reduxActionCallbackPromise, toFormErrors } from '@asuna-admin/helpers';
+import { DebugInfo, diff, isErrorResponse, reduxActionCallbackPromise, toFormErrors } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 import * as schemaHelper from '@asuna-admin/schema';
 import { asyncLoadAssociationsDecorator } from '@asuna-admin/schema/async';
@@ -29,7 +29,7 @@ interface IContentForm {
   onSubmit: (fn: (e: Error) => void) => void;
 }
 
-const ContentForm = Form.create<IContentForm>({
+const ContentForm = Form.create<IContentForm & DynamicFormProps>({
   mapPropsToFields({ fields }) {
     const mappedFields = R.map(field => {
       // DatePicker for antd using moment instance
@@ -73,7 +73,7 @@ const ContentForm = Form.create<IContentForm>({
       props.onChange(filteredChangedFields);
     }
   },
-})(DynamicForm) as any;
+})(DynamicForm);
 
 // --------------------------------------------------------------
 // Main
@@ -387,7 +387,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
   };
 
   render() {
-    const { fields, loadings, status } = this.state;
+    const { fields, loadings, status, modelName } = this.state;
 
     logger.log('[render]', { props: this.props, state: this.state });
 
@@ -412,7 +412,18 @@ class ContentUpsert extends React.Component<IProps, IState> {
       );
     }
 
-    return <ContentForm anchor fields={fields} onChange={this._handleFormChange} onSubmit={this._handleFormSubmit} />;
+    return (
+      <>
+        <ContentForm
+          model={modelName}
+          anchor
+          fields={fields}
+          onChange={this._handleFormChange}
+          onSubmit={this._handleFormSubmit}
+        />
+        <DebugInfo data={{ props: this.props, state: this.state }} divider />
+      </>
+    );
   }
 }
 

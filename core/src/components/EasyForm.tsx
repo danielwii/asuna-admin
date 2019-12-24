@@ -1,9 +1,10 @@
 import { Config } from '@asuna-admin/config';
 import { AppContext } from '@asuna-admin/core';
+import { DebugInfo } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
-import { FormControl, FormHelperText, Input, InputLabel } from '@material-ui/core';
+import { FormControl, FormControlLabel, FormHelperText, Input, TextField, InputLabel, Switch } from '@material-ui/core';
 import * as antd from 'antd';
-import { Divider, Popconfirm, Switch } from 'antd';
+import { Divider, Popconfirm } from 'antd';
 import * as formik from 'formik';
 import { FieldInputProps } from 'formik';
 import * as _ from 'lodash';
@@ -45,35 +46,30 @@ interface EasyFormProps extends FormProps<FormFields> {
 }
 
 function RenderInputComponent({
-  formField,
+  fieldDef,
   field,
   value,
 }: {
-  formField: FormField;
+  fieldDef: FormFieldDef;
   field: FieldInputProps<any>;
   value: any;
 }) {
-  logger.log('[RenderInputComponent]', field, { formField, value });
-  switch (formField.type) {
+  logger.log('[RenderInputComponent]', field, { fieldDef, value });
+  switch (fieldDef.field.type) {
     case FormFieldType.boolean: {
       return (
-        <div>
-          <InputLabel htmlFor={field.name}>{field.name}</InputLabel>
-          <Switch
-            defaultChecked={value}
-            onChange={newValue =>
-              field.onChange({
-                target: {
-                  id: field.name,
-                  name: field.name,
-                  value: newValue,
-                },
-              })
-            }
-          />
-          <br />
-          <br />
-        </div>
+        <FormControlLabel
+          control={
+            <Switch
+              onChange={(event, checked) =>
+                field.onChange({ target: { id: field.name, name: field.name, value: checked } })
+              }
+              value={value}
+              color="primary"
+            />
+          }
+          label={fieldDef.name}
+        />
       );
     }
     case FormFieldType.image: {
@@ -85,7 +81,7 @@ function RenderInputComponent({
             urlHandler={Config.get('IMAGE_RES_HANDLER')}
             value={value}
             onChange={newValue => {
-              logger.log('[RenderInputComponent]', { formField, value, newValue });
+              logger.log('[RenderInputComponent]', { fieldDef, value, newValue });
               field.onChange({ target: { id: field.name, name: field.name, value: newValue } });
             }}
           />
@@ -93,28 +89,21 @@ function RenderInputComponent({
       );
     }
     case FormFieldType.text: {
+      const label = field.name === fieldDef.name ? field.name : `${field.name} / ${fieldDef.name}`;
       return (
         <>
-          <span>
-            {field.name} / {formField.name}
-          </span>
-          <antd.Input.TextArea id={field.name} {...field} autoSize rows={4} value={value} />
+          {/*<antd.Input.TextArea id={field.name} {...field} autoSize rows={4} value={value} />*/}
+          <TextField id={field.name} multiline {...field} value={value} label={label} />
+          <DebugInfo data={{ field, fieldDef, value }} />
         </>
       );
     }
     default: {
+      const label = field.name === fieldDef.name ? field.name : `${field.name} / ${fieldDef.name}`;
       return (
         <>
-          <InputLabel htmlFor={field.name}>
-            {field.name === formField.name ? (
-              field.name
-            ) : (
-              <>
-                {field.name} / {formField.name}
-              </>
-            )}
-          </InputLabel>
-          <Input id={field.name} type={formField.type} {...field} value={value} />
+          <TextField id={field.name} type={fieldDef.field.type} {...field} value={value} label={label} />
+          {/*<DebugInfo data={{ field, fieldDef, value }} />*/}
         </>
       );
     }
@@ -135,7 +124,11 @@ const InnerForm = (props: EasyFormProps & formik.FormikProps<formik.FormikValues
             logger.log('render field', field, { hasError, value });
             return (
               <FormControl key={field.name} error={hasError} fullWidth={true}>
-                <RenderInputComponent formField={formField} field={field} value={value} />
+                <RenderInputComponent
+                  fieldDef={{ field: formField, name: formField.name }}
+                  field={field}
+                  value={value}
+                />
                 {/*<Input id={field.name} type={formField.type} {...field} value={value} />*/}
                 {formField.help && <FormHelperText>{formField.help}</FormHelperText>}
                 {hasError && <FormHelperText>{form.errors[formField.name]}</FormHelperText>}
@@ -260,13 +253,12 @@ const GroupInnerForm = (props: GroupEasyFormProps & formik.FormikProps<formik.Fo
                       const value = field.value || _.get(fieldValues, formField.name) || formField.defaultValue;
                       return (
                         <FormControl error={hasError} fullWidth={true}>
-                          <InputLabel htmlFor={field.name}>
-                            {field.name} / {fieldDef.name}
-                          </InputLabel>
+                          {/*<InputLabel htmlFor={field.name}>{field.name} / {fieldDef.name}</InputLabel>*/}
                           {/*<Input id={field.name} type={formField.type} {...field} value={value} />*/}
-                          <RenderInputComponent formField={formField} field={field} value={value} />
+                          <RenderInputComponent fieldDef={fieldDef} field={field} value={value} />
                           {formField.help && <FormHelperText>{formField.help}</FormHelperText>}
                           {hasError && <FormHelperText>{form.errors[formField.name]}</FormHelperText>}
+                          <Divider type="horizontal" style={{ margin: '0.5rem 0' }} />
                         </FormControl>
                       );
                     }}
@@ -346,6 +338,6 @@ export const EasyGroupForm = formik.withFormik<GroupEasyFormProps, any>({
   },
 
   handleSubmit: (values, { props, setSubmitting }) => {
-    props.onSubmit({ ...props.fieldValues, ...values }).finally(() => setSubmitting(false));
+    props.onSubmit(_.merge(props.fieldValues, values)).finally(() => setSubmitting(false));
   },
 })(GroupInnerForm);

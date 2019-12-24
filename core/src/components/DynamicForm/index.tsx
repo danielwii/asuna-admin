@@ -1,10 +1,12 @@
-import { diff } from '@asuna-admin/helpers';
+import { adminProxyCaller } from '@asuna-admin/adapters';
+import { DebugInfo, diff } from '@asuna-admin/helpers';
 import { WithDebugInfo } from '@asuna-admin/helpers/debug';
 import { createLogger } from '@asuna-admin/logger';
 import { Asuna } from '@asuna-admin/types';
 import { EnumFilterMetaInfoOptions, MetaInfoOptions } from '@asuna-admin/types/meta';
+import { Paper } from '@material-ui/core';
 
-import { Affix, Anchor, Button, Col, Form, Row, Tag } from 'antd';
+import { Affix, Anchor, Button, Col, Divider, Form, Row, Tag } from 'antd';
 import { FormComponentProps } from 'antd/es/form';
 import * as _ from 'lodash';
 import * as PropTypes from 'prop-types';
@@ -86,18 +88,21 @@ export enum DynamicFormTypes {
   ManyToMany = 'ManyToMany',
 }
 
-type DynamicFormProps = {
+export type DynamicFormProps = {
+  model: string;
+  fields: FormField[];
+  onSubmit: (fn: (e: Error) => void) => void;
   loading?: boolean;
   anchor?: boolean;
   /**
    * 隐藏提交按钮
    */
   delegate?: boolean;
-  fields: FormField[];
-  onSubmit: (fn: (e: Error) => void) => void;
 };
 
 export type DynamicFormField = {
+  name: string;
+  type: DynamicFormTypes;
   foreignOpts?: Asuna.Schema.ForeignOpt[];
   options?: Partial<MetaInfoOptions> & {
     required?: boolean;
@@ -105,8 +110,6 @@ export type DynamicFormField = {
   };
   ref?: string;
   key?: string;
-  name: string;
-  type: DynamicFormTypes;
   raw?: any[];
   value?: any | any[];
 };
@@ -322,7 +325,7 @@ export class DynamicForm extends React.Component<DynamicFormProps & AntdFormOnCh
     ));
 
     return (
-      <React.Fragment>
+      <>
         <div className="dynamic-form">
           {loading && <FixedLoading />}
           <Row type="flex" gutter={anchor ? 16 : 0}>
@@ -334,14 +337,24 @@ export class DynamicForm extends React.Component<DynamicFormProps & AntdFormOnCh
                 {!delegate && (
                   <Form.Item>
                     <Affix offsetBottom={20}>
-                      <Button
-                        type="primary"
-                        htmlType="submit"
-                        onClick={this._handleOnSubmit}
-                        // disabled={hasErrors(getFieldsError())}
-                      >
-                        Submit
-                      </Button>
+                      <Paper style={{ padding: '.5rem' }}>
+                        <Button
+                          type="primary"
+                          htmlType="submit"
+                          onClick={this._handleOnSubmit}
+                          // disabled={hasErrors(getFieldsError())}
+                        >
+                          Submit
+                        </Button>
+                        <Divider type="vertical" />
+                        <Button
+                          onClick={() =>
+                            adminProxyCaller().createDraft({ content: { test: 1 }, type: 'companies', refId: 1 })
+                          }
+                        >
+                          Create Draft
+                        </Button>
+                      </Paper>
                     </Affix>
                   </Form.Item>
                 )}
@@ -352,13 +365,14 @@ export class DynamicForm extends React.Component<DynamicFormProps & AntdFormOnCh
             </Col>
           </Row>
         </div>
+        <DebugInfo data={{ props: this.props, state: this.state }} divider />
         {/* language=CSS */}
         <style jsx global>{`
           .dynamic-form .ant-form-item {
             margin-bottom: 0;
           }
         `}</style>
-      </React.Fragment>
+      </>
     );
   }
 }
@@ -407,7 +421,11 @@ class FormAnchor extends React.Component<IFormAnchorProps> {
       return '';
     }
 
-    return <Anchor>{renderFields}</Anchor>;
+    return (
+      <Anchor>
+        <Paper style={{ margin: '.5rem' }}>{renderFields}</Paper>
+      </Anchor>
+    );
   }
 }
 

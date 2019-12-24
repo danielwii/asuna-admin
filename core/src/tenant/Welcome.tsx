@@ -82,7 +82,11 @@ export const TenantWelcome: React.FC = props => {
             账户
           </Button>
         )}
-        onSubmit={({ name, description }) => adminProxyCaller().registerTenant({ name, description })}
+        onSubmit={({ name, description }) =>
+          adminProxyCaller()
+            .registerTenant({ name, description })
+            .then(() => location.reload())
+        }
         fields={{
           name: {
             name: 'name',
