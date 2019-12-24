@@ -1,7 +1,7 @@
 import { AsunaDataTable, Pane } from '@asuna-admin/components';
 import { Config } from '@asuna-admin/config';
 import { ActionEvent, AppContext, EventBus, EventType } from '@asuna-admin/core';
-import { castModelKey, diff, extractModelNameFromPane, resolveModelInPane } from '@asuna-admin/helpers';
+import { castModelKey, DebugInfo, diff, extractModelNameFromPane, resolveModelInPane } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 import { Asuna } from '@asuna-admin/types';
 import { SorterResult } from 'antd/es/table';
@@ -75,7 +75,7 @@ class ContentIndex extends React.Component<IProps, IState> {
       key: activeKey,
       subscription: AppContext.subject.subscribe({
         next: action => {
-          // logger.log('[observer-content-index]', { modelName, activeKey, action });
+          logger.debug('[observer-content-index]', { modelName, activeKey, action });
         },
       }),
       busSubscription: EventBus.observable.subscribe({
@@ -114,25 +114,23 @@ class ContentIndex extends React.Component<IProps, IState> {
   render() {
     const { modelName, extraName, creatable, editable, deletable, rowClassName, opts } = this.state;
 
-    // const { models } = this.props;
-
     return (
-      <AsunaDataTable
-        modelName={modelName}
-        extraName={extraName}
-        creatable={creatable}
-        editable={editable}
-        deletable={deletable}
-        renderActions={opts?.renderActions}
-        renderHelp={opts?.renderHelp}
-        // models={models}
-        rowClassName={rowClassName}
-      />
+      <>
+        <AsunaDataTable
+          modelName={modelName}
+          extraName={extraName}
+          creatable={creatable}
+          editable={editable}
+          deletable={deletable}
+          renderActions={opts?.renderActions}
+          renderHelp={opts?.renderHelp}
+          // models={models}
+          rowClassName={rowClassName}
+        />
+        <DebugInfo data={{ props: this.props, state: this.state }} divider />
+      </>
     );
   }
 }
 
-// const mapStateToProps = (state: RootState): any => state.content;
-
-// export default connect(mapStateToProps)(ContentIndex);
 export default ContentIndex;

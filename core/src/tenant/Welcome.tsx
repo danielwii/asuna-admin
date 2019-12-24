@@ -30,9 +30,7 @@ export const TenantWelcome: React.FC = props => {
     return Promise.props({
       // tenantInfo: adminProxyCaller().tenantInfo(),
       schemas: Promise.props<{ [name: string]: Asuna.Schema.OriginSchema }>(
-        _.mapValues(store.tenantInfo?.tenantRecordCounts, (count, name) =>
-          AppContext.adapters.models.loadOriginSchema(name),
-        ),
+        _.mapValues(store.tenantInfo?.recordCounts, (count, name) => AppContext.adapters.models.loadOriginSchema(name)),
       ),
     });
   });
@@ -107,7 +105,7 @@ export const TenantWelcome: React.FC = props => {
         const limit = store.tenantInfo?.config?.[`limit.${key}`];
         const displayName = schema.info?.displayName;
         const title = displayName ? `${displayName} / ${key}` : key;
-        const recordCount = store.tenantInfo?.tenantRecordCounts?.[key] ?? { total: 0 };
+        const recordCount = store.tenantInfo?.recordCounts?.[key] ?? { total: 0 };
         const disable = recordCount.total >= limit || !store.tenantInfo?.tenant || !authorized;
         return (
           <Descriptions.Item label={title} key={title}>

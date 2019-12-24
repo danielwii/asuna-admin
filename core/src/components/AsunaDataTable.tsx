@@ -1,6 +1,14 @@
 import { responseProxy } from '@asuna-admin/adapters';
+import { StoreContext } from '@asuna-admin/context/store';
 import { ActionEvent, AppContext, EventBus, EventType } from '@asuna-admin/core';
-import { castModelKey, ModelsHelper, parseJSONIfCould, resolveModelInPane, useAsunaModels } from '@asuna-admin/helpers';
+import {
+  castModelKey,
+  DebugInfo,
+  ModelsHelper,
+  parseJSONIfCould,
+  resolveModelInPane,
+  useAsunaModels,
+} from '@asuna-admin/helpers';
 import { WithDebugInfo } from '@asuna-admin/helpers/debug';
 import { createLogger } from '@asuna-admin/logger';
 import { modelsActions, panesActions } from '@asuna-admin/store';
@@ -10,8 +18,8 @@ import { PaginationConfig } from 'antd/es/pagination';
 import { SorterResult, TableCurrentDataSource } from 'antd/es/table';
 import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
-import React, { useEffect, useState } from 'react';
-import { useAsync } from 'react-use';
+import React, { useContext, useEffect, useState } from 'react';
+import { useAsync, useLogger } from 'react-use';
 
 const logger = createLogger('components:data-table');
 
@@ -47,6 +55,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
     sorter?: SorterResult<any>;
   }>({});
   // 用于刷新页面的一个标记
+  const { store } = useContext(StoreContext);
   const [flag, updateFlag] = useState(0);
 
   const _refresh = () => {
@@ -77,7 +86,6 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
     </WithDebugInfo>
   );
 
-  // useLogger('AsunaDataTable', props, { flag });
   useEffect(() => {
     // 收到更新事件时更新对应的模型
     const subscription = EventBus.observable.subscribe({
@@ -94,12 +102,12 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
       logger.log('unsubscribe', subscription);
       subscription.unsubscribe();
     };
-  });
-  const { loading: loadingAsunaModels, columnProps, relations } = useAsunaModels(modelName, {
-    callRefresh: _refresh,
-    extraName: extraName || modelName,
-    actions,
-  });
+  }, [modelName]);
+  const { loading: loadingAsunaModels, columnProps, relations } = useAsunaModels(
+    modelName,
+    { callRefresh: _refresh, extraName: extraName || modelName, actions },
+    [modelName],
+  );
 
   const { primaryKey } = resolveModelInPane(modelName, extraName);
   const _pinActions = () => {
@@ -228,6 +236,9 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
       .then(fp.get('data'));
   }, [queryCondition, loadingAsunaModels]);
 
+  if (AppContext.isDebugMode)
+    useLogger('AsunaDataTable', props, { loadingAsunaModels, columnProps, relations }, { data, loading }, { flag });
+
   if (loading || loadingAsunaModels) {
     return <Skeleton active avatar />;
   }
@@ -236,8 +247,6 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
 
   return (
     <>
-      {/*<pre>{util.inspect({ relations })}</pre>*/}
-
       {creatable && (
         <React.Fragment>
           <Button type={'primary'} onClick={() => (_.isFunction(creatable) ? creatable(modelName) : _create())}>
@@ -340,6 +349,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
           rowClassName={rowClassName}
         />
       )}
+      <DebugInfo data={{ store, relations }} divider />
       {/* language=CSS */}
       <style jsx global>{`
         .ant-tabs {

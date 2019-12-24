@@ -34,7 +34,7 @@ export class TenantHelper {
 
   static authorized(tenantInfo?: TenantInfo): boolean {
     const boundTenant = tenantInfo?.tenant;
-    const hasTenantRoles = !_.isEmpty(tenantInfo?.tenantRoles);
+    const hasTenantRoles = !_.isEmpty(tenantInfo?.roles);
     return (boundTenant && hasTenantRoles && tenantInfo?.tenant?.isPublished) ?? false;
   }
 }

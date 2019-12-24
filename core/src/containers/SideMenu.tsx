@@ -26,7 +26,7 @@ export const SideMenuRender: React.FC = props => {
 */
 
   const isTenantEnabled = store.tenantInfo?.config?.enabled;
-  const hasTenantRoles = !_.isEmpty(store.tenantInfo?.tenantRoles);
+  const hasTenantRoles = !_.isEmpty(store.tenantInfo?.roles);
   const authorized = TenantHelper.authorized(store.tenantInfo);
   if (isTenantEnabled && hasTenantRoles && !authorized)
     return (

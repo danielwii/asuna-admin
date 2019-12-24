@@ -3,7 +3,7 @@ import { createLogger } from '@asuna-admin/logger';
 import { Asuna } from '@asuna-admin/types';
 import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
-import { useState } from 'react';
+import { DependencyList, useState } from 'react';
 import { useAsync } from 'react-use';
 import { AppContext } from '../core/context';
 
@@ -12,6 +12,7 @@ const logger = createLogger('helpers:hooks');
 export function useAsunaModels(
   modelName: string,
   { extraName, callRefresh, actions }: { actions?; extraName?; callRefresh? } = {},
+  deps?: DependencyList,
 ): {
   loading: boolean;
   columnProps: RelationColumnProps[];
@@ -41,7 +42,7 @@ export function useAsunaModels(
     const schemas = await AppContext.adapters.models.loadOriginSchema(modelName);
 
     setState({ columnProps, schemas, loading: false });
-  }, [modelName]);
+  }, deps);
 
   const relations = _.flow([fp.mapValues(fp.get('relation')), _.values, _.compact, _.uniq])(state.columnProps);
 

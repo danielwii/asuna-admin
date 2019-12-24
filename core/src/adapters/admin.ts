@@ -1,5 +1,5 @@
 import { AppContext } from '@asuna-admin/core';
-import { Json } from '@asuna-admin/types';
+import { Json, Asuna } from '@asuna-admin/types';
 import { AxiosResponse } from 'axios';
 import { plainToClass } from 'class-transformer';
 
@@ -20,8 +20,9 @@ export class TenantInfo {
     firstDisplayName: string;
   }>;
   tenant?: Tenant;
-  tenantRoles: string[];
-  tenantRecordCounts: { [name: string]: { total: number; published?: number } };
+  roles: string[];
+  recordCounts: { [name: string]: { total: number; published?: number } };
+  entities: { [name: string]: Asuna.Schema.EntityInfo };
 }
 
 export class Tenant {
