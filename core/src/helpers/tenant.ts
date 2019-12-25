@@ -46,11 +46,11 @@ export class TenantHelper {
     return (boundTenant && hasTenantRoles && tenantInfo?.tenant?.isPublished) ?? false;
   }
 
-  static enableModelPublish(modelName: string): boolean {
+  static enableModelPublishForCurrentUser(modelName: string): boolean {
     return this.hasTenantRoles ? this.modelPublishEnabled(modelName) : true;
   }
 
-  static filterModelColumnProps(modelName: string, columns: RelationColumnProps[]): RelationColumnProps[] {
+  static wrapModelColumnProps(modelName: string, columns: RelationColumnProps[]): RelationColumnProps[] {
     console.log('filterModelColumnProps', this.tenantInfo, { modelName, columns });
     if (!_.keys(this.tenantInfo?.entities).includes(modelName)) return columns;
 
@@ -60,5 +60,11 @@ export class TenantHelper {
       console.log('isPublishedColumn', isPublishedColumn);
     }
     return columns;
+  }
+
+  static wrapFields(modelName: string, fields): void {
+    const readonly = !TenantHelper.enableModelPublishForCurrentUser(modelName);
+    const field = _.find(fields, field => field.name === 'isPublished');
+    field && readonly && _.set(field, 'options.accessible', 'readonly');
   }
 }

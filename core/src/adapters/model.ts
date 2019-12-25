@@ -301,7 +301,7 @@ export class ModelAdapter {
     logger.log('[getColumns]', { modelName, extraName, opts });
     const formSchema = this.getFormSchema(modelName);
     const { table: columnsRender } = this.getModelConfig(extraName || modelName);
-    const readonly = !TenantHelper.enableModelPublish(modelName);
+    const readonly = !TenantHelper.enableModelPublishForCurrentUser(modelName);
     const columns = columnsRender
       ? await Promise.all(columnsRender(opts.actions, { modelName, callRefresh: opts.callRefresh, readonly }))
       : [];

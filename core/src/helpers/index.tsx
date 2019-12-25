@@ -12,6 +12,7 @@ import { Badge, Button, Checkbox, Divider, Icon, Input, Popconfirm, Statistic, T
 import { ColumnProps } from 'antd/es/table';
 import { FilterDropdownProps } from 'antd/es/table/interface';
 import * as deepDiff from 'deep-diff';
+import { Diff } from 'deep-diff';
 import * as _ from 'lodash';
 import moment from 'moment';
 import * as R from 'ramda';
@@ -560,7 +561,11 @@ export const defaultColumnsByPrimaryKey = (primaryKey = 'id') => actions => [
   commonColumns.actions(actions),
 ];
 
-export const diff = (first, second, opts: { include?; exclude? } = {}) => {
+export const diff = (
+  first,
+  second,
+  opts: { include?; exclude? } = {},
+): { verbose: Array<Diff<any>>; isDifferent: boolean } => {
   let verbose;
   if (R.not(R.anyPass([R.isEmpty, R.isNil])(opts.include))) {
     verbose = deepDiff.diff(R.pickAll(opts.include)(first), R.pickAll(opts.include)(second));

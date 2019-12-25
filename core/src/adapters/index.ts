@@ -1,3 +1,4 @@
+export * from './admin.plain';
 export * from './admin';
 export * from './api';
 export * from './auth';

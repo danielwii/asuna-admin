@@ -1,7 +1,14 @@
 import { DynamicFormProps, Pane } from '@asuna-admin/components';
 import { DynamicForm, DynamicFormTypes } from '@asuna-admin/components/DynamicForm';
 import { AppContext, EventBus, EventType } from '@asuna-admin/core';
-import { DebugInfo, diff, isErrorResponse, reduxActionCallbackPromise, toFormErrors } from '@asuna-admin/helpers';
+import {
+  DebugInfo,
+  diff,
+  isErrorResponse,
+  reduxActionCallbackPromise,
+  TenantHelper,
+  toFormErrors,
+} from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 import * as schemaHelper from '@asuna-admin/schema';
 import { asyncLoadAssociationsDecorator } from '@asuna-admin/schema/async';
@@ -388,6 +395,8 @@ class ContentUpsert extends React.Component<IProps, IState> {
 
   render() {
     const { fields, loadings, status, modelName } = this.state;
+    TenantHelper.wrapFields(modelName, fields);
+    const auditMode = !TenantHelper.enableModelPublishForCurrentUser(modelName);
 
     logger.log('[render]', { props: this.props, state: this.state });
 
@@ -417,11 +426,12 @@ class ContentUpsert extends React.Component<IProps, IState> {
         <ContentForm
           model={modelName}
           anchor
+          auditMode={auditMode}
           fields={fields}
           onChange={this._handleFormChange}
           onSubmit={this._handleFormSubmit}
         />
-        <DebugInfo data={{ props: this.props, state: this.state }} divider />
+        <DebugInfo data={{ props: this.props, state: this.state, auditMode }} divider />
       </>
     );
   }

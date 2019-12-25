@@ -1,13 +1,35 @@
+import { adminProxyCaller, Draft } from '@asuna-admin/adapters';
 import { RelationColumnProps } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 import { Asuna } from '@asuna-admin/types';
 import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
 import { DependencyList, useState } from 'react';
-import { useAsync } from 'react-use';
+import { useAsync, useAsyncRetry } from 'react-use';
 import { AppContext } from '../core/context';
 
 const logger = createLogger('helpers:hooks');
+
+export function useAsunaDrafts(
+  params: { type: string; refId: string },
+  deps?: DependencyList,
+): { loading: boolean; drafts: Draft[]; retry: () => void } {
+  const [loading, setLoading] = useState<boolean>(true);
+  const [drafts, setDrafts] = useState<Draft[]>([]);
+  const { retry } = useAsyncRetry(async () => {
+    try {
+      setLoading(true);
+      const drafts = await adminProxyCaller().getDrafts(params);
+      setDrafts(drafts);
+    } catch (e) {
+      logger.error('useAsunaDrafts error', e);
+    } finally {
+      setLoading(false);
+    }
+  }, deps);
+
+  return { loading, drafts, retry };
+}
 
 export function useAsunaModels(
   modelName: string,

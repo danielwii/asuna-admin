@@ -1,18 +1,23 @@
 import { adminProxyCaller } from '@asuna-admin/adapters';
-import { DebugInfo, diff } from '@asuna-admin/helpers';
+import { DrawerButton } from '@asuna-admin/components';
+import { DebugInfo, diff, parseString, useAsunaDrafts } from '@asuna-admin/helpers';
 import { WithDebugInfo } from '@asuna-admin/helpers/debug';
 import { createLogger } from '@asuna-admin/logger';
 import { Asuna } from '@asuna-admin/types';
 import { EnumFilterMetaInfoOptions, MetaInfoOptions } from '@asuna-admin/types/meta';
 import { Paper } from '@material-ui/core';
 
-import { Affix, Anchor, Button, Col, Divider, Form, Row, Tag } from 'antd';
+import { Affix, Anchor, Button, Col, Divider, Form, List, Row, Tag } from 'antd';
 import { FormComponentProps } from 'antd/es/form';
 import * as _ from 'lodash';
+import * as fp from 'lodash/fp';
+import moment from 'moment';
 import * as PropTypes from 'prop-types';
 import * as R from 'ramda';
 import * as React from 'react';
-import { CircleLoader } from 'react-spinners';
+import { useMemo } from 'react';
+import { CircleLoader, ScaleLoader } from 'react-spinners';
+import VisualDiff from 'react-visual-diff';
 import styled from 'styled-components';
 import * as util from 'util';
 
@@ -90,7 +95,7 @@ export enum DynamicFormTypes {
 
 export type DynamicFormProps = {
   model: string;
-  fields: FormField[];
+  fields: any[] | FormField[];
   onSubmit: (fn: (e: Error) => void) => void;
   loading?: boolean;
   anchor?: boolean;
@@ -98,6 +103,7 @@ export type DynamicFormProps = {
    * 隐藏提交按钮
    */
   delegate?: boolean;
+  auditMode?: boolean;
 };
 
 export type DynamicFormField = {
@@ -124,10 +130,19 @@ export type DynamicFormField = {
  *   },
  * }
  */
-export class DynamicForm extends React.Component<DynamicFormProps & AntdFormOnChangeListener & FormComponentProps> {
-  _buildField = (fields: FormField[], field: DynamicFormField, index: number) => {
-    const { form } = this.props;
-
+export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener & FormComponentProps> = ({
+  form,
+  model,
+  fields,
+  onSubmit,
+  loading,
+  delegate,
+  anchor,
+  auditMode,
+}) => {
+  const memoizedFields = useMemo(() => fields, [1]);
+  const { loading: loadingDrafts, drafts, retry } = useAsunaDrafts({ type: model, refId: _.get(fields, 'id.value') });
+  const _buildField = (fields: FormField[], field: DynamicFormField, index: number) => {
     field.options = field.options || {};
     const options: DeepPartial<DynamicFormField['options'] &
       HiddenOptions &
@@ -297,10 +312,23 @@ export class DynamicForm extends React.Component<DynamicFormProps & AntdFormOnCh
     }
   };
 
-  _handleOnSubmit = e => {
+  const _handleOnAuditDraft = e => {
     e.preventDefault();
 
-    const { form, onSubmit } = this.props;
+    form.validateFields(async (err, values) => {
+      logger.log('[DynamicForm][handleOnAuditDraft]', values);
+      if (err) {
+        logger.error('[DynamicForm][handleOnAuditDraft]', 'error occurred in form', values, err);
+      } else {
+        await adminProxyCaller().createDraft({ content: values, type: model, refId: _.get(fields, 'id.value') });
+        retry();
+      }
+    });
+  };
+
+  const _handleOnSubmit = e => {
+    e.preventDefault();
+
     form.validateFields((err, values) => {
       logger.log('[DynamicForm][handleOnSubmit]', values);
       if (err) {
@@ -311,71 +339,190 @@ export class DynamicForm extends React.Component<DynamicFormProps & AntdFormOnCh
     });
   };
 
-  render() {
-    const { loading, fields, delegate, anchor } = this.props;
-    logger.log('[DynamicForm]', '[render]', { props: this.props });
+  logger.log('[DynamicForm]', '[render]');
 
-    // validateFields((errors, values) => console.log({ errors, values }));
-    // remove fields which type is not included
-    // pure component will not trigger error handler
+  // validateFields((errors, values) => console.log({ errors, values }));
+  // remove fields which type is not included
+  // pure component will not trigger error handler
 
-    const typedFields = _.filter(fields, field => _.has(field, 'type'));
-    const renderFields = _.map(typedFields, (field, index) => (
-      <EnhancedPureElement key={index} field={field} index={index} builder={_.curry(this._buildField)(fields)} />
-    ));
+  const typedFields = _.filter(fields, field => _.has(field, 'type'));
+  const renderFields = _.map(typedFields, (field, index) => (
+    <EnhancedPureElement key={index} field={field} index={index} builder={_.curry(_buildField)(fields)} />
+  ));
 
-    return (
-      <>
-        <div className="dynamic-form">
-          {loading && <FixedLoading />}
-          <Row type="flex" gutter={anchor ? 16 : 0}>
-            <Col span={anchor ? 18 : 24}>
-              <Form>
-                {/* {_.map(fieldGroups, this.buildFieldGroup)} */}
-                {/* {_.map(fields, this.buildField)} */}
-                {renderFields}
-                {!delegate && (
-                  <Form.Item>
-                    <Affix offsetBottom={20}>
-                      <Paper style={{ padding: '.5rem' }}>
+  return (
+    <>
+      <div className="dynamic-form">
+        {loading && <FixedLoading />}
+        <Row type="flex" gutter={anchor ? 16 : 0}>
+          <Col span={anchor ? 18 : 24}>
+            <Form>
+              {/* {_.map(fieldGroups, this.buildFieldGroup)} */}
+              {/* {_.map(fields, this.buildField)} */}
+              {renderFields}
+              <Form.Item>
+                <Affix offsetBottom={20}>
+                  <Paper style={{ padding: '.5rem' }}>
+                    {!delegate && (
+                      <>
                         <Button
                           type="primary"
                           htmlType="submit"
-                          onClick={this._handleOnSubmit}
+                          onClick={_handleOnSubmit}
                           // disabled={hasErrors(getFieldsError())}
+                          disabled={auditMode}
                         >
                           Submit
                         </Button>
                         <Divider type="vertical" />
-                        <Button
-                          onClick={() =>
-                            adminProxyCaller().createDraft({ content: { test: 1 }, type: 'companies', refId: 1 })
-                          }
-                        >
-                          Create Draft
-                        </Button>
-                      </Paper>
-                    </Affix>
-                  </Form.Item>
-                )}
-              </Form>
-            </Col>
-            <Col span={anchor ? 6 : 0}>
-              <FormAnchor fields={fields} />
-            </Col>
-          </Row>
-        </div>
-        <DebugInfo data={{ props: this.props, state: this.state }} divider />
-        {/* language=CSS */}
-        <style jsx global>{`
-          .dynamic-form .ant-form-item {
-            margin-bottom: 0;
-          }
-        `}</style>
-      </>
-    );
-  }
-}
+                        {(() => {
+                          // const values = _.map(fields, fp.get('value'));
+                          const values = _.flow(
+                            fp.mapValues(fp.get('value')),
+                            // fp.pick(_.keys(draft.content)),
+                          )(fields);
+                          const memoizedValues = _.flow(
+                            fp.mapValues(fp.get('value')),
+                            // fp.pick(_.keys(draft.content)),
+                          )(memoizedFields);
+                          return (
+                            <DrawerButton
+                              text="对比"
+                              // key={draft.refId}
+                              // text={`${moment(draft.updatedAt).calendar()}(${moment(draft.updatedAt).fromNow()})`}
+                              // title={`Draft: ${draft.type} / ${draft.refId}`}
+                              width="60%"
+                            >
+                              <List<{ key: string; title: string; value: any }>
+                                itemLayout="horizontal"
+                                dataSource={_.map(values, (value, key) => {
+                                  return {
+                                    key,
+                                    title:
+                                      fields[key]?.options?.name ?? fields[key]?.options?.label ?? fields[key]?.name,
+                                    value,
+                                  };
+                                })}
+                                renderItem={item => (
+                                  <List.Item>
+                                    <List.Item.Meta
+                                      title={item.title}
+                                      description={
+                                        <WithDebugInfo info={fields[item.key]}>
+                                          <VisualDiff
+                                            left={<div>{parseString(memoizedValues[item.key] ?? '')}</div>}
+                                            right={<div>{parseString(item.value ?? '')}</div>}
+                                          />
+                                        </WithDebugInfo>
+                                      }
+                                    />
+                                  </List.Item>
+                                )}
+                              />
+                            </DrawerButton>
+                          );
+                        })()}
+                      </>
+                    )}
+                    <Divider type="vertical" />
+                    {loadingDrafts ? (
+                      <ScaleLoader />
+                    ) : _.isEmpty(drafts) ? (
+                      <Button onClick={_handleOnAuditDraft} disabled={!diff(fields, memoizedFields).isDifferent}>
+                        Create Draft
+                      </Button>
+                    ) : (
+                      <>
+                        Drafts:{' '}
+                        {drafts.map(draft => {
+                          const values = _.flow(
+                            fp.mapValues(fp.get('value')),
+                            fp.pick(_.keys(draft.content)),
+                          )(memoizedFields);
+                          const filteredValues = _.omitBy(draft.content, (value, key) => _.eq(values[key], value));
+                          return (
+                            <DrawerButton
+                              key={draft.refId}
+                              text={`${moment(draft.updatedAt).calendar()}(${moment(draft.updatedAt).fromNow()})`}
+                              title={`Draft: ${draft.type} / ${draft.refId}`}
+                              width="40%"
+                              popoverProps={{
+                                content: (
+                                  <>
+                                    <Button size="small">更新</Button>
+                                  </>
+                                ),
+                              }}
+                            >
+                              {/*<pre>{util.inspect(filteredValues)}</pre>*/}
+                              {/*<pre>{util.inspect(draft)}</pre>*/}
+                              {/*<pre>{util.inspect(values)}</pre>*/}
+
+                              {/*<pre>{util.inspect(diff(draft.content, values).verbose)}</pre>*/}
+                              {/*
+                              <ReactDiffViewer
+                                oldValue={JSON.stringify(values, null, 2)}
+                                newValue={JSON.stringify(draft.content, null, 2)}
+                                splitView={true}
+                              />
+*/}
+                              {/*
+                              <VisualDiff
+                                left={<pre>{JSON.stringify(values, null, 2)}</pre>}
+                                right={<pre>{JSON.stringify(draft.content, null, 2)}</pre>}
+                              />
+*/}
+                              <List<{ key: string; title: string; value: any }>
+                                itemLayout="horizontal"
+                                dataSource={_.map(draft.content, (value, key) => {
+                                  return {
+                                    key,
+                                    title:
+                                      fields[key]?.options?.name ?? fields[key]?.options?.label ?? fields[key]?.name,
+                                    value,
+                                  };
+                                })}
+                                renderItem={item => (
+                                  <List.Item>
+                                    <List.Item.Meta
+                                      title={item.title}
+                                      description={
+                                        <WithDebugInfo info={fields[item.key]}>
+                                          <VisualDiff
+                                            left={<div>{parseString(values[item.key] ?? '')}</div>}
+                                            right={<div>{parseString(item.value ?? '')}</div>}
+                                          />
+                                        </WithDebugInfo>
+                                      }
+                                    />
+                                  </List.Item>
+                                )}
+                              />
+                            </DrawerButton>
+                          );
+                        })}
+                      </>
+                    )}
+                  </Paper>
+                </Affix>
+              </Form.Item>
+            </Form>
+          </Col>
+          <Col span={anchor ? 6 : 0}>
+            <FormAnchor fields={fields} />
+          </Col>
+        </Row>
+      </div>
+      <DebugInfo data={{ diff: diff(fields, memoizedFields) }} divider />
+      {/* language=CSS */}
+      <style jsx global>{`
+        .dynamic-form .ant-form-item {
+          margin-bottom: 0;
+        }
+      `}</style>
+    </>
+  );
+};
 
 interface IFormAnchorProps {
   fields: FormField[];
@@ -488,7 +635,7 @@ class EnhancedPureElement extends React.Component<IPureElementProps> {
     }
 
     return (
-      <React.Fragment>
+      <>
         <div key={index} id={`dynamic-form-${field.name}`}>
           <WithDebugInfo info={field}>{builder(field as DynamicFormField, index)}</WithDebugInfo>
           <hr />
@@ -502,7 +649,7 @@ class EnhancedPureElement extends React.Component<IPureElementProps> {
             /*box-shadow: #bfbfbf 0 0 1px;*/
           }
         `}</style>
-      </React.Fragment>
+      </>
     );
   }
 }

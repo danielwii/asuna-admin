@@ -10,6 +10,7 @@ export * from './ErrorInfo';
 export * from './LogoCanvas';
 export * from './LivingLoading';
 export * from './Login';
+export * from './ModalButton';
 export * from './SideMenu';
 export * from './Panes';
 export * from './Header';

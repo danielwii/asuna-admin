@@ -1,47 +1,25 @@
 import { AppContext } from '@asuna-admin/core';
-import { Json, Asuna } from '@asuna-admin/types';
+import { Json } from '@asuna-admin/types';
 import { AxiosResponse } from 'axios';
 import { plainToClass } from 'class-transformer';
+import * as _ from 'lodash';
+import { Draft, Tenant, TenantInfo } from './admin.plain';
 
 export interface IAdminService {
   tenantInfo(auth: { token: string | null }): Promise<AxiosResponse>;
   registerTenant(auth: { token: string | null }, data: { name: string; description?: string }): Promise<AxiosResponse>;
   createDraft(
     auth: { token: string | null },
-    data: { content: Json; type: string; refId: string | number },
+    data: { content: Json; type: string; refId: string },
   ): Promise<AxiosResponse>;
-}
-
-export class TenantInfo {
-  config?: Partial<{
-    enabled: boolean;
-    bindRoles: string;
-    firstModelName: string;
-    firstDisplayName: string;
-  }>;
-  tenant?: Tenant;
-  roles: string[];
-  recordCounts: { [name: string]: { total: number; published?: number } };
-  entities: { [name: string]: Asuna.Schema.EntityInfo };
-}
-
-export class Tenant {
-  id: string;
-  name: string;
-  description?: string;
-  isPublished?: boolean;
-}
-
-export class Draft {
-  content: Json;
-  type: string;
-  refId: string | number;
+  getDrafts(auth: { token: string | null }, params: { type: string; refId: string }): Promise<AxiosResponse>;
 }
 
 export interface AdminAdapter {
   tenantInfo(): Promise<TenantInfo>;
   registerTenant(data: { name: string; description?: string }): Promise<Tenant>;
   createDraft(data: { content: Json; type: string; refId: string | number }): Promise<Draft>;
+  getDrafts(params: { type: string; refId: string | number }): Promise<Draft[]>;
 }
 
 export class AdminAdapterImpl implements AdminAdapter {
@@ -61,8 +39,14 @@ export class AdminAdapterImpl implements AdminAdapter {
     );
   }
 
-  async createDraft(data: { content: Json; type: string; refId: string | number }): Promise<Draft> {
+  async createDraft(data: { content: Json; type: string; refId: string }): Promise<Draft> {
     return AppContext.withAuth(auth => this.service.createDraft(auth, data).then(res => plainToClass(Draft, res.data)));
+  }
+
+  async getDrafts(params: { type: string; refId: string }): Promise<Draft[]> {
+    return AppContext.withAuth(auth =>
+      this.service.getDrafts(auth, params).then(res => _.map(res.data, item => plainToClass(Draft, item))),
+    );
   }
 }
 

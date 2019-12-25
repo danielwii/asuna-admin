@@ -16,6 +16,10 @@ export function removePreAndSuf(value: string, prefix: string, suffix: string): 
   return _.flow([_.curryRight(removeSuffix)(suffix), _.curryRight(removePrefix)(prefix)])(value);
 }
 
+export function parseString(value?: any): string {
+  return _.isString(value) ? value : JSON.stringify(value);
+}
+
 export function parseJSONIfCould(value?: string): any {
   try {
     if (value) return JSON.parse(value);

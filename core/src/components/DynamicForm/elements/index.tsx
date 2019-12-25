@@ -49,12 +49,13 @@ export const horizontalFormItemLayout: IFormItemLayout = {
 export type PlainOptions = {
   key: string;
   label: string;
+  name?: string;
   text?: string | React.ReactNode;
   help?: string;
 };
 
 export const generatePlain = (options: PlainOptions, formItemLayout: IFormItemLayout = horizontalFormItemLayout) => {
-  const { key, label, text, help } = options;
+  const { key, name, label, text, help } = options;
   logger.log('[generatePlain]', options);
   const fieldName = key || name;
   const labelName = label || name || key;

@@ -1,4 +1,7 @@
-import { Button, Drawer, Empty, Icon, Skeleton, Timeline } from 'antd';
+import { Button, Drawer, Empty, Icon, Popconfirm, Popover, Skeleton, Timeline } from 'antd';
+import { BaseButtonProps } from 'antd/es/button/button';
+import { PopconfirmProps } from 'antd/es/popconfirm';
+import { PopoverProps } from 'antd/lib/popover';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
@@ -6,38 +9,25 @@ import { useEffect, useState } from 'react';
 export interface DrawerButtonProps {
   text: string;
   title?: string;
+  width?: number | string;
 }
 
-export class DrawerButton extends React.Component<DrawerButtonProps> {
-  state = { visible: false, childrenDrawer: false };
+export const DrawerButtonBuilder: React.FC<DrawerButtonProps &
+  BaseButtonProps & { builder: () => React.ReactNode }> = ({ text, title, width, builder, ...baseButtonProps }) => {
+  const [visible, setVisible] = useState(false);
 
-  showDrawer = () => {
-    this.setState({ visible: true });
-  };
+  const _showDrawer = () => setVisible(true);
+  const _onClose = () => setVisible(false);
 
-  onClose = () => {
-    this.setState({ visible: false });
-  };
-
-  showChildrenDrawer = () => {
-    this.setState({ childrenDrawer: true });
-  };
-
-  onChildrenDrawerClose = () => {
-    this.setState({ childrenDrawer: false });
-  };
-
-  render() {
-    const { text, title, children } = this.props;
-    return (
-      <>
-        <Button size="small" type="dashed" onClick={this.showDrawer}>
-          {text}
-          <Icon type="select" />
-        </Button>
-        <Drawer title={title || text} width={520} closable={false} onClose={this.onClose} visible={this.state.visible}>
-          {children}
-          {/*<Button type="primary" onClick={this.showChildrenDrawer}>
+  return (
+    <>
+      <Button {...baseButtonProps} onClick={_showDrawer}>
+        {text}
+        <Icon type="select" />
+      </Button>
+      <Drawer title={title || text} width={width ?? 520} closable={false} onClose={_onClose} visible={visible}>
+        {builder()}
+        {/*<Button type="primary" onClick={this.showChildrenDrawer}>
             Two-level drawer
           </Button>
           <Drawer
@@ -49,44 +39,102 @@ export class DrawerButton extends React.Component<DrawerButtonProps> {
           >
             This is two-level drawer
           </Drawer>*/}
-          <div
-            style={{
-              position: 'absolute',
-              bottom: 0,
-              width: '100%',
-              borderTop: '1px solid #e8e8e8',
-              padding: '10px 16px',
-              textAlign: 'right',
-              left: 0,
-              background: '#fff',
-              borderRadius: '0 0 4px 4px',
-            }}
-          >
-            <Button
-              style={{
-                marginRight: 8,
-              }}
-              onClick={this.onClose}
-            >
-              Cancel
-            </Button>
-            {/*<Button onClick={this.onClose} type="primary">
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 0,
+            width: '100%',
+            borderTop: '1px solid #e8e8e8',
+            padding: '10px 16px',
+            textAlign: 'right',
+            left: 0,
+            background: '#fff',
+            borderRadius: '0 0 4px 4px',
+          }}
+        >
+          <Button style={{ marginRight: 8 }} onClick={_onClose}>
+            Cancel
+          </Button>
+          {/*<Button onClick={this.onClose} type="primary">
               Submit
             </Button>*/}
-          </div>
-        </Drawer>
-      </>
-    );
-  }
-}
+        </div>
+      </Drawer>
+    </>
+  );
+};
+
+export const DrawerButton: React.FC<DrawerButtonProps & BaseButtonProps & { popoverProps?: PopoverProps }> = ({
+  text,
+  title,
+  width,
+  popoverProps,
+  children,
+  ...baseButtonProps
+}) => {
+  const [visible, setVisible] = useState(false);
+  const [childrenDrawer, setChildrenVisible] = useState(false);
+
+  const _showDrawer = () => setVisible(true);
+  const _onClose = () => setVisible(false);
+  const _showChildrenDrawer = () => setChildrenVisible(true);
+  const _onChildrenDrawerClose = () => setChildrenVisible(false);
+
+  const _renderButton = (
+    <Button {...baseButtonProps} onClick={_showDrawer}>
+      {text}
+      <Icon type="select" />
+    </Button>
+  );
+
+  return (
+    <>
+      {popoverProps ? <Popover {...popoverProps}>{_renderButton}</Popover> : _renderButton}
+      <Drawer title={title || text} width={width ?? 520} closable={false} onClose={_onClose} visible={visible}>
+        {children}
+        {/*<Button type="primary" onClick={this.showChildrenDrawer}>
+            Two-level drawer
+          </Button>
+          <Drawer
+            title="Two-level Drawer"
+            width={320}
+            closable={false}
+            onClose={this.onChildrenDrawerClose}
+            visible={this.state.childrenDrawer}
+          >
+            This is two-level drawer
+          </Drawer>*/}
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 0,
+            width: '100%',
+            borderTop: '1px solid #e8e8e8',
+            padding: '10px 16px',
+            textAlign: 'right',
+            left: 0,
+            background: '#fff',
+            borderRadius: '0 0 4px 4px',
+          }}
+        >
+          <Button style={{ marginRight: 8 }} onClick={_onClose}>
+            Cancel
+          </Button>
+          {/*<Button onClick={this.onClose} type="primary">
+              Submit
+            </Button>*/}
+        </div>
+      </Drawer>
+    </>
+  );
+};
 
 export interface HistoryTimelineProps {
   dataLoader: () => Promise<{ items: any[] }>;
   render: (history) => React.ReactChild;
 }
 
-export function HistoryTimeline(props: HistoryTimelineProps) {
-  const { dataLoader, render } = props;
+export const HistoryTimeline: React.FC<HistoryTimelineProps> = ({ dataLoader, render }) => {
   const [state, setState] = useState<{ loading: boolean; fields: any[] }>({
     loading: true,
     fields: [],
@@ -103,4 +151,4 @@ export function HistoryTimeline(props: HistoryTimelineProps) {
   if (_.isEmpty(state.fields)) return <Empty />;
 
   return <Timeline>{state.fields.map(render)}</Timeline>;
-}
+};
