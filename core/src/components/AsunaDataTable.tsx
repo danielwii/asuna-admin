@@ -230,7 +230,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
       .loadModels(modelName, {
         relations,
         filters: transformedFilters,
-        pagination,
+        pagination: queryCondition.pagination,
         sorter: transformedSorter,
       })
       .then(fp.get('data'));

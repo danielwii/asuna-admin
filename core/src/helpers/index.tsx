@@ -302,7 +302,7 @@ export const columnHelper = {
       dataIndex: ref,
       ...filterProps,
       render: nullProtectRender(record => {
-        const content = extractValue(record, opts.transformer)[opts.transformer];
+        const content = extractValue(record, opts.transformer);
         return <WithDebugInfo info={{ key, title, opts, record }}>{content}</WithDebugInfo>;
       }),
     };
