@@ -70,6 +70,8 @@ export declare module Asuna {
 
     type RecordRenderActions = (text, record, extras) => any;
     type RecordRenderExtras = {
+      readonly?: boolean;
+      tips?: string;
       modelName: string;
       /**
        * 用于处理完毕后的的页面刷新

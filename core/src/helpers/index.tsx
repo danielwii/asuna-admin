@@ -165,6 +165,7 @@ export const columnHelper2 = {
       }),
     };
   },
+  fpGenerateSwitch: (key, title) => _.curry(columnHelper.generateSwitch)(key, title),
 };
 export const columnHelper = {
   generateID: (key = 'id', title = 'ID', transformer?): ColumnProps<any> => ({
@@ -498,44 +499,29 @@ export const columnHelper = {
   }),
   /**
    * 生成切换按钮
-   * @param key
-   * @param title
-   * @param {any} readonly
-   * @param {any} modelName
-   * @param {any} callRefresh
-   * @param {any} tips
-   * @returns {{title: any; dataIndex: string | any; key: string | any; render: (isActive, record) => any}}
    */
-  generateSwitch: (
-    key,
-    title,
-    { readonly, modelName, callRefresh, tips }: { readonly?; modelName?; callRefresh?; tips?: string },
-  ): ColumnProps<any> => ({
+  generateSwitch: (key, title, extras: Asuna.Schema.RecordRenderExtras): ColumnProps<any> => ({
     title,
     dataIndex: castModelKey(key),
     key: castModelKey(key),
     ...generateSearchColumnProps(castModelKey(key), 'boolean', {}),
-    render: function(isActive, record) {
-      const component = readonly ? (
+    render: (isActive, record) => {
+      console.log({ isActive, record }, extras);
+      const component = extras.readonly ? (
         <Checkbox checked={isActive} disabled={true} />
       ) : (
         <Popconfirm
           title={isActive ? `是否注销: ${record.id}` : `是否激活: ${record.id}`}
           onConfirm={async () => {
             // const { modelProxy } = require('../adapters');
-            await AppContext.adapters.models.upsert(modelName, {
-              body: {
-                id: record.id,
-                [key]: !isActive,
-              },
-            });
-            callRefresh();
+            await AppContext.adapters.models.upsert(extras.modelName, { body: { id: record.id, [key]: !isActive } });
+            extras.callRefresh();
           }}
         >
           <Checkbox checked={isActive} />
         </Popconfirm>
       );
-      return tips ? <Tooltip title={tips}>{component}</Tooltip> : component;
+      return extras.tips ? <Tooltip title={extras.tips}>{component}</Tooltip> : component;
     },
   }),
 };
@@ -562,7 +548,7 @@ export const commonColumns = {
   eduType: columnHelper.generate('eduType', '类型'),
   createdAt: columnHelper.generateCalendar('createdAt', '创建时间'),
   updatedAt: columnHelper.generateCalendar('updatedAt', '更新时间'),
-  isPublished: _.curry(columnHelper.generateSwitch)('isPublished', '发布'),
+  isPublished: columnHelper2.fpGenerateSwitch('isPublished', '发布'),
   actions: columnHelper.generateActions,
 };
 

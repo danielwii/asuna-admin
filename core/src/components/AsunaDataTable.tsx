@@ -7,6 +7,7 @@ import {
   ModelsHelper,
   parseJSONIfCould,
   resolveModelInPane,
+  TenantHelper,
   useAsunaModels,
 } from '@asuna-admin/helpers';
 import { WithDebugInfo } from '@asuna-admin/helpers/debug';
@@ -236,8 +237,10 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
       .then(fp.get('data'));
   }, [queryCondition, loadingAsunaModels]);
 
+  /*
   if (AppContext.isDebugMode)
     useLogger('AsunaDataTable', props, { loadingAsunaModels, columnProps, relations }, { data, loading }, { flag });
+*/
 
   if (loading || loadingAsunaModels) {
     return <Skeleton active avatar />;
@@ -248,12 +251,12 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
   return (
     <>
       {creatable && (
-        <React.Fragment>
+        <>
           <Button type={'primary'} onClick={() => (_.isFunction(creatable) ? creatable(modelName) : _create())}>
             Create
           </Button>
           <Divider type="vertical" />
-        </React.Fragment>
+        </>
       )}
       <Button onClick={_refresh}>刷新</Button>
 

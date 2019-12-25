@@ -7,6 +7,7 @@ import {
   defaultColumnsByPrimaryKey,
   parseJSONIfCould,
   RelationColumnProps,
+  TenantHelper,
 } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 import { AuthState } from '@asuna-admin/store';
@@ -300,8 +301,9 @@ export class ModelAdapter {
     logger.log('[getColumns]', { modelName, extraName, opts });
     const formSchema = this.getFormSchema(modelName);
     const { table: columnsRender } = this.getModelConfig(extraName || modelName);
+    const readonly = !TenantHelper.enableModelPublish(modelName);
     const columns = columnsRender
-      ? await Promise.all(columnsRender(opts.actions, { modelName, callRefresh: opts.callRefresh }))
+      ? await Promise.all(columnsRender(opts.actions, { modelName, callRefresh: opts.callRefresh, readonly }))
       : [];
 
     // dev 模式下提示模型 schema 中不包含的字段，在 production 中隐藏该字段
