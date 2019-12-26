@@ -1,5 +1,7 @@
 export * from './AsunaDataTable';
 export * from './AsunaDataView';
+export * from './AsunaPlainInfo';
+export * from './Button';
 export * from './DataDisplay';
 export * from './ProgressBar';
 export * from './Snow';

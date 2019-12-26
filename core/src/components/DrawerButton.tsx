@@ -1,4 +1,4 @@
-import { Button, Drawer, Empty, Icon, Popconfirm, Popover, Skeleton, Timeline } from 'antd';
+import { Button, Divider, Drawer, Empty, Icon, Popconfirm, Popover, Skeleton, Timeline } from 'antd';
 import { BaseButtonProps } from 'antd/es/button/button';
 import { PopconfirmProps } from 'antd/es/popconfirm';
 import { PopoverProps } from 'antd/lib/popover';
@@ -64,11 +64,13 @@ export const DrawerButtonBuilder: React.FC<DrawerButtonProps &
   );
 };
 
-export const DrawerButton: React.FC<DrawerButtonProps & BaseButtonProps & { popoverProps?: PopoverProps }> = ({
+export const DrawerButton: React.FC<DrawerButtonProps &
+  BaseButtonProps & { popoverProps?: PopoverProps; extraButtons?: React.ReactNode }> = ({
   text,
   title,
   width,
   popoverProps,
+  extraButtons,
   children,
   ...baseButtonProps
 }) => {
@@ -117,12 +119,15 @@ export const DrawerButton: React.FC<DrawerButtonProps & BaseButtonProps & { popo
             borderRadius: '0 0 4px 4px',
           }}
         >
+          {extraButtons && (
+            <>
+              {extraButtons}
+              <Divider type="vertical" />
+            </>
+          )}
           <Button style={{ marginRight: 8 }} onClick={_onClose}>
             Cancel
           </Button>
-          {/*<Button onClick={this.onClose} type="primary">
-              Submit
-            </Button>*/}
         </div>
       </Drawer>
     </>

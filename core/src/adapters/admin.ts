@@ -3,6 +3,7 @@ import { Json } from '@asuna-admin/types';
 import { AxiosResponse } from 'axios';
 import { plainToClass } from 'class-transformer';
 import * as _ from 'lodash';
+import * as fp from 'lodash/fp';
 import { Draft, Tenant, TenantInfo } from './admin.plain';
 
 export interface IAdminService {
@@ -13,6 +14,7 @@ export interface IAdminService {
     data: { content: Json; type: string; refId: string },
   ): Promise<AxiosResponse>;
   getDrafts(auth: { token: string | null }, params: { type: string; refId: string }): Promise<AxiosResponse>;
+  publishDraft(auth: { token: string | null }, params: { id: string }): Promise<AxiosResponse>;
 }
 
 export interface AdminAdapter {
@@ -20,6 +22,7 @@ export interface AdminAdapter {
   registerTenant(data: { name: string; description?: string }): Promise<Tenant>;
   createDraft(data: { content: Json; type: string; refId: string | number }): Promise<Draft>;
   getDrafts(params: { type: string; refId: string | number }): Promise<Draft[]>;
+  publishDraft(params: { id: string }): Promise<void>;
 }
 
 export class AdminAdapterImpl implements AdminAdapter {
@@ -47,6 +50,10 @@ export class AdminAdapterImpl implements AdminAdapter {
     return AppContext.withAuth(auth =>
       this.service.getDrafts(auth, params).then(res => _.map(res.data, item => plainToClass(Draft, item))),
     );
+  }
+
+  async publishDraft(params: { id: string }): Promise<void> {
+    return AppContext.withAuth(auth => this.service.publishDraft(auth, params).then(fp.get('data')));
   }
 }
 

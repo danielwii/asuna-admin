@@ -7,7 +7,7 @@ import { Asuna } from '@asuna-admin/types';
 import { EnumFilterMetaInfoOptions, MetaInfoOptions } from '@asuna-admin/types/meta';
 import { Paper } from '@material-ui/core';
 
-import { Affix, Anchor, Button, Col, Divider, Form, List, Row, Tag } from 'antd';
+import { Affix, Anchor, Button, Col, Divider, Form, List, Popconfirm, Row, Tag } from 'antd';
 import { FormComponentProps } from 'antd/es/form';
 import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
@@ -387,10 +387,11 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
                           )(memoizedFields);
                           return (
                             <DrawerButton
-                              text="对比"
+                              text="变更对比"
                               // key={draft.refId}
                               // text={`${moment(draft.updatedAt).calendar()}(${moment(draft.updatedAt).fromNow()})`}
                               // title={`Draft: ${draft.type} / ${draft.refId}`}
+                              type="dashed"
                               width="60%"
                             >
                               <List<{ key: string; title: string; value: any }>
@@ -433,7 +434,10 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
                       </Button>
                     ) : (
                       <>
-                        Drafts:{' '}
+                        <Popconfirm onConfirm={_handleOnAuditDraft} title="重提交将覆盖已提交部分，确认重新提交？">
+                          <Button>重提交</Button>
+                        </Popconfirm>{' '}
+                        待审核：
                         {drafts.map(draft => {
                           const values = _.flow(
                             fp.mapValues(fp.get('value')),
@@ -444,15 +448,16 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
                             <DrawerButton
                               key={draft.refId}
                               text={`${moment(draft.updatedAt).calendar()}(${moment(draft.updatedAt).fromNow()})`}
-                              title={`Draft: ${draft.type} / ${draft.refId}`}
+                              title={`${draft.type} / ${draft.refId}`}
+                              type="dashed"
                               width="40%"
-                              popoverProps={{
-                                content: (
-                                  <>
-                                    <Button size="small">更新</Button>
-                                  </>
-                                ),
-                              }}
+                              // popoverProps={{
+                              //   content: (
+                              //     <>
+                              //       <Button size="small">更新</Button>
+                              //     </>
+                              //   ),
+                              // }}
                             >
                               {/*<pre>{util.inspect(filteredValues)}</pre>*/}
                               {/*<pre>{util.inspect(draft)}</pre>*/}

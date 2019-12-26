@@ -1,5 +1,5 @@
 import preloadAll from 'jest-next-dynamic';
-import { IModelService, ModelAdapter } from './model';
+import { IModelService, ModelAdapterImpl } from './model';
 import { DynamicFormTypes } from '../components/DynamicForm';
 import { AppContext, AsunaDefinitions } from '../core';
 import { storeConnector } from '../store';
@@ -9,7 +9,7 @@ beforeAll(async () => {
 });
 
 describe('identify types', () => {
-  const adapter = new ModelAdapter({} as IModelService, new AsunaDefinitions());
+  const adapter = new ModelAdapterImpl({} as IModelService, new AsunaDefinitions());
 
   it('return right type', () => {
     expect(
@@ -100,7 +100,7 @@ describe('getFormSchema', () => {
         },
       },
     });
-    const adapter = new ModelAdapter({} as IModelService, definitions);
+    const adapter = new ModelAdapterImpl({} as IModelService, definitions);
     AppContext.regStore(storeConnector, { models: { schemas: { users: [{ name: 'password' }] } } }, true);
     const fields = adapter.getFormSchema('users', {});
     expect(fields).toEqual({
@@ -122,7 +122,7 @@ describe('getFormSchema', () => {
   });
 
   it('should return undefined when value not exists', () => {
-    const adapter = new ModelAdapter({} as IModelService, new AsunaDefinitions());
+    const adapter = new ModelAdapterImpl({} as IModelService, new AsunaDefinitions());
     AppContext.regStore(
       storeConnector,
       {
@@ -143,7 +143,7 @@ describe('getFormSchema', () => {
   });
 
   it('should matched related fields', () => {
-    const adapter = new ModelAdapter({} as IModelService, new AsunaDefinitions());
+    const adapter = new ModelAdapterImpl({} as IModelService, new AsunaDefinitions());
     AppContext.regStore(
       storeConnector,
       {
@@ -192,7 +192,7 @@ describe('getFormSchema', () => {
   });
 
   it('should handle nullable fields', () => {
-    const adapter = new ModelAdapter({} as IModelService, new AsunaDefinitions());
+    const adapter = new ModelAdapterImpl({} as IModelService, new AsunaDefinitions());
     AppContext.regStore(
       storeConnector,
       {

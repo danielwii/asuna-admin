@@ -1,4 +1,5 @@
 import { responseProxy } from '@asuna-admin/adapters';
+import { DrawerButton } from '@asuna-admin/components/DrawerButton';
 import { StoreContext } from '@asuna-admin/context/store';
 import { ActionEvent, AppContext, EventBus, EventType } from '@asuna-admin/core';
 import {
@@ -6,21 +7,21 @@ import {
   DebugInfo,
   ModelsHelper,
   parseJSONIfCould,
+  parseString,
   resolveModelInPane,
-  TenantHelper,
   useAsunaModels,
 } from '@asuna-admin/helpers';
 import { WithDebugInfo } from '@asuna-admin/helpers/debug';
 import { createLogger } from '@asuna-admin/logger';
 import { modelsActions, panesActions } from '@asuna-admin/store';
 import { Asuna } from '@asuna-admin/types';
-import { Button, Divider, Dropdown, Menu, Modal, Skeleton, Switch, Table, Tag, Tooltip } from 'antd';
+import { Button, Divider, Dropdown, List, Menu, Modal, Skeleton, Switch, Table, Tag, Tooltip } from 'antd';
 import { PaginationConfig } from 'antd/es/pagination';
 import { SorterResult, TableCurrentDataSource } from 'antd/es/table';
 import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
 import React, { useContext, useEffect, useState } from 'react';
-import { useAsync, useLogger } from 'react-use';
+import { useAsync } from 'react-use';
 
 const logger = createLogger('components:data-table');
 
@@ -71,9 +72,37 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
             Edit
           </Button>
         ) : (
-          <Button size="small" type="dashed" onClick={() => onView!(text, record)} disabled={!onView}>
-            View
-          </Button>
+          <DrawerButton
+            text="View"
+            // key={draft.refId}
+            // text={`${moment(draft.updatedAt).calendar()}(${moment(draft.updatedAt).fromNow()})`}
+            // title={`Draft: ${draft.type} / ${draft.refId}`}
+            size="small"
+            type="dashed"
+            width="40%"
+          >
+            <List<{ key: string; title: string; value: any }>
+              itemLayout="horizontal"
+              dataSource={_.map(record, (value, key) => ({
+                key,
+                title: key,
+                // fields[key]?.options?.name ?? fields[key]?.options?.label ?? fields[key]?.name,
+                value,
+              }))}
+              renderItem={item => (
+                <List.Item>
+                  <List.Item.Meta
+                    title={item.title}
+                    description={
+                      <WithDebugInfo info={{ item, record: record[item.key] }}>
+                        <div>{parseString(record[item.key] ?? '')}</div>
+                      </WithDebugInfo>
+                    }
+                  />
+                </List.Item>
+              )}
+            />
+          </DrawerButton>
         )}{' '}
         {isDeletableSystemRecord(record) && deletable && (
           <>

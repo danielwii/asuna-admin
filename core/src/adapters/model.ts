@@ -68,12 +68,12 @@ export interface IModelService {
     modelName: string,
     data: {
       endpoint?: string;
-      id: number;
+      id: string | number;
       profile?: Asuna.Profile;
       /**
        * 包含关联字符串列表，该列表中不包含 schema 中 accessible 未 hidden 的关联
        */
-      relations?: string;
+      relations?: string[];
     } & Asuna.Schema.ModelConfig,
   ): Promise<AxiosResponse>;
 
@@ -130,14 +130,28 @@ export interface ModelListConfig {
   relations?: string[];
 }
 
-export class ModelAdapter {
+export interface ModelAdapter {
+  fetch2<T>(
+    modelName: string,
+    data: {
+      endpoint?: string;
+      id: string | number;
+      profile?: Asuna.Profile;
+      /**
+       * 包含关联字符串列表，该列表中不包含 schema 中 accessible 未 hidden 的关联
+       */
+      relations?: string[];
+    } & Asuna.Schema.ModelConfig,
+  ): Promise<T>;
+}
+
+export class ModelAdapterImpl implements ModelAdapter {
   private readonly cache: NodeCacheLegacyCallbacks = new NodeCache({ stdTTL: 100, checkperiod: 120 });
   private service: IModelService;
   private allModels: string[];
   readonly modelConfigs: { [K: string]: Asuna.Schema.ModelConfig };
   readonly associations: { [key: string]: Asuna.Schema.Association };
   readonly columnOpts: { [key: string]: Asuna.Schema.ColumnOpts<any> };
-
   /**
    * @param service
    * @param definitions - models: 模型定义; tableColumns: 模型列表定义; modelColumns: 模型表单定义
@@ -216,17 +230,31 @@ export class ModelAdapter {
     ])(field);
   };
 
+  fetch2<T = any>(
+    modelName: string,
+    data: {
+      endpoint?: string;
+      id: string | number;
+      profile?: Asuna.Profile;
+      /**
+       * 包含关联字符串列表，该列表中不包含 schema 中 accessible 未 hidden 的关联
+       */
+      relations?: string[];
+    },
+  ): Promise<T> {
+    return this.fetch(modelName, data).then(fp.get('data'));
+  }
+
   /**
    * 加载 model 信息，profile 定义了要加载的模型形式
    * 同时，由于实际上关联模型会产生过多的附加信息，这里考虑了两种优化模式
    * 1. 依据 schema 中定义的 accessible 信息，只加载有限的关联
    * 2. 采用更加丰富的关联数据加载组件，已应对大数据库量的加载需求
-   * @param modelName
-   * @param data
+   * @deprecated fetch2
    */
   public fetch = (
     modelName: string,
-    data: { endpoint?: string; id: number; profile?: Asuna.Profile; relations?: string[] },
+    data: { endpoint?: string; id: string | number; profile?: Asuna.Profile; relations?: string[] },
   ): Promise<AxiosResponse> => {
     logger.log('[fetch]', { modelName, data });
     if (!data?.id) {
@@ -302,6 +330,7 @@ export class ModelAdapter {
     const formSchema = this.getFormSchema(modelName);
     const { table: columnsRender } = this.getModelConfig(extraName || modelName);
     const readonly = !TenantHelper.enableModelPublishForCurrentUser(modelName);
+    console.log(modelName, { readonly });
     const columns = columnsRender
       ? await Promise.all(columnsRender(opts.actions, { modelName, callRefresh: opts.callRefresh, readonly }))
       : [];
@@ -517,3 +546,5 @@ export class ModelAdapter {
     }
   }
 }
+
+export const modelProxyCaller: () => ModelAdapter = () => AppContext.ctx.models;

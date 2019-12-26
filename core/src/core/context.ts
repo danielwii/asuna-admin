@@ -9,7 +9,7 @@ import {
   IModelService,
   ISecurityService,
   MenuAdapter,
-  ModelAdapter,
+  ModelAdapterImpl,
   ResponseAdapter,
   SecurityAdapterImpl,
   WsAdapter,
@@ -86,7 +86,7 @@ class AppContext {
     api: ApiAdapter;
     admin: AdminAdapter;
     security: SecurityAdapterImpl;
-    models: ModelAdapter;
+    models: ModelAdapterImpl;
     ws: WsAdapter;
     components: IComponentService;
     graphql: GraphqlAdapter;
@@ -192,7 +192,7 @@ class AppContext {
   }
 
   public static get isDebugMode() {
-    return (global as any).DEBUG_MODE;
+    return (global as any).DEBUG_MODE || true;
   }
 
   public static get publicConfig() {
@@ -248,7 +248,7 @@ class AppContext {
       api: new ApiAdapter(register.createApiService()),
       admin: new AdminAdapterImpl(register.createAdminService()),
       security: new SecurityAdapterImpl(register.createSecurityService()),
-      models: new ModelAdapter(register.modelService, register.definitions),
+      models: new ModelAdapterImpl(register.modelService, register.definitions),
       ws: new WsAdapter(),
       components: register.componentService,
       graphql: new GraphqlAdapter(Config.get('GRAPHQL_HOST')),
