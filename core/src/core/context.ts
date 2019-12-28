@@ -192,7 +192,7 @@ class AppContext {
   }
 
   public static get isDebugMode() {
-    return (global as any).DEBUG_MODE || true;
+    return (global as any).DEBUG_MODE;
   }
 
   public static get publicConfig() {
