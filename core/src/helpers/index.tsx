@@ -594,9 +594,9 @@ function TooltipContent({ value, link }: { value: any; link?: boolean }) {
       return <TextLink url={value} text={shortValue} />;
     }
     component = <Tooltip title={value}>{shortValue}</Tooltip>;
-    return component;
+    return <>{component}</>;
   }
-  return link ? <TextLink url={component} text={component} /> : component;
+  return link ? <TextLink url={component} text={component} /> : <>{component}</>;
 }
 
 function TextLink({ url, text }: { url: string; text?: string }) {
