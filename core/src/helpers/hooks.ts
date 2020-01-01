@@ -19,8 +19,10 @@ export function useAsunaDrafts(
   const { retry } = useAsyncRetry(async () => {
     try {
       setLoading(true);
-      const drafts = await adminProxyCaller().getDrafts(params);
-      setDrafts(drafts);
+      if (params.type && params.refId) {
+        const drafts = await adminProxyCaller().getDrafts(params);
+        setDrafts(drafts);
+      }
     } catch (e) {
       logger.error('useAsunaDrafts error', e);
     } finally {

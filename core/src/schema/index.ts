@@ -1,4 +1,4 @@
-import { DynamicFormTypes } from '@asuna-admin/components';
+import { DynamicFormField, DynamicFormFieldOptions, DynamicFormTypes } from '@asuna-admin/components';
 import { AppContext } from '@asuna-admin/core';
 import { castModelKey, castModelName, diff } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
@@ -7,6 +7,7 @@ import * as R from 'ramda';
 
 const logger = createLogger('helpers:schema');
 
+export * from './async';
 export * from './helper';
 
 export const peek = (message, callback?) => fields => {
@@ -15,27 +16,9 @@ export const peek = (message, callback?) => fields => {
   return fields;
 };
 
-export type Fields = {
-  [key: string]: {
-    name: string;
-    ref: string;
-    type: string;
-    value?: any;
-    options: {
-      name: string;
-      type: DynamicFormTypes;
-      label: string | null;
-      length: number | null;
-      required: boolean;
-      selectable?: string;
-      jsonType?: string;
-    };
-  };
-};
+export type Fields = { [key: string]: DynamicFormField };
 
-export type WithHidden = {
-  options: { hidden?: boolean };
-};
+export type WithHidden = { options: { hidden?: boolean } };
 
 export type PositionsField = Fields &
   WithHidden &
@@ -57,17 +40,20 @@ export const hiddenComponentDecorator = ({
   const TAG = '[hiddenComponentDecorator]';
   logger.log(TAG, { fields });
 
+  const primaryKey = AppContext.adapters.models.getPrimaryKey(modelName);
   let wrappedFields = R.omit([castModelKey('createdAt'), castModelKey('updatedAt')])(fields);
-  if (R.has('id', wrappedFields)) {
-    const hidden = R.isNil(wrappedFields.id.value);
-    wrappedFields = R.mergeDeepRight(wrappedFields, { id: { options: { hidden } } });
+  if (R.has(primaryKey, wrappedFields)) {
+    const hidden = R.isNil(wrappedFields[primaryKey].value);
+    wrappedFields = R.mergeDeepRight(wrappedFields, {
+      [primaryKey]: { options: { accessible: hidden ? 'hidden' : null } as DynamicFormFieldOptions },
+    });
   }
 
   const positions = R.filter(R.pathEq(['options', 'type'], 'SortPosition'))(wrappedFields);
   if (!R.isEmpty(positions)) {
-    const hiddenPositions = R.map(position => ({
+    const hiddenPositions: DynamicFormFieldOptions = R.map(position => ({
       ...position,
-      options: { hidden: true },
+      options: { accessible: 'hidden' } as DynamicFormFieldOptions,
     }))(positions);
 
     wrappedFields = R.mergeDeepRight(wrappedFields, { ...hiddenPositions });

@@ -102,7 +102,7 @@ export class Panes extends React.Component<IPanesProps, IState> {
             <Divider type="vertical" />
             <Button icon="minus-square" onClick={() => onCloseWithout(activeKey)} />
             <Divider type="vertical" />
-            <Button onClick={() => onCloseCurrent(activeKey)}>Close Current</Button>
+            <Button onClick={() => onCloseCurrent(activeKey)}>关闭当前标签页</Button>
           </React.Fragment>
         )}
       </React.Fragment>

@@ -160,7 +160,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
     AppContext.dispatch(
       panesActions.open({
         key: `content::upsert::${modelName}::${record.id}`,
-        title: `view - ${modelName} - ${record.name || ''}`,
+        title: `编辑 - ${modelName} - ${record.name || ''}`,
         linkTo: 'content::upsert',
         data: { modelName, record },
       }),
@@ -282,7 +282,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
       {creatable && (
         <>
           <Button type={'primary'} onClick={() => (_.isFunction(creatable) ? creatable(modelName) : _create())}>
-            Create
+            创建
           </Button>
           <Divider type="vertical" />
         </>

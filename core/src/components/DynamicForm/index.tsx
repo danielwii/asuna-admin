@@ -97,6 +97,7 @@ export type DynamicFormProps = {
   model: string;
   fields: any[] | FormField[];
   onSubmit: (fn: (e: Error) => void) => void;
+  onClose: () => void;
   loading?: boolean;
   anchor?: boolean;
   /**
@@ -106,14 +107,30 @@ export type DynamicFormProps = {
   auditMode?: boolean;
 };
 
+/*
+{name: string;
+    ref: string;
+    type: string;
+    value?: any;
+    options: {
+      name: string;
+      type: DynamicFormTypes;
+      label: string | null;
+      length: number | null;
+      required: boolean;
+      selectable?: string;
+      jsonType?: string;
+    };}
+ */
+export type DynamicFormFieldOptions = Partial<MetaInfoOptions> & {
+  required?: boolean;
+  tooltip?: string;
+};
 export type DynamicFormField = {
   name: string;
   type: DynamicFormTypes;
   foreignOpts?: Asuna.Schema.ForeignOpt[];
-  options?: Partial<MetaInfoOptions> & {
-    required?: boolean;
-    tooltip?: string;
-  };
+  options?: DynamicFormFieldOptions;
   ref?: string;
   key?: string;
   raw?: any[];
@@ -135,6 +152,7 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
   model,
   fields,
   onSubmit,
+  onClose,
   loading,
   delegate,
   anchor,
@@ -320,8 +338,13 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
       if (err) {
         logger.error('[DynamicForm][handleOnAuditDraft]', 'error occurred in form', values, err);
       } else {
-        await adminProxyCaller().createDraft({ content: values, type: model, refId: _.get(fields, 'id.value') });
-        retry();
+        const refId = _.get(fields, 'id.value');
+        await adminProxyCaller().createDraft({ content: values, type: model, refId });
+        if (!refId) {
+          onClose();
+        } else {
+          retry();
+        }
       }
     });
   };
@@ -372,7 +395,7 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
                           // disabled={hasErrors(getFieldsError())}
                           disabled={auditMode}
                         >
-                          Submit
+                          提交
                         </Button>
                         <Divider type="vertical" />
                         {(() => {
@@ -430,7 +453,7 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
                       <ScaleLoader />
                     ) : _.isEmpty(drafts) ? (
                       <Button onClick={_handleOnAuditDraft} disabled={!diff(fields, memoizedFields).isDifferent}>
-                        Create Draft
+                        提交待审核
                       </Button>
                     ) : (
                       <>
@@ -451,32 +474,7 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
                               title={`${draft.type} / ${draft.refId}`}
                               type="dashed"
                               width="40%"
-                              // popoverProps={{
-                              //   content: (
-                              //     <>
-                              //       <Button size="small">更新</Button>
-                              //     </>
-                              //   ),
-                              // }}
                             >
-                              {/*<pre>{util.inspect(filteredValues)}</pre>*/}
-                              {/*<pre>{util.inspect(draft)}</pre>*/}
-                              {/*<pre>{util.inspect(values)}</pre>*/}
-
-                              {/*<pre>{util.inspect(diff(draft.content, values).verbose)}</pre>*/}
-                              {/*
-                              <ReactDiffViewer
-                                oldValue={JSON.stringify(values, null, 2)}
-                                newValue={JSON.stringify(draft.content, null, 2)}
-                                splitView={true}
-                              />
-*/}
-                              {/*
-                              <VisualDiff
-                                left={<pre>{JSON.stringify(values, null, 2)}</pre>}
-                                right={<pre>{JSON.stringify(draft.content, null, 2)}</pre>}
-                              />
-*/}
                               <List<{ key: string; title: string; value: any }>
                                 itemLayout="horizontal"
                                 dataSource={_.map(draft.content, (value, key) => {

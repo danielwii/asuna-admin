@@ -58,7 +58,7 @@ export class ModelsHelper {
     AppContext.dispatch(
       panesActions.open({
         key: `content::upsert::${modelName}::${Date.now()}`,
-        title: `new - ${modelName}`,
+        title: `新建 - ${modelName}`,
         linkTo: 'content::upsert',
       }),
     );

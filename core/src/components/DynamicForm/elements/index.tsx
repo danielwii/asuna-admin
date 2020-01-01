@@ -4,6 +4,7 @@ import { createLogger } from '@asuna-admin/logger';
 
 import { Checkbox, DatePicker, Form, Icon, Input, InputNumber, Switch, TimePicker } from 'antd';
 import { GetFieldDecoratorOptions, WrappedFormUtils } from 'antd/es/form/Form';
+import { AppContext } from 'asuna-admin';
 import * as React from 'react';
 
 import { Authorities } from '../Authorities';
@@ -87,7 +88,12 @@ export const generateComponent = (
     logger.debug('[generateComponent]', options);
     const decorator = form.getFieldDecorator(fieldName, opts || {});
     return (
-      <Form.Item key={fieldName} {...formItemLayout} label={`${labelName || fieldName} / ${fieldName}`} help={help}>
+      <Form.Item
+        key={fieldName}
+        {...formItemLayout}
+        label={AppContext.isDebugMode ? `${labelName || fieldName} / ${fieldName}` : labelName || fieldName}
+        help={help}
+      >
         {decorator(Component)}
       </Form.Item>
     );
@@ -221,7 +227,7 @@ export const generateDateTime = (
   return generateComponent(
     form,
     { fieldName, labelName, ...options },
-    <DatePicker showTime format="YYYY-MM-DD HH:mm:ss" />,
+    <DatePicker showTime format="yyyy-MM-dd HH:mm:ss" />,
     formItemLayout,
   );
 };

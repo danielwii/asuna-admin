@@ -65,7 +65,7 @@ export function GraphTable(props: IGraphTableProps) {
           <div>
             {creatable && (
               <React.Fragment>
-                <Button onClick={create}>Create</Button>
+                <Button onClick={create}>新建</Button>
                 <Divider type="vertical" />
               </React.Fragment>
             )}

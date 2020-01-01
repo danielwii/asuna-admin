@@ -2,7 +2,7 @@ import { Config } from '@asuna-admin/config';
 import { AppContext } from '@asuna-admin/core';
 import { DebugInfo } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
-import { FormControl, FormControlLabel, FormHelperText, Input, TextField, InputLabel, Switch } from '@material-ui/core';
+import { FormControl, FormControlLabel, FormHelperText, Switch, TextField } from '@material-ui/core';
 import * as antd from 'antd';
 import { Divider, Popconfirm } from 'antd';
 import * as formik from 'formik';
@@ -64,7 +64,8 @@ function RenderInputComponent({
               onChange={(event, checked) =>
                 field.onChange({ target: { id: field.name, name: field.name, value: checked } })
               }
-              value={value}
+              defaultChecked={value}
+              // value={value}
               color="primary"
             />
           }

@@ -11,7 +11,6 @@ import {
 } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 import * as schemaHelper from '@asuna-admin/schema';
-import { asyncLoadAssociationsDecorator } from '@asuna-admin/schema/async';
 import { modelsActions, RootState } from '@asuna-admin/store';
 
 import { Form } from 'antd';
@@ -55,13 +54,7 @@ const ContentForm = Form.create<IContentForm & DynamicFormProps>({
       R.pickBy((field, key) => {
         const oldVar = R.path(['fields', key, 'value'])(props);
         const newVar = field.value;
-        logger.debug('[ContentForm][onFieldsChange]', {
-          oldVar,
-          newVar,
-          field,
-          key,
-          changedFields,
-        });
+        logger.debug('[ContentForm][onFieldsChange]', { oldVar, newVar, field, key, changedFields });
 
         return oldVar !== newVar || field.errors != null;
       }),
@@ -97,6 +90,7 @@ interface IState {
   status: 'Initializing' | 'Loading' | 'Loaded' | 'Updating' | 'Done';
   isInsertMode: boolean;
   modelName: string;
+  primaryKey: string;
   /**
    * 是否是第一次初始化操作
    */
@@ -126,7 +120,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
     // TODO 目前异步数据拉取无法在页面上显示对应字段的 loading 状态
     async fields => R.curry(schemaHelper.peek(`before-async-${tag}`))(fields),
     // async fields => schemaHelper.hiddenComponentDecorator(fields),
-    asyncLoadAssociationsDecorator,
+    schemaHelper.asyncLoadAssociationsDecorator,
     schemaHelper.associationDecorator,
     async fields => R.curry(schemaHelper.peek(`after-async-${tag}`))(fields),
   ];
@@ -141,9 +135,11 @@ class ContentUpsert extends React.Component<IProps, IState> {
     logger.log('[constructor]', 'model name is ', modelName);
 
     const isInsertMode = !R.path(['pane', 'data', 'record'])(basis);
+    const primaryKey = AppContext.adapters.models.getPrimaryKey(modelName);
 
     this.state = {
       status: 'Initializing',
+      primaryKey,
       isInsertMode,
       modelName,
       init: true,
@@ -161,7 +157,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
   async componentWillMount() {
     logger.log('[componentWillMount]', { props: this.props, state: this.state });
     const { basis } = this.props;
-    const { isInsertMode, init } = this.state;
+    const { isInsertMode, init, primaryKey } = this.state;
 
     // content::create::name::timestamp => name
     const modelName = R.compose(R.nth(2), R.split(/::/), R.path(['pane', 'key']))(basis);
@@ -196,6 +192,8 @@ class ContentUpsert extends React.Component<IProps, IState> {
         modelName,
         fields: decoratedFields,
       }));
+      // insert mode 隐藏 tenant 字段
+      _.set(decoratedFields['tenant'], 'options.accessible', 'hidden');
     } else {
       // 非新增模式尝试再次拉取数据 TODO record must have property id
       const record = this.props?.basis?.pane?.data?.record;
@@ -252,12 +250,11 @@ class ContentUpsert extends React.Component<IProps, IState> {
 
   _reloadEntity = (record): Promise<AxiosResponse> => {
     const { dispatch } = this.props;
-    const { modelName } = this.state;
+    const { modelName, primaryKey } = this.state;
 
     return reduxActionCallbackPromise(callback => {
       if (record) {
         logger.log('[_reloadEntity]', 'reload model...', record);
-        const primaryKey = AppContext.adapters.models.getPrimaryKey(modelName);
         dispatch(modelsActions.fetch(modelName, { id: record[primaryKey], profile: 'ids' }, callback));
       }
     });
@@ -341,7 +338,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
 
   _handleFormSubmit = event => {
     event.preventDefault();
-    const { originalFieldValues } = this.state;
+    const { originalFieldValues, primaryKey } = this.state;
 
     const fieldPairs = R.compose(
       R.pickBy((value, key) =>
@@ -362,7 +359,6 @@ class ContentUpsert extends React.Component<IProps, IState> {
     const { dispatch, onClose } = this.props;
     const { modelName, isInsertMode } = this.state;
 
-    const primaryKey = AppContext.adapters.models.getPrimaryKey(modelName);
     const id = R.prop(primaryKey)(originalFieldValues);
 
     dispatch(
@@ -430,6 +426,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
           fields={fields}
           onChange={this._handleFormChange}
           onSubmit={this._handleFormSubmit}
+          onClose={this.props.onClose}
         />
         <DebugInfo data={{ props: this.props, state: this.state, auditMode }} divider />
       </>

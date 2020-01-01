@@ -11,7 +11,7 @@ export interface IAdminService {
   registerTenant(auth: { token: string | null }, data: { name: string; description?: string }): Promise<AxiosResponse>;
   createDraft(
     auth: { token: string | null },
-    data: { content: Json; type: string; refId: string },
+    data: { content: Json; type: string; refId?: string },
   ): Promise<AxiosResponse>;
   getDrafts(auth: { token: string | null }, params: { type: string; refId: string }): Promise<AxiosResponse>;
   publishDraft(auth: { token: string | null }, params: { id: string }): Promise<AxiosResponse>;
@@ -20,7 +20,7 @@ export interface IAdminService {
 export interface AdminAdapter {
   tenantInfo(): Promise<TenantInfo>;
   registerTenant(data: { name: string; description?: string }): Promise<Tenant>;
-  createDraft(data: { content: Json; type: string; refId: string | number }): Promise<Draft>;
+  createDraft(data: { content: Json; type: string; refId?: string | number }): Promise<Draft>;
   getDrafts(params: { type: string; refId: string | number }): Promise<Draft[]>;
   publishDraft(params: { id: string }): Promise<void>;
 }
@@ -42,7 +42,7 @@ export class AdminAdapterImpl implements AdminAdapter {
     );
   }
 
-  async createDraft(data: { content: Json; type: string; refId: string }): Promise<Draft> {
+  async createDraft(data: { content: Json; type: string; refId?: string }): Promise<Draft> {
     return AppContext.withAuth(auth => this.service.createDraft(auth, data).then(res => plainToClass(Draft, res.data)));
   }
 

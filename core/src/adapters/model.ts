@@ -432,19 +432,14 @@ export class ModelAdapterImpl implements ModelAdapter {
     )(schema) as { [member: string]: Asuna.Schema.FormSchema };
   };
 
-  public getFieldsOfAssociations = _.memoize(() => {
-    logger.debug('[getFieldsOfAssociations]', 'modelConfigs is', this.modelConfigs);
-    const concatValues = (l, r) => (R.is(String, l) ? l : R.uniq(R.concat(l, r)));
-    const isNotEmpty = R.compose(R.not, R.anyPass([R.isEmpty, R.isNil]));
-    const associationsFields = R.compose(
-      R.reduce(R.mergeDeepWith(concatValues), {}),
-      R.filter(isNotEmpty),
-      R.values,
-      R.map(R.path(['model', 'associations'])),
-    )(this.modelConfigs as any);
-    logger.log('[getFieldsOfAssociations]', 'associationsFields is', associationsFields);
-    return associationsFields;
-  });
+  public getAssociationByName = (associationName: string, modelName?: string): Required<Asuna.Schema.Association> => {
+    const primaryKey = AppContext.adapters.models.getPrimaryKey(associationName);
+    const defaultValue = { name: 'name', value: primaryKey, fields: [primaryKey, 'name'] };
+    const defaultAssociation = R.pathOr(defaultValue, [associationName])(this.associations);
+    return modelName
+      ? this.modelConfigs?.[modelName]?.model?.associations?.[associationName] ?? defaultAssociation
+      : defaultAssociation;
+  };
 
   public loadModels = (modelName: string, configs: ModelListConfig = {}): Promise<AxiosResponse> => {
     logger.debug('[loadModels]', { modelName, configs, modelConfig: this.getModelConfig(modelName) });
@@ -464,17 +459,12 @@ export class ModelAdapterImpl implements ModelAdapter {
     });
   };
 
-  private getFieldsOfAssociation(associationName: string): string[] {
-    const primaryKey = AppContext.adapters.models.getPrimaryKey(associationName);
-    const defaultFields = R.pathOr([primaryKey, 'name'], [associationName, 'fields'])(this.associations);
-    return R.pathOr(defaultFields, [associationName, 'fields'])(this.getFieldsOfAssociations());
-  }
-
   public loadAssociationByIds = (associationName: string, ids: string[] | number[]): Promise<AxiosResponse | void> => {
     if (_.trim(associationName) && !_.isEmpty(ids)) {
       logger.debug('[loadAssociationByIds]', { associationName, ids });
 
-      const fields = this.getFieldsOfAssociation(associationName);
+      const fields = this.getAssociationByName(associationName).fields;
+      console.log('loadAssociationByIds', fields);
       const auth = AppContext.fromStore('auth');
       return this.service.loadAssociationByIds(auth, associationName, {
         ids,
@@ -494,7 +484,7 @@ export class ModelAdapterImpl implements ModelAdapter {
       return Promise.resolve();
     }
 
-    const fields = this.getFieldsOfAssociation(associationName);
+    const fields = this.getAssociationByName(associationName).fields;
     logger.debug('[loadAssociation]', { fields, associationName, associations: this.associations });
     const auth = AppContext.fromStore('auth');
     return this.service.loadAssociation(auth, associationName, {

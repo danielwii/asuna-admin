@@ -97,12 +97,12 @@ export const asyncLoadAssociationsDecorator = async ({
         logger.debug(TAG, { field, selectable });
         if (selectable) {
           const primaryKey = AppContext.adapters.models.getPrimaryKey(selectable);
-          const fieldsOfAssociations = AppContext.adapters.models.getFieldsOfAssociations();
+          const association = AppContext.adapters.models.getAssociationByName(selectable, modelName);
 
           const foreignOpts = [
             {
               modelName: selectable,
-              association: fieldsOfAssociations[selectable],
+              association: association.fields,
               onSearch: async (value, callback) => {
                 logger.log(TAG, 'onSearch', { value });
 
@@ -118,7 +118,7 @@ export const asyncLoadAssociationsDecorator = async ({
               },
             },
           ];
-          logger.debug(TAG, { fieldsOfAssociations, foreignOpts });
+          logger.debug(TAG, { associations, foreignOpts });
 
           try {
             const results = await Promise.props({

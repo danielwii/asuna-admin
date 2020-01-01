@@ -55,16 +55,17 @@ export const nullProtectRender = (fn: (value, record) => React.ReactChild) => (v
   return record ? fn(value, record) : 'n/a';
 };
 
-type ConditionType = 'like' | 'boolean';
-type SwitchConditionExtras = {};
+type ConditionType = 'like' | 'boolean' | 'list';
+type SwitchConditionExtras = { model: string; relationSearchField?: string };
 
-function generateSearchColumnProps(
+async function generateSearchColumnProps(
   dataIndex: string,
   conditionType?: ConditionType,
   conditionExtras?: SwitchConditionExtras,
-): ColumnProps<any> {
+): Promise<ColumnProps<any>> {
+  // console.log('generateSearchColumnProps', { dataIndex, conditionType, conditionExtras });
   // only called in filterDropdown
-  const getSelectedValue = value => {
+  const getSelectedValue = async value => {
     switch (conditionType) {
       case 'like':
         return [{ $like: `%${value}%` }];
@@ -96,22 +97,54 @@ function generateSearchColumnProps(
     };
   }
 
+  /*
+  if (conditionType === 'list' && conditionExtras) {
+    const modelName = conditionExtras?.model;
+    const primaryKey = AppContext.adapters.models.getPrimaryKey(modelName);
+    const relation = AppContext.adapters.models.getFormSchema(modelName)[dataIndex];
+    const relationName = relation?.options?.selectable ?? relation?.ref ?? relation?.name;
+    console.log({ modelName, primaryKey, relation, relationName });
+    if (relationName) {
+      const field = conditionExtras.relationSearchField || 'name';
+      const {
+        data: { items },
+        // TODO 取 unique 数据
+      } = await AppContext.adapters.models.loadModels(relationName, {
+        fields: [field],
+        pagination: { pageSize: 500 },
+      });
+      return {
+        filterMultiple: false,
+        // 关联筛选时的搜索 key 为了区别同一个关联的不同字段，所以会包含非主键信息，这里传递整个包括主键的搜索信息
+        filters: _.map(items, item => ({
+          text: `${item[primaryKey]} / ${item[field]}`,
+          value: JSON.stringify({ key: [`${dataIndex}.${primaryKey}`], value: [item[primaryKey]] }),
+        })),
+      };
+    }
+
+    return {};
+  }
+*/
+
   return {
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }: FilterDropdownProps) => (
       <Content>
         <Input
           addonBefore={conditionType}
-          placeholder={`Search '${dataIndex}' ...`}
+          placeholder={`搜索 '${dataIndex}' ...`}
           value={getSelectedKey(selectedKeys)}
-          onChange={e => setSelectedKeys && setSelectedKeys(e.target.value ? getSelectedValue(e.target.value) : [])}
+          onChange={async e =>
+            setSelectedKeys && setSelectedKeys(e.target.value ? await getSelectedValue(e.target.value) : [])
+          }
           onPressEnter={confirm}
         />
         <Divider type="horizontal" style={{ margin: '0.2rem 0' }} />
         <Button type="primary" onClick={confirm} icon="search" size="small">
-          Search
+          搜索
         </Button>{' '}
         <Button onClick={clearFilters} size="small">
-          Reset
+          重置
         </Button>
       </Content>
     ),
@@ -135,7 +168,7 @@ export const columnHelper2 = {
       title: title ?? columnInfo?.config?.info?.name ?? key,
       dataIndex: key,
       sorter: true,
-      ...generateSearchColumnProps(key, opts.searchType),
+      ...(await generateSearchColumnProps(key, opts.searchType, { model })),
       render: nullProtectRender((value, record) => {
         const extracted = extractValue(value, opts.transformer);
         return (
@@ -169,12 +202,12 @@ export const columnHelper2 = {
   fpGenerateSwitch: (key, title) => _.curry(columnHelper.generateSwitch)(key, title),
 };
 export const columnHelper = {
-  generateID: (key = 'id', title = 'ID', transformer?): ColumnProps<any> => ({
+  generateID: async (key = 'id', title = 'ID', transformer?): Promise<ColumnProps<any>> => ({
     key,
     title,
     dataIndex: key,
     sorter: true,
-    ...generateSearchColumnProps(key, 'like'),
+    ...(await generateSearchColumnProps(key, 'like')),
     render: nullProtectRender(record => (
       <WithDebugInfo info={{ key, title, record }}>{transformer ? transformer(record) : record}</WithDebugInfo>
     )),
@@ -187,7 +220,7 @@ export const columnHelper = {
       transformer?: keyof RelationSchema | ((record) => React.ReactChild);
       filterType?: 'list' | 'search';
       relationSearchField?: string;
-      render?: (content, record?) => React.ReactChild;
+      render?: (content, record?, extras?: Asuna.Schema.RecordRenderExtras) => React.ReactChild;
     } = {},
   ) => async (
     laterKey: string,
@@ -227,7 +260,7 @@ export const columnHelper = {
         }
         break;
       case 'search':
-        filterProps = generateSearchColumnProps(`${ref}.${opts.relationSearchField || 'name'}`, 'like');
+        filterProps = await generateSearchColumnProps(`${ref}.${opts.relationSearchField || 'name'}`, 'like');
         break;
     }
 
@@ -241,7 +274,7 @@ export const columnHelper = {
         const content = extractValue(record, transformer);
         return (
           <WithDebugInfo info={{ key, title, opts, record, content, transformer }}>
-            {opts.render ? opts.render(content, record) : content}
+            {opts.render ? opts.render(content, record, extras) : content}
           </WithDebugInfo>
         );
       }),
@@ -293,7 +326,7 @@ export const columnHelper = {
         break;
       case 'search':
         // fixme not implemented
-        filterProps = generateSearchColumnProps(`${ref}.${opts.relationField || 'name'}`, 'like');
+        filterProps = await generateSearchColumnProps(`${ref}.${opts.relationField || 'name'}`, 'like');
         break;
     }
 
@@ -312,7 +345,7 @@ export const columnHelper = {
   /**
    * @deprecated {@see columnHelper2.generate}
    */
-  generate: (
+  generate: async (
     key,
     title,
     opts: {
@@ -320,12 +353,12 @@ export const columnHelper = {
       searchType?: ConditionType;
       render?: (content, record?) => React.ReactChild;
     } = {},
-  ): ColumnProps<any> => ({
+  ): Promise<ColumnProps<any>> => ({
     key,
     title,
     dataIndex: key,
     sorter: true,
-    ...generateSearchColumnProps(key, opts.searchType),
+    ...(await generateSearchColumnProps(key, opts.searchType)),
     render: nullProtectRender((value, record) => {
       const extracted = extractValue(value, opts.transformer);
       return (
@@ -371,18 +404,18 @@ export const columnHelper = {
       );
     }),
   }),
-  generateNumber: (
+  generateNumber: async (
     key,
     title,
     opts: { transformer?; searchType?: ConditionType; type: 'badge' | 'statistics' } = {
       type: 'badge',
     },
-  ): ColumnProps<any> => ({
+  ): Promise<ColumnProps<any>> => ({
     key,
     title,
     dataIndex: key,
     sorter: true,
-    ...generateSearchColumnProps(key, opts.searchType),
+    ...(await generateSearchColumnProps(key, opts.searchType)),
     render: nullProtectRender(record => {
       const value = extractValue(record, opts.transformer);
       return opts.type === 'badge' ? (
@@ -501,13 +534,12 @@ export const columnHelper = {
   /**
    * 生成切换按钮
    */
-  generateSwitch: (key, title, extras: Asuna.Schema.RecordRenderExtras): ColumnProps<any> => ({
+  generateSwitch: async (key, title, extras: Asuna.Schema.RecordRenderExtras): Promise<ColumnProps<any>> => ({
     title,
     dataIndex: castModelKey(key),
     key: castModelKey(key),
-    ...generateSearchColumnProps(castModelKey(key), 'boolean', {}),
+    ...(await generateSearchColumnProps(castModelKey(key), 'boolean')),
     render: (isActive, record) => {
-      console.log({ isActive, record }, extras);
       const component = extras.readonly ? (
         <Checkbox checked={isActive} disabled={true} />
       ) : (
