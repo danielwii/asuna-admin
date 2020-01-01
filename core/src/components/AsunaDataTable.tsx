@@ -56,8 +56,8 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
     filters?: Partial<Record<keyof any, string[]>>;
     sorter?: SorterResult<any>;
   }>({});
-  // 用于刷新页面的一个标记
   const { store } = useContext(StoreContext);
+  // 用于刷新页面的一个标记
   const [flag, updateFlag] = useState(0);
 
   const _refresh = () => {

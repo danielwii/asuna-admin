@@ -4,7 +4,7 @@ import { createLogger } from '@asuna-admin/logger';
 import { WrappedFormUtils } from 'antd/es/form/Form';
 import * as React from 'react';
 
-import { defaultFormItemLayout, generateComponent, IFormItemLayout } from '.';
+import { horizontalFormItemLayout, generateComponent, IFormItemLayout } from '.';
 import { ImageTrivia } from '../ImageTrivia';
 import { ImageUploader } from '../ImageUploader';
 
@@ -13,7 +13,7 @@ const logger = createLogger('components:dynamic-form:image');
 export const generateImages = (
   form: WrappedFormUtils,
   options,
-  formItemLayout: IFormItemLayout = defaultFormItemLayout,
+  formItemLayout: IFormItemLayout = horizontalFormItemLayout,
 ) => {
   const { key, name, label } = options;
 
@@ -33,7 +33,7 @@ export const generateImages = (
 export const generateImage = (
   form: WrappedFormUtils,
   options,
-  formItemLayout: IFormItemLayout = defaultFormItemLayout,
+  formItemLayout: IFormItemLayout = horizontalFormItemLayout,
 ) => {
   const { key, name, label } = options;
 
@@ -53,7 +53,7 @@ export function generateRichImage(
   form: WrappedFormUtils,
   fields: FormField[],
   options,
-  formItemLayout: IFormItemLayout = defaultFormItemLayout,
+  formItemLayout: IFormItemLayout = horizontalFormItemLayout,
 ) {
   const { key, name, label } = options;
 

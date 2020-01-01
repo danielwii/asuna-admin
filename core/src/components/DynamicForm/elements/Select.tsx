@@ -8,7 +8,7 @@ import * as R from 'ramda';
 import * as React from 'react';
 import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc';
 
-import { generateComponent, IFormItemLayout } from '.';
+import { generateComponent, horizontalFormItemLayout, IFormItemLayout } from '.';
 
 const logger = createLogger('components:dynamic-form:select');
 
@@ -91,7 +91,7 @@ export function generateSelect<T>(
     onSearch,
     enumSelector = {},
   }: SelectOptions,
-  formItemLayout: IFormItemLayout = defaultFormItemLayout,
+  formItemLayout: IFormItemLayout = horizontalFormItemLayout,
 ) {
   const fieldName = key || name;
   const labelName = label || name || key;

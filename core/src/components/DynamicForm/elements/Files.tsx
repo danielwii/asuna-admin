@@ -4,7 +4,7 @@ import { createLogger } from '@asuna-admin/logger';
 import { WrappedFormUtils } from 'antd/es/form/Form';
 import * as React from 'react';
 
-import { defaultFormItemLayout, generateComponent, IFormItemLayout } from '.';
+import { horizontalFormItemLayout, generateComponent, IFormItemLayout } from '.';
 import { FileUploader } from '../FileUploader';
 
 const logger = createLogger('components:dynamic-form:files');
@@ -12,7 +12,7 @@ const logger = createLogger('components:dynamic-form:files');
 export const generateFile = (
   form: WrappedFormUtils,
   options,
-  formItemLayout: IFormItemLayout = defaultFormItemLayout,
+  formItemLayout: IFormItemLayout = horizontalFormItemLayout,
 ) => {
   const { key, name, label } = options;
 
@@ -32,7 +32,7 @@ export const generateFile = (
 export const generateFiles = (
   form: WrappedFormUtils,
   options,
-  formItemLayout: IFormItemLayout = defaultFormItemLayout,
+  formItemLayout: IFormItemLayout = horizontalFormItemLayout,
 ) => {
   const { key, name, label } = options;
 

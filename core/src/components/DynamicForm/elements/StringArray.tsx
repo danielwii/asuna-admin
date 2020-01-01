@@ -5,7 +5,7 @@ import { WrappedFormUtils } from 'antd/es/form/Form';
 import * as _ from 'lodash';
 import * as React from 'react';
 
-import { defaultFormItemLayout, generateComponent, IFormItemLayout } from '.';
+import { horizontalFormItemLayout, generateComponent, IFormItemLayout } from '.';
 
 const logger = createLogger('components:dynamic-form:string-array');
 
@@ -20,7 +20,7 @@ export type StringArrayOptions = {
 export function generateStringArray(
   form: WrappedFormUtils,
   { key, name, label, items, onChange }: StringArrayOptions,
-  formItemLayout: IFormItemLayout = defaultFormItemLayout,
+  formItemLayout: IFormItemLayout = horizontalFormItemLayout,
 ) {
   const fieldName = key || name;
   const labelName = label || name || key;

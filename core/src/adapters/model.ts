@@ -465,7 +465,6 @@ export class ModelAdapterImpl implements ModelAdapter {
       logger.debug('[loadAssociationByIds]', { associationName, ids });
 
       const fields = this.getAssociationByName(associationName).fields;
-      console.log('loadAssociationByIds', fields);
       const auth = AppContext.fromStore('auth');
       return this.service.loadAssociationByIds(auth, associationName, {
         ids,

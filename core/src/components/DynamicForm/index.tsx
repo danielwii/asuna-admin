@@ -164,7 +164,7 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
   formRef?.(form);
   const memoizedFields = useMemo(() => fields, [1]);
   const { loading: loadingDrafts, drafts, retry } = useAsunaDrafts({ type: model, refId: _.get(fields, 'id.value') });
-  const _buildField = (fields: FormField[], field: DynamicFormField, index: number) => {
+  const _buildField = (fields: FormField[], field: DynamicFormField): React.ReactNode => {
     field.options = field.options || {};
     const options: DeepPartial<DynamicFormField['options'] &
       HiddenOptions &
@@ -184,7 +184,7 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
       fields: ['id', 'name'],
     };
 
-    logger.log('[DynamicForm]', '[buildField]', { field, index, options });
+    logger.log('[DynamicForm]', '[buildField]', { field, options });
 
     // all readonly or hidden field will rendered as plain component
     if (_.includes(['readonly'], field?.options?.accessible)) {
@@ -321,7 +321,7 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
         return generateStringArray(form, { ...(options as any), items: field.value });
       default: {
         return (
-          <WithDebugInfo key={index} info={field}>
+          <WithDebugInfo key={field.name} info={field}>
             {`DynamicForm ${util.inspect({
               name: field.name,
               type: field.type,
@@ -373,9 +373,16 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
   // pure component will not trigger error handler
 
   const typedFields = _.filter(fields, field => _.has(field, 'type'));
-  const renderFields = _.map(typedFields, (field, index) => (
-    <EnhancedPureElement key={index} field={field} index={index} builder={_.curry(_buildField)(fields)} />
-  ));
+  const renderFields = _.map(
+    // 简单的排序方案
+    _.sortBy(typedFields, field => {
+      const pos = ['id'].indexOf(field.name) + 1;
+      if (pos) return pos;
+      if (field.name.startsWith('is')) return 10;
+      return field.options.accessible === 'readonly' ? 20 : 30;
+    }),
+    field => <EnhancedPureElement key={field.name} field={field} builder={_.curry(_buildField)(fields)} />,
+  );
 
   return (
     <>
@@ -585,8 +592,7 @@ class FormAnchor extends React.Component<IFormAnchorProps> {
 
 interface IPureElementProps {
   field: DynamicFormField | FormField;
-  index: number;
-  builder: (field: DynamicFormField, index: number) => any;
+  builder: (field: DynamicFormField) => React.ReactNode;
 }
 
 const pureLogger = createLogger('components:dynamic-form:pure-element');
@@ -602,15 +608,7 @@ class EnhancedPureElement extends React.Component<IPureElementProps> {
     if (shouldUpdate) {
       pureLogger.debug(
         '[EnhancedPureElement][shouldComponentUpdate]',
-        {
-          nextProps,
-          nextState,
-          propsDiff,
-          stateDiff,
-          isRequired,
-          props: this.props,
-          state: this.state,
-        },
+        { nextProps, nextState, propsDiff, stateDiff, isRequired, props: this.props, state: this.state },
         shouldUpdate,
       );
     }
@@ -618,33 +616,20 @@ class EnhancedPureElement extends React.Component<IPureElementProps> {
     return shouldUpdate;
   }
 
-  componentWillUnmount(): void {
-    pureLogger.log('[EnhancedPureElement][componentWillUnmount]', this.state, this.props);
-  }
-
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
-    pureLogger.log('[EnhancedPureElement][componentDidCatch]', error, errorInfo);
-  }
-
-  componentDidMount(): void {
-    pureLogger.log('[EnhancedPureElement][componentDidMount]', this.state, this.props);
-  }
-
   render() {
-    const { field, index, builder } = this.props;
+    const { field, builder } = this.props;
     pureLogger.log('[EnhancedPureElement][render]', { props: this.props, state: this.state });
 
     // options.accessible = 'hidden' 时需要隐藏该元素
     const hidden = (field as DynamicFormField)?.options?.accessible === 'hidden';
 
-    if (hidden) {
-      return null;
-    }
+    if (hidden) return null;
 
+    const rendered = builder(field as DynamicFormField);
     return (
       <>
-        <div key={index} id={`dynamic-form-${field.name}`}>
-          <WithDebugInfo info={field}>{builder(field as DynamicFormField, index)}</WithDebugInfo>
+        <div key={field.name} id={`dynamic-form-${field.name}`}>
+          <WithDebugInfo info={field}>{rendered}</WithDebugInfo>
           <hr />
         </div>
         {/* language=CSS */}

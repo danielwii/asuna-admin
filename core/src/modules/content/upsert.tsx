@@ -203,6 +203,11 @@ class ContentUpsert extends React.Component<IProps, IState> {
       logger.debug('[componentWillMount]', { modelName, record, entity }, diff(originalFieldValues, record));
     }
 
+    // 当前角色是租户是资源不显示租户字段
+    if (TenantHelper.hasTenantRoles) {
+      _.set(decoratedFields['tenant'], 'options.accessible', 'hidden');
+    }
+
     await this.setState({
       // 不是新增时还存在更多信息的加载操作
       status: this.state.isInsertMode ? 'Done' : 'Loading',

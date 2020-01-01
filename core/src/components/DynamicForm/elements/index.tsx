@@ -17,11 +17,11 @@ export interface IFormItemLayout {
   wrapperCol?: { offset?: number; span?: number };
 }
 
-export const defaultFormItemLayout: IFormItemLayout = {};
+// export const horizontalFormItemLayout: IFormItemLayout = {};
 
 export const horizontalFormItemLayout: IFormItemLayout = {
-  labelCol: { offset: 0, span: 5 },
-  wrapperCol: { offset: 0, span: 19 },
+  labelCol: { offset: 0, span: 4 },
+  wrapperCol: { offset: 0, span: 20 },
 };
 
 // --------------------------------------------------------------
@@ -29,7 +29,7 @@ export const horizontalFormItemLayout: IFormItemLayout = {
 //
 // export const generate = (form, {
 //   key, name, label,
-// }, formItemLayout: IFormItemLayout = defaultFormItemLayout) => {
+// }, formItemLayout: IFormItemLayout = horizontalFormItemLayout) => {
 // //   logger.debug('generate', key, name);
 //   const fieldName = key || name;
 //   const labelName = label || name || key;
@@ -81,7 +81,7 @@ export const generateComponent = (
   form: WrappedFormUtils,
   options: ComponentOptions,
   Component: React.ReactNode,
-  formItemLayout: IFormItemLayout = {},
+  formItemLayout: IFormItemLayout = horizontalFormItemLayout,
 ) => {
   const { fieldName, labelName, opts, help } = options;
   if (fieldName) {
@@ -129,7 +129,7 @@ export const generateCheckbox = (form: WrappedFormUtils, options, formItemLayout
 export const generateInputNumber = (
   form: WrappedFormUtils,
   options,
-  formItemLayout: IFormItemLayout = defaultFormItemLayout,
+  formItemLayout: IFormItemLayout = horizontalFormItemLayout,
 ) => {
   const { key, name, label } = options;
   logger.debug('[generateInputNumber]', options);
@@ -211,7 +211,7 @@ export const generateTextArea = (form: WrappedFormUtils, options, formItemLayout
 export const generateDateTime = (
   form: WrappedFormUtils,
   options,
-  formItemLayout: IFormItemLayout = defaultFormItemLayout,
+  formItemLayout: IFormItemLayout = horizontalFormItemLayout,
 ) => {
   const { key, name, label, mode = '' } = options;
   logger.debug('[generateDateTime]', options);
@@ -235,7 +235,7 @@ export const generateDateTime = (
 export const generateSwitch = (
   form: WrappedFormUtils,
   options,
-  formItemLayout: IFormItemLayout = defaultFormItemLayout,
+  formItemLayout: IFormItemLayout = horizontalFormItemLayout,
 ) => {
   const { key, name, label } = options;
 
@@ -252,7 +252,7 @@ export const generateSwitch = (
 export const generateVideo = (
   form: WrappedFormUtils,
   options,
-  formItemLayout: IFormItemLayout = defaultFormItemLayout,
+  formItemLayout: IFormItemLayout = horizontalFormItemLayout,
 ) => {
   const { key, name, label } = options;
 
@@ -271,7 +271,7 @@ export const generateVideo = (
 export const generateAuthorities = (
   form: WrappedFormUtils,
   options,
-  formItemLayout: IFormItemLayout = defaultFormItemLayout,
+  formItemLayout: IFormItemLayout = horizontalFormItemLayout,
 ) => {
   const { key, name, label } = options;
 
@@ -283,7 +283,7 @@ export const generateAuthorities = (
 export const generateRichTextEditor = (
   form: WrappedFormUtils,
   options,
-  formItemLayout: IFormItemLayout = defaultFormItemLayout,
+  formItemLayout: IFormItemLayout = horizontalFormItemLayout,
 ) => {
   const { key, name, label } = options;
 
