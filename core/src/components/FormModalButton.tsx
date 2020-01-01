@@ -3,7 +3,6 @@ import { createLogger } from '@asuna-admin/logger';
 
 import { Form, message, Modal } from 'antd';
 import { WrappedFormUtils } from 'antd/es/form/Form';
-import { AxiosResponse } from 'axios';
 import * as _ from 'lodash';
 import * as R from 'ramda';
 import * as React from 'react';
@@ -141,7 +140,13 @@ export class FormModalButton extends React.Component<IFormModalProps, IState> {
           {body}
           {fields && (
             <LightForm
-              wrappedComponentRef={inst => (this.form = inst?.props?.form)}
+              formRef={form => (this.form = form)}
+              /*
+              wrappedComponentRef={inst => {
+                console.log('wrappedComponentRef', inst);
+                return (this.form = inst?.props?.form);
+              }}
+*/
               delegate
               fields={fields}
               onSubmit={this.handleOk}

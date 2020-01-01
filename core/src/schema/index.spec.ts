@@ -1,6 +1,4 @@
 import preloadAll from 'jest-next-dynamic';
-import { AppContext } from '../core';
-import { storeConnector } from '../store/middlewares';
 import * as schemaHelper from './';
 
 beforeAll(async () => {

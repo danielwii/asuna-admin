@@ -69,7 +69,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
         {/*{extras && extras(auth)}*/}
         {editable ? (
           <Button size="small" type="dashed" onClick={() => _edit(text, record)}>
-            Edit
+            编辑
           </Button>
         ) : (
           <DrawerButton
@@ -108,7 +108,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
           <>
             <Divider type="vertical" />
             <Button size="small" type="danger" onClick={() => _remove(text, record)}>
-              Delete
+              删除
             </Button>
           </>
         )}

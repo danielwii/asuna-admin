@@ -9,6 +9,7 @@ import { Paper } from '@material-ui/core';
 
 import { Affix, Anchor, Button, Col, Divider, Form, List, Popconfirm, Row, Tag } from 'antd';
 import { FormComponentProps } from 'antd/es/form';
+import { WrappedFormUtils } from 'antd/es/form/Form';
 import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
 import moment from 'moment';
@@ -105,6 +106,7 @@ export type DynamicFormProps = {
    */
   delegate?: boolean;
   auditMode?: boolean;
+  formRef?: (form: WrappedFormUtils) => void;
 };
 
 /*
@@ -157,7 +159,9 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
   delegate,
   anchor,
   auditMode,
+  formRef,
 }) => {
+  formRef?.(form);
   const memoizedFields = useMemo(() => fields, [1]);
   const { loading: loadingDrafts, drafts, retry } = useAsunaDrafts({ type: model, refId: _.get(fields, 'id.value') });
   const _buildField = (fields: FormField[], field: DynamicFormField, index: number) => {
@@ -383,10 +387,10 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
               {/* {_.map(fieldGroups, this.buildFieldGroup)} */}
               {/* {_.map(fields, this.buildField)} */}
               {renderFields}
-              <Form.Item>
-                <Affix offsetBottom={20}>
-                  <Paper style={{ padding: '.5rem' }}>
-                    {!delegate && (
+              {!delegate && (
+                <Form.Item>
+                  <Affix offsetBottom={20}>
+                    <Paper style={{ padding: '.5rem' }}>
                       <>
                         <Button
                           type="primary"
@@ -447,68 +451,68 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
                           );
                         })()}
                       </>
-                    )}
-                    <Divider type="vertical" />
-                    {loadingDrafts ? (
-                      <ScaleLoader />
-                    ) : _.isEmpty(drafts) ? (
-                      <Button onClick={_handleOnAuditDraft} disabled={!diff(fields, memoizedFields).isDifferent}>
-                        提交待审核
-                      </Button>
-                    ) : (
-                      <>
-                        <Popconfirm onConfirm={_handleOnAuditDraft} title="重提交将覆盖已提交部分，确认重新提交？">
-                          <Button>重提交</Button>
-                        </Popconfirm>{' '}
-                        待审核：
-                        {drafts.map(draft => {
-                          const values = _.flow(
-                            fp.mapValues(fp.get('value')),
-                            fp.pick(_.keys(draft.content)),
-                          )(memoizedFields);
-                          const filteredValues = _.omitBy(draft.content, (value, key) => _.eq(values[key], value));
-                          return (
-                            <DrawerButton
-                              key={draft.refId}
-                              text={`${moment(draft.updatedAt).calendar()}(${moment(draft.updatedAt).fromNow()})`}
-                              title={`${draft.type} / ${draft.refId}`}
-                              type="dashed"
-                              width="40%"
-                            >
-                              <List<{ key: string; title: string; value: any }>
-                                itemLayout="horizontal"
-                                dataSource={_.map(draft.content, (value, key) => {
-                                  return {
-                                    key,
-                                    title:
-                                      fields[key]?.options?.name ?? fields[key]?.options?.label ?? fields[key]?.name,
-                                    value,
-                                  };
-                                })}
-                                renderItem={item => (
-                                  <List.Item>
-                                    <List.Item.Meta
-                                      title={item.title}
-                                      description={
-                                        <WithDebugInfo info={fields[item.key]}>
-                                          <VisualDiff
-                                            left={<div>{parseString(values[item.key] ?? '')}</div>}
-                                            right={<div>{parseString(item.value ?? '')}</div>}
-                                          />
-                                        </WithDebugInfo>
-                                      }
-                                    />
-                                  </List.Item>
-                                )}
-                              />
-                            </DrawerButton>
-                          );
-                        })}
-                      </>
-                    )}
-                  </Paper>
-                </Affix>
-              </Form.Item>
+                      <Divider type="vertical" />
+                      {loadingDrafts ? (
+                        <ScaleLoader />
+                      ) : _.isEmpty(drafts) ? (
+                        <Button onClick={_handleOnAuditDraft} disabled={!diff(fields, memoizedFields).isDifferent}>
+                          提交待审核
+                        </Button>
+                      ) : (
+                        <>
+                          <Popconfirm onConfirm={_handleOnAuditDraft} title="重提交将覆盖已提交部分，确认重新提交？">
+                            <Button>重提交</Button>
+                          </Popconfirm>{' '}
+                          待审核：
+                          {drafts.map(draft => {
+                            const values = _.flow(
+                              fp.mapValues(fp.get('value')),
+                              fp.pick(_.keys(draft.content)),
+                            )(memoizedFields);
+                            const filteredValues = _.omitBy(draft.content, (value, key) => _.eq(values[key], value));
+                            return (
+                              <DrawerButton
+                                key={draft.refId}
+                                text={`${moment(draft.updatedAt).calendar()}(${moment(draft.updatedAt).fromNow()})`}
+                                title={`${draft.type} / ${draft.refId}`}
+                                type="dashed"
+                                width="40%"
+                              >
+                                <List<{ key: string; title: string; value: any }>
+                                  itemLayout="horizontal"
+                                  dataSource={_.map(draft.content, (value, key) => {
+                                    return {
+                                      key,
+                                      title:
+                                        fields[key]?.options?.name ?? fields[key]?.options?.label ?? fields[key]?.name,
+                                      value,
+                                    };
+                                  })}
+                                  renderItem={item => (
+                                    <List.Item>
+                                      <List.Item.Meta
+                                        title={item.title}
+                                        description={
+                                          <WithDebugInfo info={fields[item.key]}>
+                                            <VisualDiff
+                                              left={<div>{parseString(values[item.key] ?? '')}</div>}
+                                              right={<div>{parseString(item.value ?? '')}</div>}
+                                            />
+                                          </WithDebugInfo>
+                                        }
+                                      />
+                                    </List.Item>
+                                  )}
+                                />
+                              </DrawerButton>
+                            );
+                          })}
+                        </>
+                      )}
+                    </Paper>
+                  </Affix>
+                </Form.Item>
+              )}
             </Form>
           </Col>
           <Col span={anchor ? 6 : 0}>
