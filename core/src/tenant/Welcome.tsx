@@ -104,7 +104,7 @@ export const TenantWelcome: React.FC = props => {
       {_.map(value?.schemas, (schema, key) => {
         const limit = store.tenantInfo?.config?.[`limit.${key}`];
         const displayName = schema.info?.displayName;
-        const title = displayName ? `${displayName} / ${key}` : key;
+        const title = displayName || key; //displayName ? `${displayName} / ${key}` : key;
         const recordCount = store.tenantInfo?.recordCounts?.[key] ?? { total: 0 };
         const disable = recordCount.total >= limit || !store.tenantInfo?.tenant || !authorized;
         return (
@@ -114,7 +114,7 @@ export const TenantWelcome: React.FC = props => {
                 <>
                   <Col>
                     <Statistic
-                      title="Published"
+                      title="已发布"
                       valueStyle={{ color: '#3f8600' }}
                       // prefix={recordCount.published}
                       value={recordCount.published}
@@ -123,7 +123,7 @@ export const TenantWelcome: React.FC = props => {
                   </Col>
                   <Col>
                     <Statistic
-                      title="Unpublished"
+                      title="未发布"
                       valueStyle={{ color: '#8e8e8e' }}
                       // prefix={recordCount.published}
                       value={recordCount.total - (recordCount.published ?? 0)}
@@ -137,7 +137,7 @@ export const TenantWelcome: React.FC = props => {
               {limit ? (
                 <Col>
                   <Statistic
-                    title="Total / Limit"
+                    title="总共 / 限制"
                     valueStyle={recordCount.total >= limit ? { color: '#cf1322' } : {}}
                     value={recordCount.total}
                     suffix={`/ ${limit}`}
@@ -146,7 +146,7 @@ export const TenantWelcome: React.FC = props => {
               ) : (
                 <Col>
                   <Statistic
-                    title="Total"
+                    title="总共"
                     // valueStyle={recordCount.total >= limit ? { color: '#cf1322' } : {}}
                     value={recordCount.total}
                   />

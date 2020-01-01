@@ -143,6 +143,7 @@ export interface ModelAdapter {
       relations?: string[];
     } & Asuna.Schema.ModelConfig,
   ): Promise<T>;
+  getPrimaryKey(modelName: string): string;
 }
 
 export class ModelAdapterImpl implements ModelAdapter {

@@ -1,3 +1,4 @@
+import { AppContext } from '@asuna-admin/core';
 import { Icon, notification, Timeline } from 'antd';
 import { differenceInSeconds } from 'date-fns';
 import * as _ from 'lodash';
@@ -70,7 +71,7 @@ export class TimelineMessageBox {
       this.messages.push({ key: _key, type: _type, content: message, createdAt });
     }
     _.remove(this.messages, ({ createdAt }) => !createdAt || differenceInSeconds(Date.now(), createdAt) > 3);
-    MessageBox.show({ key: this.boxId, message: this.render() });
+    if (AppContext.isDevMode) MessageBox.show({ key: this.boxId, message: this.render() });
     return _key;
   }
 }

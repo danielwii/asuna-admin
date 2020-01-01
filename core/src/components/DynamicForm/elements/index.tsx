@@ -1,10 +1,10 @@
 import { BraftRichEditor } from '@asuna-admin/components';
 import { Config } from '@asuna-admin/config';
+import { AppContext } from '@asuna-admin/core';
 import { createLogger } from '@asuna-admin/logger';
 
 import { Checkbox, DatePicker, Form, Icon, Input, InputNumber, Switch, TimePicker } from 'antd';
 import { GetFieldDecoratorOptions, WrappedFormUtils } from 'antd/es/form/Form';
-import { AppContext } from 'asuna-admin';
 import * as React from 'react';
 
 import { Authorities } from '../Authorities';
