@@ -331,7 +331,6 @@ export class ModelAdapterImpl implements ModelAdapter {
     const formSchema = this.getFormSchema(modelName);
     const { table: columnsRender } = this.getModelConfig(extraName || modelName);
     const readonly = !TenantHelper.enableModelPublishForCurrentUser(modelName);
-    console.log(modelName, { readonly });
     const columns = columnsRender
       ? await Promise.all(columnsRender(opts.actions, { modelName, callRefresh: opts.callRefresh, readonly }))
       : [];

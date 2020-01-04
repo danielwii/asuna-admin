@@ -65,6 +65,9 @@ export class TenantHelper {
   static wrapFields(modelName: string, fields: any[]): void {
     if (!this.enableModelPublishForCurrentUser(modelName)) {
       const field = _.find(fields, field => field.name === 'isPublished');
+      // const primaryKey = AppContext.adapters.models.getPrimaryKey(modelName);
+      // const id = fields[primaryKey];
+      // field && _.set(field, 'options.accessible', id.value ? 'readonly' : 'hidden');
       field && _.set(field, 'options.accessible', 'hidden');
     }
 
@@ -76,5 +79,11 @@ export class TenantHelper {
       });
       if (field) delete fields[field.name];
     }
+  }
+
+  static resolveCount(key: string): { total: number; published?: number; limit: number } {
+    const limit = this.tenantInfo?.config?.[`limit.${key}`];
+    const recordCount = this.tenantInfo?.recordCounts?.[key] ?? { total: 0 };
+    return { ...recordCount, limit };
   }
 }

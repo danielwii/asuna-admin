@@ -1,6 +1,5 @@
 import { BraftRichEditor } from '@asuna-admin/components';
 import { Config } from '@asuna-admin/config';
-import { AppContext } from '@asuna-admin/core';
 import { createLogger } from '@asuna-admin/logger';
 
 import { Checkbox, DatePicker, Form, Icon, Input, InputNumber, Switch, TimePicker } from 'antd';
@@ -88,12 +87,7 @@ export const generateComponent = (
     logger.debug('[generateComponent]', options);
     const decorator = form.getFieldDecorator(fieldName, opts || {});
     return (
-      <Form.Item
-        key={fieldName}
-        {...formItemLayout}
-        label={AppContext.isDebugMode ? `${labelName || fieldName} / ${fieldName}` : labelName || fieldName}
-        help={help}
-      >
+      <Form.Item key={fieldName} {...formItemLayout} label={labelName || fieldName} help={help}>
         {decorator(Component)}
       </Form.Item>
     );
@@ -237,14 +231,14 @@ export const generateSwitch = (
   options,
   formItemLayout: IFormItemLayout = horizontalFormItemLayout,
 ) => {
-  const { key, name, label } = options;
+  const { key, name, label, readonly: disabled } = options;
 
   const fieldName = key || name;
   const labelName = label || name || key;
   return generateComponent(
     form,
     { fieldName, labelName, opts: { valuePropName: 'checked' }, ...options },
-    <Switch />,
+    <Switch disabled />,
     formItemLayout,
   );
 };

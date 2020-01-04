@@ -1,7 +1,14 @@
 import { AsunaDataTable, Pane } from '@asuna-admin/components';
 import { Config } from '@asuna-admin/config';
 import { ActionEvent, AppContext, EventBus, EventType } from '@asuna-admin/core';
-import { castModelKey, DebugInfo, diff, extractModelNameFromPane, resolveModelInPane } from '@asuna-admin/helpers';
+import {
+  castModelKey,
+  DebugInfo,
+  diff,
+  extractModelNameFromPane,
+  resolveModelInPane,
+  TenantHelper,
+} from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 import { Asuna } from '@asuna-admin/types';
 import { SorterResult } from 'antd/es/table';
@@ -64,10 +71,14 @@ class ContentIndex extends React.Component<IProps, IState> {
       sorter['columnKey'] = castModelKey(orderBy);
       sorter['field'] = castModelKey(orderBy);
     }
+
+    const resolved = TenantHelper.resolveCount(modelName);
+    const creatableForTenant = resolved && resolved.limit ? resolved.total < resolved.limit : creatable;
+
     this.state = {
       modelName,
       extraName,
-      creatable,
+      creatable: creatableForTenant,
       editable,
       deletable,
       opts: columnOpts,

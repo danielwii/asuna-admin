@@ -104,22 +104,21 @@ export const TenantWelcome: React.FC = props => {
   const recordsInfo = store.tenantInfo?.config?.enabled ? (
     <Descriptions bordered size="small">
       {_.map(value?.schemas, (schema, key) => {
-        const limit = store.tenantInfo?.config?.[`limit.${key}`];
+        const { limit, published, total } = TenantHelper.resolveCount(key);
         const displayName = schema.info?.displayName;
         const title = displayName || key; //displayName ? `${displayName} / ${key}` : key;
-        const recordCount = store.tenantInfo?.recordCounts?.[key] ?? { total: 0 };
-        const disable = recordCount.total >= limit || !store.tenantInfo?.tenant || !authorized;
+        const disable = total >= limit || !store.tenantInfo?.tenant || !authorized;
         return (
           <Descriptions.Item label={title} key={title}>
             <Row gutter={8} type="flex">
-              {_.has(recordCount, 'published') ? (
+              {published ? (
                 <>
                   <Col>
                     <Statistic
                       title="已发布"
                       valueStyle={{ color: '#3f8600' }}
                       // prefix={recordCount.published}
-                      value={recordCount.published}
+                      value={published}
                       // suffix={`/ ${recordCount.total}`}
                     />
                   </Col>
@@ -128,20 +127,20 @@ export const TenantWelcome: React.FC = props => {
                       title="未发布"
                       valueStyle={{ color: '#8e8e8e' }}
                       // prefix={recordCount.published}
-                      value={recordCount.total - (recordCount.published ?? 0)}
+                      value={total - (published ?? 0)}
                       // suffix={`/ ${recordCount.total}`}
                     />
                   </Col>
                 </>
               ) : (
-                recordCount.total
+                total
               )}
               {limit ? (
                 <Col>
                   <Statistic
                     title="总共 / 限制"
-                    valueStyle={recordCount.total >= limit ? { color: '#cf1322' } : {}}
-                    value={recordCount.total}
+                    valueStyle={total >= limit ? { color: '#cf1322' } : {}}
+                    value={total}
                     suffix={`/ ${limit}`}
                   />
                 </Col>
@@ -150,7 +149,7 @@ export const TenantWelcome: React.FC = props => {
                   <Statistic
                     title="总共"
                     // valueStyle={recordCount.total >= limit ? { color: '#cf1322' } : {}}
-                    value={recordCount.total}
+                    value={total}
                   />
                 </Col>
               )}

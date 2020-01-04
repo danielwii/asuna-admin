@@ -200,7 +200,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
       logger.debug('[componentWillMount]', { modelName, record, entity }, diff(originalFieldValues, record));
     }
 
-    // 当前角色是租户是资源不显示租户字段
+    // 当前角色是租户的资源不显示租户字段
     if (TenantHelper.hasTenantRoles) {
       _.set(decoratedFields['tenant'], 'options.accessible', 'hidden');
     }
@@ -394,7 +394,8 @@ class ContentUpsert extends React.Component<IProps, IState> {
   render() {
     const { fields, loadings, status, modelName } = this.state;
     TenantHelper.wrapFields(modelName, fields);
-    const auditMode = !TenantHelper.enableModelPublishForCurrentUser(modelName);
+    const isPublishedField = _.find(fields, field => field.name === 'isPublished') as any;
+    const auditMode = !TenantHelper.enableModelPublishForCurrentUser(modelName) && !isPublishedField?.value;
 
     logger.log('[render]', { props: this.props, state: this.state });
 

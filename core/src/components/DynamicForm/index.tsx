@@ -197,6 +197,8 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
             }}
           />
         );
+      } else if (field.type === DynamicFormTypes.Switch) {
+        return generateSwitch(form, { ...options, readonly: true });
       }
       return generatePlain({
         text: _.defaultTo(field.value, options.defaultValue),
@@ -384,6 +386,57 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
     field => <EnhancedPureElement key={field.name} field={field} builder={_.curry(_buildField)(fields)} />,
   );
 
+  const renderedDrafts = loadingDrafts ? (
+    <ScaleLoader />
+  ) : _.isEmpty(drafts) ? (
+    <Button onClick={_handleOnAuditDraft} /*disabled={!diff(fields, memoizedFields).isDifferent}*/>提交待审核</Button>
+  ) : (
+    <>
+      <Popconfirm onConfirm={_handleOnAuditDraft} title="重提交将覆盖已提交部分，确认重新提交？">
+        <Button>重提交</Button>
+      </Popconfirm>{' '}
+      待审核：
+      {drafts.map(draft => {
+        const values = _.flow(fp.mapValues(fp.get('value')), fp.pick(_.keys(draft.content)))(memoizedFields);
+        const filteredValues = _.omitBy(draft.content, (value, key) => _.eq(values[key], value));
+        return (
+          <DrawerButton
+            key={draft.refId}
+            text={`${moment(draft.updatedAt).calendar()}(${moment(draft.updatedAt).fromNow()})`}
+            title={`${draft.type} / ${draft.refId}`}
+            type="dashed"
+            width="40%"
+          >
+            <List<{ key: string; title: string; value: any }>
+              itemLayout="horizontal"
+              dataSource={_.map(draft.content, (value, key) => {
+                return {
+                  key,
+                  title: fields[key]?.options?.name ?? fields[key]?.options?.label ?? fields[key]?.name,
+                  value,
+                };
+              })}
+              renderItem={item => (
+                <List.Item>
+                  <List.Item.Meta
+                    title={item.title}
+                    description={
+                      <WithDebugInfo info={fields[item.key]}>
+                        <VisualDiff
+                          left={<div>{parseString(values[item.key] ?? '')}</div>}
+                          right={<div>{parseString(item.value ?? '')}</div>}
+                        />
+                      </WithDebugInfo>
+                    }
+                  />
+                </List.Item>
+              )}
+            />
+          </DrawerButton>
+        );
+      })}
+    </>
+  );
   return (
     <>
       <div className="dynamic-form">
@@ -399,16 +452,20 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
                   <Affix offsetBottom={20}>
                     <Paper style={{ padding: '.5rem' }}>
                       <>
-                        <Button
-                          type="primary"
-                          htmlType="submit"
-                          onClick={_handleOnSubmit}
-                          // disabled={hasErrors(getFieldsError())}
-                          disabled={auditMode}
-                        >
-                          提交
-                        </Button>
-                        <Divider type="vertical" />
+                        {!auditMode && (
+                          <>
+                            <Button
+                              type="primary"
+                              htmlType="submit"
+                              onClick={_handleOnSubmit}
+                              // disabled={hasErrors(getFieldsError())}
+                              // disabled={auditMode}
+                            >
+                              提交
+                            </Button>
+                            <Divider type="vertical" />
+                          </>
+                        )}
                         {(() => {
                           // const values = _.map(fields, fp.get('value'));
                           const values = _.flow(
@@ -458,62 +515,10 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
                           );
                         })()}
                       </>
-                      <Divider type="vertical" />
-                      {loadingDrafts ? (
-                        <ScaleLoader />
-                      ) : _.isEmpty(drafts) ? (
-                        <Button onClick={_handleOnAuditDraft} disabled={!diff(fields, memoizedFields).isDifferent}>
-                          提交待审核
-                        </Button>
-                      ) : (
+                      {auditMode && (
                         <>
-                          <Popconfirm onConfirm={_handleOnAuditDraft} title="重提交将覆盖已提交部分，确认重新提交？">
-                            <Button>重提交</Button>
-                          </Popconfirm>{' '}
-                          待审核：
-                          {drafts.map(draft => {
-                            const values = _.flow(
-                              fp.mapValues(fp.get('value')),
-                              fp.pick(_.keys(draft.content)),
-                            )(memoizedFields);
-                            const filteredValues = _.omitBy(draft.content, (value, key) => _.eq(values[key], value));
-                            return (
-                              <DrawerButton
-                                key={draft.refId}
-                                text={`${moment(draft.updatedAt).calendar()}(${moment(draft.updatedAt).fromNow()})`}
-                                title={`${draft.type} / ${draft.refId}`}
-                                type="dashed"
-                                width="40%"
-                              >
-                                <List<{ key: string; title: string; value: any }>
-                                  itemLayout="horizontal"
-                                  dataSource={_.map(draft.content, (value, key) => {
-                                    return {
-                                      key,
-                                      title:
-                                        fields[key]?.options?.name ?? fields[key]?.options?.label ?? fields[key]?.name,
-                                      value,
-                                    };
-                                  })}
-                                  renderItem={item => (
-                                    <List.Item>
-                                      <List.Item.Meta
-                                        title={item.title}
-                                        description={
-                                          <WithDebugInfo info={fields[item.key]}>
-                                            <VisualDiff
-                                              left={<div>{parseString(values[item.key] ?? '')}</div>}
-                                              right={<div>{parseString(item.value ?? '')}</div>}
-                                            />
-                                          </WithDebugInfo>
-                                        }
-                                      />
-                                    </List.Item>
-                                  )}
-                                />
-                              </DrawerButton>
-                            );
-                          })}
+                          <Divider type="vertical" />
+                          {renderedDrafts}
                         </>
                       )}
                     </Paper>
