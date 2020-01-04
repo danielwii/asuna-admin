@@ -1,6 +1,8 @@
+import { ConfigProvider } from 'antd';
 import * as React from 'react';
 import NextHead from 'next/head';
 import getConfig from 'next/config';
+import zhCN from 'antd/lib/locale/zh_CN';
 
 import 'antd/dist/antd.css';
 import 'draft-js/dist/Draft.css';
@@ -8,7 +10,7 @@ import 'draft-js/dist/Draft.css';
 import 'video.js/dist/video-js.css';
 
 export default ({ children, hideCharacteristics }) => (
-  <div>
+  <ConfigProvider locale={zhCN}>
     <NextHead>
       <title>
         {hideCharacteristics ? '' : 'Asuna '}Admin : {getConfig().publicRuntimeConfig.env}
@@ -29,5 +31,5 @@ export default ({ children, hideCharacteristics }) => (
         color: darkred;
       }
     `}</style>
-  </div>
+  </ConfigProvider>
 );

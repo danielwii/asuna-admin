@@ -227,7 +227,7 @@ export const generateDateTime = (
   return generateComponent(
     form,
     { fieldName, labelName, ...options },
-    <DatePicker showTime format="yyyy-MM-dd HH:mm:ss" />,
+    <DatePicker showTime format="YYYY-MM-DD HH:mm:ss" />,
     formItemLayout,
   );
 };

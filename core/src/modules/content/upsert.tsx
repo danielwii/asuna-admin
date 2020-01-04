@@ -180,10 +180,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
     // Using pre decorators instead
     // --------------------------------------------------------------
 
-    let { fields: decoratedFields } = R.pipe(...this.preDecorators('INIT'))({
-      modelName,
-      fields: formFields,
-    });
+    let { fields: decoratedFields } = R.pipe(...this.preDecorators('INIT'))({ modelName, fields: formFields });
     let originalFieldValues;
 
     // INSERT-MODE: 仅在新增模式下拉取关联数据

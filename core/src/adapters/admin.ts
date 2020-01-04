@@ -8,7 +8,10 @@ import { Draft, Tenant, TenantInfo } from './admin.plain';
 
 export interface IAdminService {
   tenantInfo(auth: { token: string | null }): Promise<AxiosResponse>;
-  registerTenant(auth: { token: string | null }, data: { name: string; description?: string }): Promise<AxiosResponse>;
+  registerTenant<T>(
+    auth: { token: string | null },
+    data: { name: string; description?: string; payload?: T },
+  ): Promise<AxiosResponse>;
   createDraft(
     auth: { token: string | null },
     data: { content: Json; type: string; refId?: string },
@@ -19,7 +22,7 @@ export interface IAdminService {
 
 export interface AdminAdapter {
   tenantInfo(): Promise<TenantInfo>;
-  registerTenant(data: { name: string; description?: string }): Promise<Tenant>;
+  registerTenant<T = any>(data: { name: string; description?: string; payload?: T }): Promise<Tenant>;
   createDraft(data: { content: Json; type: string; refId?: string | number }): Promise<Draft>;
   getDrafts(params: { type: string; refId: string | number }): Promise<Draft[]>;
   publishDraft(params: { id: string }): Promise<void>;
@@ -36,7 +39,7 @@ export class AdminAdapterImpl implements AdminAdapter {
     return AppContext.withAuth(auth => this.service.tenantInfo(auth).then(res => plainToClass(TenantInfo, res.data)));
   }
 
-  async registerTenant(data: { name: string; description?: string }): Promise<Tenant> {
+  async registerTenant<T>(data: { name: string; description?: string; payload: T }): Promise<Tenant> {
     return AppContext.withAuth(auth =>
       this.service.registerTenant(auth, data).then(res => plainToClass(Tenant, res.data)),
     );

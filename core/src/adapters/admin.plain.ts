@@ -3,7 +3,10 @@ import { Asuna, Json } from '@asuna-admin/types';
 export class TenantInfo {
   config?: Partial<{
     enabled: boolean;
+    activeByDefault: boolean;
     bindRoles: string;
+    firstModelBind: boolean;
+    firstModelField: string;
     firstModelName: string;
     firstDisplayName: string;
   }>;

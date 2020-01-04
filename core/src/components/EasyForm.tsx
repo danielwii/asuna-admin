@@ -243,7 +243,7 @@ const GroupInnerForm = (props: GroupEasyFormProps & formik.FormikProps<formik.Fo
         <formik.Form>
           {message && <h1>{message}</h1>}
           {_.map(fields, (fieldsGroup: FormFieldsGroup, key: string) => (
-            <antd.Card key={key}>
+            <div key={key}>
               {fieldsGroup.name && <h2>{fieldsGroup.name}</h2>}
               {_.map(fieldsGroup.fields, (fieldDef: FormFieldDef) => {
                 const formField = fieldDef.field;
@@ -266,7 +266,8 @@ const GroupInnerForm = (props: GroupEasyFormProps & formik.FormikProps<formik.Fo
                   </formik.Field>
                 );
               })}
-            </antd.Card>
+              <Divider type="horizontal" dashed />
+            </div>
           ))}
           <antd.Divider />
           <antd.Button type="primary" htmlType="submit" onSubmit={handleSubmit} disabled={isSubmitting}>

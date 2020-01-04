@@ -69,28 +69,30 @@ export const TenantWelcome: React.FC = props => {
     );
   }
 
+  const label = store.tenantInfo?.config?.firstModelBind ? store.tenantInfo?.config?.firstDisplayName : '账户';
+
   const info = store.tenantInfo?.config?.enabled ? (
     <>
       绑定{' '}
       <FormModalButton
-        title="绑定账户"
+        title={`绑定${label}`}
         onRefresh={() => reload(count + 1)}
         openButton={open => (
           <Button size="small" type="dashed" onClick={open}>
-            账户
+            {label}
           </Button>
         )}
-        onSubmit={({ name, description }) =>
-          adminProxyCaller()
-            .registerTenant({ name, description })
-            .then(() => location.reload())
-        }
+        onSubmit={({ name, description }) => {
+          const payload =
+            store.tenantInfo?.config?.firstModelBind && store.tenantInfo?.config?.firstModelField
+              ? { title: name }
+              : null;
+          return adminProxyCaller()
+            .registerTenant({ name, description, payload })
+            .then(() => location.reload());
+        }}
         fields={{
-          name: {
-            name: 'name',
-            type: DynamicFormTypes.Input,
-            options: { required: true, name: '账户名称' },
-          },
+          name: { name: 'name', type: DynamicFormTypes.Input, options: { required: true, name: `${label}名称` } },
           description: { name: 'description', type: DynamicFormTypes.TextArea, options: { name: '描述' } },
         }}
       />

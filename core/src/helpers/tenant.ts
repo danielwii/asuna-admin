@@ -62,9 +62,19 @@ export class TenantHelper {
     return columns;
   }
 
-  static wrapFields(modelName: string, fields): void {
-    const readonly = !TenantHelper.enableModelPublishForCurrentUser(modelName);
-    const field = _.find(fields, field => field.name === 'isPublished');
-    field && readonly && _.set(field, 'options.accessible', 'readonly');
+  static wrapFields(modelName: string, fields: any[]): void {
+    if (!this.enableModelPublishForCurrentUser(modelName)) {
+      const field = _.find(fields, field => field.name === 'isPublished');
+      field && _.set(field, 'options.accessible', 'hidden');
+    }
+
+    if (this.tenantInfo?.config?.firstModelBind && this.tenantInfo?.config?.firstModelName) {
+      const field = _.find(fields, field => {
+        // if (_.get(field, 'options.selectable') === this.tenantInfo?.config?.firstModelName)
+        //   console.log('check', field, _.get(field, 'options.selectable'), this.tenantInfo?.config?.firstModelName);
+        return _.get(field, 'options.selectable') === this.tenantInfo?.config?.firstModelName;
+      });
+      if (field) delete fields[field.name];
+    }
   }
 }

@@ -127,7 +127,7 @@ export class FormModalButton extends React.Component<IFormModalProps, IState> {
         : null;
 
     return (
-      <React.Fragment>
+      <>
         {openButton(this.showModal)}
         <Modal
           title={title}
@@ -154,7 +154,7 @@ export class FormModalButton extends React.Component<IFormModalProps, IState> {
             />
           )}
         </Modal>
-      </React.Fragment>
+      </>
     );
   }
 }
