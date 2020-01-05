@@ -1,8 +1,9 @@
 import { adminProxyCaller } from '@asuna-admin/adapters';
-import { DrawerButton } from '@asuna-admin/components';
+import { DrawerButton, parseAddressStr } from '@asuna-admin/components';
 import { DebugInfo, diff, parseString, useAsunaDrafts } from '@asuna-admin/helpers';
 import { WithDebugInfo } from '@asuna-admin/helpers/debug';
 import { createLogger } from '@asuna-admin/logger';
+import { SchemaHelper } from '@asuna-admin/schema';
 import { Asuna } from '@asuna-admin/types';
 import { EnumFilterMetaInfoOptions, MetaInfoOptions } from '@asuna-admin/types/meta';
 import { Paper } from '@material-ui/core';
@@ -18,6 +19,7 @@ import * as R from 'ramda';
 import * as React from 'react';
 import { useMemo } from 'react';
 import { CircleLoader, ScaleLoader } from 'react-spinners';
+import { useAsync } from 'react-use';
 import VisualDiff from 'react-visual-diff';
 import styled from 'styled-components';
 import * as util from 'util';
@@ -38,6 +40,7 @@ import {
   InputOptions,
   PlainOptions,
 } from './elements';
+import { generateAddress } from './elements/Address';
 import { generateFile, generateFiles } from './elements/Files';
 import { generateImage, generateImages, generateRichImage } from './elements/Image';
 import { PlainImages } from './elements/Plain';
@@ -76,6 +79,7 @@ export enum DynamicFormTypes {
   // Advanced Types
   // --------------------------------------------------------------
 
+  Address = 'Address',
   Image = 'Image',
   Images = 'Images',
   File = 'File',
@@ -164,6 +168,7 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
   formRef?.(form);
   const memoizedFields = useMemo(() => fields, [1]);
   const { loading: loadingDrafts, drafts, retry } = useAsunaDrafts({ type: model, refId: _.get(fields, 'id.value') });
+  const { value: schema } = useAsync(() => SchemaHelper.getSchema(model), [model]);
   const _buildField = (fields: FormField[], field: DynamicFormField): React.ReactNode => {
     field.options = field.options || {};
     const options: DeepPartial<DynamicFormField['options'] &
@@ -215,6 +220,8 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
         return generatePlain({ text: field.value, ...options } as PlainOptions);
       case DynamicFormTypes.Input:
         return generateInput(form, options as InputOptions);
+      case DynamicFormTypes.Address:
+        return generateAddress(form, options as InputOptions);
       case DynamicFormTypes.Checkbox:
         return generateCheckbox(form, options);
       case DynamicFormTypes.Hidden:
@@ -495,21 +502,38 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
                                     value,
                                   };
                                 })}
-                                renderItem={item => (
-                                  <List.Item>
-                                    <List.Item.Meta
-                                      title={item.title}
-                                      description={
-                                        <WithDebugInfo info={fields[item.key]}>
-                                          <VisualDiff
-                                            left={<div>{parseString(memoizedValues[item.key] ?? '')}</div>}
-                                            right={<div>{parseString(item.value ?? '')}</div>}
-                                          />
-                                        </WithDebugInfo>
-                                      }
-                                    />
-                                  </List.Item>
-                                )}
+                                renderItem={item => {
+                                  const columnInfo = _.find(schema?.columns, column => column.name === item.key);
+
+                                  const { before, after } = (type => {
+                                    switch (type) {
+                                      case DynamicFormTypes.Address:
+                                        return {
+                                          before: (
+                                            <div>{parseAddressStr(parseString(memoizedValues[item.key] ?? ''))}</div>
+                                          ),
+                                          after: <div>{parseAddressStr(parseString(item.value ?? ''))}</div>,
+                                        };
+                                      default:
+                                        return {
+                                          before: <div>{parseString(memoizedValues[item.key] ?? '')}</div>,
+                                          after: <div>{parseString(item.value ?? '')}</div>,
+                                        };
+                                    }
+                                  })(columnInfo?.config?.info?.type);
+                                  return (
+                                    <List.Item>
+                                      <List.Item.Meta
+                                        title={item.title}
+                                        description={
+                                          <WithDebugInfo info={fields[item.key]}>
+                                            <VisualDiff left={before} right={after} />
+                                          </WithDebugInfo>
+                                        }
+                                      />
+                                    </List.Item>
+                                  );
+                                }}
                               />
                             </DrawerButton>
                           );

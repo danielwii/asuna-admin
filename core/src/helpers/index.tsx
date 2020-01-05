@@ -1,4 +1,4 @@
-import { AssetsPreview, Content } from '@asuna-admin/components';
+import { AssetsPreview, Content, DynamicFormTypes, parseAddressStr } from '@asuna-admin/components';
 import { VideoPlayer } from '@asuna-admin/components/DynamicForm/Videos';
 import { Config } from '@asuna-admin/config';
 import { AppContext } from '@asuna-admin/core';
@@ -170,7 +170,10 @@ export const columnHelper2 = {
       sorter: true,
       ...(await generateSearchColumnProps(key, opts.searchType, { model })),
       render: nullProtectRender((value, record) => {
-        const extracted = extractValue(value, opts.transformer);
+        let extracted = extractValue(value, opts.transformer);
+        if (columnInfo?.config.info.type === DynamicFormTypes.Address) {
+          extracted = parseAddressStr(extracted);
+        }
         return (
           <WithDebugInfo info={{ key, title, model, value, record, extracted, opts, columnInfo }}>
             {opts.render ? opts.render(extracted, value) : <TooltipContent value={extracted} />}

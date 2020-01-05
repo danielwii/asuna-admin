@@ -1,3 +1,4 @@
+export * from './Address';
 export * from './AsunaDataTable';
 export * from './AsunaDataView';
 export * from './AsunaPlainInfo';

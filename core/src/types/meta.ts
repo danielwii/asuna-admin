@@ -105,6 +105,10 @@ export interface JSONMetaInfoOptions extends MetaInfoBaseOptions {
   jsonType: 'string-array';
 }
 
+export interface AddressMetaInfoOptions extends MetaInfoBaseOptions {
+  type: 'Address';
+}
+
 export interface STIMetaInfoOptions extends MetaInfoBaseOptions {
   type: 'EnumFilter';
   /**
@@ -116,6 +120,7 @@ export interface STIMetaInfoOptions extends MetaInfoBaseOptions {
 }
 
 export type MetaInfoOptions =
+  | AddressMetaInfoOptions
   | NormalMetaInfoOptions
   | EnumFilterMetaInfoOptions
   | JSONMetaInfoOptions;

@@ -5142,6 +5142,11 @@ check-types@^8.0.3:
   resolved "https://registry.yarnpkg.com/check-types/-/check-types-8.0.3.tgz#3356cca19c889544f2d7a95ed49ce508a0ecf552"
   integrity sha512-YpeKZngUmG65rLudJ4taU7VLkOCTMhNl/u4ctNC56LQS/zJTyNH0Lrtwm1tfTsbLlwvlfsA2d1c8vCf/Kh2KwQ==
 
+china-division@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/china-division/-/china-division-2.2.0.tgz#1c345d62e95409081082973674ebf74c8275851f"
+  integrity sha512-+9m8xIAOK/OuOI7rFDx/uBumiVJfndTAzTENDpnUeNPgtZzCo95+h+zebwfYp6xRd4Q2H2L2G63KJNYT8OLOmw==
+
 chokidar@^2.0.2, chokidar@^2.0.4, chokidar@^2.1.8:
   version "2.1.8"
   resolved "https://registry.yarnpkg.com/chokidar/-/chokidar-2.1.8.tgz#804b3a7b6a99358c3c5c61e71d8728f041cff917"
