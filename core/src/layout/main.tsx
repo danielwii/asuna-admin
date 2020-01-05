@@ -30,10 +30,10 @@ export default ({ loading, heartbeat, auth, appInfo, hideCharacteristics }) => {
           <ProgressBar />
           <HeaderRender hideLogo={hideCharacteristics} />
           <Layout>
-            <Sider theme={'light'} style={{ overflow: 'auto', height: '90vh', position: 'fixed', left: 0 }}>
+            <Sider theme={'light'} /*style={{ overflow: 'auto', height: '90vh', position: 'fixed', left: 0 }}*/>
               <SideMenuRender />
             </Sider>
-            <Layout style={{ marginLeft: 200, padding: '1rem' }}>
+            <Layout style={{ /*marginLeft: 200,*/ padding: '.5rem' }}>
               <StyledContentDiv>
                 <PanesContainer />
               </StyledContentDiv>

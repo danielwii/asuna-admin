@@ -1,23 +1,14 @@
 import { AssetsPreview, DynamicFormTypes } from '@asuna-admin/components';
-import { resolveModelInPane, useAsunaModels } from '@asuna-admin/helpers';
+import { ModelsHelper, resolveModelInPane, useAsunaModels } from '@asuna-admin/helpers';
 import { WithDebugInfo } from '@asuna-admin/helpers/debug';
-import { Collapse, Descriptions, Empty, PageHeader, Tabs, Tag, Tooltip } from 'antd';
+import { Button, Collapse, Descriptions, Empty, PageHeader, Tag, Tooltip } from 'antd';
 import { Promise } from 'bluebird';
 import * as _ from 'lodash';
 import moment from 'moment';
 import * as React from 'react';
 import { useAsync } from 'react-use';
+import { FoldingCube } from 'styled-spinkit';
 import * as util from 'util';
-
-const { Panel } = Collapse;
-const { TabPane } = Tabs;
-
-const text = (
-  <p style={{ paddingLeft: 24 }}>
-    A dog is a type of domesticated animal. Known for its loyalty and faithfulness, it can be found as a welcome guest
-    in many households across the world.
-  </p>
-);
 
 export interface DataViewColumnProps<EntitySchema> {
   title?: keyof EntitySchema;
@@ -27,42 +18,56 @@ export interface DataViewColumnProps<EntitySchema> {
 export interface AsunaDataViewProps {
   data: JSON;
   modelName: string;
+  withActions?: boolean;
   extraName?: string;
   title?: string;
   cover?: string;
   onBack?: () => void;
 }
 
-export const AsunaDataView: React.FC<AsunaDataViewProps> = props => {
-  const { cover, title, modelName, extraName, onBack, data } = props;
-
+export const AsunaDataView: React.FC<AsunaDataViewProps> = ({
+  cover,
+  title,
+  modelName,
+  extraName,
+  onBack,
+  data,
+  withActions,
+}) => {
   if (!data) {
     return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />;
   }
 
-  const actions = null;
-  // const actions = (text, record, extras) => (
-  //   <span>
-  //     {/*{extras && extras(auth)}*/}
-  //     {/*{editable ? (*/}
-  //     {/*  <Button size="small" type="dashed" onClick={() => _edit(text, record)}>*/}
-  //     {/*    Edit*/}
-  //     {/*  </Button>*/}
-  //     {/*) : (*/}
-  //     {/*  <Button size="small" type="dashed" onClick={() => onView!(text, record)} disabled={!onView}>*/}
-  //     {/*    View*/}
-  //     {/*  </Button>*/}
-  //     {/*)}{' '}*/}
-  //     {/*{isDeletableSystemRecord(record) && deletable && (*/}
-  //     {/*  <>*/}
-  //     {/*    <Divider type="vertical" />*/}
-  //     {/*    <Button size="small" type="danger" onClick={() => _remove(text, record)}>*/}
-  //     {/*      Delete*/}
-  //     {/*    </Button>*/}
-  //     {/*  </>*/}
-  //     {/*)}*/}
-  //   </span>
-  // );
+  const actions = withActions
+    ? (text, record, extras) => (
+        <span>
+          <Button size="small" type="dashed" onClick={() => ModelsHelper.openEditPane(modelName, record)}>
+            编辑
+          </Button>
+          {/*{extras && extras(auth)}*/}
+          {/*          {editable ? (
+            <Button size="small" type="dashed" onClick={() => _edit(text, record)}>
+              Edit
+            </Button>
+          ) : (
+            <Button size="small" type="dashed" onClick={() => onView!(text, record)} disabled={!onView}>
+              View
+            </Button>
+          )}{' '}
+          */}
+          {/*
+          {isDeletableSystemRecord(record) && deletable && (
+            <>
+              <Divider type="vertical" />
+              <Button size="small" type="danger" onClick={() => _remove(text, record)}>
+                Delete
+              </Button>
+            </>
+          )}
+*/}
+        </span>
+      )
+    : null;
 
   const { columnProps, relations, originSchemas } = useAsunaModels(modelName, { actions, extraName });
   const actionColumn = _.find(columnProps, column => column.key === 'action');
@@ -192,17 +197,16 @@ export const AsunaDataView: React.FC<AsunaDataViewProps> = props => {
             {_.map(leftVars, (value, label: string) => {
               const schemaLabel = _.get(schemas, `${label}.options.label`, '') || label;
               return (
-                <Descriptions.Item
-                  key={label}
-                  label={schemaLabel === label ? label : `${schemaLabel || label} / ${label}`}
-                >
-                  {renderValue({ value, type: schemas[label]?.type })}
+                <Descriptions.Item key={label} label={schemaLabel}>
+                  <WithDebugInfo info={schemas[label]}>
+                    {renderValue({ value, type: schemas[label]?.type })}
+                  </WithDebugInfo>
                 </Descriptions.Item>
               );
             })}
 
             {customColumnOpts.loading ? (
-              <div>Loading...</div>
+              <FoldingCube />
             ) : (
               _.map(customColumnOpts.value, (columnOpt, label) => {
                 return (

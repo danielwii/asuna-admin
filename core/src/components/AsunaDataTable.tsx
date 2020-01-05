@@ -271,7 +271,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
     useLogger('AsunaDataTable', props, { loadingAsunaModels, columnProps, relations }, { data, loading }, { flag });
 */
 
-  if (loading || loadingAsunaModels) {
+  if (loadingAsunaModels) {
     return <Skeleton active avatar />;
   }
 

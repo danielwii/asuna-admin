@@ -12,6 +12,8 @@ export declare module Asuna {
 
   type Profile = 'detail' | 'ids';
 
+  type PageableResponse<T> = { items: T[]; total: number; query: any } & Pageable;
+
   module Error {
     enum Code {
       /**
@@ -226,7 +228,7 @@ export declare module Asuna {
       model?: string;
       group?: string;
       title: string;
-      linkTo: string;
+      linkTo: 'content::view' | 'content::upsert' | 'content::insert' | 'content::query' | 'content::blank';
       component?: string;
     };
 

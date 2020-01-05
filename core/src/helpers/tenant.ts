@@ -1,9 +1,10 @@
-import { adminProxyCaller, TenantInfo } from '@asuna-admin/adapters';
+import { adminProxyCaller, modelProxyCaller, TenantInfo } from '@asuna-admin/adapters';
 import { AppContext } from '@asuna-admin/core';
 import { diff, RelationColumnProps } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 import { panesActions } from '@asuna-admin/store';
 import * as _ from 'lodash';
+import * as fp from 'lodash/fp';
 import * as Rx from 'rxjs';
 
 const logger = createLogger('helpers:tenant');
@@ -28,16 +29,6 @@ export class TenantHelper {
       this.tenantInfo = info;
     }
     return info;
-  }
-
-  static openCreatePane(modelName: string): void {
-    AppContext.dispatch(
-      panesActions.open({
-        key: `content::upsert::${modelName}::${Date.now()}`,
-        title: `新建 - ${modelName}`,
-        linkTo: 'content::upsert',
-      }),
-    );
   }
 
   static authorized(tenantInfo?: TenantInfo): boolean {
@@ -85,5 +76,13 @@ export class TenantHelper {
     const limit = this.tenantInfo?.config?.[`limit.${key}`];
     const recordCount = this.tenantInfo?.recordCounts?.[key] ?? { total: 0 };
     return { ...recordCount, limit };
+  }
+
+  static async resolveBindModel<T = JSON>(): Promise<T | undefined> {
+    if (this.tenantInfo?.config?.firstModelBind && this.tenantInfo?.config?.firstModelName) {
+      return await modelProxyCaller()
+        .loadModels2(this.tenantInfo?.config?.firstModelName)
+        .then(fp.get('items[0]'));
+    }
   }
 }

@@ -1,6 +1,7 @@
 import { Pane } from '@asuna-admin/components';
 import { AppContext } from '@asuna-admin/core';
 import { createLogger } from '@asuna-admin/logger';
+import { SchemaHelper } from '@asuna-admin/schema';
 import { panesActions } from '@asuna-admin/store';
 import { Asuna } from '@asuna-admin/types';
 import * as _ from 'lodash';
@@ -54,12 +55,29 @@ export function resolveModelInPane(
 }
 
 export class ModelsHelper {
-  static openCreatePane(modelName: string): void {
+  static async openCreatePane(modelName: string): Promise<void> {
+    const schema = await SchemaHelper.getSchema(modelName);
+    const name = schema.info?.displayName ?? modelName;
+    logger.log('[create]', modelName, name, schema);
     AppContext.dispatch(
       panesActions.open({
-        key: `content::upsert::${modelName}::${Date.now()}`,
-        title: `新建 - ${modelName}`,
+        key: `content::upsert::${name}::${Date.now()}`,
+        title: `新建 - ${schema.info?.displayName ?? modelName}`,
         linkTo: 'content::upsert',
+      }),
+    );
+  }
+
+  static async openEditPane(modelName: string, record: any, opts?: { id?: string; name?: string }): Promise<void> {
+    const schema = await SchemaHelper.getSchema(modelName);
+    const name = schema.info?.displayName ?? modelName;
+    logger.log('[edit]', name, record, schema);
+    AppContext.dispatch(
+      panesActions.open({
+        key: `content::upsert::${modelName}::${record[opts?.id ?? 'id']}`,
+        title: `编辑 - ${name} - ${record[opts?.name ?? 'name'] || record[opts?.name ?? 'title'] || ''}`,
+        linkTo: 'content::upsert',
+        data: { modelName, record },
       }),
     );
   }

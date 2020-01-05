@@ -144,6 +144,16 @@ export interface ModelAdapter {
     } & Asuna.Schema.ModelConfig,
   ): Promise<T>;
   getPrimaryKey(modelName: string): string;
+  loadModels2<T>(
+    modelName: string,
+    configs?: {
+      relations?: string[];
+      fields?: string[];
+      pagination?: Asuna.Pageable;
+      filters?: WhereConditions;
+      sorter?: any;
+    } & Asuna.Schema.ModelConfig,
+  ): Promise<Asuna.PageableResponse<T>>;
 }
 
 export class ModelAdapterImpl implements ModelAdapter {
@@ -441,6 +451,9 @@ export class ModelAdapterImpl implements ModelAdapter {
       : defaultAssociation;
   };
 
+  /**
+   * @see loadModels2
+   */
   public loadModels = (modelName: string, configs: ModelListConfig = {}): Promise<AxiosResponse> => {
     logger.debug('[loadModels]', { modelName, configs, modelConfig: this.getModelConfig(modelName) });
     const page = configs?.pagination?.current || 1;
@@ -457,6 +470,26 @@ export class ModelAdapterImpl implements ModelAdapter {
       relations: configs.relations,
       ...this.getModelConfig(modelName),
     });
+  };
+
+  public loadModels2 = <T>(modelName: string, configs: ModelListConfig = {}): Promise<Asuna.PageableResponse<T>> => {
+    logger.debug('[loadModels2]', { modelName, configs, modelConfig: this.getModelConfig(modelName) });
+    const page = configs?.pagination?.current || 1;
+    const size = configs?.pagination?.pageSize || Config.get('DEFAULT_PAGE_SIZE') || 25;
+    const auth = AppContext.fromStore('auth');
+    return this.service
+      .loadModels(auth, modelName, {
+        pagination: { page, size },
+        fields: configs.fields,
+        filters: _.mapValues<Record<string, [Partial<Condition>]>, WhereConditions>(
+          configs.filters,
+          _.flow(filter => (_.isArray(filter) ? filter[0] : filter), parseJSONIfCould),
+        ),
+        sorter: configs.sorter,
+        relations: configs.relations,
+        ...this.getModelConfig(modelName),
+      })
+      .then(fp.get('data'));
   };
 
   public loadAssociationByIds = (associationName: string, ids: string[] | number[]): Promise<AxiosResponse | void> => {

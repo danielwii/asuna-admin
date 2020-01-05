@@ -20,19 +20,38 @@ export const WithDebugInfo: React.FC<{ info: any }> = ({ info, children }) => {
   return <>{children}</>;
 };
 
-export const DebugInfo: React.FC<{ data: any; divider?: boolean }> = ({ data, divider }) => {
+export const DebugInfo: React.FC<{ data: any; divider?: boolean; type?: 'json' | 'util' | 'tree' }> = ({
+  data,
+  divider,
+  type,
+}) => {
   const [lv, setLevel] = useState(3);
 
   if (!AppContext.isDebugMode) {
     return null;
   }
 
+  const rendered = (type => {
+    switch (type) {
+      case 'json':
+        return <pre>{JSON.stringify(data, null, 2)}</pre>;
+      case 'util':
+        return <pre>{util.inspect(data)}</pre>;
+      default:
+        return (
+          <>
+            <Button type="dashed" size="small" onClick={() => setLevel(lv + 1)} children="+" />{' '}
+            <Button type="dashed" size="small" onClick={() => setLevel(lv - 1)} children="-" />
+            <JSONTree data={data} hideRoot shouldExpandNode={(keyPath, data, level) => level < lv} />
+          </>
+        );
+    }
+  })(type);
+
   return (
     <>
       {divider && <Divider type="horizontal" style={{ margin: '1rem 0' }} />}
-      <Button type="dashed" size="small" onClick={() => setLevel(lv + 1)} children="+" />{' '}
-      <Button type="dashed" size="small" onClick={() => setLevel(lv - 1)} children="-" />
-      <JSONTree data={data} hideRoot shouldExpandNode={(keyPath, data, level) => level < lv} />
+      {rendered}
     </>
   );
 };
