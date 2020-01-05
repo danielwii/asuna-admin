@@ -100,12 +100,10 @@ function* heartbeat({ force }) {
     logger.debug('[heartbeat]', { force, remote: response.data, version: app.version });
 
     // 版本不一致时执行同步操作
-    /*
-    if (force || app.version !== response.data) {
+    if (force /*|| app.version !== response.data*/) {
       yield put(appActions.sync());
       yield put(appActions.loadVersionSuccess(response.data));
     }
-*/
 
     if (!app.heartbeat) {
       yield put(appActions.heartbeatAlive());
