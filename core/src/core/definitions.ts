@@ -79,7 +79,7 @@ export class AsunaDefinitions<T extends Asuna.Schema.ModelOpts = {}> {
     this._extraTableColumns = extend(this._extraTableColumns, this.wrapTableColumns(key, withStylesOpts));
   }
 
-  setupTableColumns<EntitySchema>(entity: keyof T, opts: Asuna.Schema.ColumnOpts<EntitySchema>): void {
+  setupTableColumns<EntitySchema = any>(entity: keyof T, opts: Asuna.Schema.ColumnOpts<EntitySchema>): void {
     const withStylesOpts = {
       ...opts,
       rowClassName:

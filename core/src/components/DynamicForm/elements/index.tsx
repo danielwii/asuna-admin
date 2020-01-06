@@ -231,14 +231,14 @@ export const generateSwitch = (
   options,
   formItemLayout: IFormItemLayout = horizontalFormItemLayout,
 ) => {
-  const { key, name, label, readonly: disabled } = options;
+  const { key, name, label, readonly } = options;
 
   const fieldName = key || name;
   const labelName = label || name || key;
   return generateComponent(
     form,
     { fieldName, labelName, opts: { valuePropName: 'checked' }, ...options },
-    <Switch disabled />,
+    <Switch disabled={readonly} />,
     formItemLayout,
   );
 };

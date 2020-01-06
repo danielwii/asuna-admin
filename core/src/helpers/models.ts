@@ -61,7 +61,7 @@ export class ModelsHelper {
     logger.log('[create]', modelName, name, schema);
     AppContext.dispatch(
       panesActions.open({
-        key: `content::upsert::${name}::${Date.now()}`,
+        key: `content::upsert::${modelName}::${Date.now()}`,
         title: `新建 - ${schema.info?.displayName ?? modelName}`,
         linkTo: 'content::upsert',
       }),

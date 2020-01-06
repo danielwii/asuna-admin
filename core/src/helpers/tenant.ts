@@ -54,6 +54,7 @@ export class TenantHelper {
   }
 
   static wrapFields(modelName: string, fields: any[]): void {
+    if (!this.hasTenantRoles) return;
     if (!this.enableModelPublishForCurrentUser(modelName)) {
       const field = _.find(fields, field => field.name === 'isPublished');
       // const primaryKey = AppContext.adapters.models.getPrimaryKey(modelName);
