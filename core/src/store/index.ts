@@ -72,7 +72,7 @@ export class AsunaStore {
     key: 'root',
     storage: localForage,
     debug: true,
-    timeout: 10000,
+    timeout: 1000,
     blacklist: ['app', 'router' /*, 'auth'*/],
   };
 

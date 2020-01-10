@@ -3,6 +3,7 @@ import { toErrorMessage } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 
 import { message } from 'antd';
+import localforage from 'localforage';
 import * as R from 'ramda';
 import { REHYDRATE } from 'redux-persist';
 import { call, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
@@ -54,6 +55,7 @@ function* logoutSaga() {
     logger.log('[logoutSaga]');
     const response = yield call(authProxy.logout);
     logger.log('[logoutSaga]', 'response is', response);
+    localforage.clear();
   } catch (e) {
     logger.error('[logoutSaga]', { e });
   }

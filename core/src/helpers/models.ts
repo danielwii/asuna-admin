@@ -57,12 +57,12 @@ export function resolveModelInPane(
 export class ModelsHelper {
   static async openCreatePane(modelName: string): Promise<void> {
     const schema = await SchemaHelper.getSchema(modelName);
-    const name = schema.info?.displayName ?? modelName;
+    const name = schema?.info?.displayName ?? modelName;
     logger.log('[create]', modelName, name, schema);
     AppContext.dispatch(
       panesActions.open({
         key: `content::upsert::${modelName}::${Date.now()}`,
-        title: `新建 - ${schema.info?.displayName ?? modelName}`,
+        title: `新建 - ${schema?.info?.displayName ?? modelName}`,
         linkTo: 'content::upsert',
       }),
     );
@@ -70,7 +70,7 @@ export class ModelsHelper {
 
   static async openEditPane(modelName: string, record: any, opts?: { id?: string; name?: string }): Promise<void> {
     const schema = await SchemaHelper.getSchema(modelName);
-    const name = schema.info?.displayName ?? modelName;
+    const name = schema?.info?.displayName ?? modelName;
     logger.log('[edit]', name, record, schema);
     AppContext.dispatch(
       panesActions.open({
