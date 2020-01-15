@@ -1,15 +1,15 @@
-import { Button, Divider, Drawer, Empty, Icon, Popconfirm, Popover, Skeleton, Timeline } from 'antd';
+import { Button, Divider, Drawer, Empty, Icon, Popover, Skeleton, Timeline } from 'antd';
 import { BaseButtonProps } from 'antd/es/button/button';
-import { PopconfirmProps } from 'antd/es/popconfirm';
 import { PopoverProps } from 'antd/lib/popover';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 
 export interface DrawerButtonProps {
-  text: string;
+  text: React.ReactNode;
   title?: string;
   width?: number | string;
+  render?: React.FC<{ refreshFlag: number }>;
 }
 
 export const DrawerButtonBuilder: React.FC<DrawerButtonProps &
@@ -72,8 +72,10 @@ export const DrawerButton: React.FC<DrawerButtonProps &
   popoverProps,
   extraButtons,
   children,
+  render,
   ...baseButtonProps
 }) => {
+  const [refreshFlag, setRefreshFlag] = useState(0);
   const [visible, setVisible] = useState(false);
   const [childrenDrawer, setChildrenVisible] = useState(false);
 
@@ -88,12 +90,14 @@ export const DrawerButton: React.FC<DrawerButtonProps &
       <Icon type="select" />
     </Button>
   );
+  const RenderComponent = render || <></> as any;
 
   return (
     <>
       {popoverProps ? <Popover {...popoverProps}>{_renderButton}</Popover> : _renderButton}
       <Drawer title={title || text} width={width ?? 520} closable={false} onClose={_onClose} visible={visible}>
         {children}
+        {render && <RenderComponent refreshFlag={refreshFlag} />}
         {/*<Button type="primary" onClick={this.showChildrenDrawer}>
             Two-level drawer
           </Button>
@@ -125,9 +129,15 @@ export const DrawerButton: React.FC<DrawerButtonProps &
               <Divider type="vertical" />
             </>
           )}
-          <Button style={{ marginRight: 8 }} onClick={_onClose}>
-            Cancel
-          </Button>
+          {render && (
+            <>
+              <Button type="primary" onClick={() => setRefreshFlag(refreshFlag + 1)}>
+                刷新
+              </Button>
+              <Divider type="vertical" />
+            </>
+          )}
+          <Button onClick={_onClose}>关闭</Button>
         </div>
       </Drawer>
     </>

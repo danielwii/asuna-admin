@@ -1,6 +1,6 @@
 import { AppContext } from '@asuna-admin/core';
-import { createLogger } from '@asuna-admin/logger';
 import { authHeader } from '@asuna-admin/helpers';
+import { createLogger } from '@asuna-admin/logger';
 
 import ApolloClient, { gql } from 'apollo-boost';
 import * as fp from 'lodash/fp';
@@ -25,7 +25,7 @@ export interface IGraphQLService {
 
 const logger = createLogger('adapters:graphql');
 
-export class GraphqlAdapter {
+export class GraphqlAdapterImpl {
   public client: ApolloClient<any>;
   public serverClient: ApolloClient<any>;
   constructor(uri?: string) {

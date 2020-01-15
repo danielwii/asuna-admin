@@ -14,7 +14,7 @@ import {
   SecurityAdapterImpl,
   WsAdapter,
 } from '@asuna-admin/adapters';
-import { GraphqlAdapter } from '@asuna-admin/adapters/graphql';
+import { GraphqlAdapterImpl } from '@asuna-admin/adapters/graphql';
 import { Config } from '@asuna-admin/config';
 import { AsunaDefinitions } from '@asuna-admin/core/definitions';
 import { AuthState, IStoreConnector, RootState } from '@asuna-admin/store';
@@ -89,7 +89,7 @@ class AppContext {
     models: ModelAdapterImpl;
     ws: WsAdapter;
     components: IComponentService;
-    graphql: GraphqlAdapter;
+    graphql: GraphqlAdapterImpl;
   };
 
   /**
@@ -251,7 +251,7 @@ class AppContext {
       models: new ModelAdapterImpl(register.modelService, register.definitions),
       ws: new WsAdapter(),
       components: register.componentService,
-      graphql: new GraphqlAdapter(Config.get('GRAPHQL_HOST')),
+      graphql: new GraphqlAdapterImpl(Config.get('GRAPHQL_HOST')),
     };
 
     this.syncServerSettings();

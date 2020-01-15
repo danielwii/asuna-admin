@@ -187,9 +187,10 @@ export const columnHelper2 = {
    */
   generateImage: async (key, { model, title }: ModelOpts, opts: CommonColumnOpts = {}): Promise<ColumnProps<any>> => {
     const columnInfo = model ? await SchemaHelper.getColumnInfo(model, key) : undefined;
+    const titleStr = title ?? columnInfo?.config?.info?.name ?? key;
     return {
       key,
-      title: title ?? columnInfo?.config?.info?.name ?? key,
+      title: titleStr,
       dataIndex: key,
       sorter: true,
       render: nullProtectRender(record => {
@@ -199,6 +200,33 @@ export const columnHelper2 = {
             {value ? <AssetsPreview key={key} urls={valueToArrays(value)} /> : record}
           </WithDebugInfo>
         );
+      }),
+    };
+  },
+  generateCalendar: async (
+    key,
+    { model, title }: ModelOpts,
+    opts: CommonColumnOpts = {},
+  ): Promise<ColumnProps<any>> => {
+    const columnInfo = model ? await SchemaHelper.getColumnInfo(model, key) : undefined;
+    const titleStr = title ?? columnInfo?.config?.info?.name ?? key;
+    return {
+      key: castModelKey(key),
+      title: titleStr,
+      dataIndex: castModelKey(key),
+      sorter: true,
+      render: nullProtectRender(record => {
+        const value = extractValue(record, opts.transformer);
+        if (value) {
+          const content = moment(record).calendar();
+          return (
+            <Tooltip title={value}>
+              {content}
+              <div>{moment(record).fromNow()}</div>
+            </Tooltip>
+          );
+        }
+        return record;
       }),
     };
   },

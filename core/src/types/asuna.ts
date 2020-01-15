@@ -183,7 +183,7 @@ export declare module Asuna {
       enablePublished?: boolean;
       renderHelp?: React.ReactChild;
       renderActions?: (extras: RecordRenderExtras) => React.ReactChild;
-      recordActions?: (actions: RecordRenderActions, extras: RecordRenderExtras) => void;
+      recordActions?: (actions: RecordRenderActions, extras: RecordRenderExtras) => ColumnProps<any>;
       rowClassName?: (record: any, index: number) => string;
       customColumns?: { [key: string]: ColumnPropsCreator };
       columns:

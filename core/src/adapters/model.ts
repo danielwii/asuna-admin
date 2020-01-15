@@ -112,6 +112,18 @@ export interface IModelService {
     associationName: string,
     data: Asuna.Schema.ModelConfig & { fields: string[]; ids: string[] | number[] },
   ): Promise<AxiosResponse>;
+
+  uniq(
+    { auth, modelConfig }: { auth: AuthState; modelConfig: Asuna.Schema.ModelConfig },
+    modelName: string,
+    data: { column: string },
+  ): Promise<AxiosResponse>;
+
+  groupCounts(
+    { auth, modelConfig }: { auth: AuthState; modelConfig: Asuna.Schema.ModelConfig },
+    modelName: string,
+    data: { column: string; where: string },
+  ): Promise<AxiosResponse>;
 }
 
 // --------------------------------------------------------------
@@ -154,6 +166,8 @@ export interface ModelAdapter {
       sorter?: any;
     } & Asuna.Schema.ModelConfig,
   ): Promise<Asuna.PageableResponse<T>>;
+  uniq(modelName: string, column: string, where?: object): Promise<string[]>;
+  groupCounts(modelName: string, column: string, where?: object): Promise<{ [name: string]: number }>;
 }
 
 export class ModelAdapterImpl implements ModelAdapter {
@@ -187,7 +201,6 @@ export class ModelAdapterImpl implements ModelAdapter {
       if (!config.model) logger.debug('[ModelAdapter]', '[constructor]', name, 'should set model');
     });
   }
-
   public identifyType = (modelName: string, field: Asuna.Schema.ModelSchema): DynamicFormTypes | undefined => {
     const primaryKeys = this.getPrimaryKeys(modelName);
     const plainKeys = _.map(primaryKeys.concat('created_at', 'updated_at'), castModelKey);
@@ -240,6 +253,20 @@ export class ModelAdapterImpl implements ModelAdapter {
       [_.stubTrue, notFound],
     ])(field);
   };
+
+  uniq(modelName: string, column: string): Promise<string[]> {
+    const auth = AppContext.fromStore('auth');
+    const modelConfig = this.getModelConfig(modelName);
+    return this.service.uniq({ auth, modelConfig }, modelName, { column }).then(fp.get('data'));
+  }
+
+  groupCounts(modelName: string, column: string, where: object): Promise<{ [name: string]: number }> {
+    const auth = AppContext.fromStore('auth');
+    const modelConfig = this.getModelConfig(modelName);
+    return this.service
+      .groupCounts({ auth, modelConfig }, modelName, { column, where: JSON.stringify(where) })
+      .then(fp.get('data'));
+  }
 
   fetch2<T = any>(
     modelName: string,
