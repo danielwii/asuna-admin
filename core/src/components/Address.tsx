@@ -48,5 +48,5 @@ export const parseAddress = (value: string): { codes: string[]; labels: string[]
 
 export const parseAddressStr = (value: string): string => {
   const { labels, detail } = parseAddress(value);
-  return `${labels?.join(',')} ${detail}`;
+  return `${labels ? `${labels.join(',')} ` : ''}${detail || ''}`;
 };
