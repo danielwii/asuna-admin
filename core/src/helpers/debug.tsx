@@ -11,7 +11,7 @@ export const WithDebugInfo: React.FC<{ info: any }> = ({ info, children }) => {
     return (
       <>
         {children}
-        <Popover content={<pre>{util.inspect(info)}</pre>} trigger={'click'}>
+        <Popover content={<pre>{util.inspect(info, { depth: 5 })}</pre>} trigger={'click'}>
           <Icon type="info-circle" style={{ margin: '0 0.2rem' }} />
         </Popover>
       </>
