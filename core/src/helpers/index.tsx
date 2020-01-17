@@ -171,7 +171,7 @@ export const columnHelper2 = {
       ...(await generateSearchColumnProps(key, opts.searchType, { model })),
       render: nullProtectRender((value, record) => {
         let extracted = extractValue(value, opts.transformer);
-        if (columnInfo?.config.info.type === DynamicFormTypes.Address) {
+        if (columnInfo?.config?.info?.type === DynamicFormTypes.Address) {
           extracted = parseAddressStr(extracted);
         }
         return (
