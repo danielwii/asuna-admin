@@ -68,37 +68,19 @@ export interface IApiService {
 const logger = createLogger('adapters:api');
 
 export const apiProxy = {
-  upload(
+  upload: (
     file,
     options = {},
     requestConfig?: AxiosRequestConfig,
-  ): Promise<AxiosResponse<Asuna.Schema.UploadResponse[]>> {
-    return AppContext.ctx.api.upload(file, options, requestConfig);
-  },
-  getVersion(): Promise<AxiosResponse> {
-    return AppContext.ctx.api.getVersion();
-  },
-  acquireOperationToken(service: string): Promise<AxiosResponse> {
-    return AppContext.ctx.api.acquireOperationToken(service);
-  },
-  useOperationToken(token: string): Promise<AxiosResponse> {
-    return AppContext.ctx.api.useOperationToken(token);
-  },
-  releaseOperationToken(token: string): Promise<AxiosResponse> {
-    return AppContext.ctx.api.releaseOperationToken(token);
-  },
-  getExcelModel(auth, data, options): Promise<AxiosResponse> {
-    return AppContext.ctx.api.getExcelModel(auth, data, options);
-  },
-  importExcel(auth, data, options): Promise<AxiosResponse> {
-    return AppContext.ctx.api.importExcel(auth, data, options);
-  },
-  exportExcel(auth, data, options): Promise<AxiosResponse> {
-    return AppContext.ctx.api.exportExcel(auth, data, options);
-  },
-  destroyKv(data): Promise<AxiosResponse> {
-    return AppContext.ctx.api.destroyKv(data);
-  },
+  ): Promise<AxiosResponse<Asuna.Schema.UploadResponse[]>> => AppContext.ctx.api.upload(file, options, requestConfig),
+  getVersion: (): Promise<AxiosResponse> => AppContext.ctx.api.getVersion(),
+  acquireOperationToken: (service: string): Promise<AxiosResponse> => AppContext.ctx.api.acquireOperationToken(service),
+  useOperationToken: (token: string): Promise<AxiosResponse> => AppContext.ctx.api.useOperationToken(token),
+  releaseOperationToken: (token: string): Promise<AxiosResponse> => AppContext.ctx.api.releaseOperationToken(token),
+  getExcelModel: (auth, data, options): Promise<AxiosResponse> => AppContext.ctx.api.getExcelModel(auth, data, options),
+  importExcel: (auth, data, options): Promise<AxiosResponse> => AppContext.ctx.api.importExcel(auth, data, options),
+  exportExcel: (auth, data, options): Promise<AxiosResponse> => AppContext.ctx.api.exportExcel(auth, data, options),
+  destroyKv: (data): Promise<AxiosResponse> => AppContext.ctx.api.destroyKv(data),
 };
 
 export class ApiAdapter {
@@ -123,24 +105,14 @@ export class ApiAdapter {
     return this.service.getVersion(auth);
   };
 
-  acquireOperationToken = (service: string): Promise<AxiosResponse> => {
-    return this.service.acquireOperationToken({ payload: { service } });
-  };
-  useOperationToken = (token: string): Promise<AxiosResponse> => {
-    return this.service.useOperationToken({ payload: { token } });
-  };
-  releaseOperationToken = (token: string): Promise<AxiosResponse> => {
-    return this.service.releaseOperationToken({ payload: { token } });
-  };
-  getExcelModel = (param, data, options): Promise<AxiosResponse> => {
-    return this.service.getExcelModel(param, data, options);
-  };
-  importExcel = (param, data, options): Promise<AxiosResponse> => {
-    return this.service.importExcel(param, data, options);
-  };
-  exportExcel = (param, data, options): Promise<AxiosResponse> => {
-    return this.service.exportExcel(param, data, options);
-  };
+  acquireOperationToken = (service: string): Promise<AxiosResponse> =>
+    this.service.acquireOperationToken({ payload: { service } });
+  useOperationToken = (token: string): Promise<AxiosResponse> => this.service.useOperationToken({ payload: { token } });
+  releaseOperationToken = (token: string): Promise<AxiosResponse> =>
+    this.service.releaseOperationToken({ payload: { token } });
+  getExcelModel = (param, data, options): Promise<AxiosResponse> => this.service.getExcelModel(param, data, options);
+  importExcel = (param, data, options): Promise<AxiosResponse> => this.service.importExcel(param, data, options);
+  exportExcel = (param, data, options): Promise<AxiosResponse> => this.service.exportExcel(param, data, options);
   destroyKv = (data): Promise<AxiosResponse> => {
     const auth = AppContext.fromStore('auth');
     return this.service.destroyKv(auth, data);

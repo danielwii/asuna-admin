@@ -1,5 +1,4 @@
 import { responseProxy } from '@asuna-admin/adapters';
-import { DrawerButton } from './DrawerButton';
 import { StoreContext } from '@asuna-admin/context';
 import { ActionEvent, AppContext, EventBus, EventType } from '@asuna-admin/core';
 import {
@@ -22,6 +21,7 @@ import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
 import React, { useContext, useEffect, useState } from 'react';
 import { useAsync } from 'react-use';
+import { DrawerButton } from './DrawerButton';
 
 const logger = createLogger('components:data-table');
 

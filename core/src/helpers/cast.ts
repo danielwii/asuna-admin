@@ -1,6 +1,6 @@
-import { toCamelCase, toSnakeCase } from 'node-buffs';
-
 import { Config } from '@asuna-admin/config';
+import { AppContext } from '@asuna-admin/core';
+import { toCamelCase, toSnakeCase } from 'node-buffs';
 
 export function castModelKey(key) {
   if (Config.is('MODEL_KEYS_CASE', 'Camel')) {
@@ -28,4 +28,15 @@ export function htmlEntities(unsafeHtml: string): string {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
+}
+
+export function parseType(
+  key: 'ActivityStatus' | 'ApplyStatus' | 'EnrollmentStatus' | 'InteractionType' | 'Sex',
+  name: string,
+): string {
+  const value = AppContext.constants?.[key]?.[name];
+  if (!value) {
+    console.warn('not found for constants', { key, name });
+  }
+  return value ?? name;
 }

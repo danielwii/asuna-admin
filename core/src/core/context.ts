@@ -97,6 +97,7 @@ class AppContext {
    */
   private static _dispatch: Dispatch;
   private static _subject;
+  private static _constants;
   private static _isServer = typeof window === 'undefined';
   private static _storeConnector: IStoreConnector<RootState>;
 
@@ -183,6 +184,10 @@ class AppContext {
     AppContext._isServer = !!isServer;
   }
 
+  public static set constants(constants: any) {
+    this._constants = constants;
+  }
+
   public static get isServer() {
     return AppContext._isServer;
   }
@@ -192,7 +197,7 @@ class AppContext {
   }
 
   public static get isDebugMode() {
-    return (global as any).DEBUG_MODE;
+    return (global as any).DEBUG_MODE || true;
   }
 
   public static get publicConfig() {
@@ -215,12 +220,20 @@ class AppContext {
     return AppContext._context;
   }
 
-  public static syncServerSettings() {
-    AppContext.ctx.graphql
-      .loadSystemSettings()
-      .then(
-        settings => (this.serverSettings = Object.assign({}, ...settings.map(setting => ({ [setting.key]: setting })))),
-      );
+  public static get constants() {
+    return AppContext._constants;
+  }
+
+  public static async syncSettings() {
+    const settings = await AppContext.ctx.graphql.loadSystemSettings();
+    if (settings) {
+      this.serverSettings = Object.assign({}, ...settings.map(setting => ({ [setting.key]: setting })));
+    }
+
+    const value = await AppContext.ctx.graphql.loadKv('app.settings', 'constants');
+    if (value) {
+      this.constants = value.value;
+    }
   }
 
   /**
@@ -239,7 +252,7 @@ class AppContext {
     return func(AppContext.fromStore('auth'));
   }
 
-  private static registerIndex(register: IIndexRegister) {
+  private static registerIndex(register: IIndexRegister): Promise<any> {
     AppContext._context = {
       ...AppContext._context,
       auth: new AuthAdapter(register.createAuthService()),
@@ -254,7 +267,7 @@ class AppContext {
       graphql: new GraphqlAdapterImpl(Config.get('GRAPHQL_HOST')),
     };
 
-    this.syncServerSettings();
+    return this.syncSettings();
   }
 }
 

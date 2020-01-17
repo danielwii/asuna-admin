@@ -176,7 +176,7 @@ export const columnHelper2 = {
         }
         return (
           <WithDebugInfo info={{ key, title, model, value, record, extracted, opts, columnInfo }}>
-            {opts.render ? opts.render(extracted, value) : <TooltipContent value={extracted} />}
+            {opts.render ? opts.render(extracted, record) : <TooltipContent value={extracted} />}
           </WithDebugInfo>
         );
       }),
@@ -394,7 +394,7 @@ export const columnHelper = {
       const extracted = extractValue(value, opts.transformer);
       return (
         <WithDebugInfo info={{ key, title, value, record, extracted, opts }}>
-          {opts.render ? opts.render(extracted, value) : <TooltipContent value={extracted} />}
+          {opts.render ? opts.render(extracted, record) : <TooltipContent value={extracted} />}
         </WithDebugInfo>
       );
     }),

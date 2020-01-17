@@ -44,13 +44,13 @@ export class GraphqlAdapterImpl {
         ${queryString}
       `,
     });
-    AppContext.syncServerSettings();
+    AppContext.syncSettings();
     return promise;
   }
 
   async queryT(query: any, client = this.client) {
     const promise = client.query({ query });
-    AppContext.syncServerSettings();
+    AppContext.syncSettings();
     return promise;
   }
 
@@ -85,6 +85,25 @@ export class GraphqlAdapterImpl {
         `,
       })
       .then(fp.get('data.kvs'));
+  }
+
+  async loadKv(collection: string, key: string) {
+    return this.serverClient
+      .query({
+        // fetchPolicy: 'cache-first',
+        variables: { nCollection: collection, nKey: key },
+        query: gql`
+          query loadKv($nCollection: String, $nKey: String) {
+            kv(collection: $nCollection, key: $nKey) {
+              key
+              name
+              type
+              value
+            }
+          }
+        `,
+      })
+      .then(fp.get('data.kv'));
   }
 
   async loadGraphs() {
