@@ -669,3 +669,14 @@ function TextLink({ url, text }: { url: string; text?: string }) {
     </a>
   );
 }
+
+export function parseType(
+  key: 'ActivityStatus' | 'ApplyStatus' | 'EnrollmentStatus' | 'InteractionType' | 'Sex',
+  name: string,
+): string {
+  const value = AppContext.constants?.[key]?.[name];
+  if (!value) {
+    console.warn('not found for constants', { key, name });
+  }
+  return value ?? name;
+}
