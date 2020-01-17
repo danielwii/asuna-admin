@@ -73,17 +73,20 @@ const WeChatQrCodeFuture = React.lazy(
         }).then(response => response.json());
         subscription.unsubscribe();
         resolve({
-          default: () => (
-            <div>
+          default: () =>
+            url ? (
               <div>
-                <QRCode value={url} />
+                <div>
+                  <QRCode value={url} />
+                </div>
+                <div>
+                  <Icon type="qrcode" />
+                  微信扫码登录
+                </div>
               </div>
-              <div>
-                <Icon type="qrcode" />
-                微信扫码登录
-              </div>
-            </div>
-          ),
+            ) : (
+              <div>无法获取到微信二维码信息</div>
+            ),
         } as any);
       });
     }),
