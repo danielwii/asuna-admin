@@ -11,3 +11,4 @@ components/*
 bff/*
 /config.js
 /schema.json
+__generated__

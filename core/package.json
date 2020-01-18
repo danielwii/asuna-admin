@@ -36,7 +36,8 @@
     "test": "ENV=test jest",
     "changelog": "conventional-changelog -p asuna-admin -i CHANGELOG.md",
     "init-changelog": "conventional-changelog -p asuna-admin -i CHANGELOG.md -r 0",
-    "check:circular": "npx madge --circular --extensions ts ./"
+    "check:circular": "npx madge --circular --extensions ts ./",
+    "codegen:generate": "apollo codegen:generate --endpoint http://localhost:5100/graphql --target typescript --includes=services/*.ts --tagName gql --addTypename"
   },
   "peerDependencies": {},
   "dependencies": {
@@ -141,6 +142,7 @@
     "@types/video.js": "^7.3.3",
     "@types/webpack": "^4.41.2",
     "@zeit/next-typescript": "^1.1.1",
+    "apollo": "^2.21.3",
     "babel-jest": "^24.9.0",
     "babel-loader": "^8.0.6",
     "babel-plugin-async-import": "^2.1.0",
