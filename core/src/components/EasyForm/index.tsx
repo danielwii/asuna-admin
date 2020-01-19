@@ -1,7 +1,6 @@
-import { DynamicJsonArrayTable } from '@asuna-admin/components/EasyForm/table';
 import { Config } from '@asuna-admin/config';
 import { AppContext } from '@asuna-admin/core';
-import { DebugInfo, WithDebugInfo } from '@asuna-admin/helpers';
+import { WithDebugInfo } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 import { FormControl, FormControlLabel, FormHelperText, Switch, TextField } from '@material-ui/core';
 import * as antd from 'antd';
@@ -15,6 +14,7 @@ import * as util from 'util';
 
 import { ImageUploader } from '../DynamicForm/ImageUploader';
 import { FormField, FormFieldDef, FormFields, FormFieldsGroup, FormFieldType } from './interfaces';
+import { DynamicJsonArrayTable } from './table';
 
 export * from './interfaces';
 
