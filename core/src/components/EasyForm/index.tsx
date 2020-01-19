@@ -1,37 +1,24 @@
+import { DynamicJsonArrayTable } from '@asuna-admin/components/EasyForm/table';
 import { Config } from '@asuna-admin/config';
 import { AppContext } from '@asuna-admin/core';
-import { DebugInfo } from '@asuna-admin/helpers';
+import { DebugInfo, WithDebugInfo } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 import { FormControl, FormControlLabel, FormHelperText, Switch, TextField } from '@material-ui/core';
 import * as antd from 'antd';
 import { Divider, Popconfirm } from 'antd';
 import * as formik from 'formik';
-import { FieldInputProps } from 'formik';
+import { FieldInputProps, FormikProps } from 'formik';
 import * as _ from 'lodash';
 import * as React from 'react';
 import Highlight from 'react-highlight';
-import { ImageUploader } from './DynamicForm/ImageUploader';
+import * as util from 'util';
+
+import { ImageUploader } from '../DynamicForm/ImageUploader';
+import { FormField, FormFieldDef, FormFields, FormFieldsGroup, FormFieldType } from './interfaces';
+
+export * from './interfaces';
 
 const logger = createLogger('components:easy-form');
-
-export enum FormFieldType {
-  string = 'string',
-  number = 'number',
-  image = 'image',
-  text = 'text',
-  boolean = 'boolean',
-}
-
-export type FormField = {
-  name: string;
-  type: FormFieldType;
-  validate?: (value) => string | null;
-  help?: React.ReactChild;
-  required?: boolean;
-  defaultValue?: boolean | number | string;
-};
-
-export type FormFields = { [key: string]: FormField };
 
 interface FormProps<FieldsType> {
   message?: string | React.ReactChild;
@@ -46,10 +33,12 @@ interface EasyFormProps extends FormProps<FormFields> {
 }
 
 function RenderInputComponent({
+  form,
   fieldDef,
   field,
   value,
 }: {
+  form: FormikProps<any>;
   fieldDef: FormFieldDef;
   field: FieldInputProps<any>;
   value: any;
@@ -89,23 +78,75 @@ function RenderInputComponent({
         </>
       );
     }
+    case FormFieldType.string:
     case FormFieldType.text: {
       const label = field.name === fieldDef.name ? field.name : `${field.name} / ${fieldDef.name}`;
       return (
         <>
           {/*<antd.Input.TextArea id={field.name} {...field} autoSize rows={4} value={value} />*/}
           <TextField id={field.name} multiline {...field} value={value} label={label} />
-          <DebugInfo data={{ field, fieldDef, value }} />
+          {/*<DebugInfo data={{ field, fieldDef, value }} />*/}
+        </>
+      );
+    }
+    case FormFieldType.wxTmplData: {
+      const label = field.name === fieldDef.name ? field.name : `${field.name} / ${fieldDef.name}`;
+      return (
+        <>
+          <label>{label}</label>
+          <DynamicJsonArrayTable
+            value={value}
+            createItem={index => ({ [`${index}-key`]: '' })}
+            preview={item => {
+              const parsedItem = _.assign(
+                {},
+                ..._.chain(item)
+                  .toPairs()
+                  .groupBy(([key]) => key.split('-')[0])
+                  .map(value => {
+                    const values = _.assign({}, ...value.map(([key, value]) => ({ [key.split('-')[1]]: value })));
+                    return { [values.key]: _.omit(values, 'key') };
+                  })
+                  .value(),
+              );
+              return <pre>{util.inspect(parsedItem)}</pre>;
+            }}
+            render={(formik, item, index) => (
+              <>
+                <TextField
+                  name={`${index}-key`}
+                  value={item?.[`${index}-key`]}
+                  onChange={event => formik.handleChange(event)}
+                  label="key"
+                />{' '}
+                <TextField
+                  name={`${index}-color`}
+                  value={item?.[`${index}-color`]}
+                  onChange={event => formik.handleChange(event)}
+                  label="color"
+                />
+                <TextField
+                  name={`${index}-value`}
+                  value={item?.[`${index}-value`]}
+                  onChange={event => formik.handleChange(event)}
+                  label="value"
+                  fullWidth
+                />
+              </>
+            )}
+            onChange={values => form.setFieldValue(field.name, values)}
+          />
+          {/*<DebugInfo data={value} type="util" />*/}
         </>
       );
     }
     default: {
       const label = field.name === fieldDef.name ? field.name : `${field.name} / ${fieldDef.name}`;
       return (
-        <>
+        <WithDebugInfo info={{ field, fieldDef, value, label }}>
           <TextField id={field.name} type={fieldDef.field.type} {...field} value={value} label={label} />
           {/*<DebugInfo data={{ field, fieldDef, value }} />*/}
-        </>
+        </WithDebugInfo>
       );
     }
   }
@@ -126,6 +167,7 @@ const InnerForm = (props: EasyFormProps & formik.FormikProps<formik.FormikValues
             return (
               <FormControl key={field.name} error={hasError} fullWidth={true}>
                 <RenderInputComponent
+                  form={form}
                   fieldDef={{ field: formField, name: formField.name }}
                   field={field}
                   value={value}
@@ -209,10 +251,6 @@ interface ValuesFormProps extends FormProps<GroupFormFields> {
   fieldValues: { [key: string]: any };
 }
 
-export type FormFieldDef = { name: string; field: FormField };
-
-export type FormFieldsGroup = { name?: string; fields: FormFieldDef[] };
-
 export type GroupFormFields = { [groupKey: string]: FormFieldsGroup };
 
 interface GroupEasyFormProps extends ValuesFormProps {
@@ -256,7 +294,7 @@ const GroupInnerForm = (props: GroupEasyFormProps & formik.FormikProps<formik.Fo
                         <FormControl error={hasError} fullWidth={true}>
                           {/*<InputLabel htmlFor={field.name}>{field.name} / {fieldDef.name}</InputLabel>*/}
                           {/*<Input id={field.name} type={formField.type} {...field} value={value} />*/}
-                          <RenderInputComponent fieldDef={fieldDef} field={field} value={value} />
+                          <RenderInputComponent form={form} fieldDef={fieldDef} field={field} value={value} />
                           {formField.help && <FormHelperText>{formField.help}</FormHelperText>}
                           {hasError && <FormHelperText>{form.errors[formField.name]}</FormHelperText>}
                           <Divider type="horizontal" style={{ margin: '0.5rem 0' }} />
