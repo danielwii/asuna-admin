@@ -131,6 +131,7 @@ function RenderInputComponent({
                   onChange={event => formik.handleChange(event)}
                   label="value"
                   fullWidth
+                  multiline
                 />
               </>
             )}
