@@ -17,12 +17,12 @@ export async function getBase64(image): Promise<string | ArrayBuffer | null> {
 }
 
 export function validateFile(file: { type: string; size: number }): boolean {
-  console.log(file);
+  logger.log('validate file', file);
   const isImage = ['image/jpeg', 'image/png', 'image/gif'].includes(file.type);
   const isVideo = ['video/mp4'].includes(file.type);
   const isLt20M = file.size / 1024 / 1024 < 20;
-  const isLt100M = file.size / 1024 / 1024 < 100;
-  logger.log('[validateFile]', file, { isImage, isVideo, isLt100M });
+  const isLt1000M = file.size / 1024 / 1024 < 1000;
+  logger.log('[validateFile]', file, { isImage, isVideo, isLt1000M });
 
   if (isImage) {
     if (!isLt20M) {
@@ -33,8 +33,8 @@ export function validateFile(file: { type: string; size: number }): boolean {
   }
 
   if (isVideo) {
-    if (!isLt100M) {
-      message.error('Video must smaller than 100MB!');
+    if (!isLt1000M) {
+      message.error('Video must smaller than 1000MB!');
       return false;
     }
     return true;
