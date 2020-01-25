@@ -32,6 +32,7 @@ export * from './app.actions';
 export * from './auth.redux';
 export * from './auth.actions';
 export * from './models.redux';
+export * from './router.redux';
 // export * from './content.redux';
 export * from './middlewares';
 
