@@ -2,10 +2,10 @@ const { join, relative, resolve } = require('path');
 const tsconfig = require('tsconfig-extends');
 const { Project } = require('ts-morph');
 const _ = require('lodash');
-const fs = require('fs-extra');
+const fs = require('fs');
 
 const dist = resolve('dist');
-const detectedSrc = !!fs.statSync(`${dist}/src`);
+const detectedSrc = !!fs.existsSync(`${dist}/src`);
 
 const opts = {
   roots: [detectedSrc ? `${dist}/src` : dist],
@@ -37,7 +37,7 @@ const handleSourceFile = root => async sourceFile => {
         const prefix = _.findKey(opts.alias, (v, k) => value.startsWith(k));
         if (prefix) {
           const relativePathToDepsModule = join(root, opts.alias[prefix], value.slice(prefix.length + 1));
-          console.log({ root, opts, prefix, value, relativePathToDepsModule });
+          // console.log({ root, opts, prefix, value, relativePathToDepsModule });
           // console.log({
           //   prefix,
           //   sourceFileAbsolutePath,
@@ -51,7 +51,7 @@ const handleSourceFile = root => async sourceFile => {
 
             if (resultPath) {
               if (resultPath.startsWith('../../')) {
-                console.log('result path is', resultPath);
+                // console.log('result path is', resultPath);
                 resultPath = resultPath.slice(3);
               }
 
