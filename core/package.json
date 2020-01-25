@@ -150,6 +150,7 @@
     "babel-plugin-module-resolver": "^4.0.0",
     "babel-plugin-styled-components": "^1.10.6",
     "babel-plugin-ts-optchain": "^1.1.5",
+    "fs-extra": "^8.1.0",
     "glob": "^7.1.6",
     "jest": "^24.9.0",
     "jest-next-dynamic": "^1.0.1",
