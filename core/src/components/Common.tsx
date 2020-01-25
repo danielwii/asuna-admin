@@ -1,9 +1,9 @@
 import { Button } from 'antd';
-import { ErrorInfo } from 'asuna-admin';
 import _ from 'lodash';
 import * as React from 'react';
 import { FoldingCube } from 'styled-spinkit';
 import * as util from 'util';
+import { ErrorInfo } from './ErrorInfo';
 
 export const WithLoading: React.FC<{ loading: boolean; error: any; retry? }> = ({
   loading,
