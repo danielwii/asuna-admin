@@ -1,7 +1,7 @@
 import {
   AdminAdapter,
   AdminAdapterImpl,
-  ApiAdapter,
+  ApiAdapterImpl,
   AuthAdapter,
   IAdminService,
   IApiService,
@@ -83,7 +83,7 @@ class AppContext {
     auth: AuthAdapter;
     response: ResponseAdapter;
     menu: MenuAdapter;
-    api: ApiAdapter;
+    api: ApiAdapterImpl;
     admin: AdminAdapter;
     security: SecurityAdapterImpl;
     models: ModelAdapterImpl;
@@ -258,7 +258,7 @@ class AppContext {
       auth: new AuthAdapter(register.createAuthService()),
       response: new ResponseAdapter(),
       menu: new MenuAdapter(register.definitions.sideMenus),
-      api: new ApiAdapter(register.createApiService()),
+      api: new ApiAdapterImpl(register.createApiService()),
       admin: new AdminAdapterImpl(register.createAdminService()),
       security: new SecurityAdapterImpl(register.createSecurityService()),
       models: new ModelAdapterImpl(register.modelService, register.definitions),

@@ -1,3 +1,5 @@
+// eslint-disable-next-line eslint-comments/disable-enable-pair
+/* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/explicit-function-return-type */
 const debug = require('debug');
 const url = require('url');
 const { createProxyServer } = require('http-proxy');
@@ -32,9 +34,7 @@ function createProxy(api) {
       response.writeHead(500, { 'content-type': 'application/json' });
     }
     if (error.code === 'ECONNREFUSED') {
-      response.end(
-        JSON.stringify({ message: 'Sorry, our API server is down. Please come back later.' }),
-      );
+      response.end(JSON.stringify({ message: 'Sorry, our API server is down. Please come back later.' }));
     } else {
       response.end(JSON.stringify({ error, message: error.message }));
     }

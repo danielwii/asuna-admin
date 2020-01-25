@@ -14,17 +14,17 @@
     "preserveConstEnums": true,
     "sourceMap": true,
     "skipLibCheck": true,
+    "strict": false,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
     "outDir": "dist",
     "baseUrl": "./src",
     "paths": {
       "asuna-admin": ["index.ts"],
       "@asuna-admin/*": ["*"]
-    },
-    "strict": false,
-    "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true
+    }
   },
   "exclude": ["**/*.spec.*", "node_modules"],
   "include": ["next-env.d.ts", "src/**/*.ts*", "./services/**/*.ts*", "./components/**/*.ts*", "./pages/**/*.ts*"]

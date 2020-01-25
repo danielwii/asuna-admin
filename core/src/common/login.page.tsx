@@ -1,3 +1,4 @@
+/** @jsx jsx */
 import { NextSocketType, WsAdapter } from '@asuna-admin/adapters';
 import { LogoCanvas, Snow, Sun } from '@asuna-admin/components';
 import { Config } from '@asuna-admin/config';
@@ -8,6 +9,7 @@ import { WithStyles } from '@asuna-admin/layout';
 import { createLogger } from '@asuna-admin/logger';
 import { AppState, authActions, RootState } from '@asuna-admin/store';
 import { routerActions } from '@asuna-admin/store/router.redux';
+import { css, jsx } from '@emotion/core';
 import { Divider, Icon } from 'antd';
 import ApolloClient, { gql } from 'apollo-boost';
 import * as _ from 'lodash';
@@ -21,7 +23,7 @@ import { Subscription } from 'rxjs';
 import * as shortid from 'shortid';
 import styled from 'styled-components';
 
-const logger = createLogger('pages:login');
+const logger = createLogger('common:login');
 
 // --------------------------------------------------------------
 // Main
@@ -52,85 +54,28 @@ export type LoginInitialProps = Partial<{
   weChatLoginEnable: boolean;
   tempId: string;
   userAgent: string;
+  site: { logo?: string; title?: string };
 }>;
 
 export type ILoginPageProps = ReduxProps & {
   app: AppState;
   register: ILoginRegister & IIndexRegister;
   hideCharacteristics?: boolean;
+  customLogin?: (site, enableWeChat) => React.ReactElement;
 } & LoginInitialProps;
 
-const WeChatQrCodeFuture = React.lazy(
-  () =>
-    new Promise(resolve => {
-      const subscription = WsAdapter.subject.subscribe(async ({ id, socket }) => {
-        const body = { type: 'admin-login', value: id };
-        logger.log('generate ticket', body, { id, socket });
-        const { url } = await fetch(`/api/v1/wx/ticket`, {
-          method: 'post',
-          body: JSON.stringify(body),
-          headers: { 'Content-Type': 'application/json' },
-        }).then(response => response.json());
-        subscription.unsubscribe();
-        resolve({
-          default: () =>
-            url ? (
-              <div>
-                <div>
-                  <QRCode value={url} />
-                </div>
-                <div>
-                  <Icon type="qrcode" />
-                  微信扫码登录
-                </div>
-              </div>
-            ) : (
-              <div>无法获取到微信二维码信息</div>
-            ),
-        } as any);
-      });
-    }),
-);
-
-type AdminLoginEvent =
-  | { type: 'activated'; token: { accessToken: string }; username: string }
-  | { type: 'unactivated' }
-  | { type: 'invalid' };
-
-export class LoginPage extends React.Component<
-  ILoginPageProps,
-  { subscription: Subscription; message?: string; weChatLoginEnable?: boolean }
-> {
+export class LoginPage extends React.Component<ILoginPageProps> {
   constructor(props) {
     super(props);
 
-    const { dispatch, register, weChatLoginEnable } = this.props;
+    const { dispatch, register } = this.props;
     AppContext.setup(register);
     AppContext.regDispatch(dispatch);
-
-    const subscription = WsAdapter.subject.subscribe(({ socket }: NextSocketType) => {
-      socket.on('admin-login', value => {
-        const event = JSON.parse(value) as AdminLoginEvent;
-        let message;
-        logger.log(`[admin-login]`, event);
-        if (event.type === 'invalid') {
-          message = '请先关注服务号';
-        } else if (event.type === 'unactivated') {
-          message = '请先关注服务号或联系管理员查询对应的权限';
-        } else {
-          subscription.unsubscribe();
-          dispatch(authActions.loginSuccess(event.username, event.token.accessToken));
-          dispatch(routerActions.toIndex());
-        }
-        this.setState({ weChatLoginEnable: this.state.weChatLoginEnable || weChatLoginEnable, message });
-      });
-    });
-    this.state = { subscription };
   }
 
   componentWillUnmount() {
-    logger.log('[componentWillUnmount]', 'destroy subscriptions');
-    this.state.subscription?.unsubscribe();
+    // logger.log('[componentWillUnmount]', 'destroy subscriptions');
+    // this.state.subscription?.unsubscribe();
   }
 
   shouldComponentUpdate(
@@ -147,8 +92,7 @@ export class LoginPage extends React.Component<
   }
 
   render() {
-    const { hideCharacteristics, weChatLoginEnable } = this.props;
-    const { message } = this.state;
+    const { hideCharacteristics, weChatLoginEnable, dispatch, site, customLogin } = this.props;
 
     logger.log(`render ...`, this.props, this.state);
 
@@ -158,29 +102,17 @@ export class LoginPage extends React.Component<
           {!hideCharacteristics && (
             <>
               <Snow />
+              {/*
               <Sun />
               <StyledLogoWrapper>
                 <LogoCanvas />
               </StyledLogoWrapper>
+*/}
             </>
           )}
-          {/*<pre>{util.inspect({ clientId })}</pre>*/}
-          {weChatLoginEnable || this.state.weChatLoginEnable ? (
-            <StyledLoginWrapper
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '40rem',
-              }}
-            >
-              <LoginContainer {...this.props} />
-              <Divider type="vertical" />
-              <React.Suspense fallback={<PacmanLoader />}>
-                <WeChatQrCodeFuture />
-              </React.Suspense>
-              {message}
-            </StyledLoginWrapper>
+
+          {customLogin ? (
+            customLogin(site, weChatLoginEnable)
           ) : (
             <StyledLoginWrapper>
               <LoginContainer {...this.props} />
@@ -213,7 +145,13 @@ export const wechatLoginGetInitial = async (ctx: NextPageContext): Promise<Login
     const { data } = await client.query({
       query: gql`
         {
-          kv(collection: "system.wechat", key: "config") {
+          wechat: kv(collection: "system.wechat", key: "config") {
+            key
+            name
+            type
+            value
+          }
+          site: kv(collection: "app.settings", key: "site") {
             key
             name
             type
@@ -223,9 +161,10 @@ export const wechatLoginGetInitial = async (ctx: NextPageContext): Promise<Login
       `,
     });
 
-    const weChatLoginEnable = _.get(data, 'kv.value.values.wechat.login');
-    // console.log({ userAgent, weChatLoginEnable, tempId });
-    return { userAgent, weChatLoginEnable, tempId };
+    const weChatLoginEnable = _.get(data, 'wechat.value.values.wechat.login');
+    const site = _.get(data, 'site.value');
+    console.log({ userAgent, weChatLoginEnable, tempId, site });
+    return { userAgent, weChatLoginEnable, tempId, site };
   } catch (e) {
     console.error(e);
   }

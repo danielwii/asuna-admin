@@ -6,7 +6,6 @@ import zhCN from 'antd/lib/locale/zh_CN';
 
 import 'antd/dist/antd.css';
 import 'draft-js/dist/Draft.css';
-// import 'braft-editor/dist/index.css';
 import 'video.js/dist/video-js.css';
 
 export default ({ children, hideCharacteristics }) => (
@@ -15,6 +14,7 @@ export default ({ children, hideCharacteristics }) => (
       <title>
         {hideCharacteristics ? '' : 'Asuna '}Admin : {getConfig().publicRuntimeConfig.env}
       </title>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css" />
       {/*<link rel="icon" type="image/png" sizes="32x32" href="/static/icons/favicon-32x32.png" />*/}
       {/*<link rel="icon" type="image/png" sizes="16x16" href="/static/icons/favicon-16x16.png" />*/}
     </NextHead>

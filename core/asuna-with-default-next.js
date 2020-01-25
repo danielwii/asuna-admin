@@ -1,13 +1,12 @@
-/* eslint-disable import/no-extraneous-dependencies,no-console,no-param-reassign,no-unused-vars */
+// eslint-disable-next-line eslint-comments/disable-enable-pair
+/* eslint-disable import/no-extraneous-dependencies,no-console,no-param-reassign,no-unused-vars,@typescript-eslint/no-var-requires,no-use-before-define,@typescript-eslint/explicit-function-return-type */
 const webpack = require('webpack');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
-const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
+const { TsconfigPathsPlugin } = require('tsconfig-paths-webpack-plugin');
 const pkg = require('./package.json');
 
 const contextReplacementPlugin = new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /zh/);
-const tsconfigPathsPlugin = new TsconfigPathsPlugin({
-  logLevel: 'info',
-});
+const tsconfigPathsPlugin = new TsconfigPathsPlugin({ logLevel: 'INFO' });
 
 // fix: prevents error when .css files are required by node
 if (typeof require !== 'undefined') {

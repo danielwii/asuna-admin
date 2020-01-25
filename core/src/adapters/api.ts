@@ -4,9 +4,7 @@ import { Asuna } from '@asuna-admin/types';
 
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 
-// --------------------------------------------------------------
-// Types
-// --------------------------------------------------------------
+const logger = createLogger('adapters:api');
 
 export interface IApiService {
   upload(
@@ -59,13 +57,9 @@ export interface IApiService {
     data: { collection: string; key: string },
     options?: { requestConfig?: AxiosRequestConfig },
   ): Promise<AxiosResponse>;
+
+  getWxTicket(auth: { token: string | null }, data: { type: 'admin-login'; value: string }): Promise<AxiosResponse>;
 }
-
-// --------------------------------------------------------------
-// Main
-// --------------------------------------------------------------
-
-const logger = createLogger('adapters:api');
 
 export const apiProxy = {
   upload: (
@@ -83,11 +77,18 @@ export const apiProxy = {
   destroyKv: (data): Promise<AxiosResponse> => AppContext.ctx.api.destroyKv(data),
 };
 
-export class ApiAdapter {
-  private service: IApiService;
+export interface ApiAdapter {
+  getWxTicket(data: { type: 'admin-login'; value: string }): Promise<{ url: string }>;
+}
 
+export class ApiAdapterImpl implements ApiAdapter {
+  private service: IApiService;
   constructor(service: IApiService) {
     this.service = service;
+  }
+
+  getWxTicket(data): Promise<{ url: string }> {
+    return AppContext.withAuth(auth => this.service.getWxTicket(auth, data).then(res => res.data));
   }
 
   upload = (

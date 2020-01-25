@@ -14,12 +14,12 @@
     "asuna-with-default-next.js",
     "asuna-utils.js"
   ],
-  "main": "dist/index.js",
-  "module": "dist/index.js",
+  "main": "src/index.ts",
+  "module": "src/index.ts",
   "types": "declaration/index.d.ts",
   "scripts": {
     "autod": "autod",
-    "dev": "NODE_ENV=dev node $NODE_DEBUG_OPTION server.js",
+    "dev": "NODE_ENV=dev node -r ts-node/register $NODE_DEBUG_OPTION server.js",
     "clean": "rm -rf ./dist ./declaration ./.next",
     "prebuild-ignore": "yarn clean",
     "create-type-schema": "node type-loader.js && quicktype schema.json --just-types --no-combine-classes --no-maps --alphabetize-properties -o ./services/type-schema.ts",
@@ -48,6 +48,7 @@
     "antd": "^3.26.7",
     "apollo-boost": "^0.4.7",
     "apollo-server-koa": "^2.9.16",
+    "asuna-components": "0.1.0",
     "axios": "^0.19.1",
     "bluebird": "^3.7.2",
     "braft-editor": "^2.3.8",

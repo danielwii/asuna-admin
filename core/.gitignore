@@ -5,6 +5,7 @@ dist
 declaration
 
 # project
+adapters/*
 pages/*
 services/*
 components/*
