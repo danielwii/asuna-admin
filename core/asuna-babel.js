@@ -14,6 +14,7 @@ module.exports = api => {
           'class-properties': {},
         },
       ],
+      '@emotion/babel-preset-css-prop',
     ],
     plugins: [
       'babel-plugin-styled-components',

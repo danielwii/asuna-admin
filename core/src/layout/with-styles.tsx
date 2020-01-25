@@ -7,6 +7,7 @@ import zhCN from 'antd/lib/locale/zh_CN';
 import 'antd/dist/antd.css';
 import 'draft-js/dist/Draft.css';
 import 'video.js/dist/video-js.css';
+import 'spinkit/spinkit.min.css'
 
 export default ({ children, hideCharacteristics }) => (
   <ConfigProvider locale={zhCN}>
