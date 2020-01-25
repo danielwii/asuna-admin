@@ -10,7 +10,7 @@
 
 ## Why Asuna-Admin
 
-A contract-first admin for developers is necessary for any different server languages.
+emm....
 
 ## Roadmap
 
