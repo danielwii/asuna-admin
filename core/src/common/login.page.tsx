@@ -163,7 +163,7 @@ export const wechatLoginGetInitial = async (ctx: NextPageContext): Promise<Login
 
     const weChatLoginEnable = _.get(data, 'wechat.value.values.wechat.login');
     const site = _.get(data, 'site.value');
-    console.log({ userAgent, weChatLoginEnable, tempId, site });
+    // console.log({ userAgent, weChatLoginEnable, tempId, site });
     return { userAgent, weChatLoginEnable, tempId, site };
   } catch (e) {
     console.error(e);

@@ -20,7 +20,7 @@
   "scripts": {
     "autod": "autod",
     "dev": "NODE_ENV=dev node -r ts-node/register $NODE_DEBUG_OPTION server.js",
-    "clean": "rm -rf ./dist ./declaration ./.next",
+    "clean": "rm -rf ./dist ./declaration ./.next services pages components adapters config.js",
     "prebuild-ignore": "yarn clean",
     "create-type-schema": "node type-loader.js && quicktype schema.json --just-types --no-combine-classes --no-maps --alphabetize-properties -o ./services/type-schema.ts",
     "build": "tsc --noEmit false --declaration true --declarationDir declaration --isolatedModules false --incremental true",
@@ -105,6 +105,7 @@
     "rxjs": "^6.5.4",
     "shortid": "^2.2.15",
     "socket.io-client": "^2.3.0",
+    "spinkit": "^2.0.1",
     "stream-array": "^1.1.2",
     "styled-components": "^5.0.0",
     "styled-spinkit": "^1.0.0",
