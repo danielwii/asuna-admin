@@ -18,7 +18,7 @@ export interface ISecurityService {
 
   updatePassword(
     opts: { token: string | null },
-    data: { body: { email: string; password: string } },
+    data: { body: { username: string; email: string; password: string } },
     configs?: IRequestConfig,
   ): Promise<AxiosResponse>;
 }
@@ -45,7 +45,7 @@ export const securityProxy = {
   },
 
   updatePassword(
-    data: { body: { email: string; password: string } },
+    data: { body: { username: string; email: string; password: string } },
     configs?: IRequestConfig,
   ): Promise<AxiosResponse> {
     return AppContext.ctx.security.updatePassword(data, configs);
@@ -69,7 +69,10 @@ export class SecurityAdapterImpl {
     return this.service.roles(auth, configs);
   };
 
-  updatePassword = (data: { body: { email: string; password: string } }, configs?: IRequestConfig) => {
+  updatePassword = (
+    data: { body: { username: string; email: string; password: string } },
+    configs?: IRequestConfig,
+  ) => {
     const auth = AppContext.fromStore('auth');
     return this.service.updatePassword(auth, data, configs);
   };
