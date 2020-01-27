@@ -20,7 +20,7 @@
   "scripts": {
     "autod": "autod",
     "dev": "NODE_ENV=dev node -r ts-node/register $NODE_DEBUG_OPTION server.js",
-    "clean": "rm -rf ./dist ./declaration ./.next services pages components adapters config.js",
+    "clean": "rm -rf ./dist ./declaration ./.next services pages components adapters __generated__ config.js",
     "prebuild-ignore": "yarn clean",
     "create-type-schema": "node type-loader.js && quicktype schema.json --just-types --no-combine-classes --no-maps --alphabetize-properties -o ./services/type-schema.ts",
     "build": "tsc --noEmit false --declaration true --declarationDir declaration --isolatedModules false --incremental true",

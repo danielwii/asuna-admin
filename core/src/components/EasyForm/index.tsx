@@ -32,7 +32,7 @@ interface EasyFormProps extends FormProps<FormFields> {
   onClear?: () => Promise<any>;
 }
 
-function RenderInputComponent({
+export function RenderInputComponent({
   form,
   fieldDef,
   field,
@@ -96,7 +96,7 @@ function RenderInputComponent({
           <label>{label}</label>
           <DynamicJsonArrayTable
             value={value}
-            createItem={index => ({ [`${index}-key`]: '' })}
+            // createItem={index => ({ [`${index}-key`]: '' })}
             preview={item => {
               const parsedItem = _.assign(
                 {},

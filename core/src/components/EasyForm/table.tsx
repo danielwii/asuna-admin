@@ -6,28 +6,51 @@ import React from 'react';
 import { useLogger } from 'react-use';
 
 interface DynamicJsonTableProps<V = {}> {
+  mode?: 'group' | 'array'; // TODO 分离两种模式
   value: V;
   render: (formik, item, index: number) => React.ReactNode;
   onChange: (values) => void;
-  createItem: (index: number) => object;
+  // createItem: (index: number) => object;
   preview: (item) => React.ReactNode;
 }
 
-export const DynamicJsonArrayTable: React.FC<DynamicJsonTableProps> = <T extends {}>({
+export const DynamicJsonArrayTable: <T = {}>(
+  props: DynamicJsonTableProps<T>,
+) => React.ReactElement<DynamicJsonTableProps<T>> = ({
+  mode,
   value,
   render,
   onChange,
-  createItem,
+  // createItem,
   preview,
 }) => {
-  const initialValues = parseJSONIfCould(value as any) || {};
-  const parsedFields = _.chain(initialValues)
-    .toPairs()
-    .groupBy(([key]) => key.split('-')[0])
-    .flatMap(_.fromPairs)
-    // .map(value => _.assign({}, ..._.values(value)))
-    .value();
+  const initialValues = parseJSONIfCould(value as any) ?? (mode === 'array' ? [] : {});
+  const parsedFields =
+    mode === 'array'
+      ? initialValues
+      : _.chain(initialValues)
+          .toPairs()
+          .groupBy(([key]) => key.split('-')[0])
+          .flatMap(_.fromPairs)
+          // .map(value => _.assign({}, ..._.values(value)))
+          .value();
   const formik = useFormik({ initialValues, validate: values => onChange(values), onSubmit: values => {} });
+
+  /*
+  function createItem(index: number): any {
+    return mode === 'array' ? [...(parsedFields || []), {}] : { [`${index}-key`]: '' };
+  }
+*/
+  function remove(index: number): void {
+    mode === 'array'
+      ? onChange(_.remove(parsedFields, (o, i) => i !== index))
+      : onChange(_.omitBy(parsedFields, (field, key) => +key.split('-')[0] === index));
+  }
+  function add() {
+    mode === 'array'
+      ? onChange([...parsedFields, {}])
+      : onChange({ ...parsedFields, ...{ [`${parsedFields.length}-key`]: '' } });
+  }
 
   useLogger(DynamicJsonArrayTable.name, { value, initialValues, formik, parsedFields });
 
@@ -38,11 +61,7 @@ export const DynamicJsonArrayTable: React.FC<DynamicJsonTableProps> = <T extends
         renderItem={(item, index) => (
           <List.Item
             actions={[
-              <Button
-                size="small"
-                type="danger"
-                onClick={() => onChange(_.omitBy(value, (field, key) => +key.split('-')[0] === index))}
-              >
+              <Button size="small" type="danger" onClick={() => remove(index)}>
                 remove
               </Button>,
             ]}
@@ -56,7 +75,7 @@ export const DynamicJsonArrayTable: React.FC<DynamicJsonTableProps> = <T extends
           </List.Item>
         )}
         footer={
-          <Button size="small" onClick={() => onChange({ ...value, ...createItem(parsedFields.length) })}>
+          <Button size="small" onClick={() => add()}>
             add
           </Button>
         }
