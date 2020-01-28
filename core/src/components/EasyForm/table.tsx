@@ -34,7 +34,14 @@ export const DynamicJsonArrayTable: <T = {}>(
           .flatMap(_.fromPairs)
           // .map(value => _.assign({}, ..._.values(value)))
           .value();
-  const formik = useFormik({ initialValues, validate: values => onChange(values), onSubmit: values => {} });
+  const formik = useFormik({
+    initialValues: parsedFields,
+    validate: values => {
+      // console.log('DynamicJsonArrayTable.validate', values, parsedFields, _.merge(parsedFields, values));
+      onChange(_.merge(parsedFields, values));
+    },
+    onSubmit: values => {},
+  });
 
   /*
   function createItem(index: number): any {

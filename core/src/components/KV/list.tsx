@@ -3,13 +3,12 @@ import { FormFieldDef, FormFields } from '@asuna-admin/components';
 import { AppContext } from '@asuna-admin/core';
 import { ComponentsHelper, WithDebugInfo } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
+
 import { jsx } from '@emotion/core';
 import { TextField } from '@material-ui/core';
 import { Button, Col, Divider, Icon, Row, Typography } from 'antd';
 import { Field, FieldProps, Form, Formik, FormikValues } from 'formik';
-
 import 'highlight.js/styles/default.css';
-
 import * as _ from 'lodash';
 import React, { useEffect, useState } from 'react';
 import Highlight from 'react-highlight';
@@ -85,7 +84,7 @@ export function ListKVComponent(props: {
               <Form>
                 <Field name="values">
                   {({ field, meta, form }: FieldProps<FormikValues>) => (
-                    <WithDebugInfo info={{ field, meta }}>
+                    <WithDebugInfo info={{ field, meta, value: formikBag.values.values ?? body.values ?? [] }}>
                       <DynamicJsonArrayTable<[]>
                         mode="array"
                         value={formikBag.values.values ?? body.values ?? []}
@@ -99,7 +98,7 @@ export function ListKVComponent(props: {
                               name={`[${index}].${fieldDef.field.name}`}
                               value={item?.[fieldDef.field.name]}
                               onChange={event => innerFormik.handleChange(event)}
-                              label={fieldDef.name + `values[${index}].${fieldDef.field.name}`}
+                              label={fieldDef.name}
                               multiline
                             />
                           ))
