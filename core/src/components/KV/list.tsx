@@ -76,7 +76,7 @@ export function ListKVComponent(props: {
       <Row gutter={16}>
         <Col span={18}>
           <Formik
-            initialValues={{ values: body.values, firstName: 'hi' }}
+            initialValues={{ values: body.values }}
             onSubmit={(values, formikHelpers) =>
               ComponentsHelper.save({ key, collection }, { ...body, ...values }, refetch)
             }
@@ -88,7 +88,7 @@ export function ListKVComponent(props: {
                     <WithDebugInfo info={{ field, meta }}>
                       <DynamicJsonArrayTable<[]>
                         mode="array"
-                        value={body.values ?? []}
+                        value={formikBag.values.values ?? body.values ?? []}
                         preview={item => <pre>{JSON.stringify(item, null, 2)}</pre>}
                         onChange={values => formikBag.setFieldValue(field.name, values)}
                         render={(innerFormik, item, index) =>
