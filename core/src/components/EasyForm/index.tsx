@@ -141,6 +141,52 @@ export function RenderInputComponent({
         </>
       );
     }
+    case FormFieldType.wxSubscribeData: {
+      const label = field.name === fieldDef.name ? field.name : `${field.name} / ${fieldDef.name}`;
+      return (
+        <>
+          <label>{label}</label>
+          <DynamicJsonArrayTable
+            value={value}
+            // createItem={index => ({ [`${index}-key`]: '' })}
+            preview={item => {
+              const parsedItem = _.assign(
+                {},
+                ..._.chain(item)
+                  .toPairs()
+                  .groupBy(([key]) => key.split('-')[0])
+                  .map(value => {
+                    const values = _.assign({}, ...value.map(([key, value]) => ({ [key.split('-')[1]]: value })));
+                    return { [values.key]: _.omit(values, 'key') };
+                  })
+                  .value(),
+              );
+              return <pre>{util.inspect(parsedItem)}</pre>;
+            }}
+            render={(formik, item, index) => (
+              <>
+                <TextField
+                  name={`${index}-key`}
+                  value={item?.[`${index}-key`]}
+                  onChange={event => formik.handleChange(event)}
+                  label="key"
+                />
+                <TextField
+                  name={`${index}-value`}
+                  value={item?.[`${index}-value`]}
+                  onChange={event => formik.handleChange(event)}
+                  label="value"
+                  fullWidth
+                  multiline
+                />
+              </>
+            )}
+            onChange={values => form.setFieldValue(field.name, values)}
+          />
+          {/*<DebugInfo data={value} type="util" />*/}
+        </>
+      );
+    }
     default: {
       const label = field.name === fieldDef.name ? field.name : `${field.name} / ${fieldDef.name}`;
       return (

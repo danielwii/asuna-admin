@@ -7,6 +7,7 @@ export enum FormFieldType {
   text = 'text',
   boolean = 'boolean',
   wxTmplData = 'wx-tmpl-data',
+  wxSubscribeData = 'wx-subscribe-data',
 }
 
 export type FormField = {
