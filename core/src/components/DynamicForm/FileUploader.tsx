@@ -59,6 +59,8 @@ export class FileUploader extends React.Component<IFilesUploaderProps> {
   }
 
   render() {
+    const { uploadFiles } = this.state;
+
     logger.log('render', this.props, this.state);
 
     const uploadProps: UploadProps = {
@@ -113,11 +115,12 @@ export class FileUploader extends React.Component<IFilesUploaderProps> {
           message.error(`${info.file.name} file upload failed.`);
         }
       },
+      fileList: uploadFiles,
     };
 
     return (
       <div key={this.props.key}>
-        <Upload {...uploadProps} fileList={this.state.uploadFiles as UploadFile[]}>
+        <Upload {...uploadProps}>
           <Button>
             <Icon type="upload" /> upload
           </Button>

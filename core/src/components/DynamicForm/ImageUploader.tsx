@@ -115,7 +115,7 @@ export class ImageUploader extends React.Component<IProps, IState> {
     }
     logger.log('[ImageUploader][handleChange]', { images });
     onChange!(images);
-    this.setState({ fileList: ImageUploader.wrapImagesToFileList(images) });
+    this.setState({ fileList: info.fileList });
   };
 
   valueToSubmit = (value?: string | string[], extra?: string): string | string[] => {

@@ -3,16 +3,17 @@ import { upload, validateFile } from '@asuna-admin/helpers/upload';
 import { createLogger } from '@asuna-admin/logger';
 import { Asuna } from '@asuna-admin/types';
 
-import { Button, Icon, Input, Upload } from 'antd';
+import { Button, Icon, Input, Upload, Divider } from 'antd';
 import {
   RcCustomRequestOptions,
   RcFile,
   UploadChangeParam,
   UploadFile,
   UploadFileStatus,
+  UploadProps,
 } from 'antd/es/upload/interface';
 import * as _ from 'lodash';
-import fp from 'lodash/fp';
+import * as fp from 'lodash/fp';
 import * as React from 'react';
 import videojs from 'video.js';
 
@@ -32,9 +33,7 @@ export interface IProps {
 }
 
 export class VideoUploader extends React.Component<IProps> {
-  prop = {
-    multi: false,
-  };
+  prop = { multi: false };
 
   state = {
     fileList: VideoUploader.wrapVideosToFileList(this.props.value),
@@ -51,20 +50,24 @@ export class VideoUploader extends React.Component<IProps> {
     }
     logger.log('[VideoUploader][handleChange]', { videos });
     onChange!(videos);
-    this.setState({ fileList: VideoUploader.wrapVideosToFileList(videos) });
+    this.setState({ fileList: info.fileList });
   };
 
   static wrapVideosToFileList = (videosInfo?: string | string[]): UploadFile[] => {
     const videos = valueToArrays(videosInfo);
     const fileList = _.flow([
-      fp.filter(video => typeof video !== 'object'),
-      fp.map((video, index) => ({
-        uid: `${index}`,
-        status: 'done' as UploadFileStatus,
-        name: valueToUrl(video, { type: 'video' }),
-        url: valueToUrl(video, { type: 'video' }),
-        // thumbUrl: valueToUrl(video, { type: 'video' }),
-      })),
+      fp.filter<string>(video => typeof video !== 'object'),
+      fp.map<string, Partial<UploadFile>>(video => {
+        return {
+          uid: `${video}`,
+          status: 'done' as UploadFileStatus,
+          name: valueToUrl(video, { type: 'video' }),
+          url: valueToUrl(video, { type: 'video' }),
+          // size: option?.file.size || 0,
+          // type: option?.file.type || '',
+          // thumbUrl: valueToUrl(video, { type: 'video' }),
+        };
+      }),
     ])(videos);
     logger.log('[wrapVideosToFileList]', 'fileList is', fileList);
     return fileList;
@@ -84,10 +87,10 @@ export class VideoUploader extends React.Component<IProps> {
     return videos;
   };
 
-  customRequest = (option: RcCustomRequestOptions): void => {
-    logger.log('[VideoUploader][customRequest]', option);
+  customRequest = ({ file }: RcCustomRequestOptions): void => {
+    logger.log('[VideoUploader][customRequest]', file);
     const { onChange, urlHandler, bucket, jsonMode } = this.props;
-    upload(option.file, {}, { bucket }).then(uploaded => {
+    upload(file, {}, { bucket }).then(uploaded => {
       if (uploaded) {
         logger.log('[VideoUploader][customRequest]', { props: this.props, state: this.state });
         const resolvedUrl = urlHandler ? urlHandler(uploaded[0]) : `${uploaded[0]}`;
@@ -119,7 +122,7 @@ export class VideoUploader extends React.Component<IProps> {
     const { onChange, value: videos } = this.props;
     const { fileList } = this.state;
 
-    const props = {
+    const props: UploadProps = {
       onChange: this.handleChange,
       multiple: false,
       customRequest: this.customRequest,
@@ -134,6 +137,7 @@ export class VideoUploader extends React.Component<IProps> {
             <Icon type="upload" /> upload
           </Button>
         </Upload>
+        <Divider type="horizontal" dashed={true} style={{ margin: '0.5rem 0' }} />
         {_.isArray(videos) ? _.map(videos || [], this.renderPlayer) : this.renderPlayer(videos)}
         <Input.TextArea
           value={typeof videos === 'string' ? videos : videos ? JSON.stringify(videos) : ''}
