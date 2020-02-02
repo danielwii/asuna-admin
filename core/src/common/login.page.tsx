@@ -1,24 +1,21 @@
 /** @jsx jsx */
-import { NextSocketType, WsAdapter } from '@asuna-admin/adapters';
-import { LogoCanvas, Snow, Sun } from '@asuna-admin/components';
+import { Snow } from '@asuna-admin/components';
 import { Config } from '@asuna-admin/config';
 import { LoginContainer } from '@asuna-admin/containers';
 import { AppContext, IIndexRegister, ILoginRegister, INextConfig } from '@asuna-admin/core';
 import { diff } from '@asuna-admin/helpers';
 import { WithStyles } from '@asuna-admin/layout';
 import { createLogger } from '@asuna-admin/logger';
-import { AppState, authActions, RootState } from '@asuna-admin/store';
-import { routerActions } from '@asuna-admin/store/router.redux';
-import { css, jsx } from '@emotion/core';
-import { Divider, Icon } from 'antd';
+import { AppState, RootState } from '@asuna-admin/store';
+import { jsx } from '@emotion/core';
+
 import ApolloClient, { gql } from 'apollo-boost';
+import { changeAntdTheme, getThemeColor } from 'dynamic-antd-theme';
 import * as _ from 'lodash';
 import { NextPageContext } from 'next';
 import fetch from 'node-fetch';
-import QRCode from 'qrcode.react';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { PacmanLoader } from 'react-spinners';
 import { Subscription } from 'rxjs';
 import * as shortid from 'shortid';
 import styled from 'styled-components';
@@ -54,7 +51,7 @@ export type LoginInitialProps = Partial<{
   weChatLoginEnable: boolean;
   tempId: string;
   userAgent: string;
-  site: { logo?: string; title?: string };
+  site: { logo?: string; title?: string; primaryColor?: { hex: string } };
 }>;
 
 export type ILoginPageProps = ReduxProps & {
@@ -68,9 +65,14 @@ export class LoginPage extends React.Component<ILoginPageProps> {
   constructor(props) {
     super(props);
 
-    const { dispatch, register } = this.props;
+    const { dispatch, register, site } = this.props;
     AppContext.setup(register);
     AppContext.regDispatch(dispatch);
+
+    if (site?.primaryColor) {
+      const themeColor = getThemeColor(site?.primaryColor.hex);
+      changeAntdTheme(themeColor);
+    }
   }
 
   componentWillUnmount() {
@@ -101,7 +103,7 @@ export class LoginPage extends React.Component<ILoginPageProps> {
         <StyledFullFlexContainer>
           {!hideCharacteristics && (
             <>
-              <Snow />
+              <Snow color={site?.primaryColor?.hex} />
               {/*
               <Sun />
               <StyledLogoWrapper>

@@ -8,12 +8,12 @@ const snowCss = () => ({
   animationDelay: `${Math.random() * 2000}ms`,
 });
 
-const randomCssCircle = key => {
+const randomCssCircle = (key: number, color?: string) => {
   const cx = `${Math.random() * 100}%`;
   const cy = -Math.random() * 90 - 10;
 
   return (
-    <circle key={key} style={snowCss()} cx={cx} cy={cy} r={Math.random() * 5} fill="#7EE">
+    <circle key={key} style={snowCss()} cx={cx} cy={cy} r={Math.random() * 5} fill={color ?? '#7EE'}>
       {/* language=CSS */}
       <style jsx global>{`
         @keyframes snowing {
@@ -30,9 +30,9 @@ const randomCssCircle = key => {
   );
 };
 
-export const Snow = () => (
+export const Snow: React.FC<{ color?: string }> = ({ color }) => (
   <svg className="svg-snow">
-    {_.range(100).map((ele, index) => randomCssCircle(index))}
+    {_.range(100).map((ele, index) => randomCssCircle(index, color))}
     {/* language=CSS */}
     <style jsx>{`
       svg {

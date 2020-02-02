@@ -2,6 +2,7 @@ import * as React from 'react';
 
 export enum FormFieldType {
   string = 'string',
+  color = 'color',
   number = 'number',
   image = 'image',
   text = 'text',

@@ -39,7 +39,7 @@ export const ComponentsHelper = {
         }
       }
     `,
-      { fetchPolicy: 'no-cache' },
+      { fetchPolicy: 'network-only' },
     ),
   save: (identifier: { key: string; collection?: string }, body: any, cb?): Promise<any> => {
     logger.log('save', { identifier, body });

@@ -3,6 +3,10 @@ import { Asuna } from '@asuna-admin/types';
 import * as _ from 'lodash';
 
 export class SchemaHelper {
+  static async getFormSchema(modelName: string): Promise<Asuna.Schema.FormSchemas | null> {
+    return modelName ? AppContext.adapters.models.getFormSchema(modelName) : null;
+  }
+
   static async getSchema(modelName: string): Promise<Asuna.Schema.OriginSchema | null> {
     return modelName ? AppContext.adapters.models.loadOriginSchema(modelName) : null;
   }

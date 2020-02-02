@@ -7,6 +7,7 @@ import { AxiosResponse } from 'axios';
 import { reduxAction } from 'node-buffs';
 import * as R from 'ramda';
 import { call, put, select, takeLatest } from 'redux-saga/effects';
+import { message } from 'antd';
 
 const logger = createLogger('store:models');
 
@@ -105,6 +106,7 @@ const modelsSagaFunctions = {
       TimelineMessageBox.push({ key: boxId, type: 'loading', message: `upsert model '${modelName}'...` });
       try {
         const response = yield call(AppContext.adapters.models.upsert, modelName, data);
+        message.success('更新/创建 成功！');
         TimelineMessageBox.push({ key: boxId, type: 'done', message: `upsert model '${modelName}' success` });
         logger.log('[upsert]', 'response of upsert model is', response);
         if (callback != null) callback({ response });
@@ -129,6 +131,7 @@ const modelsSagaFunctions = {
       TimelineMessageBox.push({ key: boxId, type: 'loading', message: `remove model '${modelName}'...` });
       try {
         const response = yield call(AppContext.adapters.models.remove, modelName, data);
+        message.success('删除 成功！');
         TimelineMessageBox.push({ key: boxId, type: 'done', message: `remove model '${modelName}' success` });
         logger.log('[remove]', 'response of remove model is', response);
         if (callback != null) callback(response);

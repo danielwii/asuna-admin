@@ -5,10 +5,12 @@ import { createLogger } from '@asuna-admin/logger';
 import { FormControl, FormControlLabel, FormHelperText, Switch, TextField } from '@material-ui/core';
 import * as antd from 'antd';
 import { Divider, Popconfirm } from 'antd';
+import { changeAntdTheme, getThemeColor } from 'dynamic-antd-theme';
 import * as formik from 'formik';
 import { FieldInputProps, FormikProps } from 'formik';
 import * as _ from 'lodash';
 import * as React from 'react';
+import { SketchPicker } from 'react-color';
 import Highlight from 'react-highlight';
 import * as util from 'util';
 
@@ -59,6 +61,17 @@ export function RenderInputComponent({
             />
           }
           label={fieldDef.name}
+        />
+      );
+    }
+    case FormFieldType.color: {
+      return (
+        <SketchPicker
+          color={value}
+          onChange={color => {
+            changeAntdTheme(getThemeColor(color.hex));
+            field.onChange({ target: { id: field.name, name: field.name, value: color } });
+          }}
         />
       );
     }
@@ -209,8 +222,8 @@ const InnerForm = (props: EasyFormProps & formik.FormikProps<formik.FormikValues
         <formik.Field key={key} name={key}>
           {({ field, form }: formik.FieldProps<formik.FormikValues>) => {
             const hasError = !!(form.touched[formField.name] && form.errors[formField.name]);
-            const value = _.defaultTo(field.value, formField.defaultValue);
-            logger.log('render field', field, { hasError, value });
+            const value = field.value ?? formField.defaultValue;
+            logger.log('render field', field, { hasError, value }, formField);
             return (
               <FormControl key={field.name} error={hasError} fullWidth={true}>
                 <RenderInputComponent
@@ -236,11 +249,7 @@ const InnerForm = (props: EasyFormProps & formik.FormikProps<formik.FormikValues
         <antd.Button onClick={handleReset} disabled={isSubmitting}>
           {isSubmitting ? 'Resetting' : 'Reset'}
         </antd.Button>
-      )}{' '}
-      {/*<div>
-        Preview:
-        <Highlight className="json">{JSON.stringify(state.body, null, 2)}</Highlight>
-      </div>*/}
+      )}
     </formik.Form>
   );
 };

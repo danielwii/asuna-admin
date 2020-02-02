@@ -1,4 +1,5 @@
 import { responseProxy } from '@asuna-admin/adapters';
+import { WithFuture } from '@asuna-admin/components';
 import { StoreContext } from '@asuna-admin/context';
 import { ActionEvent, AppContext, EventBus, EventType } from '@asuna-admin/core';
 import {
@@ -12,6 +13,7 @@ import {
 } from '@asuna-admin/helpers';
 import { WithDebugInfo } from '@asuna-admin/helpers/debug';
 import { createLogger } from '@asuna-admin/logger';
+import { SchemaHelper } from '@asuna-admin/schema';
 import { modelsActions, panesActions } from '@asuna-admin/store';
 import { Asuna } from '@asuna-admin/types';
 import { Button, Divider, Dropdown, List, Menu, Modal, Skeleton, Switch, Table, Tag, Tooltip } from 'antd';
@@ -81,27 +83,38 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
             type="dashed"
             width="40%"
           >
-            <List<{ key: string; title: string; value: any }>
-              itemLayout="horizontal"
-              dataSource={_.map(record, (value, key) => ({
-                key,
-                title: key,
-                // fields[key]?.options?.name ?? fields[key]?.options?.label ?? fields[key]?.name,
-                value,
-              }))}
-              renderItem={item => (
-                <List.Item>
-                  <List.Item.Meta
-                    title={item.title}
-                    description={
-                      <WithDebugInfo info={{ item, record: record[item.key] }}>
-                        <div>{parseString(record[item.key] ?? '')}</div>
-                      </WithDebugInfo>
-                    }
-                  />
-                </List.Item>
+            <WithFuture
+              future={() => Promise.all([SchemaHelper.getSchema(modelName), SchemaHelper.getFormSchema(modelName)])}
+            >
+              {([schema, formSchema]) => (
+                <List<{ key: string; title: string; value: any }>
+                  itemLayout="horizontal"
+                  dataSource={_.map(record, (value, key) => ({
+                    key,
+                    title: key,
+                    // fields[key]?.options?.name ?? fields[key]?.options?.label ?? fields[key]?.name,
+                    value,
+                  }))}
+                  renderItem={item => {
+                    const columnInfo = _.find(schema?.columns, column => column.name === item.key);
+                    const title = columnInfo?.config?.info?.name ?? item.title;
+
+                    return (
+                      <List.Item>
+                        <List.Item.Meta
+                          title={title}
+                          description={
+                            <WithDebugInfo info={{ item, record: record[item.key], columnInfo }}>
+                              <div>{parseString(record[item.key] ?? '')}</div>
+                            </WithDebugInfo>
+                          }
+                        />
+                      </List.Item>
+                    );
+                  }}
+                />
               )}
-            />
+            </WithFuture>
           </DrawerButton>
         )}{' '}
         {isDeletableSystemRecord(record) && deletable && (
