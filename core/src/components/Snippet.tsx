@@ -1,4 +1,7 @@
+/** @jsx jsx */
 import { joinUrl, valueToUrl } from '@asuna-admin/core/url-rewriter';
+import { WithDebugInfo } from '@asuna-admin/helpers';
+import { jsx } from '@emotion/core';
 
 import { Icon } from 'antd';
 import * as _ from 'lodash';
@@ -90,23 +93,23 @@ export function AssetPreview({ host, url, showPdf, fullWidth }: IAssetPreviewPro
 
   if (/pdf$/.test(url)) {
     return showPdf ? (
-      <React.Fragment>
+      <WithDebugInfo info={state}>
         {!state.loading && (
           <div>
             <a href={href} target="_blank">
               <Icon type="file-pdf" style={{ fontSize: '2rem', padding: '1rem' }} />
             </a>
-            Total pages is {state.numPages}, preview first page:
+            {state.numPages} pages in total.
           </div>
         )}
         <FlexCenterBox key={url}>
           <a href={href} target="_blank">
             <Document file={href} onLoadSuccess={onDocumentLoadSuccess}>
-              <Page pageNumber={state.pageNumber} weight={fullWidth ? null : 200} />
+              <Page pageNumber={state.pageNumber} width={fullWidth ? (null as any) : 200} />
             </Document>
           </a>
         </FlexCenterBox>
-      </React.Fragment>
+      </WithDebugInfo>
     ) : (
       <FlexCenterBox>
         <a href={href} target="_blank">

@@ -203,6 +203,46 @@ export const columnHelper2 = {
       }),
     };
   },
+  generateTag: async (
+    key,
+    { model, title }: ModelOpts,
+    opts: {
+      transformer?: (value) => string;
+      colorMap?: {
+        [key: string]:
+          | null
+          | 'magenta'
+          | 'red'
+          | 'volcano'
+          | 'orange'
+          | 'gold'
+          | 'lime'
+          | 'green'
+          | 'cyan'
+          | 'blue'
+          | 'geekblue'
+          | 'purple';
+      };
+    } = {},
+  ): Promise<ColumnProps<any>> => {
+    const columnInfo = model ? await SchemaHelper.getColumnInfo(model, key) : undefined;
+    const titleStr = title ?? columnInfo?.config?.info?.name ?? key;
+    return ({
+      key,
+      title: titleStr,
+      dataIndex: key,
+      sorter: true,
+      // ...generateSearchColumnProps(key, opts.searchType),
+      render: nullProtectRender(record => {
+        const value = extractValue(record, opts.transformer);
+        return (
+          <WithDebugInfo info={{ key, title, record, value }}>
+            <Tag color={_.get(opts, `colorMap['${record}']`)}>{value}</Tag>
+          </WithDebugInfo>
+        );
+      })
+    });
+  },
   generateCalendar: async (
     key,
     { model, title }: ModelOpts,
@@ -251,7 +291,7 @@ export const columnHelper = {
       transformer?: keyof RelationSchema | ((record) => React.ReactChild);
       filterType?: 'list' | 'search';
       relationSearchField?: string;
-      render?: (content, record?, extras?: Asuna.Schema.RecordRenderExtras) => React.ReactChild;
+      render?: (content, record?, extras?: Asuna.Schema.RecordRenderExtras) => React.ReactNode;
     } = {},
   ) => async (
     laterKey: string,
@@ -399,6 +439,9 @@ export const columnHelper = {
       );
     }),
   }),
+  /**
+   * @deprecated {@see columnHelper2.generateTag}
+   */
   generateTag: (
     key,
     title,
