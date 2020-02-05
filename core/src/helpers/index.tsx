@@ -159,8 +159,16 @@ type TextColumnOpts = {
    * 用提供的转换器来转译
    */
   parseBy?: ParseType;
+  /**
+   * 内容修正
+   */
   transformer?: ((record) => string) | string;
   searchType?: ConditionType;
+  /**
+   * 自定义渲染
+   * @param content
+   * @param record
+   */
   render?: (content, record?) => React.ReactChild;
 };
 type CommonColumnOpts = { transformer? };
@@ -176,7 +184,6 @@ export const columnHelper2 = {
       ...(await generateSearchColumnProps(key, opts.searchType, { model })),
       render: nullProtectRender((value, record) => {
         let extracted = extractValue(value, opts.transformer);
-        parseType('ApplyStatus', '1');
         if (opts.parseBy) extracted = parseType(opts.parseBy, extracted);
         if (columnInfo?.config?.info?.type === DynamicFormTypes.Address) extracted = parseAddressStr(extracted);
         if (opts.mode === 'html') {
@@ -749,7 +756,6 @@ export type ParseType =
   | 'Sex';
 
 export function parseType(key: ParseType, name: string): string {
-  console.log(AppContext.constants);
   const value = AppContext.constants?.[key]?.[name];
   if (!value) {
     console.warn('not found for constants', { key, name });
