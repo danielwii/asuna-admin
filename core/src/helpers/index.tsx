@@ -8,7 +8,7 @@ import { createLogger } from '@asuna-admin/logger';
 import { SchemaHelper } from '@asuna-admin/schema';
 import { Asuna } from '@asuna-admin/types';
 
-import { Badge, Button, Checkbox, Divider, Icon, Input, Popconfirm, Statistic, Tag, Tooltip } from 'antd';
+import { Badge, Button, Checkbox, Divider, Icon, Input, Modal, Popconfirm, Statistic, Tag, Tooltip } from 'antd';
 import { ColumnProps } from 'antd/es/table';
 import { FilterDropdownProps } from 'antd/es/table/interface';
 import * as deepDiff from 'deep-diff';
@@ -154,6 +154,11 @@ async function generateSearchColumnProps(
 
 type ModelOpts = { model: string; title?: string };
 type TextColumnOpts = {
+  mode?: 'html' | 'text';
+  /**
+   * 用提供的转换器来转译
+   */
+  parseBy?: ParseType;
   transformer?: ((record) => string) | string;
   searchType?: ConditionType;
   render?: (content, record?) => React.ReactChild;
@@ -171,9 +176,23 @@ export const columnHelper2 = {
       ...(await generateSearchColumnProps(key, opts.searchType, { model })),
       render: nullProtectRender((value, record) => {
         let extracted = extractValue(value, opts.transformer);
-        if (columnInfo?.config?.info?.type === DynamicFormTypes.Address) {
-          extracted = parseAddressStr(extracted);
+        parseType('ApplyStatus', '1');
+        if (opts.parseBy) extracted = parseType(opts.parseBy, extracted);
+        if (columnInfo?.config?.info?.type === DynamicFormTypes.Address) extracted = parseAddressStr(extracted);
+        if (opts.mode === 'html') {
+          return (
+            <Button
+              size="small"
+              type="dashed"
+              onClick={() =>
+                Modal.info({ maskClosable: true, content: <div dangerouslySetInnerHTML={{ __html: extracted }} /> })
+              }
+            >
+              预览
+            </Button>
+          );
         }
+
         return (
           <WithDebugInfo info={{ key, title, model, value, record, extracted, opts, columnInfo }}>
             {opts.render ? opts.render(extracted, record) : <TooltipContent value={extracted} />}
@@ -227,7 +246,7 @@ export const columnHelper2 = {
   ): Promise<ColumnProps<any>> => {
     const columnInfo = model ? await SchemaHelper.getColumnInfo(model, key) : undefined;
     const titleStr = title ?? columnInfo?.config?.info?.name ?? key;
-    return ({
+    return {
       key,
       title: titleStr,
       dataIndex: key,
@@ -240,8 +259,8 @@ export const columnHelper2 = {
             <Tag color={_.get(opts, `colorMap['${record}']`)}>{value}</Tag>
           </WithDebugInfo>
         );
-      })
-    });
+      }),
+    };
   },
   generateCalendar: async (
     key,
@@ -694,12 +713,17 @@ export const isJson = (value): boolean => {
 
 function TooltipContent({ value, link }: { value: any; link?: boolean }) {
   let component = _.isObject(value) ? util.inspect(value) : value;
-  if (typeof value === 'string' && value.length > 20) {
-    const shortValue = `${value.slice(0, 20)}...`;
+  const length = 30;
+  if (typeof value === 'string' && value.length > length) {
+    const shortValue = `${value.slice(0, length)}...`;
     if (link) {
       return <TextLink url={value} text={shortValue} />;
     }
-    component = <Tooltip title={value}>{shortValue}</Tooltip>;
+    component = (
+      <Tooltip title={value}>
+        <div style={{ maxWidth: '15rem' }}>{shortValue}</div>
+      </Tooltip>
+    );
     return <>{component}</>;
   }
   return link ? <TextLink url={component} text={component} /> : <>{component}</>;
@@ -713,10 +737,19 @@ function TextLink({ url, text }: { url: string; text?: string }) {
   );
 }
 
-export function parseType(
-  key: 'ActivityStatus' | 'ApplyStatus' | 'EnrollmentStatus' | 'InteractionType' | 'Sex',
-  name: string,
-): string {
+export type ParseType =
+  // TODO move to shared types
+  | 'ActivityStatus'
+  | 'ApplyStatus'
+  | 'EnrollmentStatus'
+  | 'Experience'
+  | 'InteractionType'
+  // Common Types
+  | 'Degree'
+  | 'Sex';
+
+export function parseType(key: ParseType, name: string): string {
+  console.log(AppContext.constants);
   const value = AppContext.constants?.[key]?.[name];
   if (!value) {
     console.warn('not found for constants', { key, name });

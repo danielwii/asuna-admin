@@ -7,9 +7,10 @@ export const FlexCenterBox = (styled.div`
   align-items: center;
   justify-content: center;
   border: 1px solid #f5f5f5;
-  border-radius: 0.2rem;
-  padding: 0.1rem;
+  border-radius: 0.25rem;
+  //padding: 0.1rem;
   margin: 0.1rem;
+  overflow: hidden;
 ` as any) as ComponentClass<{} & React.HTMLAttributes<{}>>;
 
 interface IThumbImage {

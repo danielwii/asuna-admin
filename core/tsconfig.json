@@ -21,6 +21,7 @@
     "isolatedModules": true,
     "outDir": "dist",
     "baseUrl": "./src",
+    "typeRoots": ["./typings"],
     "paths": {
       "asuna-admin": ["index.ts"],
       "@asuna-admin/*": ["*"]
