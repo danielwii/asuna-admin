@@ -373,6 +373,8 @@ export class ModelAdapterImpl implements ModelAdapter {
       : [];
 
     // dev 模式下提示模型 schema 中不包含的字段，在 production 中隐藏该字段
+    // 这里会过滤掉自定义字段
+/*
     if (AppContext.isDevMode) {
       return _.map(columns, (column: RelationColumnProps) => {
         // 不检测不包含在 schema 中且不属于模型的列名
@@ -384,6 +386,7 @@ export class ModelAdapterImpl implements ModelAdapter {
           : column;
       });
     }
+*/
     return _.filter<any>(
       columns,
       (column: RelationColumnProps) => !(column.key && !formSchema[column.key] && !_.includes(['action'], column.key)),
