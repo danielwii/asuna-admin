@@ -124,7 +124,7 @@ export function AssetPreview({ host, url, width, height, showPdf, fullWidth }: I
     <FlexCenterBox key={url}>
       <ThumbImage
         height={height}
-        width={fullWidth ? '100%' : `${width ?? 200}px`}
+        width={fullWidth ? '100%' : ''}
         src={valueToUrl(url, { type: 'image', thumbnail: { height: height ?? 200, width: width ?? 200 } })}
       />
     </FlexCenterBox>
