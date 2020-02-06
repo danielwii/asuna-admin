@@ -7,11 +7,15 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 
+type RenderComponentType = React.FC<{ refreshFlag: number; openChildrenDrawer?: any }>;
+type RenderChildrenComponentType = React.FC<{ item: any }>;
+
 export interface DrawerButtonProps {
   text: React.ReactNode;
   title?: string;
   width?: number | string;
-  render?: React.FC<{ refreshFlag: number }>;
+  render?: RenderComponentType;
+  renderChildrenDrawer?: RenderChildrenComponentType;
 }
 
 export const DrawerButtonBuilder: React.FC<DrawerButtonProps &
@@ -73,6 +77,7 @@ export const DrawerButton: React.FC<DrawerButtonProps &
   width,
   popoverProps,
   extraButtons,
+  renderChildrenDrawer,
   children,
   render,
   ...baseButtonProps
@@ -80,11 +85,11 @@ export const DrawerButton: React.FC<DrawerButtonProps &
   const [refreshFlag, setRefreshFlag] = useState(0);
   const [visible, setVisible] = useState(false);
   const [childrenDrawer, setChildrenVisible] = useState(false);
+  const [childrenItem, setChildrenItem] = useState(null);
 
   const _showDrawer = () => setVisible(true);
   const _onClose = () => setVisible(false);
-  const _showChildrenDrawer = () => setChildrenVisible(true);
-  const _onChildrenDrawerClose = () => setChildrenVisible(false);
+  const _onChildrenClose = () => setChildrenVisible(false);
 
   const _renderButton = (
     <Button {...baseButtonProps} onClick={_showDrawer}>
@@ -92,7 +97,8 @@ export const DrawerButton: React.FC<DrawerButtonProps &
       <Icon type="select" />
     </Button>
   );
-  const RenderComponent = render || ((<></>) as any);
+  const RenderComponent: RenderComponentType = render || ((<></>) as any);
+  const RenderChildrenComponent: RenderChildrenComponentType = renderChildrenDrawer || ((<></>) as any);
 
   return (
     <React.Fragment>
@@ -105,7 +111,15 @@ export const DrawerButton: React.FC<DrawerButtonProps &
         >
           {children}
         </div>
-        {render && <RenderComponent refreshFlag={refreshFlag} />}
+        {render && (
+          <RenderComponent
+            refreshFlag={refreshFlag}
+            openChildrenDrawer={item => {
+              setChildrenItem(item);
+              setChildrenVisible(true);
+            }}
+          />
+        )}
         {/*<Button type="primary" onClick={this.showChildrenDrawer}>
             Two-level drawer
           </Button>
@@ -147,6 +161,11 @@ export const DrawerButton: React.FC<DrawerButtonProps &
           )}
           <Button onClick={_onClose}>关闭</Button>
         </div>
+        {renderChildrenDrawer && (
+          <Drawer width={450} closable={false} onClose={_onChildrenClose} visible={childrenDrawer}>
+            <RenderChildrenComponent item={childrenItem} />
+          </Drawer>
+        )}
       </Drawer>
     </React.Fragment>
   );

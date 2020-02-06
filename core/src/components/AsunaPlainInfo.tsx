@@ -1,14 +1,13 @@
 import { AppContext } from '@asuna-admin/core';
 import { parseString, WithDebugInfo } from '@asuna-admin/helpers';
+import { SchemaHelper } from '@asuna-admin/schema';
 import { List } from 'antd';
 import { Promise } from 'bluebird';
 import * as _ from 'lodash';
 import React from 'react';
 import { useAsync } from 'react-use';
 import VisualDiff from 'react-visual-diff';
-import { FoldingCube } from 'styled-spinkit';
-import * as util from 'util';
-import { ErrorInfo } from './ErrorInfo';
+import { WithLoading, WithVariable } from './Common';
 
 export interface AsunaPlainObjectProps {
   modelName: string;
@@ -18,53 +17,56 @@ export interface AsunaPlainObjectProps {
 
 export const AsunaPlainInfo: React.FC<AsunaPlainObjectProps> = ({ modelName, record, compare }) => {
   const fields = AppContext.adapters.models.getFormSchema(modelName);
-  const { value: values, loading, error } = useAsync(
+  const { value, loading, error } = useAsync(
     () =>
       Promise.props({
         record: _.isFunction(record) ? record() : record,
         compare: _.isFunction(compare) ? compare() : compare,
+        schema: SchemaHelper.getSchema(modelName),
+        formSchema: SchemaHelper.getFormSchema(modelName),
       }),
-    [modelName],
+    [modelName, record, compare],
   );
 
-  if (loading) return <FoldingCube />;
-  if (error)
-    return (
-      <ErrorInfo>
-        <pre>{util.inspect(error)}</pre>
-      </ErrorInfo>
-    );
-
   return (
-    <>
-      <WithDebugInfo info={values} />
-      <List<{ key: string; title: string; value: any }>
-        itemLayout="horizontal"
-        dataSource={_.map(record, (value, key) => ({
-          key,
-          title: fields[key]?.options?.name ?? fields[key]?.options?.label ?? fields[key]?.name,
-          value,
-        }))}
-        renderItem={item => (
-          <List.Item>
-            <List.Item.Meta
-              title={item.title}
-              description={
-                <WithDebugInfo info={{ item, value: values?.record?.[item.key], record }}>
-                  {compare ? (
-                    <VisualDiff
-                      left={<div>{parseString(values?.compare?.[item.key] ?? '')}</div>}
-                      right={<div>{parseString(values?.record?.[item.key] ?? '')}</div>}
+    <WithLoading loading={loading} error={error}>
+      <WithVariable variable={value}>
+        {({ record, compare, formSchema, schema }) => (
+          <WithDebugInfo info={{ modelName, schema }}>
+            <List<{ key: string; title: string; value: any }>
+              itemLayout="horizontal"
+              dataSource={_.map(record, (value, key) => ({
+                key,
+                title: fields[key]?.options?.name ?? fields[key]?.options?.label ?? fields[key]?.name,
+                value,
+              }))}
+              renderItem={item => {
+                const columnInfo = _.find(schema?.columns, column => column.name === item.key);
+                const title = columnInfo?.config?.info?.name ?? item.title;
+                return (
+                  <List.Item>
+                    <List.Item.Meta
+                      title={title}
+                      description={
+                        <WithDebugInfo info={{ item, record, value: record?.[item.key], columnInfo }}>
+                          {compare ? (
+                            <VisualDiff
+                              left={<div>{parseString(compare?.[item.key] ?? '')}</div>}
+                              right={<div>{parseString(record?.[item.key] ?? '')}</div>}
+                            />
+                          ) : (
+                            <div>{parseString(record?.[item.key] ?? '')}</div>
+                          )}
+                        </WithDebugInfo>
+                      }
                     />
-                  ) : (
-                    <div>{parseString(values?.record?.[item.key] ?? '')}</div>
-                  )}
-                </WithDebugInfo>
-              }
+                  </List.Item>
+                );
+              }}
             />
-          </List.Item>
+          </WithDebugInfo>
         )}
-      />
-    </>
+      </WithVariable>
+    </WithLoading>
   );
 };

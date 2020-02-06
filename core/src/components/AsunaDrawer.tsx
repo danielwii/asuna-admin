@@ -1,3 +1,5 @@
+import { modelProxyCaller } from '@asuna-admin/adapters';
+import { AsunaPlainInfo } from '@asuna-admin/components/AsunaPlainInfo';
 import { parseString, WithDebugInfo } from '@asuna-admin/helpers';
 import { SchemaHelper } from '@asuna-admin/schema';
 import { List } from 'antd';
@@ -21,6 +23,8 @@ export const AsunaDrawerButton: React.FC<{
       type="dashed"
       width="40%"
     >
+      <AsunaPlainInfo modelName={modelName} record={record} />
+      {/*
       <WithFuture
         future={() => Promise.all([SchemaHelper.getSchema(modelName), SchemaHelper.getFormSchema(modelName)])}
       >
@@ -53,6 +57,7 @@ export const AsunaDrawerButton: React.FC<{
           />
         )}
       </WithFuture>
+*/}
     </DrawerButton>
   );
 };
