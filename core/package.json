@@ -131,7 +131,6 @@
     "@types/deep-diff": "^1.0.0",
     "@types/jest": "^25.1.1",
     "@types/lodash": "^4.14.149",
-    "@types/node": "^12.12.26",
     "@types/qrcode.react": "^1.0.0",
     "@types/react": "^16.9.19",
     "@types/react-color": "^3.0.1",

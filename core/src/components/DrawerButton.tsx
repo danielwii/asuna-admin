@@ -1,3 +1,5 @@
+/** @jsx jsx */
+import { css, jsx } from '@emotion/core';
 import { Button, Divider, Drawer, Empty, Icon, Popover, Skeleton, Timeline } from 'antd';
 import { BaseButtonProps } from 'antd/es/button/button';
 import { PopoverProps } from 'antd/lib/popover';
@@ -90,13 +92,19 @@ export const DrawerButton: React.FC<DrawerButtonProps &
       <Icon type="select" />
     </Button>
   );
-  const RenderComponent = render || <></> as any;
+  const RenderComponent = render || ((<></>) as any);
 
   return (
-    <>
+    <React.Fragment>
       {popoverProps ? <Popover {...popoverProps}>{_renderButton}</Popover> : _renderButton}
       <Drawer title={title || text} width={width ?? 520} closable={false} onClose={_onClose} visible={visible}>
-        {children}
+        <div
+          css={css`
+            margin-bottom: 2rem;
+          `}
+        >
+          {children}
+        </div>
         {render && <RenderComponent refreshFlag={refreshFlag} />}
         {/*<Button type="primary" onClick={this.showChildrenDrawer}>
             Two-level drawer
@@ -140,7 +148,7 @@ export const DrawerButton: React.FC<DrawerButtonProps &
           <Button onClick={_onClose}>关闭</Button>
         </div>
       </Drawer>
-    </>
+    </React.Fragment>
   );
 };
 

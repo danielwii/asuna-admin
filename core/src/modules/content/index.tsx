@@ -135,6 +135,7 @@ class ContentIndex extends React.Component<IProps, IState> {
           deletable={deletable}
           renderActions={opts?.renderActions}
           renderHelp={opts?.renderHelp}
+          expandedRowRender={opts?.expandedRowRender}
           // models={models}
           rowClassName={rowClassName}
         />

@@ -58,6 +58,8 @@ export function AssetsPreview({ host, urls, showPdf }: IAssetsPreviewProps) {
 interface IAssetPreviewProps {
   host?: string;
   url: string;
+  width?: number;
+  height?: number;
   showPdf?: boolean;
   fullWidth?: boolean;
 }
@@ -68,7 +70,7 @@ interface IAssetPreviewState {
   loading: boolean;
 }
 
-export function AssetPreview({ host, url, showPdf, fullWidth }: IAssetPreviewProps) {
+export function AssetPreview({ host, url, width, height, showPdf, fullWidth }: IAssetPreviewProps) {
   const [state, setState] = useState<IAssetPreviewState>({
     numPages: null,
     pageNumber: 1,
@@ -105,7 +107,7 @@ export function AssetPreview({ host, url, showPdf, fullWidth }: IAssetPreviewPro
         <FlexCenterBox key={url}>
           <a href={href} target="_blank">
             <Document file={href} onLoadSuccess={onDocumentLoadSuccess}>
-              <Page pageNumber={state.pageNumber} width={fullWidth ? (null as any) : 200} />
+              <Page pageNumber={state.pageNumber} width={fullWidth ? (null as any) : width ?? 200} />
             </Document>
           </a>
         </FlexCenterBox>
@@ -121,8 +123,9 @@ export function AssetPreview({ host, url, showPdf, fullWidth }: IAssetPreviewPro
   return (
     <FlexCenterBox key={url}>
       <ThumbImage
-        width={fullWidth ? '100%' : ''}
-        src={valueToUrl(url, { type: 'image', thumbnail: { height: 200, width: 200 } })}
+        height={height}
+        width={fullWidth ? '100%' : `${width ?? 200}px`}
+        src={valueToUrl(url, { type: 'image', thumbnail: { height: height ?? 200, width: width ?? 200 } })}
       />
     </FlexCenterBox>
   );

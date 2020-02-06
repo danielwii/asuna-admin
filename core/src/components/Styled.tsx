@@ -18,6 +18,12 @@ interface IThumbImage {
   height?: string | number;
 }
 
+export const RoundWrapper = styled.div`
+  border-radius: 0.1rem;
+  overflow: hidden;
+  display: inline-block;
+`;
+
 export const ThumbImage = (styled.img`
   max-width: ${({ width }) => width || '200px'};
   max-height: ${({ height }) => height || '120px'};

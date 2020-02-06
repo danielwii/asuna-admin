@@ -1,5 +1,5 @@
 import { responseProxy } from '@asuna-admin/adapters';
-import { WithFuture } from '@asuna-admin/components';
+import { AsunaDrawerButton } from '@asuna-admin/components';
 import { StoreContext } from '@asuna-admin/context';
 import { ActionEvent, AppContext, EventBus, EventType } from '@asuna-admin/core';
 import {
@@ -7,23 +7,20 @@ import {
   DebugInfo,
   ModelsHelper,
   parseJSONIfCould,
-  parseString,
   resolveModelInPane,
   useAsunaModels,
 } from '@asuna-admin/helpers';
 import { WithDebugInfo } from '@asuna-admin/helpers/debug';
 import { createLogger } from '@asuna-admin/logger';
-import { SchemaHelper } from '@asuna-admin/schema';
 import { modelsActions, panesActions } from '@asuna-admin/store';
 import { Asuna } from '@asuna-admin/types';
-import { Button, Divider, Dropdown, List, Menu, Modal, Skeleton, Switch, Table, Tag, Tooltip } from 'antd';
+import { Button, Divider, Dropdown, Menu, Modal, Skeleton, Switch, Table, Tag, Tooltip } from 'antd';
 import { PaginationConfig } from 'antd/es/pagination';
 import { SorterResult, TableCurrentDataSource } from 'antd/es/table';
 import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
 import React, { useContext, useEffect, useState } from 'react';
 import { useAsync } from 'react-use';
-import { DrawerButton } from './DrawerButton';
 
 const logger = createLogger('components:data-table');
 
@@ -33,6 +30,7 @@ export interface AsunaDataTableProps {
   deletable?: boolean;
   renderHelp?: React.ReactChild;
   renderActions?: (extras: Asuna.Schema.RecordRenderExtras) => React.ReactChild;
+  expandedRowRender?: (record: any, index: number, indent: number, expanded: boolean) => React.ReactNode;
   rowClassName?: (record: any, index: number) => string;
   // models: any;
   modelName: string;
@@ -52,6 +50,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
     modelName,
     extraName,
     onView,
+    expandedRowRender,
   } = props;
   const [queryCondition, setQueryCondition] = useState<{
     pagination?: PaginationConfig;
@@ -74,48 +73,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
             编辑
           </Button>
         ) : (
-          <DrawerButton
-            text="View"
-            // key={draft.refId}
-            // text={`${moment(draft.updatedAt).calendar()}(${moment(draft.updatedAt).fromNow()})`}
-            // title={`Draft: ${draft.type} / ${draft.refId}`}
-            size="small"
-            type="dashed"
-            width="40%"
-          >
-            <WithFuture
-              future={() => Promise.all([SchemaHelper.getSchema(modelName), SchemaHelper.getFormSchema(modelName)])}
-            >
-              {([schema, formSchema]) => (
-                <List<{ key: string; title: string; value: any }>
-                  itemLayout="horizontal"
-                  dataSource={_.map(record, (value, key) => ({
-                    key,
-                    title: key,
-                    // fields[key]?.options?.name ?? fields[key]?.options?.label ?? fields[key]?.name,
-                    value,
-                  }))}
-                  renderItem={item => {
-                    const columnInfo = _.find(schema?.columns, column => column.name === item.key);
-                    const title = columnInfo?.config?.info?.name ?? item.title;
-
-                    return (
-                      <List.Item>
-                        <List.Item.Meta
-                          title={title}
-                          description={
-                            <WithDebugInfo info={{ item, record: record[item.key], columnInfo }}>
-                              <div>{parseString(record[item.key] ?? '')}</div>
-                            </WithDebugInfo>
-                          }
-                        />
-                      </List.Item>
-                    );
-                  }}
-                />
-              )}
-            </WithFuture>
-          </DrawerButton>
+          <AsunaDrawerButton text="View" modelName={modelName} record={record} />
         )}{' '}
         {isDeletableSystemRecord(record) && deletable && (
           <>
@@ -291,7 +249,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
   const { items: dataSource, pagination } = responseProxy.extract(data);
 
   return (
-    <>
+    <WithDebugInfo info={props}>
       {creatable && (
         <>
           <Button type={'primary'} onClick={() => (_.isFunction(creatable) ? creatable(modelName) : _create())}>
@@ -389,6 +347,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
           rowKey={primaryKey}
           loading={loading}
           columns={columnProps}
+          expandedRowRender={expandedRowRender}
           pagination={{ ...pagination, position: 'both' }}
           onChange={_handleTableChange}
           rowClassName={rowClassName}
@@ -401,6 +360,6 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
           overflow: inherit !important;
         }
       `}</style>
-    </>
+    </WithDebugInfo>
   );
 };

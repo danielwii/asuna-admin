@@ -185,6 +185,7 @@ export declare module Asuna {
       renderActions?: (extras: RecordRenderExtras) => React.ReactChild;
       recordActions?: (actions: RecordRenderActions, extras: RecordRenderExtras) => ColumnProps<any>;
       rowClassName?: (record: any, index: number) => string;
+      expandedRowRender?: (record: any, index: number, indent: number, expanded: boolean) => React.ReactNode;
       customColumns?: { [key: string]: ColumnPropsCreator };
       columns:
         | { [key in keyof EntitySchema]: ColumnPropsCreator }
