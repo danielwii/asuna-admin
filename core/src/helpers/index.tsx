@@ -1,4 +1,4 @@
-import { AssetsPreview, Content, DynamicFormTypes, parseAddressStr } from '@asuna-admin/components';
+import { AssetsPreview, Content, DynamicFormTypes, parseAddressStr, PdfButton } from '@asuna-admin/components';
 import { VideoPlayer } from '@asuna-admin/components/DynamicForm/Videos';
 import { Config } from '@asuna-admin/config';
 import { AppContext } from '@asuna-admin/core';
@@ -154,7 +154,7 @@ async function generateSearchColumnProps(
 
 type ModelOpts = { model: string; title?: string };
 type TextColumnOpts = {
-  mode?: 'html' | 'text';
+  mode?: 'html' | 'text' | 'button';
   /**
    * 用提供的转换器来转译
    */
@@ -186,8 +186,10 @@ export const columnHelper2 = {
         let extracted = extractValue(value, opts.transformer);
         if (opts.parseBy) extracted = parseType(opts.parseBy, extracted);
         if (columnInfo?.config?.info?.type === DynamicFormTypes.Address) extracted = parseAddressStr(extracted);
+
+        let view;
         if (opts.mode === 'html') {
-          return (
+          view = extracted ? (
             <Button
               size="small"
               type="dashed"
@@ -197,17 +199,30 @@ export const columnHelper2 = {
             >
               预览
             </Button>
+          ) : (
+            'n/a'
           );
+        } else if (opts.mode === 'button') {
+          const content = opts.render ? opts.render(extracted, record) : extracted;
+          view = extracted ? (
+            <Button size="small" type="dashed" onClick={() => Modal.info({ maskClosable: true, content })}>
+              预览
+            </Button>
+          ) : (
+            'n/a'
+          );
+        } else {
+          view = opts.render ? opts.render(extracted, record) : <TooltipContent value={extracted} />;
         }
 
         return (
-          <WithDebugInfo info={{ key, title, model, value, record, extracted, opts, columnInfo }}>
-            {opts.render ? opts.render(extracted, record) : <TooltipContent value={extracted} />}
-          </WithDebugInfo>
+          <WithDebugInfo info={{ key, title, model, value, record, extracted, opts, columnInfo }}>{view}</WithDebugInfo>
         );
       }),
     };
   },
+  generatePdf: async (key, modelOpts: ModelOpts, opts: TextColumnOpts = {}): Promise<ColumnProps<any>> =>
+    columnHelper2.generate(key, modelOpts, { ...opts, render: (content, record) => <PdfButton pdf={content} /> }),
   /**
    * 生成预览小图
    */

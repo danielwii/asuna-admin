@@ -3,7 +3,7 @@ import { joinUrl, valueToUrl } from '@asuna-admin/core/url-rewriter';
 import { WithDebugInfo } from '@asuna-admin/helpers';
 import { jsx } from '@emotion/core';
 
-import { Icon } from 'antd';
+import { Button, Icon, Tooltip } from 'antd';
 import * as _ from 'lodash';
 import dynamic from 'next/dynamic';
 import React, { useState } from 'react';
@@ -42,6 +42,17 @@ export function ReactViewer({
     </>
   );
 }
+
+export const PdfButton: React.FC<{ pdf?: string }> = ({ pdf }) =>
+  pdf ? (
+    <Tooltip title="按住 option/ctrl 下载">
+      <Button type="dashed" size="small" href={pdf} target="_blank">
+        查看 pdf
+      </Button>
+    </Tooltip>
+  ) : (
+    <React.Fragment>无 pdf</React.Fragment>
+  );
 
 export function AssetsPreview({ host, urls, showPdf }: IAssetsPreviewProps) {
   return (
