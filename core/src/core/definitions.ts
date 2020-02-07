@@ -158,4 +158,10 @@ export class AsunaDefinitions<T extends Asuna.Schema.ModelOpts = {}> {
   get sideMenus(): Asuna.Schema.Menu<T>[] {
     return this._sideMenus;
   }
+
+  static renders: { model: string; field: string; render: (content) => React.ReactNode }[] = [];
+
+  regRender<EntitySchema>(model: keyof T, field: keyof EntitySchema, render: (content) => React.ReactNode) {
+    AsunaDefinitions.renders.push({ model, field, render } as any);
+  }
 }

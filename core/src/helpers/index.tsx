@@ -733,7 +733,7 @@ export const isJson = (value): boolean => {
   }
 };
 
-function TooltipContent({ value, link }: { value: any; link?: boolean }) {
+export function TooltipContent({ value, link }: { value: any; link?: boolean }) {
   let component = _.isObject(value) ? util.inspect(value) : value;
   const length = 30;
   if (typeof value === 'string' && value.length > length) {
@@ -773,6 +773,7 @@ export type ParseType =
   | 'Sex';
 
 export function parseType(key: ParseType, name: string): string {
+  if (!name) return '';
   const value = AppContext.constants?.[key]?.[name];
   if (!value) {
     console.warn('not found for constants', { key, name, map: AppContext.constants?.[key] });

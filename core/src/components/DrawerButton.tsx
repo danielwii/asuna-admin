@@ -162,7 +162,7 @@ export const DrawerButton: React.FC<DrawerButtonProps &
           <Button onClick={_onClose}>关闭</Button>
         </div>
         {renderChildrenDrawer && (
-          <Drawer width={450} closable={false} onClose={_onChildrenClose} visible={childrenDrawer}>
+          <Drawer width={520} closable={false} onClose={_onChildrenClose} visible={childrenDrawer}>
             <RenderChildrenComponent item={childrenItem} />
           </Drawer>
         )}
