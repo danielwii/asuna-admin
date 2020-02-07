@@ -1,5 +1,17 @@
 import { Asuna, Json } from '@asuna-admin/types';
 
+export type StateMachine = {
+  key: string;
+  stateKey: string;
+  actionKey: string;
+  defaultState: string;
+  actions: { type: string; from: string; to: string }[];
+};
+
+export class StateMachines {
+  [key: string]: StateMachine;
+}
+
 export class TenantInfo {
   config?: Partial<{
     enabled: boolean;

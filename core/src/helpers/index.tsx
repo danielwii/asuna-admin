@@ -763,7 +763,9 @@ export type ParseType =
   // TODO move to shared types
   | 'ActivityStatus'
   | 'ApplyStatus'
+  | 'ApplyStatusAction'
   | 'EnrollmentStatus'
+  | 'EnrollmentStatusAction'
   | 'Experience'
   | 'InteractionType'
   // Common Types
@@ -773,7 +775,7 @@ export type ParseType =
 export function parseType(key: ParseType, name: string): string {
   const value = AppContext.constants?.[key]?.[name];
   if (!value) {
-    console.warn('not found for constants', { key, name });
+    console.warn('not found for constants', { key, name, map: AppContext.constants?.[key] });
   }
   return value ?? name;
 }

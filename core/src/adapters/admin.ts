@@ -4,9 +4,10 @@ import { AxiosResponse } from 'axios';
 import { plainToClass } from 'class-transformer';
 import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
-import { Draft, Tenant, TenantInfo } from './admin.plain';
+import { Draft, StateMachines, Tenant, TenantInfo } from './admin.plain';
 
 export interface IAdminService {
+  stateMachines(auth: { token: string | null }): Promise<AxiosResponse>;
   tenantInfo(auth: { token: string | null }): Promise<AxiosResponse>;
   registerTenant<T>(
     auth: { token: string | null },
@@ -21,6 +22,7 @@ export interface IAdminService {
 }
 
 export interface AdminAdapter {
+  stateMachines(): Promise<StateMachines>;
   tenantInfo(): Promise<TenantInfo>;
   registerTenant<T = any>(data: { name: string; description?: string; payload?: T }): Promise<Tenant>;
   createDraft(data: { content: Json; type: string; refId?: string | number }): Promise<Draft>;
@@ -29,35 +31,27 @@ export interface AdminAdapter {
 }
 
 export class AdminAdapterImpl implements AdminAdapter {
-  private service: IAdminService;
+  constructor(private readonly service: IAdminService) {}
 
-  constructor(service: IAdminService) {
-    this.service = service;
-  }
+  stateMachines = (): Promise<StateMachines> =>
+    AppContext.withAuth(auth => this.service.stateMachines(auth).then(res => plainToClass(StateMachines, res.data)));
 
-  async tenantInfo(): Promise<TenantInfo> {
-    return AppContext.withAuth(auth => this.service.tenantInfo(auth).then(res => plainToClass(TenantInfo, res.data)));
-  }
+  tenantInfo = (): Promise<TenantInfo> =>
+    AppContext.withAuth(auth => this.service.tenantInfo(auth).then(res => plainToClass(TenantInfo, res.data)));
 
-  async registerTenant<T>(data: { name: string; description?: string; payload: T }): Promise<Tenant> {
-    return AppContext.withAuth(auth =>
-      this.service.registerTenant(auth, data).then(res => plainToClass(Tenant, res.data)),
-    );
-  }
+  registerTenant = <T>(data: { name: string; description?: string; payload: T }): Promise<Tenant> =>
+    AppContext.withAuth(auth => this.service.registerTenant(auth, data).then(res => plainToClass(Tenant, res.data)));
 
-  async createDraft(data: { content: Json; type: string; refId?: string }): Promise<Draft> {
-    return AppContext.withAuth(auth => this.service.createDraft(auth, data).then(res => plainToClass(Draft, res.data)));
-  }
+  createDraft = (data: { content: Json; type: string; refId?: string }): Promise<Draft> =>
+    AppContext.withAuth(auth => this.service.createDraft(auth, data).then(res => plainToClass(Draft, res.data)));
 
-  async getDrafts(params: { type: string; refId: string }): Promise<Draft[]> {
-    return AppContext.withAuth(auth =>
+  getDrafts = (params: { type: string; refId: string }): Promise<Draft[]> =>
+    AppContext.withAuth(auth =>
       this.service.getDrafts(auth, params).then(res => _.map(res.data, item => plainToClass(Draft, item))),
     );
-  }
 
-  async publishDraft(params: { id: string }): Promise<void> {
-    return AppContext.withAuth(auth => this.service.publishDraft(auth, params).then(fp.get('data')));
-  }
+  publishDraft = (params: { id: string }): Promise<void> =>
+    AppContext.withAuth(auth => this.service.publishDraft(auth, params).then(fp.get('data')));
 }
 
 export const adminProxyCaller: () => AdminAdapter = () => AppContext.ctx.admin;

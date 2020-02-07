@@ -98,6 +98,7 @@ class AppContext {
   private static _dispatch: Dispatch;
   private static _subject;
   private static _constants;
+  private static _stateMachines;
   private static _isServer = typeof window === 'undefined';
   private static _storeConnector: IStoreConnector<RootState>;
 
@@ -188,6 +189,10 @@ class AppContext {
     this._constants = constants;
   }
 
+  public static set stateMachines(stateMachines: any) {
+    this._stateMachines = stateMachines;
+  }
+
   public static get isServer() {
     return AppContext._isServer;
   }
@@ -224,16 +229,20 @@ class AppContext {
     return AppContext._constants;
   }
 
+  public static get stateMachines() {
+    return AppContext._stateMachines;
+  }
+
   public static async syncSettings() {
     const settings = await AppContext.ctx.graphql.loadSystemSettings();
     if (settings) {
       this.serverSettings = Object.assign({}, ...settings.map(setting => ({ [setting.key]: setting })));
     }
 
-    const value = await AppContext.ctx.graphql.loadKv('app.settings', 'constants');
-    if (value) {
-      this.constants = value.value;
-    }
+    const constants = await AppContext.ctx.graphql.loadKv('app.settings', 'constants');
+    if (constants) this.constants = constants.value;
+    const stateMachines = await AppContext.ctx.admin.stateMachines();
+    if (stateMachines) this.stateMachines = stateMachines;
   }
 
   /**
