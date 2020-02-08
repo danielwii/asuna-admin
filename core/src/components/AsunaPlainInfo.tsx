@@ -49,7 +49,10 @@ export const AsunaPlainInfo: React.FC<AsunaPlainObjectProps> = ({ modelName, rec
               renderItem={item => {
                 const itemSchema = formSchema?.[item.key];
                 const columnInfo = _.find(schema?.columns, column => column.name === item.key);
-                const title = columnInfo?.config?.info?.name ?? item.title;
+
+                if (!columnInfo) return <React.Fragment />;
+
+                const title = columnInfo.config?.info?.name ?? item.title;
 
                 let value = record?.[item.key];
                 let before = compare?.[item.key];
@@ -82,7 +85,7 @@ export const AsunaPlainInfo: React.FC<AsunaPlainObjectProps> = ({ modelName, rec
                   );
                 }
 
-                if (columnInfo?.config?.type === 'datetime') {
+                if (columnInfo.config?.type === 'datetime') {
                   value = (
                     <Tooltip title={value}>
                       {moment(value).calendar()}
@@ -100,9 +103,9 @@ export const AsunaPlainInfo: React.FC<AsunaPlainObjectProps> = ({ modelName, rec
                   before = parseString(before);
                 }
 
-                switch (columnInfo?.config?.info?.type as any) {
+                switch (columnInfo.config?.info?.type as any) {
                   case DynamicFormTypes.EnumFilter: {
-                    const info = columnInfo?.config?.info as EnumFilterMetaInfoOptions;
+                    const info = columnInfo.config?.info as EnumFilterMetaInfoOptions;
                     value = info?.enumData?.[value as string];
                     before = before && info?.enumData?.[before as string];
                     break;

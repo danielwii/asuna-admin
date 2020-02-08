@@ -17,7 +17,7 @@ export function removePreAndSuf(value: string, prefix: string, suffix: string): 
 }
 
 export function parseString(value?: any): string {
-  return _.isString(value) ? value : JSON.stringify(value);
+  return value ? (_.isString(value) ? value : JSON.stringify(value)) : '';
 }
 
 export function parseJSONIfCould(value?: string): any {
