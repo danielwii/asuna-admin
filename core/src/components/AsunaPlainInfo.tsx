@@ -1,4 +1,3 @@
-import { DynamicFormTypes } from '@asuna-admin/components/DynamicForm';
 import { AppContext, AsunaDefinitions } from '@asuna-admin/core';
 import { parseString, TooltipContent, WithDebugInfo } from '@asuna-admin/helpers';
 import { SchemaHelper } from '@asuna-admin/schema';
@@ -12,6 +11,7 @@ import React from 'react';
 import { useAsync } from 'react-use';
 import VisualDiff from 'react-visual-diff';
 import { WithLoading, WithVariable } from './Common';
+import { DynamicFormTypes } from './DynamicForm';
 
 export interface AsunaPlainObjectProps {
   modelName: string;
