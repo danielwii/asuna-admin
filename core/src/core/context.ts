@@ -197,10 +197,16 @@ class AppContext {
     return AppContext._isServer;
   }
 
+  /**
+   * 开发模式，生产中无法激活
+   */
   public static get isDevMode() {
     return this.isDebugMode || AppContext.nextConfig.publicRuntimeConfig?.env !== 'production';
   }
 
+  /**
+   * 调试模式，生产中也可以激活
+   */
   public static get isDebugMode() {
     return (global as any).DEBUG_MODE;
   }

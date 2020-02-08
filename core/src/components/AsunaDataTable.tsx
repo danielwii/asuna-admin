@@ -19,7 +19,7 @@ import { SorterResult, TableCurrentDataSource } from 'antd/es/table';
 import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
 import React, { useContext, useEffect, useState } from 'react';
-import { useAsync } from 'react-use';
+import { useAsync, useLogger } from 'react-use';
 import { AsunaDrawerButton } from './AsunaDrawer';
 
 const logger = createLogger('components:data-table');
@@ -236,6 +236,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
       })
       .then(fp.get('data'));
   }, [queryCondition, loadingAsunaModels]);
+  if (AppContext.isDebugMode) useLogger(AsunaDataTable.name, columnProps);
 
   /*
   if (AppContext.isDebugMode)
