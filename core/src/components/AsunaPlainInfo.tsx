@@ -50,7 +50,7 @@ export const AsunaPlainInfo: React.FC<AsunaPlainObjectProps> = ({ modelName, rec
                 const itemSchema = formSchema?.[item.key];
                 const columnInfo = _.find(schema?.columns, column => column.name === item.key);
 
-                if (!columnInfo) return <React.Fragment />;
+                if (!columnInfo || columnInfo.config?.info?.accessible === 'hidden') return <React.Fragment />;
 
                 const title = columnInfo.config?.info?.name ?? item.title;
 
