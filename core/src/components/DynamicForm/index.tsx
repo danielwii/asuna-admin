@@ -327,7 +327,11 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
       }
       case DynamicFormTypes.SimpleJSON: // TODO json-type is string-array
         logger.debug('[DynamicForm]', '[buildField][SimpleJSON]', field, options);
-        return generateStringArray(form, { ...(options as any), items: field.value });
+        return generateStringArray(form, {
+          ...(options as any),
+          items: field.value,
+          mode: (options as any).jsonType === 'tag-array' ? 'tag' : 'input',
+        });
       default: {
         return (
           <WithDebugInfo key={field.name} info={field}>
