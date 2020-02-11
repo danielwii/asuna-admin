@@ -1,4 +1,5 @@
 import { valueToArrays, valueToUrl } from '@asuna-admin/core/url-rewriter';
+import { parseJSONIfCould } from '@asuna-admin/helpers';
 import { upload } from '@asuna-admin/helpers/upload';
 import { createLogger } from '@asuna-admin/logger';
 import { Asuna } from '@asuna-admin/types';
@@ -100,7 +101,7 @@ export class FileUploader extends React.Component<IFilesUploaderProps> {
       },
       multiple: false,
       supportServerRender: true,
-      onChange(info: UploadChangeParam) {
+      onChange: (info: UploadChangeParam) => {
         this.setState({ uploadFiles: [...info.fileList] });
         if (info.file.status !== 'uploading') {
           logger.log('[FileUploader][onChange]', info.file, info.fileList);
@@ -129,7 +130,8 @@ export class FileUploader extends React.Component<IFilesUploaderProps> {
           value={_.isString(this.props.value) ? this.props.value : JSON.stringify(this.props.value)}
           autoSize={{ minRows: 2, maxRows: 6 }}
           onChange={event => {
-            this.props.onChange!(JSON.parse(event.target.value));
+            console.log(event.target.value);
+            this.props.onChange!(parseJSONIfCould(event.target.value));
             this.setState({ uploadFiles: transformToUploadFiles(event.target.value) });
           }}
         />
