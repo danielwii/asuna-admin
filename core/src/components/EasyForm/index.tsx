@@ -125,7 +125,7 @@ export function RenderInputComponent({
               return <pre>{util.inspect(parsedItem)}</pre>;
             }}
             render={(formik, item, index) => (
-              <>
+              <antd.Card>
                 <TextField
                   name={`${index}-key`}
                   value={item?.[`${index}-key`]}
@@ -146,7 +146,7 @@ export function RenderInputComponent({
                   fullWidth
                   multiline
                 />
-              </>
+              </antd.Card>
             )}
             onChange={values => form.setFieldValue(field.name, values)}
           />
@@ -177,7 +177,7 @@ export function RenderInputComponent({
               return <pre>{util.inspect(parsedItem)}</pre>;
             }}
             render={(formik, item, index) => (
-              <>
+              <antd.Card>
                 <TextField
                   name={`${index}-key`}
                   value={item?.[`${index}-key`]}
@@ -192,7 +192,7 @@ export function RenderInputComponent({
                   fullWidth
                   multiline
                 />
-              </>
+              </antd.Card>
             )}
             onChange={values => form.setFieldValue(field.name, values)}
           />
