@@ -1,9 +1,12 @@
 import { parseJSONIfCould } from '@asuna-admin/helpers';
+import { createLogger } from '@asuna-admin/logger';
 import { Button, List } from 'antd';
 import { useFormik } from 'formik';
 import _ from 'lodash';
 import React from 'react';
 import { useLogger } from 'react-use';
+
+const logger = createLogger('components:easy-form:table');
 
 interface DynamicJsonTableProps<V = {}> {
   mode?: 'group' | 'array'; // TODO 分离两种模式
@@ -41,7 +44,9 @@ export const DynamicJsonArrayTable: <T = {}>(
         .groupBy(([key]) => key.split('-')[0])
         .flatMap(_.fromPairs)
         .value();
-      onChange(_.assign({}, ..._.merge(parsedFields, updated)));
+      const changed = _.assign({}, ...parsedFields, ...updated);
+      logger.log('DynamicJsonArrayTable.validate', values, updated, parsedFields, changed);
+      onChange(changed);
     },
     onSubmit: values => {},
   });
