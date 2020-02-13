@@ -32,13 +32,16 @@ export const DynamicJsonArrayTable: <T = {}>(
           .toPairs()
           .groupBy(([key]) => key.split('-')[0])
           .flatMap(_.fromPairs)
-          // .map(value => _.assign({}, ..._.values(value)))
           .value();
   const formik = useFormik({
     initialValues: parsedFields,
     validate: values => {
-      // console.log('DynamicJsonArrayTable.validate', values, parsedFields, _.merge(parsedFields, values));
-      onChange(_.merge(parsedFields, values));
+      const updated = _.chain(_.omitBy(values, (v, k) => _.isObject(v)))
+        .toPairs()
+        .groupBy(([key]) => key.split('-')[0])
+        .flatMap(_.fromPairs)
+        .value();
+      onChange(_.assign({}, ..._.merge(parsedFields, updated)));
     },
     onSubmit: values => {},
   });
