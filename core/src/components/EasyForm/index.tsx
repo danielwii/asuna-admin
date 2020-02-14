@@ -1,10 +1,11 @@
 import { Config } from '@asuna-admin/config';
 import { AppContext } from '@asuna-admin/core';
-import { WithDebugInfo } from '@asuna-admin/helpers';
+import { DebugInfo, WithDebugInfo } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 import { FormControl, FormControlLabel, FormHelperText, Switch, TextField } from '@material-ui/core';
 import * as antd from 'antd';
 import { Divider, Popconfirm } from 'antd';
+import { DynamicJsonArrayTable, ObjectArrayHelper } from 'asuna-components';
 import { changeAntdTheme, getThemeColor } from 'dynamic-antd-theme';
 import * as formik from 'formik';
 import { FieldInputProps, FormikProps } from 'formik';
@@ -16,7 +17,6 @@ import * as util from 'util';
 
 import { ImageUploader } from '../DynamicForm/ImageUploader';
 import { FormField, FormFieldDef, FormFields, FormFieldsGroup, FormFieldType } from './interfaces';
-import { DynamicJsonArrayTable } from './table';
 
 export * from './interfaces';
 
@@ -108,44 +108,14 @@ export function RenderInputComponent({
         <>
           <label>{label}</label>
           <DynamicJsonArrayTable
+            adapter={ObjectArrayHelper}
             value={value}
-            // createItem={index => ({ [`${index}-key`]: '' })}
-            preview={item => {
-              const parsedItem = _.assign(
-                {},
-                ..._.chain(item)
-                  .toPairs()
-                  .groupBy(([key]) => key.split('-')[0])
-                  .map(value => {
-                    const values = _.assign({}, ...value.map(([key, value]) => ({ [key.split('-')[1]]: value })));
-                    return { [values.key]: _.omit(values, 'key') };
-                  })
-                  .value(),
-              );
-              return <pre>{util.inspect(parsedItem)}</pre>;
-            }}
-            render={(formik, item, index) => (
+            preview={item => <pre>{util.inspect(ObjectArrayHelper.keyParser(item))}</pre>}
+            render={({ fieldOpts, index }) => (
               <antd.Card>
-                <TextField
-                  name={`${index}-key`}
-                  value={item?.[`${index}-key`]}
-                  onChange={event => formik.handleChange(event)}
-                  label="key"
-                />{' '}
-                <TextField
-                  name={`${index}-color`}
-                  value={item?.[`${index}-color`]}
-                  onChange={event => formik.handleChange(event)}
-                  label="color"
-                />
-                <TextField
-                  name={`${index}-value`}
-                  value={item?.[`${index}-value`]}
-                  onChange={event => formik.handleChange(event)}
-                  label="value"
-                  fullWidth
-                  multiline
-                />
+                <TextField {...fieldOpts('key', index)} label="key" />{' '}
+                <TextField {...fieldOpts('color', index)} label="color" />
+                <TextField {...fieldOpts('value', index)} label="value" fullWidth multiline />
               </antd.Card>
             )}
             onChange={values => form.setFieldValue(field.name, values)}
@@ -160,43 +130,21 @@ export function RenderInputComponent({
         <>
           <label>{label}</label>
           <DynamicJsonArrayTable
+            adapter={ObjectArrayHelper}
             value={value}
-            // createItem={index => ({ [`${index}-key`]: '' })}
-            preview={item => {
-              const parsedItem = _.assign(
-                {},
-                ..._.chain(item)
-                  .toPairs()
-                  .groupBy(([key]) => key.split('-')[0])
-                  .map(value => {
-                    const values = _.assign({}, ...value.map(([key, value]) => ({ [key.split('-')[1]]: value })));
-                    return { [values.key]: _.omit(values, 'key') };
-                  })
-                  .value(),
-              );
-              return <pre>{util.inspect(parsedItem)}</pre>;
-            }}
-            render={(formik, item, index) => (
+            preview={item => <pre>{util.inspect(ObjectArrayHelper.keyParser(item))}</pre>}
+            render={({ fieldOpts, index }) => (
               <antd.Card>
-                <TextField
-                  name={`${index}-key`}
-                  value={item?.[`${index}-key`]}
-                  onChange={event => formik.handleChange(event)}
-                  label="key"
-                />
-                <TextField
-                  name={`${index}-value`}
-                  value={item?.[`${index}-value`]}
-                  onChange={event => formik.handleChange(event)}
-                  label="value"
-                  fullWidth
-                  multiline
-                />
+                <TextField {...fieldOpts('key', index)} label="key" />
+                <TextField {...fieldOpts('value', index)} label="value" fullWidth multiline />
               </antd.Card>
             )}
-            onChange={values => form.setFieldValue(field.name, values)}
+            onChange={values => {
+              console.log('onChange', field.name, values);
+              form.setFieldValue(field.name, values);
+            }}
           />
-          {/*<DebugInfo data={value} type="util" />*/}
+          <DebugInfo data={value} type="util" />
         </>
       );
     }
@@ -434,6 +382,8 @@ export const EasyGroupForm = formik.withFormik<GroupEasyFormProps, any>({
   },
 
   handleSubmit: (values, { props, setSubmitting }) => {
-    props.onSubmit(_.merge(props.fieldValues, values)).finally(() => setSubmitting(false));
+    props
+      .onSubmit(_.mergeWith(props.fieldValues, values, (objValue, srcValue) => srcValue))
+      .finally(() => setSubmitting(false));
   },
 })(GroupInnerForm);

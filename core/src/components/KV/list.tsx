@@ -7,6 +7,7 @@ import { createLogger } from '@asuna-admin/logger';
 import { jsx } from '@emotion/core';
 import { TextField } from '@material-ui/core';
 import { Button, Col, Divider, Icon, Row, Typography } from 'antd';
+import { DynamicJsonArrayTable, StringArrayHelper } from 'asuna-components';
 import { Field, FieldProps, Form, Formik, FormikValues } from 'formik';
 import 'highlight.js/styles/default.css';
 import * as _ from 'lodash';
@@ -14,7 +15,6 @@ import React, { useEffect, useState } from 'react';
 import Highlight from 'react-highlight';
 import { FoldingCube } from 'styled-spinkit';
 import * as util from 'util';
-import { DynamicJsonArrayTable } from '../EasyForm/table';
 
 const logger = createLogger('components:kv-form:form');
 
@@ -85,19 +85,16 @@ export function ListKVComponent(props: {
                 <Field name="values">
                   {({ field, meta, form }: FieldProps<FormikValues>) => (
                     <WithDebugInfo info={{ field, meta, value: formikBag.values.values ?? body.values ?? [] }}>
-                      <DynamicJsonArrayTable<[]>
-                        mode="array"
-                        value={formikBag.values.values ?? body.values ?? []}
+                      <DynamicJsonArrayTable
+                        adapter={StringArrayHelper}
+                        value={(formikBag.values.values ?? body.values ?? []) as any}
                         preview={item => <pre>{JSON.stringify(item, null, 2)}</pre>}
                         onChange={values => formikBag.setFieldValue(field.name, values)}
-                        render={(innerFormik, item, index) =>
+                        render={({ index, fieldOpts }) =>
                           _.map(body.fields, (fieldDef: FormFieldDef) => (
                             <TextField
-                              key={`${index}-${fieldDef.field.name}`}
                               style={{ marginRight: '.2rem' }}
-                              name={`[${index}].${fieldDef.field.name}`}
-                              value={item?.[fieldDef.field.name]}
-                              onChange={event => innerFormik.handleChange(event)}
+                              {...fieldOpts('key', index)}
                               label={fieldDef.name}
                               multiline
                             />
