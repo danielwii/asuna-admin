@@ -46,7 +46,7 @@
     "@material-ui/core": "^4.9.2",
     "@material-ui/icons": "^4.9.1",
     "@zeit/next-css": "^1.0.1",
-    "asuna-components": "^0.1.0",
+    "asuna-components": "^0.2.0",
     "antd": "^3.26.9",
     "apollo-boost": "^0.4.7",
     "apollo-server-koa": "^2.10.0",
