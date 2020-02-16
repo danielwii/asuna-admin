@@ -12163,12 +12163,14 @@ node-ask@^1.0.1:
   resolved "https://registry.yarnpkg.com/node-ask/-/node-ask-1.0.1.tgz#caaa1076cc58e0364267a0903e3eadfac158396b"
   integrity sha1-yqoQdsxY4DZCZ6CQPj6t+sFYOWs=
 
-node-buffs@^0.6.22:
-  version "0.6.22"
-  resolved "https://registry.yarnpkg.com/node-buffs/-/node-buffs-0.6.22.tgz#a07818f35f0e328ea5ef70f6415c67cdae3077fb"
-  integrity sha512-cnEFuHbKSTibxnPFsgOaq+LgZQYYs3+WZpDDplK/vwjUC/pHunVa8GKLx++94f4SYUochVM1DtLQnDU4usPrZA==
+node-buffs@^0.8.0:
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/node-buffs/-/node-buffs-0.8.0.tgz#66b9684cc1db7373263164ffbe855dab7bdf034d"
+  integrity sha512-EURK5VAZZdA/PLbEIxTM5YxzWad99U2MhNqqq3V1gTevbjIo67EGM+/vVVBGpCJ83cq5/jhT/A/Bj+lMiknrxQ==
   dependencies:
     dotenv "^8.2.0"
+    fs-extra "^8.1.0"
+    js-yaml "^3.13.1"
     lodash "^4.17.15"
 
 node-cache@^5.1.0:
