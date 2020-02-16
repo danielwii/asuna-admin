@@ -4391,17 +4391,20 @@ astral-regex@^1.0.0:
   resolved "https://registry.yarnpkg.com/astral-regex/-/astral-regex-1.0.0.tgz#6c8c3fb827dd43ee3918f27b82782ab7658a6fd9"
   integrity sha512-+Ryf6g3BKoRc7jfp7ad8tM4TtMiaWvbF/1/sQcZPkkS7ag3D5nMBCe2UfOTONtAkaG0tO0ij3C5Lwmf1EiyjHg==
 
-asuna-components@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/asuna-components/-/asuna-components-0.1.0.tgz#983a1ef40d33cbf1540020a08c2488855924f02e"
-  integrity sha512-zTHq9bkfi+ssi1pkFoMfhIBOewi8j2ZOpke65YmWnhX1pKJNqRQX8qu+GGcQan/DOOCPwSa/62L8s+ar/MplkA==
+asuna-components@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/asuna-components/-/asuna-components-0.2.1.tgz#a1a575a2ded9df34a9a6d3890a04c1e30e9254c4"
+  integrity sha512-H3sEytaLVoN/G+Gnr6ZqJdzdmle288blRdqq+HmBe4wQvKYOnUxtv14dcK6oY/m+E2Pn4ubj99VzLsReIe4Edw==
   dependencies:
     antd "^3.26.9"
     emotion "^10.0.27"
+    formik "^2.1.4"
+    lodash "^4.17.15"
     qrcode.react "^1.0.0"
     rc-tween-one "^2.6.8"
     react "^16.12.0"
     react-dom "^16.12.0"
+    react-json-tree "^0.11.2"
     react-use "^13.24.0"
     spinkit "^2.0.1"
     styled-components "^5.0.1"
@@ -12160,12 +12163,14 @@ node-ask@^1.0.1:
   resolved "https://registry.yarnpkg.com/node-ask/-/node-ask-1.0.1.tgz#caaa1076cc58e0364267a0903e3eadfac158396b"
   integrity sha1-yqoQdsxY4DZCZ6CQPj6t+sFYOWs=
 
-node-buffs@^0.6.22:
-  version "0.6.22"
-  resolved "https://registry.yarnpkg.com/node-buffs/-/node-buffs-0.6.22.tgz#a07818f35f0e328ea5ef70f6415c67cdae3077fb"
-  integrity sha512-cnEFuHbKSTibxnPFsgOaq+LgZQYYs3+WZpDDplK/vwjUC/pHunVa8GKLx++94f4SYUochVM1DtLQnDU4usPrZA==
+node-buffs@^0.8.0:
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/node-buffs/-/node-buffs-0.8.0.tgz#66b9684cc1db7373263164ffbe855dab7bdf034d"
+  integrity sha512-EURK5VAZZdA/PLbEIxTM5YxzWad99U2MhNqqq3V1gTevbjIo67EGM+/vVVBGpCJ83cq5/jhT/A/Bj+lMiknrxQ==
   dependencies:
     dotenv "^8.2.0"
+    fs-extra "^8.1.0"
+    js-yaml "^3.13.1"
     lodash "^4.17.15"
 
 node-cache@^5.1.0:
