@@ -75,7 +75,7 @@
     "next": "^9.2.1",
     "next-redux-wrapper": "^4.0.1",
     "next-transpile-modules": "^3.0.2",
-    "node-buffs": "^0.6.22",
+    "node-buffs": "^0.7.0",
     "node-cache": "^5.1.0",
     "object-hash": "^2.0.2",
     "qrcode.react": "^1.0.0",
