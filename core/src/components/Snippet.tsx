@@ -1,6 +1,6 @@
 /** @jsx jsx */
 import { joinUrl, valueToUrl } from '@asuna-admin/core/url-rewriter';
-import { WithDebugInfo } from '@asuna-admin/helpers';
+import { TooltipContent, WithDebugInfo } from '@asuna-admin/helpers';
 import { jsx } from '@emotion/core';
 
 import { Button, Icon, Tooltip } from 'antd';
@@ -58,9 +58,12 @@ export function AssetsPreview({ host, urls, showPdf }: IAssetsPreviewProps) {
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', maxWidth: '400px' }}>
       {_.map(urls, (url, index) => (
-        <ReactViewer key={`viewer-${index}`} index={index} images={urls.map(url => ({ src: url, downloadUrl: url }))}>
-          <AssetPreview key={url} host={host} url={url} showPdf={showPdf} />
-        </ReactViewer>
+        <div key={`viewer-${index}`}>
+          <ReactViewer index={index} images={urls.map(url => ({ src: url, downloadUrl: url }))}>
+            <AssetPreview key={url} host={host} url={url} showPdf={showPdf} />
+          </ReactViewer>
+          <TooltipContent value={url} link />
+        </div>
       ))}
     </div>
   );

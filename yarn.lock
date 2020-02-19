@@ -14700,10 +14700,10 @@ react-popper@^1.3.6:
     typed-styles "^0.0.7"
     warning "^4.0.2"
 
-react-query@^0.4.2:
-  version "0.4.2"
-  resolved "https://registry.yarnpkg.com/react-query/-/react-query-0.4.2.tgz#40f005c4cffee343a0ea31985efb94103242397d"
-  integrity sha512-ZYGiFyUifRHhM5cwaXDdMXLRTRFuHTkRrDU2gQGAeftaX1OdaNCrzjhfb3W4Wcr8X+iNWfeNtbt6t/6m5iQv9g==
+react-query@^0.4.3:
+  version "0.4.3"
+  resolved "https://registry.yarnpkg.com/react-query/-/react-query-0.4.3.tgz#ce6b90ee1677868c24bbf3050803c811f97e179c"
+  integrity sha512-EoKxO41V3s0yh1LqeA3o7IQ/nO7gbCeHM1yCeVNMjyQ5kfeV7n1FgxXbOLEV3VZLTIxvHML5/n06Q8dvpLIqFA==
   dependencies:
     "@types/react-query" "^0.3.7"
 
