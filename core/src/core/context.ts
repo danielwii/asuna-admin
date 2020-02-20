@@ -140,9 +140,7 @@ class AppContext {
   }
 
   public static regDispatch(dispatch: Dispatch): void {
-    if (!AppContext._dispatch) {
-      AppContext._dispatch = AppContext._dispatch || dispatch;
-    }
+    if (!AppContext._dispatch) AppContext._dispatch = dispatch;
   }
 
   public static dispatch(action: AnyAction) {

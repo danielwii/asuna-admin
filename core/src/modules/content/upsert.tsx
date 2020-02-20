@@ -196,7 +196,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
       const record = this.props?.basis?.pane?.data?.record;
       const { data: entity } = await this._reloadEntity(record);
       const models = this.props.models;
-      originalFieldValues = R.pathOr(entity, [modelName, record.id])(models);
+      originalFieldValues = R.pathOr(entity, [modelName, record?.id])(models);
       logger.debug('[componentWillMount]', { modelName, record, entity }, diff(originalFieldValues, record));
     }
 

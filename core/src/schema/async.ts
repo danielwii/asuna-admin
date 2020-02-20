@@ -81,7 +81,7 @@ export const asyncLoadAssociationsDecorator = async ({
     const filteredAssociations = R.pickBy(field => {
       const loaded = field?.associations?.[field.name];
       if (loaded) {
-        return loaded?.existItems?.length != field?.value?.length;
+        return loaded.existItems?.length != field?.value?.length;
       }
       return true;
     })(associations);

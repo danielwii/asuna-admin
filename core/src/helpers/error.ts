@@ -40,7 +40,7 @@ export function parseResponseError(e: Partial<AxiosError>): any {
 export function toErrorMessage(e) {
   logger.log('toErrorMessage', { e, response: e.response });
   if (e.response) {
-    return JSON.stringify(e?.response?.data);
+    return JSON.stringify(e.response?.data);
   }
   return e.message || JSON.stringify(e);
 }

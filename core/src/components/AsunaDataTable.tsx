@@ -88,7 +88,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
   const funcs = {
     createRefresher: opts => () => funcs.refresh(opts),
     refresh: (opts?) => {
-      logger.log('refresh', this, opts, queryCondition);
+      logger.log('refresh', opts, queryCondition);
       // funcs.handleTableChange(queryCondition.pagination, queryCondition.filters, queryCondition.sorter);
       updateFlag(-flag);
     },

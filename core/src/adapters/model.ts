@@ -333,7 +333,7 @@ export class ModelAdapterImpl implements ModelAdapter {
     const primaryKey = AppContext.adapters.models.getPrimaryKey(modelName);
     logger.debug('[upsert]', 'fields is', fields);
 
-    const fixKeys = _.mapKeys(data.body, (value, key) => fields?.[key]?.ref || key);
+    const fixKeys = _.mapKeys(data?.body, (value, key) => fields?.[key]?.ref || key);
     const transformed = _.mapValues(fixKeys, (value, key) => {
       // json 用于描述该字段需要通过字符串转换处理，目前用于服务器端不支持 JSON 数据格式的情况
       return _.eq(fields?.[key]?.options?.json, 'str') ? JSON.stringify(value) : value;
@@ -487,13 +487,13 @@ export class ModelAdapterImpl implements ModelAdapter {
     const auth = AppContext.fromStore('auth');
     return this.service.loadModels(auth, modelName, {
       pagination: { page, size },
-      fields: configs.fields,
+      fields: configs?.fields,
       filters: _.mapValues<Record<string, [Partial<Condition>]>, WhereConditions>(
-        configs.filters,
+        configs?.filters,
         _.flow(filter => (_.isArray(filter) ? filter[0] : filter), parseJSONIfCould),
       ),
-      sorter: configs.sorter,
-      relations: configs.relations,
+      sorter: configs?.sorter,
+      relations: configs?.relations,
       ...this.getModelConfig(modelName),
     });
   };
@@ -506,13 +506,13 @@ export class ModelAdapterImpl implements ModelAdapter {
     return this.service
       .loadModels(auth, modelName, {
         pagination: { page, size },
-        fields: configs.fields,
+        fields: configs?.fields,
         filters: _.mapValues<Record<string, [Partial<Condition>]>, WhereConditions>(
-          configs.filters,
+          configs?.filters,
           _.flow(filter => (_.isArray(filter) ? filter[0] : filter), parseJSONIfCould),
         ),
-        sorter: configs.sorter,
-        relations: configs.relations,
+        sorter: configs?.sorter,
+        relations: configs?.relations,
         ...this.getModelConfig(modelName),
       })
       .then(fp.get('data'));

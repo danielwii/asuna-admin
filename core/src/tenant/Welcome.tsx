@@ -127,7 +127,7 @@ export const TenantWelcome: React.FC = props => {
                       title="未发布"
                       valueStyle={{ color: '#8e8e8e' }}
                       // prefix={recordCount.published}
-                      value={total - (published ?? 0)}
+                      value={total - published}
                       // suffix={`/ ${recordCount.total}`}
                     />
                   </Col>
