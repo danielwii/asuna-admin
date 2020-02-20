@@ -1,9 +1,9 @@
-declare module '*.json' {
-  const value: any;
-  export default value;
-}
+// declare module '*.json' {
+//   const value: any;
+//   export default value;
+// }
 
-import { InterpolationWithTheme } from "@emotion/core";
+import { InterpolationWithTheme } from '@emotion/core';
 
 declare global {
   namespace JSX {
@@ -13,7 +13,7 @@ declare global {
      */
 
     interface IntrinsicAttributes {
-      css?: InterpolationWithTheme<any>
+      css?: InterpolationWithTheme<any>;
     }
   }
 }

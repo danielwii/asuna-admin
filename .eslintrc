@@ -6,14 +6,16 @@
   "extends": [
     "airbnb",
     "plugin:jest/recommended",
+    "plugin:@typescript-eslint/recommended",
     "prettier"
   ],
   "settings": {},
-  "parser": "babel-eslint",
+  "parser": "@typescript-eslint/parser",
   "plugins": [
     "jest",
     "prettier",
-    "react-hooks"
+    "react-hooks",
+    "@typescript-eslint"
   ],
   "rules": {
     "no-underscore-dangle": "off",
