@@ -98,7 +98,7 @@ export function RenderInputComponent({
         <>
           {/*<antd.Input.TextArea id={field.name} {...field} autoSize rows={4} value={value} />*/}
           <TextField id={field.name} multiline {...field} value={value} label={label} />
-          {/*<DebugInfo data={{ field, fieldDef, value }} />*/}
+          {/*<DebugInfo data={{ field, fieldDef, value }} type="json" />*/}
         </>
       );
     }
@@ -383,7 +383,11 @@ export const EasyGroupForm = formik.withFormik<GroupEasyFormProps, any>({
 
   handleSubmit: (values, { props, setSubmitting }) => {
     props
-      .onSubmit(_.mergeWith(props.fieldValues, values, (objValue, srcValue) => ({ ...objValue, ...srcValue })))
+      .onSubmit(
+        _.mergeWith(props.fieldValues, values, (objValue, srcValue) =>
+          _.isString(srcValue) ? srcValue : { ...objValue, ...srcValue },
+        ),
+      )
       .finally(() => setSubmitting(false));
   },
 })(GroupInnerForm);
