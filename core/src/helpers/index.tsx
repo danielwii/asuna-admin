@@ -546,32 +546,47 @@ export const columnHelper = {
     dataIndex: key,
     sorter: true,
     render: nullProtectRender(record => {
-      const value = extractValue(record, opts.transformer);
-      if (typeof value === 'string' && value.length > 30) {
+      const renderLink = value => {
+        // const value = extractValue(v, opts.transformer);
+        if (typeof value === 'string' && value.length > 30) {
+          return (
+            <WithDebugInfo info={{ value }}>
+              <Tooltip title={value}>
+                <Button href={value} size="small" type="dashed" target="_blank">
+                  {`${value.slice(0, 30)}...`}
+                  <Icon type="link" />
+                </Button>
+              </Tooltip>
+              {/* language=CSS */}
+              <style jsx>{`
+                /* 用于修复 tooltip 最大宽度固定以致长文本显示异常的问题 */
+                :global(.ant-tooltip-inner) {
+                  max-width: inherit;
+                }
+              `}</style>
+            </WithDebugInfo>
+          );
+        }
         return (
-          <React.Fragment>
-            <Tooltip title={value}>
-              <Button href={value} size="small" type="dashed" target="_blank">
-                {`${value.slice(0, 30)}...`}
-                <Icon type="link" />
-              </Button>
-            </Tooltip>
-            {/* language=CSS */}
-            <style jsx>{`
-              /* 用于修复 tooltip 最大宽度固定以致长文本显示异常的问题 */
-              :global(.ant-tooltip-inner) {
-                max-width: inherit;
-              }
-            `}</style>
-          </React.Fragment>
+          <WithDebugInfo info={{ value }}>
+            <Button href={value} size="small" type="dashed" target="_blank">
+              {value}
+              <Icon type="link" />
+            </Button>
+          </WithDebugInfo>
+        );
+      };
+
+      if (_.isArray(record)) {
+        return (
+          <>
+            {record.map(v => (
+              <div key={v}>{renderLink(v)}</div>
+            ))}
+          </>
         );
       }
-      return (
-        <Button href={value} size="small" type="dashed" target="_blank">
-          {value}
-          <Icon type="link" />
-        </Button>
-      );
+      return renderLink(record);
     }),
   }),
   generateCalendar: (key, title, transformer?): ColumnProps<any> => ({

@@ -65,7 +65,7 @@ export class FileUploader extends React.Component<IFilesUploaderProps> {
     logger.log('render', this.props, this.state);
 
     const uploadProps: UploadProps = {
-      customRequest(option) {
+      customRequest: option => {
         logger.log('[FileUploader][customRequest]', option);
         const { onChange, urlHandler, bucket, jsonMode } = this.props;
 
@@ -101,7 +101,7 @@ export class FileUploader extends React.Component<IFilesUploaderProps> {
       },
       multiple: false,
       supportServerRender: true,
-      onChange: (info: UploadChangeParam) => {
+      onChange: info => {
         this.setState({ uploadFiles: [...info.fileList] });
         if (info.file.status !== 'uploading') {
           logger.log('[FileUploader][onChange]', info.file, info.fileList);
