@@ -144,7 +144,7 @@
     "@types/shortid": "^0.0.29",
     "@types/socket.io-client": "1.4.32",
     "@types/socket.io-redis": "^1.0.25",
-    "@types/styled-components": "^4.4.3",
+    "@types/styled-components": "^5.0.0",
     "@types/styled-jsx": "^2.2.8",
     "@types/url-join": "^4.0.0",
     "@types/video.js": "^7.3.3",
