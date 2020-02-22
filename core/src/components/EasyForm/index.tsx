@@ -245,7 +245,7 @@ export const EasyForm = formik.withFormik<EasyFormProps, any>({
     const submitted = props.onSubmit(values);
     if (submitted && submitted.then) submitted.finally(() => setSubmitting(false));
   },
-})(InnerForm);
+})(InnerForm) as any;
 
 // --------------------------------------------------------------
 // GroupForm
@@ -390,4 +390,4 @@ export const EasyGroupForm = formik.withFormik<GroupEasyFormProps, any>({
       )
       .finally(() => setSubmitting(false));
   },
-})(GroupInnerForm);
+})(GroupInnerForm) as any;
