@@ -92,12 +92,14 @@ export function ListKVComponent(props: {
                         onChange={values => formikBag.setFieldValue(field.name, values)}
                         render={({ index, fieldOpts }) =>
                           _.map(body.fields, (fieldDef: FormFieldDef) => (
-                            <TextField
-                              style={{ marginRight: '.2rem' }}
-                              {...fieldOpts('key', index)}
-                              label={fieldDef.name}
-                              multiline
-                            />
+                            <WithDebugInfo info={{ fieldDef, opts: fieldOpts('key', index) }} key={fieldDef.name}>
+                              <TextField
+                                label={fieldDef.name}
+                                style={{ marginRight: '.2rem' }}
+                                {...fieldOpts('key', index)}
+                                multiline
+                              />
+                            </WithDebugInfo>
                           ))
                         }
                       />

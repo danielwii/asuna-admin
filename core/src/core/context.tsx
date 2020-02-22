@@ -14,10 +14,14 @@ import {
   SecurityAdapterImpl,
   WsAdapter,
 } from '@asuna-admin/adapters';
-import { GraphqlAdapterImpl } from '@asuna-admin/adapters/graphql';
+import { GraphqlAdapterImpl, KeyValueModelVo } from '@asuna-admin/adapters/graphql';
+import { GroupFormKVComponent } from '@asuna-admin/components';
+import { ListKVComponent } from '@asuna-admin/components/KV/list';
 import { Config } from '@asuna-admin/config';
 import { AsunaDefinitions } from '@asuna-admin/core/definitions';
 import { AuthState, IStoreConnector, RootState } from '@asuna-admin/store';
+import * as _ from 'lodash';
+import * as fp from 'lodash/fp';
 import * as React from 'react';
 import { AnyAction, Dispatch } from 'redux';
 import { Subject } from 'rxjs';
@@ -27,6 +31,7 @@ import { Subject } from 'rxjs';
 // --------------------------------------------------------------
 
 export interface IComponentService {
+  regGraphql: (componentName: string, renderComponent: React.FC) => void;
   load: (componentName: string) => React.FC;
 }
 
@@ -103,6 +108,7 @@ class AppContext {
   private static _storeConnector: IStoreConnector<RootState>;
 
   static serverSettings: object;
+  static kvModels: KeyValueModelVo[];
 
   public static init(nextConfig?: INextConfig) {
     if (nextConfig) {
@@ -155,13 +161,13 @@ class AppContext {
    * 提供全局的注册方法
    * @param {ILoginRegister & IIndexRegister} moduleRegister
    */
-  public static setup(moduleRegister: ILoginRegister & IIndexRegister): void;
+  public static async setup(moduleRegister: ILoginRegister & IIndexRegister): Promise<void>;
   /**
    * 提供基于模块的注册方法
    * @param {LoginModuleRegister | IndexModuleRegister} moduleRegister
    */
-  public static setup(moduleRegister: LoginModuleRegister | IndexModuleRegister): void;
-  public static setup(moduleRegister): void {
+  public static async setup(moduleRegister: LoginModuleRegister | IndexModuleRegister): Promise<void>;
+  public static async setup(moduleRegister): Promise<void> {
     if (moduleRegister.module) {
       const register = moduleRegister.register;
 
@@ -172,10 +178,10 @@ class AppContext {
           ws: new WsAdapter(),
         };
       } else {
-        this.registerIndex(register);
+        await this.registerIndex(register, 'index').catch(console.error);
       }
     } else {
-      this.registerIndex(moduleRegister);
+      await this.registerIndex(moduleRegister).catch(console.error);
     }
   }
 
@@ -245,8 +251,12 @@ class AppContext {
 
     const constants = await AppContext.ctx.graphql.loadKv('app.settings', 'constants');
     if (constants) this.constants = constants.value;
+
     const stateMachines = await AppContext.ctx.admin.stateMachines();
     if (stateMachines) this.stateMachines = stateMachines;
+
+    const kvModels = await AppContext.ctx.graphql.loadKvModels();
+    if (kvModels) this.kvModels = kvModels;
   }
 
   /**
@@ -265,22 +275,53 @@ class AppContext {
     return func(AppContext.fromStore('auth'));
   }
 
-  private static registerIndex(register: IIndexRegister): Promise<any> {
+  private static async registerIndex(register: IIndexRegister, module?: 'index'): Promise<void> {
     AppContext._context = {
       ...AppContext._context,
       auth: new AuthAdapter(register.createAuthService()),
       response: new ResponseAdapter(),
-      menu: new MenuAdapter(register.definitions.sideMenus),
       api: new ApiAdapterImpl(register.createApiService()),
-      admin: new AdminAdapterImpl(register.createAdminService()),
       security: new SecurityAdapterImpl(register.createSecurityService()),
       models: new ModelAdapterImpl(register.modelService, register.definitions),
       ws: new WsAdapter(),
       components: register.componentService,
+      admin: new AdminAdapterImpl(register.createAdminService()),
       graphql: new GraphqlAdapterImpl(Config.get('GRAPHQL_HOST')),
     };
 
-    return this.syncSettings();
+    // only setup menu in index page
+    if (module === 'index') {
+      await this.syncSettings();
+
+      // --------------------------------------------------------------
+      // 将 kv 压入 admin menus
+      // --------------------------------------------------------------
+
+      const adminMenu = register.definitions.sideMenus.find(_.matches({ key: 'admin' }));
+      if (adminMenu) {
+        const adminKvModels = AppContext.kvModels.filter(fp.get('formatType'));
+        adminKvModels.forEach(model => {
+          const componentName = `${model.pair.collection}#${model.pair.key}`;
+          register.componentService.regGraphql(componentName, props =>
+            model.formatType === 'KVGroupFieldsValue' ? (
+              // KVGroupFieldsValue
+              <GroupFormKVComponent kvCollection={model.pair.collection} kvKey={model.pair.key} />
+            ) : (
+              // LIST
+              <ListKVComponent kvCollection={model.pair.collection} kvKey={model.pair.key} />
+            ),
+          );
+          adminMenu.subMenus.push({
+            key: componentName,
+            title: model.name,
+            linkTo: 'content::blank',
+            component: componentName,
+          });
+        });
+      }
+
+      AppContext._context.menu = new MenuAdapter(register.definitions.sideMenus);
+    }
   }
 }
 

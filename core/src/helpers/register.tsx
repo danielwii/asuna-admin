@@ -1,21 +1,21 @@
-import { AppContext } from '@asuna-admin/core/context';
-import { gql } from 'apollo-boost';
-import * as React from 'react';
-import { ApolloProvider } from '@apollo/react-hooks';
+import { ApolloProvider } from "@apollo/react-hooks";
+import { AppContext, IComponentService } from "@asuna-admin/core/context";
+import { gql } from "apollo-boost";
+import * as React from "react";
 
 export interface IRegGraphqlProps {
   kvGql: (KVOpts: { collection: string; key: string }) => any;
 }
 
-export class ComponentService {
-  private components = {};
+export class ComponentService implements IComponentService {
+  #components: { [key: string]: React.FC<any> } = {};
 
-  reg(componentName: string, component: React.FC) {
-    this.components[componentName] = component;
+  reg(componentName: string, component: React.FC): void {
+    this.#components[componentName] = component;
   }
 
-  regGraphql(componentName: string, renderComponent: React.FC) {
-    this.components[componentName] = props => (
+  regGraphql(componentName: string, renderComponent: React.FC): void {
+    this.#components[componentName] = props => (
       <ApolloProvider client={AppContext.ctx.graphql.serverClient}>
         {renderComponent({
           ...props,
@@ -34,7 +34,7 @@ export class ComponentService {
     );
   }
 
-  load(componentName: string) {
-    return this.components[componentName];
+  load(componentName: string): React.FC<any> {
+    return this.#components[componentName];
   }
 }

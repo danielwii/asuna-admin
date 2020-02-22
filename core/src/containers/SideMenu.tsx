@@ -25,6 +25,10 @@ export const SideMenuRender: React.FC = props => {
   });
 */
 
+  // --------------------------------------------------------------
+  // tenant support
+  // --------------------------------------------------------------
+
   const isTenantEnabled = store.tenantInfo?.config?.enabled;
   const hasTenantRoles = !_.isEmpty(store.tenantInfo?.roles);
   const authorized = TenantHelper.authorized(store.tenantInfo);

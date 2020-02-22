@@ -21,8 +21,8 @@ export const menuProxy = {
 };
 
 export class MenuAdapter {
-  private service: IMenuService;
-  private sideMenus: Asuna.Schema.Menu[];
+  // private readonly service: IMenuService;
+  private readonly sideMenus: Asuna.Schema.Menu[];
 
   constructor(/*service: IMenuService, */ sideMenus: Asuna.Schema.Menu[]) {
     // this.service = service;

@@ -1,7 +1,9 @@
+/** @jsx jsx */
 import { Config } from '@asuna-admin/config';
 import { AppContext } from '@asuna-admin/core';
 import { DebugInfo, WithDebugInfo } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
+import { css, jsx } from '@emotion/core';
 import { FormControl, FormControlLabel, FormHelperText, Switch, TextField } from '@material-ui/core';
 import * as antd from 'antd';
 import { Divider, Popconfirm } from 'antd';
@@ -66,18 +68,25 @@ export function RenderInputComponent({
     }
     case FormFieldType.color: {
       return (
-        <SketchPicker
-          color={value}
-          onChange={color => {
-            changeAntdTheme(getThemeColor(color.hex));
-            field.onChange({ target: { id: field.name, name: field.name, value: color } });
-          }}
-        />
+        <>
+          <label>{field.name}</label>
+          <SketchPicker
+            css={css`
+              margin: 1rem;
+            `}
+            color={value}
+            onChange={color => {
+              changeAntdTheme(getThemeColor(color.hex));
+              field.onChange({ target: { id: field.name, name: field.name, value: color } });
+            }}
+          />
+        </>
       );
     }
     case FormFieldType.image: {
       return (
         <>
+          <label>{field.name}</label>
           <br />
           <ImageUploader
             many={false}

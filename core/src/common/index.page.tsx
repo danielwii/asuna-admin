@@ -33,9 +33,8 @@ export class IndexPage extends React.Component<IIndexPageProps> {
     super(props);
 
     const { dispatch, register, site } = this.props;
-    AppContext.setup({ register, module: 'index' });
+    AppContext.setup({ register, module: 'index' }).then(() => dispatch(appActions.init()));
     AppContext.regDispatch(dispatch);
-    dispatch(appActions.init());
 
     if (site?.primaryColor) {
       const themeColor = getThemeColor(site?.primaryColor.hex);

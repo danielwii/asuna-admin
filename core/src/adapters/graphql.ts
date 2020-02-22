@@ -25,6 +25,10 @@ export interface IGraphQLService {
 
 const logger = createLogger('adapters:graphql');
 
+export type KeyValuePairVo = { collection: string; key: string; name: string; type: string; value: string };
+
+export type KeyValueModelVo = { name: string; description: string; formatType: string; pair: KeyValuePairVo };
+
 export class GraphqlAdapterImpl {
   public client: ApolloClient<any>;
   public serverClient: ApolloClient<any>;
@@ -44,13 +48,13 @@ export class GraphqlAdapterImpl {
         ${queryString}
       `,
     });
-    AppContext.syncSettings();
+    // AppContext.syncSettings().catch(reason => logger.error(reason));
     return promise;
   }
 
   async queryT(query: any, client = this.client) {
     const promise = client.query({ query });
-    AppContext.syncSettings();
+    // AppContext.syncSettings().catch(reason => logger.error(reason));
     return promise;
   }
 
@@ -87,7 +91,7 @@ export class GraphqlAdapterImpl {
       .then(fp.get('data.kvs'));
   }
 
-  async loadKv(collection: string, key: string) {
+  async loadKv(collection: string, key: string): Promise<KeyValuePairVo> {
     return this.serverClient
       .query({
         // fetchPolicy: 'cache-first',
@@ -95,6 +99,7 @@ export class GraphqlAdapterImpl {
         query: gql`
           query loadKv($nCollection: String, $nKey: String) {
             kv(collection: $nCollection, key: $nKey) {
+              collection
               key
               name
               type
@@ -104,6 +109,29 @@ export class GraphqlAdapterImpl {
         `,
       })
       .then(fp.get('data.kv'));
+  }
+
+  async loadKvModels(): Promise<KeyValueModelVo[]> {
+    return this.serverClient
+      .query({
+        fetchPolicy: 'no-cache',
+        query: gql`
+          query loadKvModels {
+            kv_models {
+              name
+              description
+              formatType
+              pair {
+                collection
+                key
+                value
+                type
+              }
+            }
+          }
+        `,
+      })
+      .then(fp.get('data.kv_models'));
   }
 
   async loadGraphs() {
