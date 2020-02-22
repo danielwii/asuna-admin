@@ -16,7 +16,7 @@ export interface DataViewColumnProps<EntitySchema> {
 }
 
 export interface AsunaDataViewProps {
-  data: JSON;
+  data?: JSON;
   modelName: string;
   withActions?: boolean;
   extraName?: string;

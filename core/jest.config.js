@@ -1,5 +1,11 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { defaults } = require('jest-config');
+
+console.log(defaults);
+
 module.exports = {
-  verbose: true,
+  ...defaults,
+  // verbose: true,
   globals: {
     'ts-jest': {
       babelConfig: 'babelrc.test.json',
@@ -11,16 +17,14 @@ module.exports = {
     '^@asuna-admin/(.*)$': '<rootDir>/src/$1',
     '\\.(css|less)$': '<rootDir>/__mocks__/styleMock.js',
   },
-  // moduleFileExtensions: ['js', 'json', 'ts', 'tsx'],
-  moduleDirectories: ['node_modules', 'src'],
+  // moduleFileExtensions: ['js', 'jsx', 'json', 'ts', 'tsx'],
+  // moduleDirectories: ['node_modules', 'src'],
   testRegex: '.spec.tsx?$',
   transform: {
     '^.+\\.(t|j)sx?$': 'ts-jest',
     // '^.+\\.js?$': 'babel-jest',
   },
-  coverageThreshold: {
-    global: {},
-  },
+  // coverageThreshold: { global: {} },
   collectCoverage: true,
   preset: 'ts-jest/presets/js-with-ts',
   testMatch: null,

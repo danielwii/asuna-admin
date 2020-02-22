@@ -7,7 +7,7 @@ import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
 import * as React from 'react';
 import { useState } from 'react';
-import { ApolloProvider, Query } from 'react-apollo';
+import { ApolloProvider, Query, QueryResult } from 'react-apollo';
 import * as util from 'util';
 
 interface IGraphTableProps {
@@ -50,7 +50,8 @@ export function GraphTable(props: IGraphTableProps) {
         }
       `}
     >
-      {({ loading, error, data, refetch }) => {
+      {(result: QueryResult) => {
+        const { loading, error, data, refetch } = result;
         if (error)
           return (
             <p>

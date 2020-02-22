@@ -9,7 +9,7 @@ import * as _ from 'lodash';
 const logger = createLogger('adapters::response');
 
 export const responseProxy = {
-  extract(apiResponse: object): { items: object[]; pagination: PaginationConfig } {
+  extract(apiResponse?: object): { items: object[]; pagination: PaginationConfig } {
     return AppContext.ctx.response.extract(apiResponse || {});
   },
 };

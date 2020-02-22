@@ -16,7 +16,7 @@ const ContentSearch: React.FC<ModulesLoaderProps> = props => {
     basis: { pane },
   } = props;
   const [isOnline, setIsOnline] = useState<boolean | null>(null);
-  const [viewRecord, setViewRecord] = useState();
+  const [viewRecord, setViewRecord] = useState<any>();
 
   const { modelName, extraName } = extractModelNameFromPane(props.basis.pane);
   const { relations } = useAsunaModels(modelName, { extraName });

@@ -1,9 +1,10 @@
 import { parseJSONIfCould } from '@asuna-admin/helpers';
 import { CascaderOptionType } from 'antd/es/cascader';
-import areas from 'china-division/dist/areas.json';
-import cities from 'china-division/dist/cities.json';
-import provinces from 'china-division/dist/provinces.json';
 import * as _ from 'lodash';
+
+const areas = require('china-division/dist/areas.json');
+const cities = require('china-division/dist/cities.json');
+const provinces = require('china-division/dist/provinces.json');
 
 type CityType = typeof cities[0] & { children?: Array<CascaderOptionType> };
 type AreaType = typeof areas[0] & { children?: Array<CascaderOptionType> };
