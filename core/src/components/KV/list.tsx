@@ -7,7 +7,7 @@ import { createLogger } from '@asuna-admin/logger';
 import { jsx } from '@emotion/core';
 import { TextField } from '@material-ui/core';
 import { Button, Col, Divider, Icon, Row, Typography } from 'antd';
-import { DynamicJsonArrayTable, StringArrayHelper } from 'asuna-components';
+import { DynamicJsonArrayTable, ObjectArrayJsonTableHelper } from 'asuna-components';
 import { Field, FieldProps, Form, Formik, FormikValues } from 'formik';
 import 'highlight.js/styles/default.css';
 import * as _ from 'lodash';
@@ -86,9 +86,9 @@ export function ListKVComponent(props: {
                   {({ field, meta, form }: FieldProps<FormikValues>) => (
                     <WithDebugInfo info={{ field, meta, value: formikBag.values.values ?? body.values ?? [] }}>
                       <DynamicJsonArrayTable
-                        adapter={StringArrayHelper}
+                        adapter={ObjectArrayJsonTableHelper}
                         value={(formikBag.values.values ?? body.values ?? []) as any}
-                        preview={item => <pre>{JSON.stringify(item, null, 2)}</pre>}
+                        preview={item => <div>{util.inspect(ObjectArrayJsonTableHelper.keyParser(item))}</div>}
                         onChange={values => formikBag.setFieldValue(field.name, values)}
                         render={({ index, fieldOpts }) =>
                           _.map(body.fields, (fieldDef: FormFieldDef) => (

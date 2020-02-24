@@ -7,7 +7,7 @@ import { css, jsx } from '@emotion/core';
 import { FormControl, FormControlLabel, FormHelperText, Switch, TextField } from '@material-ui/core';
 import * as antd from 'antd';
 import { Divider, Popconfirm } from 'antd';
-import { DynamicJsonArrayTable, ObjectArrayHelper } from 'asuna-components';
+import { DynamicJsonArrayTable, ObjectJsonTableHelper } from 'asuna-components';
 import { changeAntdTheme, getThemeColor } from 'dynamic-antd-theme';
 import * as formik from 'formik';
 import { FieldInputProps, FormikProps } from 'formik';
@@ -117,9 +117,9 @@ export function RenderInputComponent({
         <>
           <label>{label}</label>
           <DynamicJsonArrayTable
-            adapter={ObjectArrayHelper}
+            adapter={ObjectJsonTableHelper}
             value={value}
-            preview={item => <pre>{util.inspect(ObjectArrayHelper.keyParser(item))}</pre>}
+            preview={item => <div>{util.inspect(ObjectJsonTableHelper.keyParser(item))}</div>}
             render={({ fieldOpts, index }) => (
               <antd.Card>
                 <TextField {...fieldOpts('key', index)} label="key" />{' '}
@@ -139,9 +139,9 @@ export function RenderInputComponent({
         <>
           <label>{label}</label>
           <DynamicJsonArrayTable
-            adapter={ObjectArrayHelper}
+            adapter={ObjectJsonTableHelper}
             value={value}
-            preview={item => <pre>{util.inspect(ObjectArrayHelper.keyParser(item))}</pre>}
+            preview={item => <div>{util.inspect(ObjectJsonTableHelper.keyParser(item))}</div>}
             render={({ fieldOpts, index }) => (
               <antd.Card>
                 <TextField {...fieldOpts('key', index)} label="key" />
