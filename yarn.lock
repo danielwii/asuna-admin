@@ -3469,11 +3469,6 @@
   dependencies:
     tslib "^1.9.3"
 
-"@xobotyi/scrollbar-width@1.8.2":
-  version "1.8.2"
-  resolved "https://registry.yarnpkg.com/@xobotyi/scrollbar-width/-/scrollbar-width-1.8.2.tgz#056946ac41ade4885c576619c8d70c46c77e9683"
-  integrity sha512-RV6+4hR29oMaPCvSYFUvzOvlsrg2s2k5NE9tNERs+4nFIC9dRXxs+lL2CcaRTbl3yQxKwAZ8Cd+qMI8aUu9TFw==
-
 "@xobotyi/scrollbar-width@1.9.0":
   version "1.9.0"
   resolved "https://registry.yarnpkg.com/@xobotyi/scrollbar-width/-/scrollbar-width-1.9.0.tgz#2a5d02f15c7f5624339e5d690aba432bfd9e79f0"
@@ -3800,10 +3795,10 @@ antd@^3.26.11:
     shallowequal "^1.1.0"
     warning "~4.0.3"
 
-antd@^3.26.9:
-  version "3.26.9"
-  resolved "https://registry.yarnpkg.com/antd/-/antd-3.26.9.tgz#233c9d090c44146997984966d3b3657c9426bac1"
-  integrity sha512-youf+hBJHB4nuhV7yEbm2VQSMtX9RxrNQvjlc+iIPj4FeJsuTQXIfSSAc5GhwDeVAI4+nuapCv7XLFIQ+f2ZFg==
+antd@^3.26.12:
+  version "3.26.12"
+  resolved "https://registry.yarnpkg.com/antd/-/antd-3.26.12.tgz#2f075670780ac0490b2945d8bca883edcd93158c"
+  integrity sha512-aXiRDDpDx1jH/gKJDE2dgZPT1C7qurOZ1OSt9RklQT2K6CFlveF8HJY7Jz1/xHikXA+kmy6kr/OACJiaxBFRkA==
   dependencies:
     "@ant-design/create-react-context" "^0.2.4"
     "@ant-design/icons" "~2.1.1"
@@ -4495,12 +4490,13 @@ astral-regex@^1.0.0:
   resolved "https://registry.yarnpkg.com/astral-regex/-/astral-regex-1.0.0.tgz#6c8c3fb827dd43ee3918f27b82782ab7658a6fd9"
   integrity sha512-+Ryf6g3BKoRc7jfp7ad8tM4TtMiaWvbF/1/sQcZPkkS7ag3D5nMBCe2UfOTONtAkaG0tO0ij3C5Lwmf1EiyjHg==
 
-asuna-components@^0.2.1:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/asuna-components/-/asuna-components-0.2.1.tgz#a1a575a2ded9df34a9a6d3890a04c1e30e9254c4"
-  integrity sha512-H3sEytaLVoN/G+Gnr6ZqJdzdmle288blRdqq+HmBe4wQvKYOnUxtv14dcK6oY/m+E2Pn4ubj99VzLsReIe4Edw==
+asuna-components@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/asuna-components/-/asuna-components-0.3.0.tgz#248c817ca82f7aa563d90df907e0909b72f491fa"
+  integrity sha512-nsAvAZJHwBXWndriRnR+n2NUHX7Pchzthucy00ptfiPEydIvBOkNaZdWLuONRq/DVNCjhbnP+Qe1Hj6fgfM3hg==
   dependencies:
-    antd "^3.26.9"
+    antd "^3.26.12"
+    axios "^0.19.2"
     emotion "^10.0.27"
     formik "^2.1.4"
     lodash "^4.17.15"
@@ -4509,10 +4505,12 @@ asuna-components@^0.2.1:
     react "^16.12.0"
     react-dom "^16.12.0"
     react-json-tree "^0.11.2"
-    react-use "^13.24.0"
+    react-pdf "^4.1.0"
+    react-use "^13.26.1"
+    react-viewer "^3.1.0"
     spinkit "^2.0.1"
     styled-components "^5.0.1"
-    typescript "~3.7.5"
+    typescript "~3.8.2"
 
 async-each@^1.0.1:
   version "1.0.3"
@@ -14935,25 +14933,6 @@ react-truncate@2.4.0:
   resolved "https://registry.yarnpkg.com/react-truncate/-/react-truncate-2.4.0.tgz#3cf5ff09ab86f93e3c078d359f4de6d75aa60510"
   integrity sha512-3QW11/COYwi6iPUaunUhl06DW5NJBJD1WkmxW5YxqqUu6kvP+msB3jfoLg8WRbu57JqgebjVW8Lknw6T5/QZdA==
 
-react-use@^13.24.0:
-  version "13.24.0"
-  resolved "https://registry.yarnpkg.com/react-use/-/react-use-13.24.0.tgz#f4574e26cfaaad65e3f04c0d5ff80c1836546236"
-  integrity sha512-p8GsZuMdz8OeIGzuYLm6pzJysKOhNyQjCUG6SHrQGk6o6ghy/RVGSqnmxVacNbN9166S0+9FsM1N1yH9GzWlgg==
-  dependencies:
-    "@types/js-cookie" "2.2.4"
-    "@xobotyi/scrollbar-width" "1.8.2"
-    copy-to-clipboard "^3.2.0"
-    fast-shallow-equal "^1.0.0"
-    js-cookie "^2.2.1"
-    nano-css "^5.2.1"
-    react-fast-compare "^2.0.4"
-    resize-observer-polyfill "^1.5.1"
-    screenfull "^5.0.0"
-    set-harmonic-interval "^1.0.1"
-    throttle-debounce "^2.1.0"
-    ts-easing "^0.2.0"
-    tslib "^1.10.0"
-
 react-use@^13.26.1:
   version "13.26.1"
   resolved "https://registry.yarnpkg.com/react-use/-/react-use-13.26.1.tgz#a26e51b26ebe1a3a00cadfe4d7f15c25bb19780b"
@@ -17343,12 +17322,12 @@ typescript-tuple@^2.2.1:
   dependencies:
     typescript-compare "^0.0.2"
 
-typescript@^3.8.2:
+typescript@^3.8.2, typescript@~3.8.2:
   version "3.8.2"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.8.2.tgz#91d6868aaead7da74f493c553aeff76c0c0b1d5a"
   integrity sha512-EgOVgL/4xfVrCMbhYKUQTdF37SQn4Iw73H5BgCrF1Abdun7Kwy/QZsE/ssAy0y4LxBbvua3PIbFsbRczWWnDdQ==
 
-typescript@~3.7.2, typescript@~3.7.5:
+typescript@~3.7.2:
   version "3.7.5"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.7.5.tgz#0692e21f65fd4108b9330238aac11dd2e177a1ae"
   integrity sha512-/P5lkRXkWHNAbcJIiHPfRoKqyd7bsyCma1hZNUGfn20qm64T6ZBlrzprymeu918H+mB/0rIg2gGK/BXkhhYgBw==
