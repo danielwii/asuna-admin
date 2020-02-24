@@ -1,8 +1,8 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "module": "commonjs",
-    "target": "es2017",
+    "module": "esnext",
+    "target": "es2020",
     "esModuleInterop": true,
     "lib": ["esnext", "dom"],
     "jsx": "preserve",
@@ -27,6 +27,6 @@
       "@asuna-admin/*": ["*"]
     }
   },
-  "exclude": ["**/*.spec.*", "node_modules"],
-  "include": ["next-env.d.ts", "src/**/*.ts*", "./services/**/*.ts*", "./components/**/*.ts*", "./pages/**/*.ts*"]
+  "include": ["next-env.d.ts", "src/**/*.ts*", "./services/**/*.ts*", "./components/**/*.ts*", "./pages/**/*.ts*"],
+  "exclude": ["**/*.spec.*", "node_modules"]
 }

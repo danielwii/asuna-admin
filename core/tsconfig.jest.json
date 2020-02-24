@@ -1,8 +1,8 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "target": "esnext",
     "module": "esnext",
+    "target": "esnext",
     "esModuleInterop": true,
     "lib": ["esnext", "dom"],
     "jsx": "react",

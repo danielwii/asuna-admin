@@ -4429,10 +4429,10 @@ astral-regex@^1.0.0:
   resolved "https://registry.yarnpkg.com/astral-regex/-/astral-regex-1.0.0.tgz#6c8c3fb827dd43ee3918f27b82782ab7658a6fd9"
   integrity sha512-+Ryf6g3BKoRc7jfp7ad8tM4TtMiaWvbF/1/sQcZPkkS7ag3D5nMBCe2UfOTONtAkaG0tO0ij3C5Lwmf1EiyjHg==
 
-asuna-components@^0.3.0:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/asuna-components/-/asuna-components-0.3.0.tgz#248c817ca82f7aa563d90df907e0909b72f491fa"
-  integrity sha512-nsAvAZJHwBXWndriRnR+n2NUHX7Pchzthucy00ptfiPEydIvBOkNaZdWLuONRq/DVNCjhbnP+Qe1Hj6fgfM3hg==
+asuna-components@^0.3.1:
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/asuna-components/-/asuna-components-0.3.1.tgz#07128884fd5794f01b9d2e7118896b2c4a1430f2"
+  integrity sha512-2TSz+iuwDSyzpwfcIF9SgVa0YWEWUtnDIwqDllhPZC9UHJgtLkbIUeczBrz9k2vyBd3xXD+ZkrDCBwJCYjqJZg==
   dependencies:
     antd "^3.26.12"
     axios "^0.19.2"
