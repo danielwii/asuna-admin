@@ -1,6 +1,6 @@
 import { Button } from 'antd';
 import { Promise } from 'bluebird';
-import _ from 'lodash';
+import * as _ from 'lodash';
 import * as React from 'react';
 import { useLogger } from 'react-use';
 import { Circle, FoldingCube } from 'styled-spinkit';

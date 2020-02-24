@@ -1,6 +1,6 @@
 {
   "name": "asuna-admin",
-  "version": "0.12.9",
+  "version": "0.13.0",
   "repository": "git@github.com:danielwii/asuna-admin.git",
   "author": "Daniel Wei <danielwii0326@gmail.com>",
   "license": "MIT",
@@ -43,11 +43,11 @@
   "dependencies": {
     "@apollo/react-hooks": "^3.1.3",
     "@emotion/core": "^10.0.27",
-    "@material-ui/core": "^4.9.3",
+    "@material-ui/core": "^4.9.4",
     "@material-ui/icons": "^4.9.1",
     "@zeit/next-css": "^1.0.1",
-    "asuna-components": "^0.2.1",
-    "antd": "^3.26.11",
+    "asuna-components": "^0.3.0",
+    "antd": "^3.26.12",
     "apollo": "^2.23.0",
     "apollo-boost": "^0.4.7",
     "apollo-server-koa": "^2.10.1",

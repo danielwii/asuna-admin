@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const { createConfigLoader } = require('node-buffs');
 
 const configurator = createConfigLoader({

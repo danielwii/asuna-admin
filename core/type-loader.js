@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const { createConfigLoader } = require('node-buffs');
 const axios = require('axios');
 const fsExtra = require('fs-extra');

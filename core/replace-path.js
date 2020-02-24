@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const { join, relative, resolve } = require('path');
 const tsconfig = require('tsconfig-extends');
 const { Project } = require('ts-morph');
