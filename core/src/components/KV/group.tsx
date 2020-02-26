@@ -77,10 +77,12 @@ export function GroupFormKVComponent(props: {
     <>
       <Typography>
         <Button onClick={() => refetch()}>Reload</Button>
-        <Typography.Paragraph>
-          <Icon type="info-circle" style={{ margin: '0 0.2rem' }} />
-          {info}
-        </Typography.Paragraph>
+        {info && (
+          <Typography.Paragraph>
+            <Icon type="info-circle" style={{ margin: '0 0.2rem' }} />
+            {info}
+          </Typography.Paragraph>
+        )}
       </Typography>
       <Divider />
       <EasyGroupForm

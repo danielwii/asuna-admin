@@ -66,58 +66,74 @@ export function ListKVComponent(props: {
   return (
     <>
       <Typography>
-        <Typography.Paragraph>
-          <Icon type="info-circle" style={{ margin: '0 0.2rem' }} />
-          {info}
-        </Typography.Paragraph>
+        <Button onClick={() => refetch()}>Reload</Button>
+        {info && (
+          <Typography.Paragraph>
+            <Icon type="info-circle" style={{ margin: '0 0.2rem' }} />
+            {info}
+          </Typography.Paragraph>
+        )}
       </Typography>
       <Divider />
       <Row gutter={16}>
         <Col span={18}>
-          <Formik
-            initialValues={{ values: body.values }}
-            onSubmit={(values, formikHelpers) =>
-              ComponentsHelper.save({ key, collection }, { ...body, ...values }, refetch)
-            }
-          >
-            {formikBag => (
-              <Form>
-                <Field name="values">
-                  {({ field, meta, form }: FieldProps<FormikValues>) => (
-                    <WithDebugInfo info={{ field, meta, value: formikBag.values.values ?? body.values ?? [] }}>
-                      <DynamicJsonArrayTable
-                        adapter={ObjectArrayJsonTableHelper}
-                        value={(formikBag.values.values ?? body.values ?? []) as any}
-                        preview={item => <div>{util.inspect(ObjectArrayJsonTableHelper.keyParser(item))}</div>}
-                        onChange={values => formikBag.setFieldValue(field.name, values)}
-                        render={({ index, fieldOpts }) =>
-                          _.map(body.fields, (fieldDef: FormFieldDef) => (
-                            <WithDebugInfo info={{ fieldDef, opts: fieldOpts('key', index) }} key={fieldDef.name}>
-                              <TextField
-                                label={fieldDef.name}
-                                style={{ marginRight: '.2rem' }}
-                                {...fieldOpts('key', index)}
-                                multiline
-                              />
-                            </WithDebugInfo>
-                          ))
-                        }
-                      />
-                    </WithDebugInfo>
-                  )}
-                </Field>
-                <Divider />
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  onSubmit={formikBag.handleSubmit}
-                  disabled={formikBag.isSubmitting}
-                >
-                  {formikBag.isSubmitting ? 'Submitting' : 'Submit'}
-                </Button>
-              </Form>
-            )}
-          </Formik>
+          {body.values && (
+            <Formik
+              initialValues={{ values: body.values }}
+              onSubmit={(values, formikHelpers) =>
+                ComponentsHelper.save({ key, collection }, { ...body, ...values }, refetch)
+              }
+            >
+              {formikBag => (
+                <Form>
+                  <Field name="values">
+                    {({ field, form, meta }: FieldProps<FormikValues>) => (
+                      <WithDebugInfo
+                        info={{
+                          body,
+                          formikBag: _.pick(formikBag, 'initialValues', 'values'),
+                          field,
+                          form,
+                          value: formikBag.values.values ?? body.values ?? [],
+                        }}
+                      >
+                        <DynamicJsonArrayTable
+                          adapter={ObjectArrayJsonTableHelper}
+                          value={(formikBag.values.values ?? formikBag.initialValues.values ?? body.values) as any}
+                          preview={item => <div>{util.inspect(ObjectArrayJsonTableHelper.keyParser(item))}</div>}
+                          onChange={values => form.setFieldValue(field.name, values)}
+                          render={({ fieldOpts, index }) =>
+                            _.map(body.fields, (fieldDef: FormFieldDef) => (
+                              <WithDebugInfo
+                                info={{ field, fieldDef, opts: fieldOpts(fieldDef.field.name, index) }}
+                                key={fieldDef.name}
+                              >
+                                <TextField
+                                  label={fieldDef.name}
+                                  style={{ marginRight: '.2rem' }}
+                                  {...fieldOpts(fieldDef.field.name, index)}
+                                  multiline
+                                />
+                              </WithDebugInfo>
+                            ))
+                          }
+                        />
+                      </WithDebugInfo>
+                    )}
+                  </Field>
+                  <Divider />
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    onSubmit={formikBag.handleSubmit}
+                    disabled={formikBag.isSubmitting}
+                  >
+                    {formikBag.isSubmitting ? 'Submitting' : 'Submit'}
+                  </Button>
+                </Form>
+              )}
+            </Formik>
+          )}
         </Col>
         {AppContext.isDebugMode && (
           <Col span={6}>

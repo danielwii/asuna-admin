@@ -1,16 +1,9 @@
 import { ChinaDivisionOptions, parseAddress } from '@asuna-admin/components';
 import { Cascader, Input } from 'antd';
-import { GetFieldDecoratorOptions, WrappedFormUtils } from 'antd/es/form/Form';
+import { WrappedFormUtils } from 'antd/es/form/Form';
 import * as React from 'react';
 import { generateComponent, horizontalFormItemLayout, IFormItemLayout, InputOptions } from '.';
-
-type FormComponentProps = {
-  value: any;
-  id: string;
-  onChange: (...args) => void;
-  'data-__meta': GetFieldDecoratorOptions;
-  'data-__field': any;
-};
+import { FormComponentProps } from './interfaces';
 
 class AddressInline extends React.Component<Partial<FormComponentProps> & { placeholder: string }> {
   _onChange(codes: string[] | undefined, labels: string[] | undefined, detail: string | null): void {
