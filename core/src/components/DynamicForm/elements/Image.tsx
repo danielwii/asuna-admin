@@ -1,9 +1,9 @@
+import { WithVariable } from '@asuna-admin/components/Common';
 import { Config } from '@asuna-admin/config';
 import { upload, validateFile } from '@asuna-admin/helpers/upload';
 import { createLogger } from '@asuna-admin/logger';
 
 import { WrappedFormUtils } from 'antd/es/form/Form';
-import { WithVariable } from 'asuna-admin';
 import { IUploadedFile, IUploaderProps, Uploader, UploaderAdapter } from 'asuna-components';
 import { AxiosRequestConfig } from 'axios';
 import * as React from 'react';
