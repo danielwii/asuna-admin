@@ -15,7 +15,8 @@ import { modelsActions, panesActions } from '@asuna-admin/store';
 import { Asuna } from '@asuna-admin/types';
 import { Button, Divider, Dropdown, Menu, Modal, Skeleton, Switch, Table, Tag, Tooltip } from 'antd';
 import { PaginationConfig } from 'antd/es/pagination';
-import { SorterResult, TableCurrentDataSource } from 'antd/es/table';
+import { SorterResult, TableCurrentDataSource } from 'antd/es/table/interface';
+import { Key } from 'antd/lib/table/interface';
 import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
 import React, { useContext, useEffect, useState } from 'react';
@@ -54,8 +55,8 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
   } = props;
   const [queryCondition, setQueryCondition] = useState<{
     pagination?: PaginationConfig;
-    filters?: Partial<Record<keyof any, string[]>>;
-    sorter?: SorterResult<any>;
+    filters?: Record<string, Key[] | null>;
+    sorter?: SorterResult<any> | SorterResult<any>[];
   }>({});
   const { store } = useContext(StoreContext);
   // 用于刷新页面的一个标记
@@ -93,30 +94,34 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
       updateFlag(-flag);
     },
     create: () => ModelsHelper.openCreatePane(modelName),
-    transformQueryCondition: ({
-      sorter,
+    transformQueryCondition: function<RecordType>({
       pagination,
       filters,
+      sorter,
     }: {
       pagination?: PaginationConfig;
-      filters?: Partial<Record<keyof any, string[]>>;
-      sorter?: SorterResult<any>;
-    }) => {
-      const availableSorter = sorter && _.isEmpty(sorter) ? queryCondition.sorter : sorter;
-      const transformedSorter =
-        availableSorter && !_.isEmpty(availableSorter)
-          ? ({ [availableSorter.field as string]: _.slice(availableSorter.order, 0, -3).join('') } as Sorter)
-          : null;
-      // { 'ref.name': '{ 'ref.id': 'idxxxx' }' } -> { 'ref.id': 'idxxxxx' }
+      filters?: Record<string, Key[] | null>;
+      sorter?: SorterResult<RecordType> | SorterResult<RecordType>[];
+    }) {
       const transformedFilters = _transformFilters(filters);
-      return { transformedFilters, availableSorter, transformedSorter };
+      const availableSorter = sorter && _.isEmpty(sorter) ? queryCondition.sorter : sorter;
+      if (_.isArray(availableSorter)) {
+        return { transformedFilters };
+      } else {
+        const transformedSorter =
+          availableSorter && !_.isEmpty(availableSorter)
+            ? ({ [availableSorter.field as string]: _.slice(availableSorter.order, 0, -3).join('') } as Sorter)
+            : null;
+        // { 'ref.name': '{ 'ref.id': 'idxxxx' }' } -> { 'ref.id': 'idxxxxx' }
+        return { transformedFilters, availableSorter, transformedSorter };
+      }
     },
-    handleTableChange: (
+    handleTableChange: function<RecordType>(
       pagination?: PaginationConfig,
-      filters?: Partial<Record<keyof any, string[]>>,
-      sorter?: SorterResult<any>,
-      extra?: TableCurrentDataSource<any>,
-    ): void => {
+      filters?: Record<string, Key[] | null>,
+      sorter?: SorterResult<RecordType> | SorterResult<RecordType>[],
+      extra?: TableCurrentDataSource<RecordType>,
+    ): void {
       logger.debug('[handleTableChange]', { pagination, filters, sorter, extra });
       const { availableSorter, transformedFilters, transformedSorter } = funcs.transformQueryCondition(queryCondition);
 
@@ -195,14 +200,16 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
         ),
     });
   };
-  const _transformFilters = (filters?: Partial<Record<keyof any, string[]>>) => {
+  const _transformFilters = (filters?: Partial<Record<string, Key[] | null>>) => {
     return _.chain(filters)
       .mapKeys((filterArr, key) =>
-        key.includes('.') && _.isString(_.head(filterArr)) ? _.get(parseJSONIfCould(_.head(filterArr)), 'key') : key,
+        key.includes('.') && _.isString(_.head(filterArr))
+          ? _.get(parseJSONIfCould(_.head(filterArr) as any), 'key')
+          : key,
       )
       .mapValues((filterArr, key) =>
         key.includes('.') && _.isString(_.head(filterArr))
-          ? _.get(parseJSONIfCould(_.head(filterArr)), 'value')
+          ? _.get(parseJSONIfCould(_.head(filterArr) as any), 'value')
           : filterArr,
       )
       .value();

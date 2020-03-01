@@ -1,4 +1,3 @@
-// eslint-disable-next-line eslint-comments/disable-enable-pair
 /* eslint-disable no-restricted-syntax */
 module.exports = api => {
   api.cache.never();
@@ -23,7 +22,7 @@ module.exports = api => {
       '@babel/plugin-proposal-nullish-coalescing-operator',
       // fix Error: StyleSheet: `insertRule` accepts only strings
       // ['styled-components', { ssr: true, displayName: true, preprocess: false }],
-      ['import', { libraryName: 'antd', style: false }, 'import-antd'],
+      ['import', { libraryName: 'antd', libraryDirectory: 'es', style: false }, 'import-antd'],
       // [
       //   'import',
       //   // { libraryName: '@material-ui/core', customName: name => { return `test/lib/${name}`; } },

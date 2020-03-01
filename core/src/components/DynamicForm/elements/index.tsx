@@ -2,7 +2,7 @@ import { BraftRichEditor } from '@asuna-admin/components';
 import { Config } from '@asuna-admin/config';
 import { createLogger } from '@asuna-admin/logger';
 
-import { Checkbox, DatePicker, Form, Icon, Input, InputNumber, Switch, TimePicker } from 'antd';
+import { Checkbox, DatePicker, Form, Input, InputNumber, Switch, TimePicker } from 'antd';
 import { GetFieldDecoratorOptions, WrappedFormUtils } from 'antd/es/form/Form';
 import * as React from 'react';
 
@@ -139,6 +139,9 @@ export type InputOptions = {
   required: boolean;
   requiredMessage: string;
   placeholder: string;
+  /**
+   * @deprecated
+   */
   iconType: string;
   help: string;
   length: number;
@@ -156,7 +159,7 @@ export const generateInput = (
   if (iconType) {
     component = (
       <Input
-        prefix={<Icon type={iconType} style={{ color: 'rgba(0,0,0,.25)' }} />}
+        // prefix={<Icon type={iconType} style={{ color: 'rgba(0,0,0,.25)' }} />}
         placeholder={placeholder}
         allowClear
       />
