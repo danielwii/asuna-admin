@@ -1,6 +1,6 @@
 import { DynamicFormTypes } from '@asuna-admin/components';
 import { Config } from '@asuna-admin/config';
-import { AppContext, AsunaDefinitions } from '@asuna-admin/core';
+import { AppContext, AsunaDefinitions, CacheHelper } from '@asuna-admin/core';
 import {
   castModelKey,
   defaultColumns,
@@ -137,7 +137,7 @@ export interface ModelListConfig {
   fields?: string[];
   // distinct?: boolean;
   pagination?: PaginationConfig;
-  filters?: Record<string, [Partial<Condition>]>;
+  filters?: Record<string, [Condition]>;
   sorter?: Sorter | null;
   relations?: string[];
 }
@@ -168,6 +168,12 @@ export interface ModelAdapter {
   ): Promise<Asuna.PageableResponse<T>>;
   uniq(modelName: string, column: string, where?: object): Promise<string[]>;
   groupCounts(modelName: string, column: string, where?: object): Promise<{ [name: string]: number }>;
+  loadOriginSchema(modelName: string): Promise<Asuna.Schema.OriginSchema>;
+  getColumns(
+    modelName: string,
+    opts: { callRefresh: () => void; actions: (text, record, extras) => any },
+    extraName?: string,
+  ): Promise<RelationColumnProps[]>;
 }
 
 export class ModelAdapterImpl implements ModelAdapter {
@@ -201,7 +207,7 @@ export class ModelAdapterImpl implements ModelAdapter {
       if (!config.model) logger.debug('[ModelAdapter]', '[constructor]', name, 'should set model');
     });
   }
-  public identifyType = (modelName: string, field: Asuna.Schema.ModelSchema): DynamicFormTypes | undefined => {
+  identifyType = (modelName: string, field: Asuna.Schema.ModelSchema): DynamicFormTypes | undefined => {
     const primaryKeys = this.getPrimaryKeys(modelName);
     const plainKeys = _.map(primaryKeys.concat('created_at', 'updated_at'), castModelKey);
     const basicType = field?.config?.type || '';
@@ -290,7 +296,7 @@ export class ModelAdapterImpl implements ModelAdapter {
    * 2. 采用更加丰富的关联数据加载组件，已应对大数据库量的加载需求
    * @deprecated fetch2
    */
-  public fetch = (
+  fetch = (
     modelName: string,
     data: { endpoint?: string; id: string | number; profile?: Asuna.Profile; relations?: string[] },
   ): Promise<AxiosResponse> => {
@@ -314,7 +320,7 @@ export class ModelAdapterImpl implements ModelAdapter {
     return this.service.fetch(auth, modelName, Object.assign(data, modelConfig, { relations }));
   };
 
-  public remove = (modelName: string, data) => {
+  remove = (modelName: string, data) => {
     const auth = AppContext.fromStore('auth');
     return this.service.remove(auth, modelName, {
       ...data,
@@ -322,7 +328,7 @@ export class ModelAdapterImpl implements ModelAdapter {
     });
   };
 
-  public upsert = (modelName: string, data: { body: IModelBody }): Promise<AxiosResponse> => {
+  upsert = (modelName: string, data: { body: IModelBody }): Promise<AxiosResponse> => {
     const auth = AppContext.fromStore('auth');
     // const { schemas } = AppContext.fromStore('models');
     logger.debug('[upsert]', 'upsert', { modelName, data });
@@ -357,9 +363,9 @@ export class ModelAdapterImpl implements ModelAdapter {
     });
   };
 
-  public getAssociationConfigs = (modelName: string) => R.prop(modelName)(this.associations);
+  getAssociationConfigs = (modelName: string) => R.prop(modelName)(this.associations);
 
-  public getColumns = async (
+  getColumns = async (
     modelName: string,
     opts: { callRefresh: () => void; actions: (text, record, extras) => any },
     extraName?: string,
@@ -389,9 +395,9 @@ export class ModelAdapterImpl implements ModelAdapter {
 */
   };
 
-  public getColumnOpts = (key: string): Asuna.Schema.ColumnOpts<any> => this.columnOpts[key];
+  getColumnOpts = (key: string): Asuna.Schema.ColumnOpts<any> => this.columnOpts[key];
 
-  public getModelConfig = (modelName: string): Asuna.Schema.ModelConfig => {
+  getModelConfig = (modelName: string): Asuna.Schema.ModelConfig => {
     const TAG = '[getModelConfig]';
     const config = this.modelConfigs[modelName];
     if (config) {
@@ -407,9 +413,9 @@ export class ModelAdapterImpl implements ModelAdapter {
     return { model: {}, table: defaultColumns, columns: {} };
   };
 
-  public getPrimaryKey = (modelName: string): string => _.head(this.getPrimaryKeys(modelName)) || 'id';
+  getPrimaryKey = (modelName: string): string => _.head(this.getPrimaryKeys(modelName)) || 'id';
 
-  public getPrimaryKeys = (modelName: string): string[] => {
+  getPrimaryKeys = (modelName: string): string[] => {
     const TAG = '[getPrimaryKey]';
     const { schemas } = AppContext.fromStore('models');
     const schema = R.prop(modelName)(schemas);
@@ -423,7 +429,7 @@ export class ModelAdapterImpl implements ModelAdapter {
     return ['id']; // by default
   };
 
-  public getFormSchema = (name: string, values?: { [member: string]: any }): Asuna.Schema.FormSchemas => {
+  getFormSchema = (name: string, values?: { [member: string]: any }): Asuna.Schema.FormSchemas => {
     const { schemas } = AppContext.fromStore('models');
     if (!schemas || !name) {
       logger.error('[getFormSchema]', 'schemas or name is required.', { schemas, name });
@@ -468,7 +474,7 @@ export class ModelAdapterImpl implements ModelAdapter {
     )(schema) as { [member: string]: Asuna.Schema.FormSchema };
   };
 
-  public getAssociationByName = (associationName: string, modelName?: string): Required<Asuna.Schema.Association> => {
+  getAssociationByName = (associationName: string, modelName?: string): Required<Asuna.Schema.Association> => {
     const primaryKey = AppContext.adapters.models.getPrimaryKey(associationName);
     const defaultValue = { name: 'name', value: primaryKey, fields: [primaryKey, 'name'] };
     const defaultAssociation = R.pathOr(defaultValue, [associationName])(this.associations);
@@ -480,15 +486,15 @@ export class ModelAdapterImpl implements ModelAdapter {
   /**
    * @see loadModels2
    */
-  public loadModels = (modelName: string, configs: ModelListConfig = {}): Promise<AxiosResponse> => {
+  loadModels = (modelName: string, configs: ModelListConfig = {}): Promise<AxiosResponse> => {
     logger.debug('[loadModels]', { modelName, configs, modelConfig: this.getModelConfig(modelName) });
-    const page = configs?.pagination?.current || 1;
-    const size = configs?.pagination?.pageSize || Config.get('DEFAULT_PAGE_SIZE') || 25;
+    const page = configs?.pagination?.current ?? 1;
+    const size = configs?.pagination?.pageSize ?? (Config.get('DEFAULT_PAGE_SIZE') as number);
     const auth = AppContext.fromStore('auth');
     return this.service.loadModels(auth, modelName, {
       pagination: { page, size },
       fields: configs?.fields,
-      filters: _.mapValues<Record<string, [Partial<Condition>]>, WhereConditions>(
+      filters: _.mapValues<Record<string, [Condition]>, WhereConditions>(
         configs?.filters,
         _.flow(filter => (_.isArray(filter) ? filter[0] : filter), parseJSONIfCould),
       ),
@@ -498,16 +504,16 @@ export class ModelAdapterImpl implements ModelAdapter {
     });
   };
 
-  public loadModels2 = <T>(modelName: string, configs: ModelListConfig = {}): Promise<Asuna.PageableResponse<T>> => {
+  loadModels2 = <T>(modelName: string, configs: ModelListConfig = {}): Promise<Asuna.PageableResponse<T>> => {
     logger.debug('[loadModels2]', { modelName, configs, modelConfig: this.getModelConfig(modelName) });
-    const page = configs?.pagination?.current || 1;
-    const size = configs?.pagination?.pageSize || Config.get('DEFAULT_PAGE_SIZE') || 25;
+    const page = configs?.pagination?.current ?? 1;
+    const size = configs?.pagination?.pageSize ?? (Config.get('DEFAULT_PAGE_SIZE') as number);
     const auth = AppContext.fromStore('auth');
     return this.service
       .loadModels(auth, modelName, {
         pagination: { page, size },
         fields: configs?.fields,
-        filters: _.mapValues<Record<string, [Partial<Condition>]>, WhereConditions>(
+        filters: _.mapValues<Record<string, [Condition]>, WhereConditions>(
           configs?.filters,
           _.flow(filter => (_.isArray(filter) ? filter[0] : filter), parseJSONIfCould),
         ),
@@ -518,7 +524,7 @@ export class ModelAdapterImpl implements ModelAdapter {
       .then(fp.get('data'));
   };
 
-  public loadAssociationByIds = (associationName: string, ids: string[] | number[]): Promise<AxiosResponse | void> => {
+  loadAssociationByIds = (associationName: string, ids: string[] | number[]): Promise<AxiosResponse | void> => {
     if (_.trim(associationName) && !_.isEmpty(ids)) {
       logger.debug('[loadAssociationByIds]', { associationName, ids });
 
@@ -533,7 +539,7 @@ export class ModelAdapterImpl implements ModelAdapter {
     return Promise.resolve();
   };
 
-  public loadAssociation = (
+  loadAssociation = (
     associationName,
     configs: { keywords: string | null; page?: number } = { keywords: '' },
   ): Promise<AxiosResponse | AxiosResponse[] | void> => {
@@ -556,25 +562,26 @@ export class ModelAdapterImpl implements ModelAdapter {
    * @deprecated {@see loadOriginSchema}
    * @param modelName
    */
-  async loadSchema(modelName: string) {
-    const auth = AppContext.fromStore('auth');
-    return this.service.loadSchema(auth, modelName, this.getModelConfig(modelName));
-  }
+  loadSchema = async (modelName: string) => {
+    return CacheHelper.cacheable(`loadSchema#${modelName}`, () => {
+      const auth = AppContext.fromStore('auth');
+      return this.service.loadSchema(auth, modelName, this.getModelConfig(modelName));
+    });
+  };
 
-  async loadOriginSchema(modelName: string): Promise<Asuna.Schema.OriginSchema> {
-    const auth = AppContext.fromStore('auth');
-    return this.service.loadOriginSchema(auth, modelName, this.getModelConfig(modelName)).then(fp.get('data'));
-  }
+  loadOriginSchema = async (modelName: string): Promise<Asuna.Schema.OriginSchema> => {
+    return CacheHelper.cacheable(`loadOriginSchema#${modelName}`, () => {
+      const auth = AppContext.fromStore('auth');
+      return this.service.loadOriginSchema(auth, modelName, this.getModelConfig(modelName)).then(fp.get('data'));
+    });
+  };
 
   async loadOriginSchemas(): Promise<{ [name: string]: Asuna.Schema.OriginSchema }> {
     if (AppContext.ctx.graphql.serverClient) {
       const allResponse = await AppContext.ctx.graphql.loadSchemas();
       return Object.assign({}, ..._.map(allResponse, ({ name, schema }) => ({ [name]: schema })));
     } else {
-      const callable = Object.assign(
-        {},
-        ...this.allModels.map(modelName => ({ [modelName]: this.loadOriginSchema(modelName) })),
-      );
+      const callable = { ...this.allModels.map(modelName => ({ [modelName]: this.loadOriginSchema(modelName) })) };
       const allResponse = await Promise.props(callable);
       return Object.assign({}, ..._.map(allResponse, (response, name) => ({ [name]: (response as any).data })));
     }
@@ -585,10 +592,7 @@ export class ModelAdapterImpl implements ModelAdapter {
       const allResponse = await AppContext.ctx.graphql.loadSchemas();
       return Object.assign({}, ..._.map(allResponse, ({ name, schema }) => ({ [name]: schema })));
     } else {
-      const callable = Object.assign(
-        {},
-        ...this.allModels.map(modelName => ({ [modelName]: this.loadSchema(modelName) })),
-      );
+      const callable = { ...this.allModels.map(modelName => ({ [modelName]: this.loadSchema(modelName) })) };
       const allResponse = await Promise.props(callable);
       return Object.assign({}, ..._.map(allResponse, (response, name) => ({ [name]: (response as any).data })));
     }

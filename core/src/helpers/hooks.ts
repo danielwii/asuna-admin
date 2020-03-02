@@ -1,4 +1,4 @@
-import { adminProxyCaller, Draft } from '@asuna-admin/adapters';
+import { adminProxyCaller, Draft, modelProxyCaller } from '@asuna-admin/adapters';
 import { RelationColumnProps } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 import { Asuna } from '@asuna-admin/types';
@@ -6,7 +6,6 @@ import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
 import { DependencyList, useState } from 'react';
 import { useAsync, useAsyncRetry } from 'react-use';
-import { AppContext } from '../core/context';
 
 const logger = createLogger('helpers:hooks');
 
@@ -56,14 +55,14 @@ export function useAsunaModels(
   useAsync(async () => {
     logger.log('useAsunaModels getColumns ...');
     // const hasGraphAPI = _.find(await AppContext.ctx.graphql.loadGraphs(), schema => schema === `sys_${modelName}`);
-    const columnProps = await AppContext.adapters.models.getColumns(
+    const columnProps = await modelProxyCaller().getColumns(
       modelName,
       { callRefresh, actions },
-      extraName || modelName,
+      extraName ?? modelName,
     );
 
-    logger.log('useAsunaModels loadOriginSchema ...');
-    const schemas = await AppContext.adapters.models.loadOriginSchema(modelName);
+    logger.log('useAsunaModels loadOriginSchema ...', columnProps);
+    const schemas = await modelProxyCaller().loadOriginSchema(modelName);
 
     setState({ columnProps, schemas, loading: false });
   }, deps);

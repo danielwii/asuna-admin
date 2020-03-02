@@ -1,6 +1,11 @@
 /// <reference path="../typings/index.d.ts" />
 /// <reference path="../typings/global.d.ts" />
 
+import * as _ from 'lodash';
+
+console.log('replace lodash cache to WeakMap');
+_.memoize.Cache = WeakMap;
+
 export * from './adapters';
 export * from './common';
 

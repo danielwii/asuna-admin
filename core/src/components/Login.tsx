@@ -1,26 +1,22 @@
+/** @jsx jsx */
+import { css, jsx } from '@emotion/core';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { FormComponentProps, WrappedFormUtils } from '@ant-design/compatible/es/form/Form';
+import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { createLogger } from '@asuna-admin/logger';
 
-import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
-import '@ant-design/compatible/assets/index.css';
-
 import { Button, Input } from 'antd';
-import { FormComponentProps } from '@ant-design/compatible/es/form/Form';
 import * as React from 'react';
 import { FoldingCube } from 'styled-spinkit';
 
 const logger = createLogger('components:login');
 
 // TODO using DynamicForm's component instead
-function generateInput(form, name, type, required, message, placeholder, iconType) {
-  const decorator = form.getFieldDecorator(name, { rules: [{ required, message }] });
-  if (iconType) {
-    return decorator(
-      <Input
-        type={type}
-        prefix={<LegacyIcon type={iconType} style={{ color: 'rgba(0,0,0,.25)' }} />}
-        placeholder={placeholder}
-      />,
-    );
+function generateInput(form: WrappedFormUtils, name, type, required, message, placeholder, icon: React.ReactNode) {
+  const decorator = form.getFieldDecorator<any>(name, { rules: [{ required, message }] });
+  if (icon) {
+    return decorator(<Input type={type} prefix={icon} placeholder={placeholder} />);
   }
   return decorator(<Input placeholder={placeholder} />);
 }
@@ -72,7 +68,7 @@ class NormalLoginForm extends React.Component<ILoginProps & FormComponentProps, 
       true,
       'Please input your username!',
       'Username',
-      'user',
+      <UserOutlined style={{ color: 'rgba(0,0,0,.25)' }} />,
     );
     const passwordInput = generateInput(
       form,
@@ -81,13 +77,20 @@ class NormalLoginForm extends React.Component<ILoginProps & FormComponentProps, 
       true,
       'Please input your Password!',
       'Password',
-      'lock',
+      <LockOutlined style={{ color: 'rgba(0,0,0,.25)' }} />,
     );
 
     logger.debug('[render]', { usernameInput, passwordInput });
 
     return (
-      <Form onSubmit={this.handleSubmit} className="login-form">
+      <Form
+        onSubmit={this.handleSubmit}
+        css={css`
+          .ant-input-affix-wrapper {
+            width: 20rem;
+          }
+        `}
+      >
         <Form.Item>{usernameInput}</Form.Item>
         <Form.Item>{passwordInput}</Form.Item>
         <Form.Item>

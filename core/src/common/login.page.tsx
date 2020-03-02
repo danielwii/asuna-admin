@@ -37,10 +37,6 @@ const StyledFullFlexContainer = styled.div`
   align-items: center;
 `;
 
-const StyledLoginWrapper = styled.div`
-  width: 20rem;
-`;
-
 const StyledLogoWrapper = styled.div`
   position: absolute;
   top: 1rem;
@@ -113,13 +109,7 @@ export class LoginPage extends React.Component<ILoginPageProps> {
             </>
           )}
 
-          {customLogin ? (
-            customLogin(site, weChatLoginEnable)
-          ) : (
-            <StyledLoginWrapper>
-              <LoginContainer {...this.props} />
-            </StyledLoginWrapper>
-          )}
+          {customLogin ? customLogin(site, weChatLoginEnable) : <LoginContainer {...this.props} />}
         </StyledFullFlexContainer>
       </WithStyles>
     );

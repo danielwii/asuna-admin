@@ -1,11 +1,11 @@
 import { Config } from '@asuna-admin/config';
 
-import localforage from 'localforage';
+import localForage from 'localforage';
 
 type TTLItem<T = any> = { value: T; timestamp: number; ttl?: number };
 
 export class StorageHelper {
-  private static readonly storage: LocalForage = localforage.createInstance({ name: 'storage' });
+  private static readonly storage: LocalForage = localForage.createInstance({ name: 'storage' });
 
   static async setItem<T = any>(key: string, value: T, ttl?: number): Promise<T> {
     if (this.storage && !Config.isServer) {
@@ -26,12 +26,5 @@ export class StorageHelper {
       await this.storage.removeItem(key);
     }
     return undefined;
-  }
-
-  static async cacheable<T = any>(key: string, fn: () => Promise<T>, ttl: number): Promise<T> {
-    const value = await this.getItem(key);
-    if (value) return value;
-
-    return this.setItem(key, await fn());
   }
 }

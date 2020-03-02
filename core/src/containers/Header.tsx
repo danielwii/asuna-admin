@@ -7,32 +7,6 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { withDebugSettingsProps } from './DebugSettings';
 
-/*
-const mapStateToProps = (state: RootState): Partial<IHeaderProps> => ({
-  auth: state.auth,
-  app: state.app,
-  env: AppContext.publicConfig.env,
-  version: AppContext.publicConfig.version,
-});
-const mapDispatchToProps = (dispatch): Partial<IHeaderProps> => ({
-  onSync: () => dispatch(appActions.heartbeat(true)),
-  logout: () => dispatch(authActions.logout()),
-  withDebugSettingsProps,
-  handleAction: (action, componentName) => {
-    // console.log('container-header [handleAction]', { action, componentName });
-    AppContext.dispatch(
-      panesActions.open({
-        key: `${action}`,
-        title: action,
-        linkTo: 'content::blank',
-        component: componentName,
-      }),
-    );
-  },
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(Header);*/
-
 export const HeaderRender: React.FC<Pick<IHeaderProps, 'hideLogo'>> = props => {
   const states = useSelector<RootState, Pick<IHeaderProps, 'auth' | 'app' | 'env' | 'version'>>(state => ({
     auth: state.auth,
