@@ -51,10 +51,10 @@
   dependencies:
     tinycolor2 "^1.4.1"
 
-"@ant-design/compatible@^0.0.1-rc.1":
-  version "0.0.1-rc.1"
-  resolved "https://registry.yarnpkg.com/@ant-design/compatible/-/compatible-0.0.1-rc.1.tgz#baff60699f291dbbef787ecfc10587496f9e9427"
-  integrity sha512-I1xeM3Cm3ziP0P4LRY26GpFo/9wkCcVH1u7ofMo5pzwyCHioMstIi6ZaNX18UxXUOWTWcrHTUpkr5LrkEYOZLg==
+"@ant-design/compatible@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@ant-design/compatible/-/compatible-1.0.0.tgz#6b27152bfaf13302da92dc35830fb00c5ad6e4af"
+  integrity sha512-9u7M6AGiKGRUZB1BXOCnMk2d5TPPOG/h+jg+x1XPFMnCf8xTRNx1gyb9V3H0/56FtPyaokwNXu8Rv/dg72TuLw==
   dependencies:
     "@ant-design/icons" "^4.0.0-rc.0"
     antd "^4.0.0-alpha.9"
