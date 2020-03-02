@@ -2,7 +2,8 @@ import { EasyGroupForm, ErrorInfo, GroupFormFields } from '@asuna-admin/componen
 import { AppContext } from '@asuna-admin/core';
 import { ComponentsHelper } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
-import { Button, Divider, Icon, Typography } from 'antd';
+import { InfoCircleOutlined } from '@ant-design/icons';
+import { Button, Divider, Typography } from 'antd';
 
 import 'highlight.js/styles/default.css';
 
@@ -79,7 +80,7 @@ export function GroupFormKVComponent(props: {
         <Button onClick={() => refetch()}>Reload</Button>
         {info && (
           <Typography.Paragraph>
-            <Icon type="info-circle" style={{ margin: '0 0.2rem' }} />
+            <InfoCircleOutlined style={{ margin: '0 0.2rem' }} />
             {info}
           </Typography.Paragraph>
         )}

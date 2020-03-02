@@ -3,7 +3,9 @@ import { upload, validateFile } from '@asuna-admin/helpers/upload';
 import { createLogger } from '@asuna-admin/logger';
 import { Asuna } from '@asuna-admin/types';
 
-import { Button, Icon, Input, Upload, Divider } from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
+
+import { Button, Input, Upload, Divider } from 'antd';
 import {
   RcCustomRequestOptions,
   RcFile,
@@ -134,7 +136,7 @@ export class VideoUploader extends React.Component<IProps> {
       <div>
         <Upload {...props} fileList={fileList}>
           <Button>
-            <Icon type="upload" /> upload
+            <UploadOutlined /> upload
           </Button>
         </Upload>
         <Divider type="horizontal" dashed={true} style={{ margin: '0.5rem 0' }} />

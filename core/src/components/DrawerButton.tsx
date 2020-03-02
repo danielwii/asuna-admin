@@ -1,6 +1,7 @@
 /** @jsx jsx */
 import { css, jsx } from '@emotion/core';
-import { Button, Divider, Drawer, Empty, Icon, Popover, Skeleton, Timeline } from 'antd';
+import { SelectOutlined } from '@ant-design/icons';
+import { Button, Divider, Drawer, Empty, Popover, Skeleton, Timeline } from 'antd';
 import { BaseButtonProps } from 'antd/es/button/button';
 import { PopoverProps } from 'antd/lib/popover';
 import * as _ from 'lodash';
@@ -29,22 +30,22 @@ export const DrawerButtonBuilder: React.FC<DrawerButtonProps &
     <>
       <Button {...baseButtonProps} onClick={_showDrawer}>
         {text}
-        <Icon type="select" />
+        <SelectOutlined />
       </Button>
       <Drawer title={title || text} width={width ?? 520} closable={false} onClose={_onClose} visible={visible}>
         {builder()}
         {/*<Button type="primary" onClick={this.showChildrenDrawer}>
-            Two-level drawer
-          </Button>
-          <Drawer
-            title="Two-level Drawer"
-            width={320}
-            closable={false}
-            onClose={this.onChildrenDrawerClose}
-            visible={this.state.childrenDrawer}
-          >
-            This is two-level drawer
-          </Drawer>*/}
+          Two-level drawer
+        </Button>
+        <Drawer
+          title="Two-level Drawer"
+          width={320}
+          closable={false}
+          onClose={this.onChildrenDrawerClose}
+          visible={this.state.childrenDrawer}
+        >
+          This is two-level drawer
+        </Drawer>*/}
         <div
           style={{
             position: 'absolute',
@@ -62,8 +63,8 @@ export const DrawerButtonBuilder: React.FC<DrawerButtonProps &
             Cancel
           </Button>
           {/*<Button onClick={this.onClose} type="primary">
-              Submit
-            </Button>*/}
+            Submit
+          </Button>*/}
         </div>
       </Drawer>
     </>
@@ -94,7 +95,7 @@ export const DrawerButton: React.FC<DrawerButtonProps &
   const _renderButton = (
     <Button {...baseButtonProps} onClick={_showDrawer}>
       {text}
-      <Icon type="select" />
+      <SelectOutlined />
     </Button>
   );
   const RenderComponent: RenderComponentType = render || ((<></>) as any);

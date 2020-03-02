@@ -1,4 +1,5 @@
-import { Icon, Steps } from 'antd';
+import { LoadingOutlined, SmileOutlined, SolutionOutlined, UserOutlined } from '@ant-design/icons';
+import { Steps } from 'antd';
 import { StepProps } from 'antd/es/steps';
 import * as React from 'react';
 import { useState } from 'react';
@@ -32,10 +33,10 @@ export const TwoFactorAuthentication = (props: ITwoFactorAuthenticationProps) =>
   const renderedSteps = (
     <>
       <Steps>
-        <Step status="error" title="检测" icon={<Icon type="user" />} />
-        <Step status="finish" title="绑定" icon={<Icon type="solution" />} />
-        <Step status="process" title="验证" icon={<Icon type="loading" />} />
-        <Step status="wait" title="完成" icon={<Icon type="smile-o" />} />
+        <Step status="error" title="检测" icon={<UserOutlined />} />
+        <Step status="finish" title="绑定" icon={<SolutionOutlined />} />
+        <Step status="process" title="验证" icon={<LoadingOutlined />} />
+        <Step status="wait" title="完成" icon={<SmileOutlined />} />
       </Steps>
     </>
   );

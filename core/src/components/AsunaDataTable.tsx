@@ -13,6 +13,7 @@ import { WithDebugInfo } from '@asuna-admin/helpers/debug';
 import { createLogger } from '@asuna-admin/logger';
 import { modelsActions, panesActions } from '@asuna-admin/store';
 import { Asuna } from '@asuna-admin/types';
+import { InfoOutlined } from '@ant-design/icons';
 import { Button, Divider, Dropdown, Menu, Modal, Skeleton, Switch, Table, Tag, Tooltip } from 'antd';
 import { PaginationConfig } from 'antd/es/pagination';
 import { SorterResult, TableCurrentDataSource } from 'antd/es/table/interface';
@@ -308,7 +309,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
           <Button
             type="dashed"
             shape="circle"
-            icon="info"
+            icon={<InfoOutlined />}
             size="small"
             onClick={() => Modal.info({ width: '60%', content: renderHelp })}
           />

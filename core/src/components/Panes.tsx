@@ -5,6 +5,8 @@ import { createLogger } from '@asuna-admin/logger';
 import ModulesLoader from '@asuna-admin/modules';
 import { TenantWelcome } from '@asuna-admin/tenant';
 
+import { CloseSquareOutlined, MinusSquareOutlined } from '@ant-design/icons';
+
 import { Button, Divider, Tabs } from 'antd';
 import * as _ from 'lodash';
 import * as R from 'ramda';
@@ -96,11 +98,11 @@ export class Panes extends React.Component<IPanesProps, IState> {
 
     const operations = (
       <React.Fragment>
-        {panes && <Button icon="close-square" onClick={() => onCloseWithout()} />}
+        {panes && <Button icon={<CloseSquareOutlined />} onClick={() => onCloseWithout()} />}
         {panes && R.keys(panes).length > 0 && (
           <React.Fragment>
             <Divider type="vertical" />
-            <Button icon="minus-square" onClick={() => onCloseWithout(activeKey)} />
+            <Button icon={<MinusSquareOutlined />} onClick={() => onCloseWithout(activeKey)} />
             <Divider type="vertical" />
             <Button onClick={() => onCloseCurrent(activeKey)}>关闭当前标签页</Button>
           </React.Fragment>

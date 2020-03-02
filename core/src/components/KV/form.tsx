@@ -3,7 +3,9 @@ import { AppContext } from '@asuna-admin/core';
 import { ComponentsHelper } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 
-import { Button, Col, Divider, Icon, Row, Typography } from 'antd';
+import { InfoCircleOutlined } from '@ant-design/icons';
+
+import { Button, Col, Divider, Row, Typography } from 'antd';
 
 import 'highlight.js/styles/default.css';
 import * as _ from 'lodash';
@@ -57,7 +59,7 @@ export function FormKVComponent(props: {
             <Button onClick={() => refetch()}>Reload</Button>
             {info && (
               <Typography.Paragraph>
-                <Icon type="info-circle" style={{ margin: '0 0.2rem' }} />
+                <InfoCircleOutlined style={{ margin: '0 0.2rem' }} />
                 {info}
               </Typography.Paragraph>
             )}

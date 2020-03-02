@@ -110,7 +110,7 @@ export const TenantWelcome: React.FC = props => {
         const disable = total >= limit || !store.tenantInfo?.tenant || !authorized;
         return (
           <Descriptions.Item label={title} key={title}>
-            <Row gutter={8} type="flex">
+            <Row gutter={8}>
               {published ? (
                 <>
                   <Col>

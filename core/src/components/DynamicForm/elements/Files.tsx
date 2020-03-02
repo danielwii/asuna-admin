@@ -1,7 +1,7 @@
 import { Config } from '@asuna-admin/config';
 import { createLogger } from '@asuna-admin/logger';
 
-import { WrappedFormUtils } from 'antd/es/form/Form';
+import { WrappedFormUtils } from '@ant-design/compatible/es/form/Form';
 import * as React from 'react';
 
 import { horizontalFormItemLayout, generateComponent, IFormItemLayout } from '.';

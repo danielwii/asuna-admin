@@ -2,7 +2,8 @@ import * as React from 'react';
 
 import { storiesOf } from '@storybook/react';
 
-import { Form } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 
 import DynamicForm, { buildForm, generateInput } from '../src/components/DynamicForm/index';
 

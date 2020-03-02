@@ -1,7 +1,10 @@
 import { createLogger } from '@asuna-admin/logger';
 
-import { Button, Form, Icon, Input } from 'antd';
-import { FormComponentProps } from 'antd/es/form/Form';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+
+import { Button, Input } from 'antd';
+import { FormComponentProps } from '@ant-design/compatible/es/form/Form';
 import * as React from 'react';
 import { FoldingCube } from 'styled-spinkit';
 
@@ -14,7 +17,7 @@ function generateInput(form, name, type, required, message, placeholder, iconTyp
     return decorator(
       <Input
         type={type}
-        prefix={<Icon type={iconType} style={{ color: 'rgba(0,0,0,.25)' }} />}
+        prefix={<LegacyIcon type={iconType} style={{ color: 'rgba(0,0,0,.25)' }} />}
         placeholder={placeholder}
       />,
     );

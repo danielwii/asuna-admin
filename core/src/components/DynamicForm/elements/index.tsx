@@ -2,8 +2,11 @@ import { BraftRichEditor } from '@asuna-admin/components';
 import { Config } from '@asuna-admin/config';
 import { createLogger } from '@asuna-admin/logger';
 
-import { Checkbox, DatePicker, Form, Input, InputNumber, Switch, TimePicker } from 'antd';
-import { GetFieldDecoratorOptions, WrappedFormUtils } from 'antd/es/form/Form';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { GetFieldDecoratorOptions, WrappedFormUtils } from '@ant-design/compatible/es/form/Form';
+
+import { Checkbox, DatePicker, Input, InputNumber, Switch, TimePicker } from 'antd';
 import * as React from 'react';
 
 import { Authorities } from '../Authorities';

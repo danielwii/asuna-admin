@@ -11,7 +11,7 @@ import {
 } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 import { Asuna } from '@asuna-admin/types';
-import { SorterResult } from 'antd/es/table';
+import { SorterResult } from 'antd/es/table/interface';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Subscription } from 'rxjs';

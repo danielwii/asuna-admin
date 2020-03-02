@@ -8,9 +8,12 @@ import { Asuna } from '@asuna-admin/types';
 import { EnumFilterMetaInfoOptions, MetaInfoOptions } from '@asuna-admin/types/meta';
 import { Paper } from '@material-ui/core';
 
-import { Affix, Anchor, Button, Col, Divider, Form, List, Popconfirm, Row, Tag } from 'antd';
-import { FormComponentProps } from 'antd/es/form';
-import { WrappedFormUtils } from 'antd/es/form/Form';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+
+import { Affix, Anchor, Button, Col, Divider, List, Popconfirm, Row, Tag } from 'antd';
+import { FormComponentProps } from '@ant-design/compatible/es/form';
+import { WrappedFormUtils } from '@ant-design/compatible/es/form/Form';
 import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
 import moment from 'moment';
@@ -452,7 +455,7 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
     <>
       <div className="dynamic-form">
         {loading && <FixedLoading />}
-        <Row type="flex" gutter={anchor ? 16 : 0}>
+        <Row gutter={anchor ? 16 : 0}>
           <Col span={anchor ? 18 : 24}>
             <Form>
               {/* {_.map(fieldGroups, this.buildFieldGroup)} */}

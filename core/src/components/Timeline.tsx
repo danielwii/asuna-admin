@@ -1,4 +1,5 @@
-import { Badge, Col, Icon, Row, Statistic, Tag, Timeline } from 'antd';
+import { ArrowDownOutlined, ArrowUpOutlined } from '@ant-design/icons';
+import { Badge, Col, Row, Statistic, Tag, Timeline } from 'antd';
 import moment from 'moment';
 import { default as React, useState } from 'react';
 import * as util from 'util';
@@ -42,12 +43,7 @@ export function ExchangeTimeline({
         {item.change > 0 ? (
           <>
             <Col span={6}>
-              <Statistic
-                title="+"
-                value={item.change}
-                valueStyle={{ color: '#3f8600' }}
-                prefix={<Icon type="arrow-up" />}
-              />
+              <Statistic title="+" value={item.change} valueStyle={{ color: '#3f8600' }} prefix={<ArrowUpOutlined />} />
             </Col>
             <Col>
               <Statistic
@@ -64,7 +60,7 @@ export function ExchangeTimeline({
                 title="-"
                 value={item.change}
                 valueStyle={{ color: '#cf1322' }}
-                prefix={<Icon type="arrow-down" />}
+                prefix={<ArrowDownOutlined />}
               />
             </Col>
             <Col>

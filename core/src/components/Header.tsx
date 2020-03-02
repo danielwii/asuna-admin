@@ -1,7 +1,9 @@
 import { StoreContext } from '@asuna-admin/context/store';
 import { AppState, AuthState, RootState } from '@asuna-admin/store';
 
-import { Badge, Button, Dropdown, Icon, Layout, Menu, Modal, Tag } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
+
+import { Badge, Button, Dropdown, Layout, Menu, Modal, Tag } from 'antd';
 import getConfig from 'next/config';
 import * as React from 'react';
 import { useContext } from 'react';
@@ -152,7 +154,7 @@ export const Header: React.FC<IHeaderProps> = props => {
             .
           </div>
         ) : (
-          <Icon type="loading" style={{ marginLeft: 8, fontSize: 24 }} spin />
+          <LoadingOutlined style={{ marginLeft: 8, fontSize: 24 }} spin />
         )}
       </div>
       {/* language=CSS */}

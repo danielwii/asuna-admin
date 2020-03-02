@@ -1,5 +1,5 @@
-import { GetFieldDecoratorOptions } from 'antd/es/form/Form';
-import { FIELD_DATA_PROP, FIELD_META_PROP } from 'antd/lib/form/constants';
+import { GetFieldDecoratorOptions } from '@ant-design/compatible/es/form/Form';
+import { FIELD_DATA_PROP, FIELD_META_PROP } from '@ant-design/compatible/es/form/constants';
 
 export type FormComponentProps<T = any, FieldOptions = any> = {
   value: T;

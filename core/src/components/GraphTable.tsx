@@ -1,7 +1,8 @@
 import { AppContext } from '@asuna-admin/core';
 import { RelationColumnProps } from '@asuna-admin/helpers';
 import { Button, Divider, Table } from 'antd';
-import { PaginationConfig, SorterResult, TableCurrentDataSource } from 'antd/es/table';
+import { PaginationConfig } from 'antd/es/pagination';
+import { SorterResult, TableCurrentDataSource } from 'antd/es/table/interface';
 import { gql } from 'apollo-boost';
 import * as _ from 'lodash';
 import * as fp from 'lodash/fp';

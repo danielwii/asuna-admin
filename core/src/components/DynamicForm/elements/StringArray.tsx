@@ -1,5 +1,5 @@
 import { createLogger } from '@asuna-admin/logger';
-import { WrappedFormUtils } from 'antd/es/form/Form';
+import { WrappedFormUtils } from '@ant-design/compatible/es/form/Form';
 import { StringArray } from 'asuna-components';
 import * as React from 'react';
 

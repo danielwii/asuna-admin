@@ -4,7 +4,9 @@ import { upload } from '@asuna-admin/helpers/upload';
 import { createLogger } from '@asuna-admin/logger';
 import { Asuna } from '@asuna-admin/types';
 
-import { Button, Icon, Input, List } from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
+
+import { Button, Input, List } from 'antd';
 import * as _ from 'lodash';
 import { join } from 'path';
 import * as R from 'ramda';
@@ -168,7 +170,7 @@ export class ImageTrivia extends React.Component<IProps, IState> {
       <div>
         <Button onClick={() => this.uploadElement!.click()}>
           <input hidden type="file" ref={input => (this.uploadElement = input)} onChange={this.onSelectFile} />
-          <Icon type="upload" /> Click to Upload
+          <UploadOutlined /> Click to Upload
         </Button>
         <div className="asuna-image-crop">
           {value && (

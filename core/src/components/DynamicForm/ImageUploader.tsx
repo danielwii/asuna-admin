@@ -4,7 +4,9 @@ import { upload, validateFile } from '@asuna-admin/helpers/upload';
 import { createLogger } from '@asuna-admin/logger';
 import { Asuna } from '@asuna-admin/types';
 
-import { Button, Icon, Input, Modal, Upload } from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
+
+import { Button, Input, Modal, Upload } from 'antd';
 import {
   RcCustomRequestOptions,
   RcFile,
@@ -151,7 +153,7 @@ export class ImageUploader extends React.Component<IProps, IState> {
 
     const uploadButton = (
       <Button>
-        <Icon type="upload" /> upload
+        <UploadOutlined /> upload
       </Button>
     );
 

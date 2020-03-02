@@ -2,13 +2,13 @@ import { AppContext } from '@asuna-admin/core';
 import { createLogger } from '@asuna-admin/logger';
 
 import { Select } from 'antd';
-import { WrappedFormUtils } from 'antd/es/form/Form';
 import * as _ from 'lodash';
 import * as R from 'ramda';
 import * as React from 'react';
 import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc';
 
 import { generateComponent, horizontalFormItemLayout, IFormItemLayout } from '.';
+import { WrappedFormUtils } from '@ant-design/compatible/es/form/Form';
 
 const logger = createLogger('components:dynamic-form:select');
 
@@ -35,7 +35,7 @@ export type SelectOptions = {
   placeholder: string;
   items: Item[];
   existItems?: Item[];
-  mode: 'default' | 'multiple' | 'tags' | 'combobox';
+  mode: 'multiple' | 'tags';
   getName: () => string;
   getValue: () => string;
   withSortTree: boolean;

@@ -1,5 +1,6 @@
 import { AppContext } from '@asuna-admin/core';
-import { Icon, notification, Timeline } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
+import { notification, Timeline } from 'antd';
 import { differenceInSeconds } from 'date-fns';
 import * as _ from 'lodash';
 import nanoid from 'nanoid';
@@ -40,7 +41,7 @@ export class TimelineMessageBox {
               <div>{_.isObject(message.content) ? <pre>{util.inspect(message.content)}</pre> : message.content}</div>
             </Timeline.Item>
           ) : (
-            <Timeline.Item key={message.key} dot={<Icon type="loading" style={{ fontSize: '16px' }} />}>
+            <Timeline.Item key={message.key} dot={<LoadingOutlined style={{ fontSize: '16px' }} />}>
               <div>{_.isObject(message.content) ? <pre>{util.inspect(message.content)}</pre> : message.content}</div>
             </Timeline.Item>
           ),

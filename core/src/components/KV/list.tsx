@@ -6,7 +6,8 @@ import { createLogger } from '@asuna-admin/logger';
 
 import { jsx } from '@emotion/core';
 import { TextField } from '@material-ui/core';
-import { Button, Col, Divider, Icon, Row, Typography } from 'antd';
+import { InfoCircleOutlined } from '@ant-design/icons';
+import { Button, Col, Divider, Row, Typography } from 'antd';
 import { DynamicJsonArrayTable, ObjectArrayJsonTableHelper } from 'asuna-components';
 import { Field, FieldProps, Form, Formik, FormikValues } from 'formik';
 import 'highlight.js/styles/default.css';
@@ -69,7 +70,7 @@ export function ListKVComponent(props: {
         <Button onClick={() => refetch()}>Reload</Button>
         {info && (
           <Typography.Paragraph>
-            <Icon type="info-circle" style={{ margin: '0 0.2rem' }} />
+            <InfoCircleOutlined style={{ margin: '0 0.2rem' }} />
             {info}
           </Typography.Paragraph>
         )}

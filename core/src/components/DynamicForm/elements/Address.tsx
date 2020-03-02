@@ -1,6 +1,6 @@
 import { ChinaDivisionOptions, parseAddress } from '@asuna-admin/components';
 import { Cascader, Input } from 'antd';
-import { WrappedFormUtils } from 'antd/es/form/Form';
+import { WrappedFormUtils } from '@ant-design/compatible/es/form/Form';
 import * as React from 'react';
 import { generateComponent, horizontalFormItemLayout, IFormItemLayout, InputOptions } from '.';
 import { FormComponentProps } from './interfaces';

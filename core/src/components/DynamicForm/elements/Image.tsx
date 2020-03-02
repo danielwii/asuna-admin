@@ -3,7 +3,7 @@ import { Config } from '@asuna-admin/config';
 import { upload, validateFile } from '@asuna-admin/helpers/upload';
 import { createLogger } from '@asuna-admin/logger';
 
-import { WrappedFormUtils } from 'antd/es/form/Form';
+import { WrappedFormUtils } from '@ant-design/compatible/es/form/Form';
 import { IUploadedFile, IUploaderProps, Uploader, UploaderAdapter } from 'asuna-components';
 import { AxiosRequestConfig } from 'axios';
 import * as React from 'react';

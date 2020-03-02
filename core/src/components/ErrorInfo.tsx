@@ -1,4 +1,5 @@
-import { Icon, Result, Typography } from 'antd';
+import { CloseCircleOutlined } from '@ant-design/icons';
+import { Result, Typography } from 'antd';
 import * as React from 'react';
 
 const { Paragraph, Text } = Typography;
@@ -15,7 +16,7 @@ export function ErrorInfo(props: IErrorInfoProps & { children?: React.ReactNode 
     <Result status="error" title={title || 'Error'} subTitle={subTitle} extra={extra}>
       <div className="desc">
         <Paragraph>
-          <Icon style={{ color: 'red' }} type="close-circle" /> {children}
+          <CloseCircleOutlined style={{ color: 'red' }} /> {children}
         </Paragraph>
         {/*<Paragraph>
           <Text

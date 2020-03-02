@@ -3,7 +3,9 @@ import { joinUrl, valueToUrl } from '@asuna-admin/core/url-rewriter';
 import { TooltipContent, WithDebugInfo } from '@asuna-admin/helpers';
 import { jsx } from '@emotion/core';
 
-import { Button, Icon, Tooltip } from 'antd';
+import { FilePdfOutlined } from '@ant-design/icons';
+
+import { Button, Tooltip } from 'antd';
 import * as _ from 'lodash';
 import dynamic from 'next/dynamic';
 import React, { useState } from 'react';
@@ -113,7 +115,7 @@ export function AssetPreview({ host, url, width, height, showPdf, fullWidth }: I
         {!state.loading && (
           <div>
             <a href={href} target="_blank">
-              <Icon type="file-pdf" style={{ fontSize: '2rem', padding: '1rem' }} />
+              <FilePdfOutlined style={{ fontSize: '2rem', padding: '1rem' }} />
             </a>
             {state.numPages} pages in total.
           </div>
@@ -129,7 +131,7 @@ export function AssetPreview({ host, url, width, height, showPdf, fullWidth }: I
     ) : (
       <FlexCenterBox>
         <a href={href} target="_blank">
-          <Icon type="file-pdf" style={{ fontSize: '2rem', padding: '1rem' }} />
+          <FilePdfOutlined style={{ fontSize: '2rem', padding: '1rem' }} />
         </a>
       </FlexCenterBox>
     );

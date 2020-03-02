@@ -8,7 +8,9 @@ import { createLogger } from '@asuna-admin/logger';
 import { SchemaHelper } from '@asuna-admin/schema';
 import { Asuna } from '@asuna-admin/types';
 
-import { Badge, Button, Checkbox, Divider, Icon, Input, Modal, Popconfirm, Statistic, Tag, Tooltip } from 'antd';
+import { LinkOutlined, SearchOutlined } from '@ant-design/icons';
+
+import { Badge, Button, Checkbox, Divider, Input, Modal, Popconfirm, Statistic, Tag, Tooltip } from 'antd';
 import { ColumnProps } from 'antd/es/table';
 import { FilterDropdownProps } from 'antd/es/table/interface';
 import * as deepDiff from 'deep-diff';
@@ -140,7 +142,7 @@ async function generateSearchColumnProps(
           onPressEnter={confirm}
         />
         <Divider type="horizontal" style={{ margin: '0.2rem 0' }} />
-        <Button type="primary" onClick={confirm} icon="search" size="small">
+        <Button type="primary" onClick={confirm} icon={<SearchOutlined />} size="small">
           搜索
         </Button>{' '}
         <Button onClick={clearFilters} size="small">
@@ -148,7 +150,7 @@ async function generateSearchColumnProps(
         </Button>
       </Content>
     ),
-    filterIcon: filtered => <Icon type="search" style={{ color: filtered ? '#1890ff' : 'inherit' }} />,
+    filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : 'inherit' }} />,
   };
 }
 
@@ -554,7 +556,7 @@ export const columnHelper = {
               <Tooltip title={value}>
                 <Button href={value} size="small" type="dashed" target="_blank">
                   {`${value.slice(0, 30)}...`}
-                  <Icon type="link" />
+                  <LinkOutlined />
                 </Button>
               </Tooltip>
               {/* language=CSS */}
@@ -571,7 +573,7 @@ export const columnHelper = {
           <WithDebugInfo info={{ value }}>
             <Button href={value} size="small" type="dashed" target="_blank">
               {value}
-              <Icon type="link" />
+              <LinkOutlined />
             </Button>
           </WithDebugInfo>
         );
