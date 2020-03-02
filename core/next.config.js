@@ -1,3 +1,4 @@
+// eslint-disable-next-line eslint-comments/disable-enable-pair
 /* eslint-disable @typescript-eslint/no-var-requires */
 const R = require('ramda');
 const withCss = require('@zeit/next-css');
