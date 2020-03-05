@@ -16,7 +16,7 @@ import * as util from 'util';
 
 const logger = createLogger('components:kv-form:form');
 
-type FormBody = { form: FormFields; values: object };
+type FormBody<ExtraProps> = { form: FormFields<ExtraProps>; values: object };
 
 export function FormKVComponent(props: {
   kvCollection?: string;
@@ -26,22 +26,22 @@ export function FormKVComponent(props: {
   info: React.ReactChild;
 });
 
-export function FormKVComponent(props: {
+export function FormKVComponent<ExtraProps = any>(props: {
   kvCollection?: string;
   kvKey: string;
   // initialState: { body: any };
   enableClear?: boolean;
   info: React.ReactChild;
-  fields: (state) => FormFields;
+  fields: (state) => FormFields<ExtraProps>;
 });
 
-export function FormKVComponent(props: {
+export function FormKVComponent<ExtraProps = any>(props: {
   kvCollection?: string;
   kvKey: string;
   // initialState: { body: FormBody | any };
   enableClear?: boolean;
   info: React.ReactChild;
-  fields: (state) => FormFields;
+  fields: (state) => FormFields<ExtraProps>;
 }) {
   const { kvCollection: collection, kvKey: key, info, /*initialState, */ fields } = props;
   const { loading, error, data, refetch } = ComponentsHelper.loadByKey(key, collection);

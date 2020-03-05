@@ -342,7 +342,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
           key={`table-${flag}`}
           size="small"
           className="asuna-content-table"
-          scroll={{ x: true }}
+          // scroll={{ x: true }}
           dataSource={dataSource}
           rowKey={primaryKey}
           loading={loading}

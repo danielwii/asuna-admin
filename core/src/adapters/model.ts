@@ -213,8 +213,8 @@ export class ModelAdapterImpl implements ModelAdapter {
     const basicType = field?.config?.type || '';
     const advanceType = field?.config?.info?.type as any;
     const notFound = (): undefined => {
-      const info = { field, plainKeys, basicType, advanceType };
-      logger.warn('[identifyType]', 'type cannot identified.', info);
+      const info = { plainKeys, basicType, advanceType };
+      logger.warn('[identifyType]', 'type cannot identified.', field, info);
       return undefined;
     };
     return _.cond<Asuna.Schema.ModelSchema, DynamicFormTypes | undefined>([
@@ -253,6 +253,7 @@ export class ModelAdapterImpl implements ModelAdapter {
             [() => /^DATETIME$/i.test(basicType), () => DynamicFormTypes.DateTime],
             [() => /^DATE$/i.test(basicType), () => DynamicFormTypes.Date],
             [() => /^BOOLEAN$/i.test(basicType), () => DynamicFormTypes.Switch],
+            [() => /^JSON$/i.test(basicType), () => DynamicFormTypes.JSON],
             [_.stubTrue, notFound],
           ])(basicType),
       ],

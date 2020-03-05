@@ -1,3 +1,7 @@
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { FormComponentProps } from '@ant-design/compatible/es/form';
+import { WrappedFormUtils } from '@ant-design/compatible/es/form/Form';
 import { adminProxyCaller } from '@asuna-admin/adapters';
 import { DrawerButton, parseAddressStr } from '@asuna-admin/components';
 import { DebugInfo, diff, parseString, useAsunaDrafts } from '@asuna-admin/helpers';
@@ -8,16 +12,10 @@ import { Asuna } from '@asuna-admin/types';
 import { EnumFilterMetaInfoOptions, MetaInfoOptions } from '@asuna-admin/types/meta';
 import { Paper } from '@material-ui/core';
 
-import { Form } from '@ant-design/compatible';
-import '@ant-design/compatible/assets/index.css';
-
 import { Affix, Anchor, Button, Col, Divider, List, Popconfirm, Row, Tag } from 'antd';
-import { FormComponentProps } from '@ant-design/compatible/es/form';
-import { WrappedFormUtils } from '@ant-design/compatible/es/form/Form';
 import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
 import moment from 'moment';
-import * as PropTypes from 'prop-types';
 import * as R from 'ramda';
 import * as React from 'react';
 import { useMemo } from 'react';
@@ -36,6 +34,7 @@ import {
   generateInputNumber,
   generatePlain,
   generateRichTextEditor,
+  generateStringTmpl,
   generateSwitch,
   generateTextArea,
   generateVideo,
@@ -75,6 +74,7 @@ export enum DynamicFormTypes {
   Input = 'Input',
   InputNumber = 'InputNumber',
   TextArea = 'TextArea',
+  JSON = 'JSON',
   DateTime = 'DateTime',
   Date = 'Date',
 
@@ -93,6 +93,7 @@ export enum DynamicFormTypes {
   Authorities = 'Authorities',
   Enum = 'Enum',
   EnumFilter = 'EnumFilter',
+  StringTmpl = 'StringTmpl',
   SimpleJSON = 'SimpleJSON',
   SortPosition = 'SortPosition',
   RichImage = 'RichImage',
@@ -172,6 +173,7 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
   const memoizedFields = useMemo(() => fields, [1]);
   const { loading: loadingDrafts, drafts, retry } = useAsunaDrafts({ type: model, refId: _.get(fields, 'id.value') });
   const { value: schema } = useAsync(() => SchemaHelper.getSchema(model), [model]);
+
   const _buildField = (fields: FormField[], field: DynamicFormField): React.ReactNode => {
     field.options = field.options || {};
     const options: DeepPartial<DynamicFormField['options'] &
@@ -231,6 +233,10 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
         return generateHidden(form, options as HiddenOptions);
       case DynamicFormTypes.InputNumber:
         return generateInputNumber(form, options);
+      case DynamicFormTypes.StringTmpl:
+        return generateStringTmpl(form, options);
+      case DynamicFormTypes.JSON:
+        // return generateTextArea(form, options);
       case DynamicFormTypes.TextArea:
         return generateTextArea(form, options);
       case DynamicFormTypes.DateTime:
@@ -579,10 +585,6 @@ interface IFormAnchorProps {
 }
 
 class FormAnchor extends React.Component<IFormAnchorProps> {
-  static propTypes = {
-    fields: PropTypes.shape({}),
-  };
-
   shouldComponentUpdate(nextProps, nextState) {
     const propsDiff = diff(this.props, nextProps);
     const stateDiff = diff(this.state, nextState);

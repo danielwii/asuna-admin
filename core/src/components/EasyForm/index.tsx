@@ -7,7 +7,7 @@ import { css, jsx } from '@emotion/core';
 import { FormControl, FormControlLabel, FormHelperText, Switch, TextField } from '@material-ui/core';
 import * as antd from 'antd';
 import { Divider, Popconfirm } from 'antd';
-import { DynamicJsonArrayTable, ObjectJsonTableHelper } from 'asuna-components';
+import { DynamicJsonArrayTable, ObjectJsonTableHelper, StringTmpl } from 'asuna-components';
 import { changeAntdTheme, getThemeColor } from 'dynamic-antd-theme';
 import * as formik from 'formik';
 import { FieldInputProps, FormikProps } from 'formik';
@@ -109,6 +109,15 @@ export function RenderInputComponent({
           <TextField id={field.name} multiline {...field} value={value} label={label} />
           {/*<DebugInfo data={{ field, fieldDef, value }} type="json" />*/}
         </>
+      );
+    }
+    case FormFieldType.stringTmpl: {
+      const label = field.name === fieldDef.name ? field.name : `${field.name} / ${fieldDef.name}`;
+      return (
+        <WithDebugInfo info={{ field, fieldDef, value }}>
+          <label>{label}</label>
+          <StringTmpl tmpl={value} {...field} fields={[]} {...fieldDef.field.extra} />
+        </WithDebugInfo>
       );
     }
     case FormFieldType.wxTmplData: {

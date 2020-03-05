@@ -52,7 +52,14 @@ const panesReducer = (previousState = initialState, action) => {
         const {
           payload: { pane },
         } = action;
-        return { activeKey: pane.key, panes: { ...previousState.panes, [pane.key]: pane } };
+        if (_.isEmpty(previousState.panes)) {
+          return { activeKey: pane.key, panes: { [pane.key]: pane } };
+        }
+        const entries = Object.entries(previousState.panes);
+        const index = _.findIndex(entries, ([key]) => key === previousState.activeKey);
+        const altered = [...entries.slice(0, index + 1), [pane.key, pane], ...entries.slice(index + 1)];
+        const merged = Object.fromEntries(altered);
+        return { activeKey: pane.key, panes: merged };
       }
       case panesActionTypes.ACTIVE: {
         const {

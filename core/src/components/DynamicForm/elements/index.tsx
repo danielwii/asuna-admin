@@ -1,16 +1,20 @@
-import { BraftRichEditor } from '@asuna-admin/components';
-import { Config } from '@asuna-admin/config';
-import { createLogger } from '@asuna-admin/logger';
-
 import { Form } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
 import { GetFieldDecoratorOptions, WrappedFormUtils } from '@ant-design/compatible/es/form/Form';
+import { FIELD_DATA_PROP } from '@ant-design/compatible/lib/form/constants';
+import { BraftRichEditor } from '@asuna-admin/components/RichEditor';
+import { Config } from '@asuna-admin/config';
+import { createLogger } from '@asuna-admin/logger';
 
 import { Checkbox, DatePicker, Input, InputNumber, Switch, TimePicker } from 'antd';
+import { StringTmpl, WithVariable } from 'asuna-components';
+import * as _ from 'lodash';
 import * as React from 'react';
+import { useLogger } from 'react-use';
 
 import { Authorities } from '../Authorities';
 import { VideoUploader } from '../Videos';
+import { FormComponentProps } from './interfaces';
 
 const logger = createLogger('components:dynamic-form:elements');
 
@@ -171,35 +175,45 @@ export const generateInput = (
     component = <Input placeholder={placeholder} allowClear />;
   }
 
-  return generateComponent(
-    form,
-    {
-      key,
-      name,
-      label,
-      fieldName,
-      labelName,
-      opts: {
-        rules: [{ required, message: requiredMessage }, { max: length }],
-      },
-      help,
-    },
-    component,
-    formItemLayout,
-  );
+  const opts = { rules: [{ required, message: requiredMessage }, { max: length }] };
+  return generateComponent(form, { key, name, label, fieldName, labelName, opts, help }, component, formItemLayout);
 };
+
+const TextAreaHOC: React.FC<Partial<FormComponentProps>> = props => (
+  <WithVariable key={props.id} variable={props as FormComponentProps}>
+    {props => {
+      const value = _.isObject(props.value) ? JSON.stringify(props.value) : props.value;
+      return <Input.TextArea autoSize={{ minRows: 3 }} allowClear {...props} value={value} />;
+    }}
+  </WithVariable>
+);
 
 export const generateTextArea = (form: WrappedFormUtils, options, formItemLayout?: IFormItemLayout) => {
   const { key, name, label } = options;
 
   const fieldName = key || name;
   const labelName = label || name || key;
-  return generateComponent(
-    form,
-    { fieldName, labelName, ...options },
-    <Input.TextArea autoSize={{ minRows: 3 }} allowClear />,
-    formItemLayout,
+  return generateComponent(form, { fieldName, labelName, ...options }, <TextAreaHOC />, formItemLayout);
+};
+
+const StringTmplHOC: React.FC<Partial<FormComponentProps> & Partial<{ fields: any }>> = props => {
+  useLogger(`StringTmpl(key=${name})`, props);
+  return (
+    <WithVariable key={props.id} variable={props as FormComponentProps & { fields: any }}>
+      {props => {
+        useLogger('generateStringTmpl', { props });
+        return <StringTmpl tmpl={props.value} fields={props[FIELD_DATA_PROP]?.options?.fields} {...props} />;
+      }}
+    </WithVariable>
   );
+};
+
+export const generateStringTmpl = (form: WrappedFormUtils, options, formItemLayout?: IFormItemLayout) => {
+  const { key, name, label } = options;
+
+  const fieldName = key || name;
+  const labelName = label || name || key;
+  return generateComponent(form, { fieldName, labelName, ...options }, <StringTmplHOC />, formItemLayout);
 };
 
 /**
