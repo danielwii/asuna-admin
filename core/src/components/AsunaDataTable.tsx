@@ -121,7 +121,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
       }
     },
     transformFilters: (filters?: Record<string, Key[] | null>): Record<string, [Condition]> => {
-      return _.chain(_.pickBy(filters, _.identity))
+      return _.chain(_.omitBy(filters, _.isNil))
         .mapKeys((filterArr, key) =>
           key.includes('.') && _.isString(_.head(filterArr))
             ? _.get(parseJSONIfCould(_.head(filterArr) as any), 'key')
@@ -330,7 +330,6 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
                   // if (column) column.filteredValue = null;
 
                   const filters = _.omit(queryCondition.filters, key);
-                  console.log('set 2', filters);
                   setQueryCondition({ pagination: queryCondition.pagination, filters, sorter: queryCondition.sorter });
                   func.handleTableChange(queryCondition.pagination, filters);
                   updateFlag(flag + 1);

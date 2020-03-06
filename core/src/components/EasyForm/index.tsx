@@ -1,5 +1,4 @@
 /** @jsx jsx */
-import { Config } from '@asuna-admin/config';
 import { AppContext } from '@asuna-admin/core';
 import { DebugInfo, WithDebugInfo } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
@@ -7,7 +6,7 @@ import { css, jsx } from '@emotion/core';
 import { FormControl, FormControlLabel, FormHelperText, Switch, TextField } from '@material-ui/core';
 import * as antd from 'antd';
 import { Divider, Popconfirm } from 'antd';
-import { DynamicJsonArrayTable, ObjectJsonTableHelper, StringTmpl } from 'asuna-components';
+import { DynamicJsonArrayTable, ObjectJsonTableHelper, StringTmpl, Uploader } from 'asuna-components';
 import { changeAntdTheme, getThemeColor } from 'dynamic-antd-theme';
 import * as formik from 'formik';
 import { FieldInputProps, FormikProps } from 'formik';
@@ -16,8 +15,7 @@ import * as React from 'react';
 import { SketchPicker } from 'react-color';
 import Highlight from 'react-highlight';
 import * as util from 'util';
-
-import { ImageUploader } from '../DynamicForm/ImageUploader';
+import { FileUploaderAdapterImpl } from '../DynamicForm/elements/Image';
 import { FormField, FormFieldDef, FormFields, FormFieldsGroup, FormFieldType } from './interfaces';
 
 export * from './interfaces';
@@ -88,9 +86,8 @@ export function RenderInputComponent({
         <>
           <label>{field.name}</label>
           <br />
-          <ImageUploader
-            many={false}
-            urlHandler={Config.get('IMAGE_RES_HANDLER')}
+          <Uploader
+            adapter={new FileUploaderAdapterImpl()}
             value={value}
             onChange={newValue => {
               logger.log('[RenderInputComponent]', { fieldDef, value, newValue });

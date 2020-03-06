@@ -1,11 +1,11 @@
+import { CloseCircleOutlined, CloseSquareOutlined, MinusSquareOutlined } from '@ant-design/icons';
 import { ErrorInfo } from '@asuna-admin/components';
 import { diff, TenantHelper } from '@asuna-admin/helpers';
 import { DebugInfo } from '@asuna-admin/helpers/debug';
 import { createLogger } from '@asuna-admin/logger';
 import ModulesLoader from '@asuna-admin/modules';
 import { TenantWelcome } from '@asuna-admin/tenant';
-
-import { CloseSquareOutlined, MinusSquareOutlined } from '@ant-design/icons';
+import { Tooltip } from '@material-ui/core';
 
 import { Button, Divider, Tabs } from 'antd';
 import * as _ from 'lodash';
@@ -98,13 +98,37 @@ export class Panes extends React.Component<IPanesProps, IState> {
 
     const operations = (
       <React.Fragment>
-        {panes && <Button icon={<CloseSquareOutlined />} onClick={() => onCloseWithout()} />}
+        {panes && (
+          <Tooltip title="关闭全部">
+            <Button icon={<CloseSquareOutlined />} onClick={() => onCloseWithout()} />
+          </Tooltip>
+        )}
         {panes && R.keys(panes).length > 0 && (
           <React.Fragment>
             <Divider type="vertical" />
-            <Button icon={<MinusSquareOutlined />} onClick={() => onCloseWithout(activeKey)} />
+            <Tooltip title="关闭其他">
+              <Button icon={<MinusSquareOutlined />} onClick={() => onCloseWithout(activeKey)} />
+            </Tooltip>
+            {/*
+            <Dropdown
+              overlay={
+                <Menu onClick={(param: ClickParam) => onCloseWithout()}>
+                  <Menu.Item key="1">关闭其他</Menu.Item>
+                  <Menu.Item key="2">关闭左侧全部</Menu.Item>
+                  <Menu.Item key="3">关闭右侧全部</Menu.Item>
+                </Menu>
+              }
+            >
+              <Button>
+                <MinusSquareOutlined />
+              </Button>
+            </Dropdown>
+*/}
+
             <Divider type="vertical" />
-            <Button onClick={() => onCloseCurrent(activeKey)}>关闭当前标签页</Button>
+            <Tooltip title="关闭当前标签页">
+              <CloseCircleOutlined onClick={() => onCloseCurrent(activeKey)} />
+            </Tooltip>
           </React.Fragment>
         )}
       </React.Fragment>
