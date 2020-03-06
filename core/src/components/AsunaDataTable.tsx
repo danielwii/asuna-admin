@@ -107,7 +107,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
       availableSorter?: SorterResult<any> | SorterResult<any>[];
       transformedSorter?: Sorter | null;
     } {
-      const transformedFilters = _transformFilters(filters);
+      const transformedFilters = func.transformFilters(filters);
       const availableSorter = sorter && _.isEmpty(sorter) ? queryCondition.sorter : sorter;
       if (_.isArray(availableSorter)) {
         return { transformedFilters };
@@ -120,6 +120,20 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
         return { transformedFilters, availableSorter, transformedSorter };
       }
     },
+    transformFilters: (filters?: Record<string, Key[] | null>): Record<string, [Condition]> => {
+      return _.chain(_.pickBy(filters, _.identity))
+        .mapKeys((filterArr, key) =>
+          key.includes('.') && _.isString(_.head(filterArr))
+            ? _.get(parseJSONIfCould(_.head(filterArr) as any), 'key')
+            : key,
+        )
+        .mapValues((filterArr, key) =>
+          key.includes('.') && _.isString(_.head(filterArr))
+            ? _.get(parseJSONIfCould(_.head(filterArr) as any), 'value')
+            : filterArr,
+        )
+        .value();
+    },
     handleTableChange: function<RecordType>(
       pagination?: PaginationConfig,
       filters?: Record<string, Key[] | null>,
@@ -127,9 +141,15 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
       extra?: TableCurrentDataSource<RecordType>,
     ): void {
       logger.debug('[handleTableChange]', { pagination, filters, sorter, extra });
-      const { availableSorter, transformedFilters, transformedSorter } = func.transformQueryCondition(queryCondition);
+      const { availableSorter, transformedFilters, transformedSorter } = func.transformQueryCondition({
+        pagination,
+        filters,
+        sorter,
+      });
 
       logger.debug('[handleTableChange]', { availableSorter, transformedSorter, transformedFilters });
+      console.log('set 1', filters);
+
       setQueryCondition({
         pagination,
         filters,
@@ -197,20 +217,6 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
           }),
         ),
     });
-  };
-  const _transformFilters = (filters?: Record<string, Key[] | null>): Record<string, [Condition]> => {
-    return _.chain(filters)
-      .mapKeys((filterArr, key) =>
-        key.includes('.') && _.isString(_.head(filterArr))
-          ? _.get(parseJSONIfCould(_.head(filterArr) as any), 'key')
-          : key,
-      )
-      .mapValues((filterArr, key) =>
-        key.includes('.') && _.isString(_.head(filterArr))
-          ? _.get(parseJSONIfCould(_.head(filterArr) as any), 'value')
-          : filterArr,
-      )
-      .value();
   };
   const _import = () => {
     // TODO not implemented
@@ -312,7 +318,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
 
       {!_.isEmpty(queryCondition.filters) && (
         <>
-          {_.map(_transformFilters(queryCondition.filters), (filter, key) =>
+          {_.map(func.transformFilters(queryCondition.filters), (filter, key) =>
             !_.isEmpty(filter) ? (
               <Tag
                 key={`tag-${key}`}
@@ -324,6 +330,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
                   // if (column) column.filteredValue = null;
 
                   const filters = _.omit(queryCondition.filters, key);
+                  console.log('set 2', filters);
                   setQueryCondition({ pagination: queryCondition.pagination, filters, sorter: queryCondition.sorter });
                   func.handleTableChange(queryCondition.pagination, filters);
                   updateFlag(flag + 1);
