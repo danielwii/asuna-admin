@@ -13,7 +13,6 @@ import styled from 'styled-components';
 import { FlexCenterBox } from './Styled';
 // import { Document, Page } from "react-pdf/dist/entry.webpack";
 
-import 'react-viewer/dist/index.css';
 const Viewer = dynamic(import('react-viewer'), { ssr: false });
 
 interface IAssetsPreviewProps {
