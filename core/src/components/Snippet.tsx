@@ -1,6 +1,6 @@
 /** @jsx jsx */
 import { FilePdfOutlined } from '@ant-design/icons';
-import { joinUrl } from '@asuna-admin/core/url-rewriter';
+import { joinUrl, valueToArrays } from '@asuna-admin/core/url-rewriter';
 import { TooltipContent, WithDebugInfo } from '@asuna-admin/helpers';
 import { jsx } from '@emotion/core';
 import { Button, Tooltip } from 'antd';
@@ -14,12 +14,6 @@ import { FlexCenterBox } from './Styled';
 // import { Document, Page } from "react-pdf/dist/entry.webpack";
 
 const Viewer = dynamic(import('react-viewer'), { ssr: false });
-
-interface IAssetsPreviewProps {
-  host?: string;
-  urls: string[];
-  showPdf?: boolean;
-}
 
 export function ReactViewer({
   images,
@@ -55,12 +49,20 @@ export const PdfButton: React.FC<{ pdf?: string }> = ({ pdf }) =>
     <React.Fragment>无 pdf</React.Fragment>
   );
 
-export function AssetsPreview({ host, urls, showPdf }: IAssetsPreviewProps) {
+interface IAssetsPreviewProps {
+  host?: string;
+  urls: string[] | string;
+  showPdf?: boolean;
+  clearStyle?: boolean;
+}
+
+export function AssetsPreview({ host, urls, showPdf, clearStyle }: IAssetsPreviewProps) {
+  const parsed = valueToArrays(urls);
   return (
-    <div style={{ display: 'flex', flexWrap: 'wrap', maxWidth: '400px' }}>
-      {_.map(urls, (url, index) => (
-        <div key={`viewer-${index}`}>
-          <ReactViewer index={index} images={urls.map(url => ({ src: url, downloadUrl: url }))}>
+    <div style={clearStyle ? {} : { display: 'flex', flexWrap: 'wrap', maxWidth: '400px' }}>
+      {_.map(parsed, (url, index) => (
+        <div key={`viewer-${index}`} style={{ display: 'inline-block' }}>
+          <ReactViewer index={index} images={parsed.map(url => ({ src: url, downloadUrl: url }))}>
             <AssetPreview key={url} host={host} url={url} showPdf={showPdf} />
           </ReactViewer>
           <TooltipContent value={url} link />

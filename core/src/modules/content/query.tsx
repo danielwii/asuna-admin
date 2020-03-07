@@ -15,13 +15,14 @@ const ContentSearch: React.FC<ModulesLoaderProps> = props => {
   const {
     basis: { pane },
   } = props;
-  const [isOnline, setIsOnline] = useState<boolean | null>(null);
+  // const [isOnline, setIsOnline] = useState<boolean | null>(null);
   const [viewRecord, setViewRecord] = useState<any>();
 
   const { modelName, extraName } = extractModelNameFromPane(props.basis.pane);
   const { relations } = useAsunaModels(modelName, { extraName });
   const { modelConfig, primaryKey, columnOpts } = resolveModelInPane(modelName, extraName);
 
+  /*
   useEffect(() => {
     setIsOnline(true);
     console.log('set online', true);
@@ -31,6 +32,7 @@ const ContentSearch: React.FC<ModulesLoaderProps> = props => {
       console.log('set online', false);
     };
   }, [props.module]);
+*/
 
   const fields = _.fromPairs(
     _.map(columnOpts?.columnProps?.queryFields || [primaryKey], value => {

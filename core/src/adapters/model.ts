@@ -2,6 +2,7 @@ import { DynamicFormTypes } from '@asuna-admin/components';
 import { Config } from '@asuna-admin/config';
 import { AppContext, AsunaDefinitions, CacheHelper } from '@asuna-admin/core';
 import {
+  BatchLoader,
   castModelKey,
   defaultColumns,
   defaultColumnsByPrimaryKey,
@@ -29,7 +30,6 @@ import * as R from 'ramda';
 
 export interface IModelBody {
   id?: number | string;
-
   [key: string]: any;
 }
 
@@ -123,7 +123,7 @@ export interface IModelService {
     { auth, modelConfig }: { auth: AuthState; modelConfig: Asuna.Schema.ModelConfig },
     modelName: string,
     data: { column: string; where: string },
-  ): Promise<AxiosResponse>;
+  ): Promise<AxiosResponse<{ [id: string]: { [name: string]: number } }>>;
 }
 
 // --------------------------------------------------------------
@@ -167,7 +167,7 @@ export interface ModelAdapter {
     } & Asuna.Schema.ModelConfig,
   ): Promise<Asuna.PageableResponse<T>>;
   uniq(modelName: string, column: string, where?: object): Promise<string[]>;
-  groupCounts(modelName: string, column: string, where?: object): Promise<{ [name: string]: number }>;
+  groupCounts(modelName: string, column: string, relation: string, id: string): Promise<{ [name: string]: number }>;
   loadOriginSchema(modelName: string): Promise<Asuna.Schema.OriginSchema>;
   getColumns(
     modelName: string,
@@ -267,12 +267,28 @@ export class ModelAdapterImpl implements ModelAdapter {
     return this.service.uniq({ auth, modelConfig }, modelName, { column }).then(fp.get('data'));
   }
 
-  groupCounts(modelName: string, column: string, where: object): Promise<{ [name: string]: number }> {
-    const auth = AppContext.fromStore('auth');
-    const modelConfig = this.getModelConfig(modelName);
-    return this.service
-      .groupCounts({ auth, modelConfig }, modelName, { column, where: JSON.stringify(where) })
-      .then(fp.get('data'));
+  _groupCountsBatchLoader = new BatchLoader<{ modelName; column; relation; id: string }, any>(
+    keys => {
+      const { modelName, column, relation } = keys[0];
+      const auth = AppContext.fromStore('auth');
+      const modelConfig = this.getModelConfig(modelName);
+      const ids = _.map(keys, fp.get('id'));
+      const where = JSON.stringify({ [relation]: { $in: ids } });
+      return this.service.groupCounts({ auth, modelConfig }, modelName, { column, where }).then(fp.get('data'));
+    },
+    {
+      extractor: (data, key) => _.get(data, _.get(key, 'id')),
+    },
+  );
+  async groupCounts(
+    modelName: string,
+    column: string,
+    relation: string,
+    id: string,
+  ): Promise<{ [name: string]: number }> {
+    // const auth = AppContext.fromStore('auth');
+    // const modelConfig = this.getModelConfig(modelName);
+    return this._groupCountsBatchLoader.load({ modelName, column, relation, id }).catch(console.error);
   }
 
   fetch2<T = any>(

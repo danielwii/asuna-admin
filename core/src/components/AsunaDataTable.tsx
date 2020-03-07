@@ -81,7 +81,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
         {isDeletableSystemRecord(record) && deletable && (
           <>
             <Divider type="vertical" />
-            <Button size="small" type="danger" onClick={() => _remove(text, record)}>
+            <Button size="small" type="danger" onClick={() => func.remove(text, record)}>
               删除
             </Button>
           </>
@@ -148,7 +148,6 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
       });
 
       logger.debug('[handleTableChange]', { availableSorter, transformedSorter, transformedFilters });
-      console.log('set 1', filters);
 
       setQueryCondition({
         pagination,
@@ -173,6 +172,21 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
     edit: (text, record) => {
       logger.log('[edit]', { text, record });
       return ModelsHelper.openEditPane(modelName, record);
+    },
+    remove: (text, record) => {
+      logger.log('[remove]', record);
+      const modal = Modal.confirm({
+        title: '是否确认',
+        content: `删除 ${modelName}？`,
+        okText: '确认',
+        cancelText: '取消',
+        onOk: () =>
+          AppContext.dispatch(
+            modelsActions.remove(modelName, record, response => {
+              if (/^20\d$/.test(response.status)) modal.destroy();
+            }),
+          ),
+      });
     },
   };
 
@@ -203,21 +217,6 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
   const { primaryKey } = resolveModelInPane(modelName, extraName);
 
   const isDeletableSystemRecord = record => !record[castModelKey('isSystem')];
-  const _remove = (text, record) => {
-    logger.log('[remove]', record);
-    const modal = Modal.confirm({
-      title: '是否确认',
-      content: `删除 ${modelName}？`,
-      okText: '确认',
-      cancelText: '取消',
-      onOk: () =>
-        AppContext.dispatch(
-          modelsActions.remove(modelName, record, response => {
-            if (/^20\d$/.test(response.status)) modal.destroy();
-          }),
-        ),
-    });
-  };
   const _import = () => {
     // TODO not implemented
     // AppContext.adapters.api.import();

@@ -12,6 +12,7 @@ import { useAsync } from 'react-use';
 import VisualDiff from 'react-visual-diff';
 import { WithLoading, WithVariable } from './Common';
 import { DynamicFormTypes } from './DynamicForm';
+import { AssetsPreview } from './Snippet';
 
 export interface AsunaPlainObjectProps {
   modelName: string;
@@ -41,6 +42,7 @@ export const AsunaPlainInfo: React.FC<AsunaPlainObjectProps> = ({ modelName, rec
               split
               size="small"
               itemLayout="horizontal"
+              header={schema?.info?.displayName && <legend>{schema.info.displayName}</legend>}
               dataSource={_.map(record, (value, key) => ({
                 key,
                 title: fields[key]?.options?.name ?? fields[key]?.options?.label ?? fields[key]?.name,
@@ -108,6 +110,12 @@ export const AsunaPlainInfo: React.FC<AsunaPlainObjectProps> = ({ modelName, rec
                     const info = columnInfo.config?.info as EnumFilterMetaInfoOptions;
                     value = info?.enumData?.[value as string];
                     before = before && info?.enumData?.[before as string];
+                    break;
+                  }
+                  case DynamicFormTypes.Images:
+                  case DynamicFormTypes.Image: {
+                    value = <AssetsPreview urls={value} clearStyle />;
+                    before = before && <AssetsPreview urls={before} clearStyle />;
                     break;
                   }
                   case DynamicFormTypes.File: {

@@ -1,3 +1,4 @@
+import { LinkOutlined, SearchOutlined } from '@ant-design/icons';
 import { AssetsPreview, Content, DynamicFormTypes, parseAddressStr, PdfButton } from '@asuna-admin/components';
 import { VideoPlayer } from '@asuna-admin/components/DynamicForm/Videos';
 import { Config } from '@asuna-admin/config';
@@ -8,11 +9,10 @@ import { createLogger } from '@asuna-admin/logger';
 import { SchemaHelper } from '@asuna-admin/schema';
 import { Asuna } from '@asuna-admin/types';
 
-import { LinkOutlined, SearchOutlined } from '@ant-design/icons';
-
 import { Badge, Button, Checkbox, Divider, Input, Modal, Popconfirm, Statistic, Tag, Tooltip } from 'antd';
 import { ColumnProps } from 'antd/es/table';
 import { FilterDropdownProps } from 'antd/es/table/interface';
+import { Promise } from 'bluebird';
 import * as deepDiff from 'deep-diff';
 import { Diff } from 'deep-diff';
 import * as _ from 'lodash';
@@ -789,11 +789,58 @@ export type ParseType =
   | 'Degree'
   | 'Sex';
 
-export function parseType(key: ParseType, name: string): string {
+export function parseType(key: ParseType, name: string | null): string {
   if (!name) return '';
   const value = AppContext.constants?.[key]?.[name];
   if (!value) {
     console.warn('not found for constants', { key, name, map: AppContext.constants?.[key] });
   }
   return value ?? name;
+}
+
+type Defer<R> = {
+  resolve: (thenableOrResult?: Promise<R>) => void;
+  reject: (error?: any) => void;
+  onCancel?: (callback: () => void) => void;
+  promise: Promise<R>;
+};
+
+function defer<R>(): Defer<R> {
+  let resolve, reject, onCancel;
+  const promise = new Promise(function() {
+    resolve = arguments[0];
+    reject = arguments[1];
+    onCancel = arguments[2];
+  });
+  return { resolve, reject, onCancel, promise };
+}
+
+export class BatchLoader<T, R> {
+  private queue: T[] = [];
+  private runner: Promise<R> | null;
+
+  constructor(
+    private readonly batchLoaderFn: (keys: T[]) => Promise<R>,
+    private readonly options?: {
+      extractor?: (data: R, key: T) => any;
+    },
+  ) {}
+
+  load(key: T): Promise<any> {
+    this.queue.push(key);
+    const runner =
+      this.runner ||
+      (this.runner = new Promise((resolve, reject) => {
+        setTimeout(() => {
+          this.runner = null;
+          const { queue } = this;
+          this.queue = [];
+          this.batchLoaderFn(queue).then(resolve, reject);
+        }, 0);
+      }));
+
+    return new Promise((resolve, reject) =>
+      runner.then(data => resolve(this.options?.extractor ? this.options.extractor(data, key) : data), reject),
+    );
+  }
 }
