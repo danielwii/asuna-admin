@@ -1,106 +1,81 @@
 /** @jsx jsx */
-import { css, jsx } from '@emotion/core';
-import { Form } from '@ant-design/compatible';
-import '@ant-design/compatible/assets/index.css';
-import { FormComponentProps, WrappedFormUtils } from '@ant-design/compatible/es/form/Form';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { createLogger } from '@asuna-admin/logger';
-
-import { Button, Input } from 'antd';
+import { css, jsx } from '@emotion/core';
+import { Button, Form, Input } from 'antd';
 import * as React from 'react';
 import { FoldingCube } from 'styled-spinkit';
 
 const logger = createLogger('components:login');
 
-// TODO using DynamicForm's component instead
-function generateInput(form: WrappedFormUtils, name, type, required, message, placeholder, icon: React.ReactNode) {
-  const decorator = form.getFieldDecorator<any>(name, { rules: [{ required, message }] });
-  if (icon) {
-    return decorator(<Input type={type} prefix={icon} placeholder={placeholder} />);
-  }
-  return decorator(<Input placeholder={placeholder} />);
+function generateInput2(name, type, required, message, placeholder, icon: React.ReactNode) {
+  return (
+    <Form.Item name={name} rules={[{ required, message }]}>
+      <Input type={type} prefix={icon} placeholder={placeholder} />
+    </Form.Item>
+  );
 }
 
 export interface ILoginProps {
-  form;
   login: (username: string, password: string, callback: (response) => void) => void;
 }
 
-interface IState {
-  loading: true | false;
-}
+export const NormalLoginForm: React.FC<ILoginProps> = ({ login }) => {
+  const [form] = Form.useForm();
+  const [loading, setLoading] = React.useState(false);
 
-class NormalLoginForm extends React.Component<ILoginProps & FormComponentProps, IState> {
-  state: IState = { loading: false };
+  if (loading) return <FoldingCube />;
 
-  handleSubmit = e => {
-    e.preventDefault();
-    this.props.form.validateFields((err, values) => {
-      if (!err) {
-        logger.debug('Received values of form: ', values);
+  const func = {
+    onFinish: () => {
+      form.validateFields().then(values => {
         const { username, password } = values;
-        this.setState({ loading: true });
+        setLoading(true);
 
-        this.props.login(username, password, ({ response, error }) => {
+        login(username, password, ({ response, error }) => {
           logger.log('callback', { response, error });
-          if (error) {
-            this.setState({ loading: false });
-          }
+          if (error) setLoading(false);
         });
-      }
-    });
+      });
+    },
   };
-
-  public componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
-    logger.error({ error, errorInfo });
-  }
-
-  render() {
-    const { form } = this.props;
-    const { loading } = this.state;
-
-    if (loading) return <FoldingCube />;
-
-    const usernameInput = generateInput(
-      form,
+  const rendered = {
+    usernameInput: generateInput2(
       'username',
       'input',
       true,
       'Please input your username!',
       'Username',
       <UserOutlined style={{ color: 'rgba(0,0,0,.25)' }} />,
-    );
-    const passwordInput = generateInput(
-      form,
+    ),
+    passwordInput: generateInput2(
       'password',
       'password',
       true,
       'Please input your Password!',
       'Password',
       <LockOutlined style={{ color: 'rgba(0,0,0,.25)' }} />,
-    );
+    ),
+  };
 
-    logger.debug('[render]', { usernameInput, passwordInput });
-
-    return (
-      <Form
-        onSubmit={this.handleSubmit}
-        css={css`
-          .ant-input-affix-wrapper {
-            width: 20rem;
-          }
-        `}
-      >
-        <Form.Item>{usernameInput}</Form.Item>
-        <Form.Item>{passwordInput}</Form.Item>
-        <Form.Item>
-          <Button type="primary" htmlType="submit" className="login-form-button">
-            Log in
-          </Button>
-        </Form.Item>
-      </Form>
-    );
-  }
-}
-
-export const Login = Form.create<ILoginProps>()(NormalLoginForm) as any;
+  return (
+    <Form
+      form={form}
+      onFinish={func.onFinish}
+      scrollToFirstError
+      css={css`
+        .ant-input-affix-wrapper {
+          width: 20rem;
+        }
+      `}
+    >
+      <Form.Item>{rendered.usernameInput}</Form.Item>
+      <Form.Item>{rendered.passwordInput}</Form.Item>
+      <Form.Item>
+        <Button type="primary" htmlType="submit" className="login-form-button">
+          Log in
+        </Button>
+      </Form.Item>
+    </Form>
+  );
+};
