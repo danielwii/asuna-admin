@@ -154,7 +154,7 @@ export const TenantWelcome: React.FC = props => {
                 </Col>
               )}
             </Row>
-            <Divider dashed={true} style={{ margin: '0.5rem 0' }} />
+            <Divider dashed style={{ margin: '0.5rem 0' }} />
             {key === store.tenantInfo?.config?.firstModelName ? (
               <Popconfirm
                 title={

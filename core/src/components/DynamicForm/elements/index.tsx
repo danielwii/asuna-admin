@@ -6,10 +6,12 @@ import { BraftRichEditor } from '@asuna-admin/components/RichEditor';
 import { Config } from '@asuna-admin/config';
 import { createLogger } from '@asuna-admin/logger';
 
-import { Checkbox, DatePicker, Input, InputNumber, Switch, TimePicker } from 'antd';
-import { StringTmpl, WithVariable } from 'asuna-components';
+import { Checkbox, Col, DatePicker, Divider, Input, InputNumber, Row, Switch, TimePicker } from 'antd';
+import { Preview, StringTmpl, WithVariable } from 'asuna-components';
 import * as _ from 'lodash';
 import * as React from 'react';
+import JSONInput from 'react-json-editor-ajrm';
+import locale from 'react-json-editor-ajrm/locale/zh-cn';
 import { useLogger } from 'react-use';
 
 import { Authorities } from '../Authorities';
@@ -183,7 +185,27 @@ const TextAreaHOC: React.FC<Partial<FormComponentProps>> = props => (
   <WithVariable key={props.id} variable={props as FormComponentProps}>
     {props => {
       const value = _.isObject(props.value) ? JSON.stringify(props.value) : props.value;
-      return <Input.TextArea autoSize={{ minRows: 3 }} allowClear {...props} value={value} />;
+      const textArea = <Input.TextArea autoSize={{ minRows: 3 }} allowClear {...props} value={value} />;
+      if (props[FIELD_DATA_PROP].type === 'JSON') {
+        return (
+          <Row gutter={4}>
+            <Col>
+              <JSONInput
+                id={`${props.id}_json_input`}
+                locale={locale}
+                height="10rem"
+                width="30rem"
+                onChange={({ json, jsObject }) => jsObject && props.onChange(json)}
+              />
+              <Divider type="horizontal" dashed style={{ margin: '0.5rem 0' }} />
+            </Col>
+            <Col>
+              <Preview text={props.value} jsonMode />
+            </Col>
+          </Row>
+        );
+      }
+      return textArea;
     }}
   </WithVariable>
 );
@@ -199,10 +221,28 @@ export const generateTextArea = (form: WrappedFormUtils, options, formItemLayout
 const StringTmplHOC: React.FC<Partial<FormComponentProps> & Partial<{ fields: any }>> = props => {
   useLogger(`StringTmpl(key=${name})`, props);
   return (
-    <WithVariable key={props.id} variable={props as FormComponentProps & { fields: any }}>
+    <WithVariable
+      key={props.id}
+      variable={
+        props as FormComponentProps<
+          string,
+          {
+            fields: { name: string; help?: string; fake?: string }[];
+            extra?: { jsonMode: true } | { language: string };
+          }
+        >
+      }
+    >
       {props => {
-        useLogger('generateStringTmpl', { props });
-        return <StringTmpl tmpl={props.value} fields={props[FIELD_DATA_PROP]?.options?.fields} {...props} />;
+        useLogger('generateStringTmpl', props);
+        return (
+          <StringTmpl
+            tmpl={props.value}
+            fields={props[FIELD_DATA_PROP]?.options?.fields}
+            {...props}
+            {...props[FIELD_DATA_PROP]?.options?.extra}
+          />
+        );
       }}
     </WithVariable>
   );

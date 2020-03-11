@@ -245,7 +245,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
     }
   }, [queryCondition, loadingAsunaModels, flag]);
 
-  if (AppContext.isDebugMode) useLogger(AsunaDataTable.name, { flag, queryCondition, loadingAsunaModels });
+  if (AppContext.isDebugMode) useLogger('AsunaDataTable', { flag, queryCondition, loadingAsunaModels });
 
   if (loadingAsunaModels) {
     return <Skeleton active avatar />;

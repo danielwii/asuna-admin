@@ -49,7 +49,7 @@ export function WithFuture<R>({
       }),
   );
 
-  useLogger(WithFuture.name);
+  useLogger('WithFuture');
 
   return (
     <React.Suspense fallback={fallback ?? <Circle />}>

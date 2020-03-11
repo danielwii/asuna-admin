@@ -22,8 +22,12 @@ export default ({ children, hideCharacteristics }) => (
     {children}
     {/* language=CSS */}
     <style jsx global>{`
+      .ant-legacy-form-item-control {
+        line-height: inherit !important;
+      }
       pre {
-        font-size: 0.65rem;
+        /*line-height: 1rem;*/
+        /*font-size: 0.65rem;*/
       }
       .row-published {
         /*background-color: lavender;*/

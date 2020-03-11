@@ -78,12 +78,12 @@ const ContentSearch: React.FC<ModulesLoaderProps> = props => {
         />
       </PageHeader>
 
-      <Divider type="horizontal" dashed={true} style={{ margin: '0.5rem 0' }} />
+      <Divider type="horizontal" dashed style={{ margin: '0.5rem 0' }} />
 
       <AsunaDataView modelName={modelName} extraName={extraName} data={viewRecord} onBack={() => setViewRecord(null)} />
 
       {/*
-      <Divider type="horizontal" dashed={true} style={{ margin: '0.5rem 0' }} />
+      <Divider type="horizontal" dashed style={{ margin: '0.5rem 0' }} />
 
       <AsunaDataTable
         modelName={modelName}

@@ -183,10 +183,10 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
       SelectOptions &
       StringArrayOptions> = {
       ...field.options,
-      // key: field.key || field.name,
+      // key: field.key ?? field.name,
       name: field.name,
-      label: field.options.name || field.name,
-      help: field.options.tooltip || field.options.help,
+      label: field.options.name ?? field.name,
+      help: field.options.tooltip ?? field.options.help,
     };
     const defaultAssociation = {
       name: 'name',
@@ -236,7 +236,7 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
       case DynamicFormTypes.StringTmpl:
         return generateStringTmpl(form, options);
       case DynamicFormTypes.JSON:
-        // return generateTextArea(form, options);
+      // return generateTextArea(form, options);
       case DynamicFormTypes.TextArea:
         return generateTextArea(form, options);
       case DynamicFormTypes.DateTime:
@@ -344,12 +344,8 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
       default: {
         return (
           <WithDebugInfo key={field.name} info={field}>
-            {`DynamicForm ${util.inspect({
-              name: field.name,
-              type: field.type,
-              metaType: options.type,
-              key: options.key,
-            })} not implemented. :P`}
+            DynamicForm not implemented. :P
+            <pre>{util.inspect({ field, options })}</pre>
           </WithDebugInfo>
         );
       }

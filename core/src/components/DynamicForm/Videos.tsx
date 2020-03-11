@@ -139,7 +139,7 @@ export class VideoUploader extends React.Component<IProps> {
             <UploadOutlined /> upload
           </Button>
         </Upload>
-        <Divider type="horizontal" dashed={true} style={{ margin: '0.5rem 0' }} />
+        <Divider type="horizontal" dashed style={{ margin: '0.5rem 0' }} />
         {_.isArray(videos) ? _.map(videos || [], this.renderPlayer) : this.renderPlayer(videos)}
         <Input.TextArea
           value={typeof videos === 'string' ? videos : videos ? JSON.stringify(videos) : ''}

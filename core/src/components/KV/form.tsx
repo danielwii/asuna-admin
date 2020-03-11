@@ -46,7 +46,7 @@ export function FormKVComponent<ExtraProps = any>(props: {
   const { kvCollection: collection, kvKey: key, info, /*initialState, */ fields } = props;
   const { loading, error, data, refetch } = ComponentsHelper.loadByKey(key, collection);
   const body = _.get(data, 'kv.value', {});
-  useLogger(FormKVComponent.name, props, body, { loading, error, data });
+  useLogger('FormKVComponent', props, body, { loading, error, data });
 
   const fieldValues = fields(body);
   logger.log('render', props, body, { loading, error, data, fields, /*initialState, */ fieldValues });

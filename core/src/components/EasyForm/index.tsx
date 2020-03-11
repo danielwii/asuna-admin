@@ -198,7 +198,7 @@ const InnerForm = (props: EasyFormProps & formik.FormikProps<formik.FormikValues
                 {/*<Input id={field.name} type={formField.type} {...field} value={value} />*/}
                 {formField.help && <FormHelperText>{formField.help}</FormHelperText>}
                 {hasError && <FormHelperText>{form.errors[formField.name]}</FormHelperText>}
-                <Divider dashed={true} style={{ margin: '0.5rem 0' }} />
+                <Divider dashed style={{ margin: '0.5rem 0' }} />
               </FormControl>
             );
           }}

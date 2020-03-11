@@ -210,12 +210,12 @@ export class ModelAdapterImpl implements ModelAdapter {
   identifyType = (modelName: string, field: Asuna.Schema.ModelSchema): DynamicFormTypes | undefined => {
     const primaryKeys = this.getPrimaryKeys(modelName);
     const plainKeys = _.map(primaryKeys.concat('created_at', 'updated_at'), castModelKey);
-    const basicType = field?.config?.type || '';
+    const basicType = field?.config?.type ?? '';
     const advanceType = field?.config?.info?.type as any;
     const notFound = (): undefined => {
       const info = { plainKeys, basicType, advanceType };
       logger.warn('[identifyType]', 'type cannot identified.', field, info);
-      return undefined;
+      return basicType || advanceType;
     };
     return _.cond<Asuna.Schema.ModelSchema, DynamicFormTypes | undefined>([
       // --------------------------------------------------------------
@@ -248,7 +248,7 @@ export class ModelAdapterImpl implements ModelAdapter {
         () =>
           _.cond([
             [() => /^(VARCHAR.*|String)$/i.test(basicType), () => DynamicFormTypes.Input],
-            [() => /^(INTEGER|FLOAT|Number)$/i.test(basicType), () => DynamicFormTypes.InputNumber],
+            [() => /^(INTEGER|FLOAT|Number|Numeric)$/i.test(basicType), () => DynamicFormTypes.InputNumber],
             [() => /^TEXT$/i.test(basicType), () => DynamicFormTypes.TextArea],
             [() => /^DATETIME$/i.test(basicType), () => DynamicFormTypes.DateTime],
             [() => /^DATE$/i.test(basicType), () => DynamicFormTypes.Date],
@@ -277,7 +277,7 @@ export class ModelAdapterImpl implements ModelAdapter {
       return this.service.groupCounts({ auth, modelConfig }, modelName, { column, where }).then(fp.get('data'));
     },
     {
-      extractor: (data, key) => _.get(data, _.get(key, 'id')),
+      extractor: (data, key) => _.get(data, key?.id),
     },
   );
   async groupCounts(
