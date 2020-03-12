@@ -94,7 +94,7 @@
     "react-image-crop": "^8.5.0",
     "react-json-editor-ajrm": "^2.5.9",
     "react-pdf": "^4.1.0",
-    "react-query": "^1.0.24",
+    "react-query": "^1.0.26",
     "react-redux": "^7.2.0",
     "react-sortable-hoc": "1.11.0",
     "react-spinners": "^0.8.1",
