@@ -4396,10 +4396,10 @@ astral-regex@^1.0.0:
   resolved "https://registry.yarnpkg.com/astral-regex/-/astral-regex-1.0.0.tgz#6c8c3fb827dd43ee3918f27b82782ab7658a6fd9"
   integrity sha512-+Ryf6g3BKoRc7jfp7ad8tM4TtMiaWvbF/1/sQcZPkkS7ag3D5nMBCe2UfOTONtAkaG0tO0ij3C5Lwmf1EiyjHg==
 
-asuna-components@^0.4.4:
-  version "0.4.4"
-  resolved "https://registry.yarnpkg.com/asuna-components/-/asuna-components-0.4.4.tgz#df69695e77dfee8cea8343a07a05907cbadc7193"
-  integrity sha512-1X9MfQul776BaR6jOz2fVyK/44yjBhbalG/cHG0XH80TYAJUupeJVOe5yKmxa7XyAVJsn/9f3O0JPREsQ8uOtg==
+asuna-components@^0.4.5:
+  version "0.4.5"
+  resolved "https://registry.yarnpkg.com/asuna-components/-/asuna-components-0.4.5.tgz#04c2f7dab0d87325c4e68ea3d9a2fac8237781a5"
+  integrity sha512-WSBem5+ENc5OfmT3gFvZyV3Tx8GB0HJYBKFP+5eiAb87jhKS7Go9PDFKwd06g5nZWef3ahhZNYuV/3l0ZsDivA==
   dependencies:
     "@ant-design/icons" "^4.0.2"
     antd "^4.0.2"
