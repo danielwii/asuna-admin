@@ -196,11 +196,12 @@ const TextAreaHOC: React.FC<Partial<FormComponentProps>> = props => (
                 height="10rem"
                 width="30rem"
                 onChange={({ json, jsObject }) => jsObject && props.onChange(json)}
+                placeholder={props.value || {}}
               />
               <Divider type="horizontal" dashed style={{ margin: '0.5rem 0' }} />
             </Col>
             <Col>
-              <Preview text={props.value} jsonMode />
+              <Preview text={_.isString(props.value) ? props.value : JSON.stringify(props.value)} jsonMode />
             </Col>
           </Row>
         );

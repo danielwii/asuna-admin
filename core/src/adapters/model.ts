@@ -248,7 +248,7 @@ export class ModelAdapterImpl implements ModelAdapter {
         () =>
           _.cond([
             [() => /^(VARCHAR.*|String)$/i.test(basicType), () => DynamicFormTypes.Input],
-            [() => /^(INTEGER|FLOAT|Number|Numeric)$/i.test(basicType), () => DynamicFormTypes.InputNumber],
+            [() => /^(INTEGER|FLOAT|Number|Numeric|Double.*)$/i.test(basicType), () => DynamicFormTypes.InputNumber],
             [() => /^TEXT$/i.test(basicType), () => DynamicFormTypes.TextArea],
             [() => /^DATETIME$/i.test(basicType), () => DynamicFormTypes.DateTime],
             [() => /^DATE$/i.test(basicType), () => DynamicFormTypes.Date],
