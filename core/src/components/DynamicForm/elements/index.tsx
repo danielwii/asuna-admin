@@ -6,8 +6,8 @@ import { BraftRichEditor } from '@asuna-admin/components/RichEditor';
 import { Config } from '@asuna-admin/config';
 import { createLogger } from '@asuna-admin/logger';
 
-import { Checkbox, Col, DatePicker, Divider, Input, InputNumber, Row, Switch, TimePicker } from 'antd';
-import { Preview, StringTmpl, WithVariable } from 'asuna-components';
+import { Checkbox, DatePicker, Input, InputNumber, Switch, TimePicker } from 'antd';
+import { StringTmpl, WithVariable } from 'asuna-components';
 import * as _ from 'lodash';
 import * as React from 'react';
 import JSONInput from 'react-json-editor-ajrm';
@@ -96,7 +96,12 @@ export const generateComponent = (
     logger.debug('[generateComponent]', options);
     const decorator = form.getFieldDecorator(fieldName, opts || {});
     return (
-      <Form.Item key={fieldName} {...formItemLayout} label={labelName || fieldName} help={help}>
+      <Form.Item
+        key={fieldName}
+        {...formItemLayout}
+        label={labelName || fieldName}
+        {...(help ? { help: <div dangerouslySetInnerHTML={{ __html: help }} /> } : null)}
+      >
         {decorator(Component)}
       </Form.Item>
     );
@@ -188,6 +193,17 @@ const TextAreaHOC: React.FC<Partial<FormComponentProps>> = props => (
       const textArea = <Input.TextArea autoSize={{ minRows: 3 }} allowClear {...props} value={value} />;
       if (props[FIELD_DATA_PROP].type === 'JSON') {
         return (
+          <JSONInput
+            id={`${props.id}_json_input`}
+            locale={locale}
+            height="10rem"
+            width="100%"
+            onChange={({ json, jsObject }) => jsObject && props.onChange(json)}
+            placeholder={_.isString(props.value) ? JSON.parse(props.value) : props.value ?? {}}
+          />
+        );
+        /*
+        return (
           <Row gutter={4}>
             <Col>
               <JSONInput
@@ -205,6 +221,7 @@ const TextAreaHOC: React.FC<Partial<FormComponentProps>> = props => (
             </Col>
           </Row>
         );
+*/
       }
       return textArea;
     }}
