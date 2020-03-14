@@ -2,7 +2,6 @@ import { Button } from 'antd';
 import { Promise } from 'bluebird';
 import * as _ from 'lodash';
 import * as React from 'react';
-import { useLogger } from 'react-use';
 import { Circle, FoldingCube } from 'styled-spinkit';
 import * as util from 'util';
 import { ErrorInfo } from './ErrorInfo';
@@ -49,8 +48,6 @@ export function WithFuture<R>({
       }),
   );
 
-  useLogger('WithFuture');
-
   return (
     <React.Suspense fallback={fallback ?? <Circle />}>
       <Component />
@@ -65,7 +62,7 @@ export function WithVariable<V>({
   variable: V;
   children: (props: NonNullable<V>) => React.ReactNode;
 }) {
-  if (_.isNull(variable) || _.isUndefined(variable)) {
+  if (_.isNil(variable)) {
     return <span>n/a</span>;
   }
   return <>{children(variable as any)}</>;

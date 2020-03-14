@@ -388,7 +388,9 @@ export const columnHelper = {
         const content = extractValue(record, transformer);
         return (
           <WithDebugInfo info={{ key, title, opts, record, content, transformer }}>
-            {opts.render ? opts.render(content, record, extras) : content}
+            <div style={record?.isPublished == false || record?.isActive == false ? { color: 'darkred' } : {}}>
+              {opts.render ? opts.render(content, record, extras) : content}
+            </div>
           </WithDebugInfo>
         );
       }),

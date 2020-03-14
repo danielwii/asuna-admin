@@ -3,7 +3,7 @@ import { AsunaPlainInfo } from './AsunaPlainInfo';
 import { DrawerButton } from './DrawerButton';
 
 export const AsunaDrawerButton: React.FC<{
-  text: string;
+  text: React.ReactNode;
   record: object;
   modelName: string;
 }> = ({ text, modelName, record }) => {
