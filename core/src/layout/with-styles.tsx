@@ -7,7 +7,7 @@ import zhCN from 'antd/lib/locale/zh_CN';
 import 'antd/dist/antd.css';
 import 'draft-js/dist/Draft.css';
 import 'video.js/dist/video-js.css';
-import 'spinkit/spinkit.min.css'
+import 'spinkit/spinkit.min.css';
 
 export default ({ children, hideCharacteristics }) => (
   <ConfigProvider locale={zhCN}>
@@ -22,8 +22,11 @@ export default ({ children, hideCharacteristics }) => (
     {children}
     {/* language=CSS */}
     <style jsx global>{`
-      .ant-legacy-form-item-control {
-        line-height: inherit !important;
+      .ant-legacy-form-item-control pre {
+        line-height: 1rem;
+      }
+      .ant-legacy-form-item-control [name=outer-box] {
+        line-height: 1rem;
       }
       pre {
         /*line-height: 1rem;*/

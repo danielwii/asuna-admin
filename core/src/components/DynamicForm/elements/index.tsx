@@ -196,7 +196,7 @@ const TextAreaHOC: React.FC<Partial<FormComponentProps>> = props => (
                 height="10rem"
                 width="30rem"
                 onChange={({ json, jsObject }) => jsObject && props.onChange(json)}
-                placeholder={props.value || {}}
+                placeholder={_.isString(props.value) ? JSON.parse(props.value) : props.value ?? {}}
               />
               <Divider type="horizontal" dashed style={{ margin: '0.5rem 0' }} />
             </Col>
