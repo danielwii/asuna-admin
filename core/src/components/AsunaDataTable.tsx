@@ -61,7 +61,9 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
     onView,
     expandedRowRender,
   } = props;
-  const [queryCondition, setQueryCondition] = useState<QueryConditionType>({});
+  const [queryCondition, setQueryCondition] = useState<QueryConditionType>({
+    sorter: { field: 'updatedAt', order: 'descend' },
+  });
   const { store } = useContext(StoreContext);
   // 用于刷新页面的一个标记
   const [flag, updateFlag] = useState(1);

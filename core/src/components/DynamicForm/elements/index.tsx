@@ -237,7 +237,7 @@ export const generateTextArea = (form: WrappedFormUtils, options, formItemLayout
 };
 
 const StringTmplHOC: React.FC<Partial<FormComponentProps> & Partial<{ fields: any }>> = props => {
-  useLogger(`StringTmpl(key=${name})`, props);
+  useLogger(`StringTmpl`, props);
   return (
     <WithVariable
       key={props.id}
