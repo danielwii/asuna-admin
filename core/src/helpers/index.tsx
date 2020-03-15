@@ -1,13 +1,15 @@
+/** @jsx jsx */
 import { LinkOutlined, SearchOutlined } from '@ant-design/icons';
 import { AssetsPreview, Content, DynamicFormTypes, parseAddressStr, PdfButton } from '@asuna-admin/components';
 import { VideoPlayer } from '@asuna-admin/components/DynamicForm/Videos';
 import { Config } from '@asuna-admin/config';
 import { AppContext } from '@asuna-admin/core';
 import { valueToArrays } from '@asuna-admin/core/url-rewriter';
-import { RelationColumnProps } from '@asuna-admin/helpers';
+import { ComponentsHelper, RelationColumnProps } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 import { SchemaHelper } from '@asuna-admin/schema';
 import { Asuna } from '@asuna-admin/types';
+import { jsx } from '@emotion/core';
 
 import { Badge, Button, Checkbox, Divider, Input, Modal, Popconfirm, Statistic, Tag, Tooltip } from 'antd';
 import { ColumnProps } from 'antd/es/table';
@@ -315,6 +317,7 @@ export const columnHelper2 = {
   },
   fpGenerateSwitch: (key, title) => _.curry(columnHelper.generateSwitch)(key, title),
 };
+
 export const columnHelper = {
   generateID: async (key = 'id', title = 'ID', transformer?): Promise<ColumnProps<any>> => ({
     key,
@@ -693,6 +696,23 @@ export const columnHelper = {
   }),
 };
 
+export const asunaColumnHelper = {
+  profile: columnHelper.fpGenerateRelation('profile.username', 'UserProfile', {
+    filterType: 'search',
+    relationSearchField: 'username',
+    render: (content, record) =>
+      record &&
+      ComponentsHelper.renderDrawerButton({
+        future: record,
+        getModel: data => data,
+        getPortrait: info => info?.portrait ?? info?.miniAppUserInfo?.avatar,
+        getTitle: info => info.id,
+        getText: info => `${info.email ? `${info.email}/` : ''}${info.username}`,
+        modelName: 'auth__user_profiles',
+      }),
+  }),
+};
+
 /**
  * 通用配置
  */
@@ -712,7 +732,7 @@ export const commonColumns = {
   nameEn: columnHelper.generate('nameEn', '英文名称', { searchType: 'like' }),
   email: columnHelper.generate('email', 'Email', { searchType: 'like' }),
   type: columnHelper.generate('type', '类型'),
-  eduType: columnHelper.generate('eduType', '类型'),
+  // eduType: columnHelper.generate('eduType', '类型'),
   createdAt: columnHelper.generateCalendar('createdAt', '创建时间'),
   updatedAt: columnHelper.generateCalendar('updatedAt', '更新时间'),
   isPublished: columnHelper2.fpGenerateSwitch('isPublished', '发布'),

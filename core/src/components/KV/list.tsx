@@ -1,7 +1,7 @@
 /** @jsx jsx */
 import { FormFieldDef, FormFields } from '@asuna-admin/components';
 import { AppContext } from '@asuna-admin/core';
-import { ComponentsHelper, WithDebugInfo } from '@asuna-admin/helpers';
+import { KVHelper, WithDebugInfo } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 
 import { jsx } from '@emotion/core';
@@ -46,7 +46,7 @@ export function ListKVComponent(props: {
 }) {
   const { kvCollection: collection, kvKey: key, info, /*initialState, */ fields } = props;
   const [body, setBody] = useState<Partial<{ type: string; fields: FormFieldDef[]; values: [] }>>({});
-  const { loading, error, data, refetch } = ComponentsHelper.loadByKey(key, collection);
+  const { loading, error, data, refetch } = KVHelper.loadByKey(key, collection);
   useEffect(() => setBody(_.get(data, 'kv.value', {})), [JSON.stringify(data)]);
 
   if (loading) return <FoldingCube />;
@@ -82,7 +82,7 @@ export function ListKVComponent(props: {
             <Formik
               initialValues={{ values: body.values }}
               onSubmit={(values, formikHelpers) =>
-                ComponentsHelper.save({ key, collection }, { ...body, ...values }, refetch)
+                KVHelper.save({ key, collection }, { ...body, ...values }, refetch)
               }
             >
               {formikBag => (

@@ -1,6 +1,6 @@
 import { EasyForm, FormFields, WithLoading } from '@asuna-admin/components';
 import { AppContext } from '@asuna-admin/core';
-import { ComponentsHelper } from '@asuna-admin/helpers';
+import { KVHelper } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 
 import { InfoCircleOutlined } from '@ant-design/icons';
@@ -44,7 +44,7 @@ export function FormKVComponent<ExtraProps = any>(props: {
   fields: (state) => FormFields<ExtraProps>;
 }) {
   const { kvCollection: collection, kvKey: key, info, /*initialState, */ fields } = props;
-  const { loading, error, data, refetch } = ComponentsHelper.loadByKey(key, collection);
+  const { loading, error, data, refetch } = KVHelper.loadByKey(key, collection);
   const body = _.get(data, 'kv.value', {});
   useLogger('FormKVComponent', props, body, { loading, error, data });
 
@@ -69,8 +69,8 @@ export function FormKVComponent<ExtraProps = any>(props: {
             <Col span={18}>
               <EasyForm
                 fields={fieldValues}
-                onSubmit={values => ComponentsHelper.save({ key, collection }, values, refetch)}
-                onClear={() => ComponentsHelper.clear({ key, collection }, refetch)}
+                onSubmit={values => KVHelper.save({ key, collection }, values, refetch)}
+                onClear={() => KVHelper.clear({ key, collection }, refetch)}
               />
             </Col>
             {AppContext.isDebugMode && (

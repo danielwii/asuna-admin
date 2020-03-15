@@ -1,6 +1,6 @@
 import { EasyGroupForm, ErrorInfo, GroupFormFields } from '@asuna-admin/components';
 import { AppContext } from '@asuna-admin/core';
-import { ComponentsHelper } from '@asuna-admin/helpers';
+import { KVHelper } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { Button, Divider, Typography } from 'antd';
@@ -57,7 +57,7 @@ export function GroupFormKVComponent(props: {
   const initialState = !preInitialState && !fields ? { body: { form: {}, values: {} } } : preInitialState;
 
   const [state, setState] = useState(initialState);
-  const { loading, error, data, refetch, networkStatus } = ComponentsHelper.loadByKey(key, collection);
+  const { loading, error, data, refetch, networkStatus } = KVHelper.loadByKey(key, collection);
   useEffect(() => setState({ body: _.get(data, 'kv.value', {}) }), [JSON.stringify(data)]);
 
   if (loading) return <FoldingCube />;
@@ -89,9 +89,9 @@ export function GroupFormKVComponent(props: {
       <EasyGroupForm
         fields={state.body.form}
         fieldValues={state.body.values}
-        onSubmit={values => ComponentsHelper.save({ key, collection }, { form: state.body.form, values }, refetch)}
-        onClear={enableClear ? () => ComponentsHelper.clear({ key, collection }, refetch) : undefined}
-        onDestroy={enableDestroy ? () => ComponentsHelper.destroy({ key, collection }, refetch) : undefined}
+        onSubmit={values => KVHelper.save({ key, collection }, { form: state.body.form, values }, refetch)}
+        onClear={enableClear ? () => KVHelper.clear({ key, collection }, refetch) : undefined}
+        onDestroy={enableDestroy ? () => KVHelper.destroy({ key, collection }, refetch) : undefined}
       />
       {AppContext.isDebugMode && (
         <>
