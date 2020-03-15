@@ -196,7 +196,7 @@ const TextAreaHOC: React.FC<Partial<FormComponentProps>> = props => (
           <JSONInput
             id={`${props.id}_json_input`}
             locale={locale}
-            height="10rem"
+            height="15rem"
             width="100%"
             onChange={({ json, jsObject }) => jsObject && props.onChange(json)}
             placeholder={_.isString(props.value) ? JSON.parse(props.value) : props.value ?? {}}
@@ -209,8 +209,8 @@ const TextAreaHOC: React.FC<Partial<FormComponentProps>> = props => (
               <JSONInput
                 id={`${props.id}_json_input`}
                 locale={locale}
-                height="10rem"
-                width="30rem"
+                height="15rem"
+                width="100%"
                 onChange={({ json, jsObject }) => jsObject && props.onChange(json)}
                 placeholder={_.isString(props.value) ? JSON.parse(props.value) : props.value ?? {}}
               />
