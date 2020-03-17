@@ -32,6 +32,7 @@ export class TenantHelper {
   static authorized(tenantInfo?: TenantInfo): boolean {
     const boundTenant = tenantInfo?.tenant;
     const hasTenantRoles = !_.isEmpty(tenantInfo?.roles);
+    logger.log('authorized', { boundTenant, hasTenantRoles, isPublished: tenantInfo?.tenant?.isPublished });
     return (boundTenant && hasTenantRoles && tenantInfo?.tenant?.isPublished) ?? false;
   }
 
@@ -40,13 +41,13 @@ export class TenantHelper {
   }
 
   static wrapModelColumnProps(modelName: string, columns: RelationColumnProps[]): RelationColumnProps[] {
-    console.log('filterModelColumnProps', this.tenantInfo, { modelName, columns });
+    logger.log('filterModelColumnProps', this.tenantInfo, { modelName, columns });
     if (!_.keys(this.tenantInfo?.entities).includes(modelName)) return columns;
 
     const isPublishedColumn = columns.find(column => column.key === 'isPublished');
     if (this.hasTenantRoles && !this.modelPublishEnabled(modelName)) {
       // isPublishedColumn
-      console.log('isPublishedColumn', isPublishedColumn);
+      logger.log('isPublishedColumn', isPublishedColumn);
     }
     return columns;
   }

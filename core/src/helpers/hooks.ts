@@ -58,7 +58,7 @@ export function useAsunaModels(
     const columnProps = await modelProxyCaller().getColumns(
       modelName,
       { callRefresh, actions },
-      extraName ?? modelName,
+      // extraName ?? modelName,
     );
 
     logger.log('useAsunaModels loadOriginSchema ...', columnProps);

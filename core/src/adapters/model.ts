@@ -212,7 +212,7 @@ export class ModelAdapterImpl implements ModelAdapter {
     const plainKeys = _.map(primaryKeys.concat('created_at', 'updated_at'), castModelKey);
     const basicType = field?.config?.type ?? '';
     const advanceType = field?.config?.info?.type as any;
-    const notFound = (): undefined => {
+    const notFound = (): string | undefined => {
       const info = { plainKeys, basicType, advanceType };
       logger.warn('[identifyType]', 'type cannot identified.', field, info);
       return basicType || advanceType;
@@ -453,7 +453,7 @@ export class ModelAdapterImpl implements ModelAdapter {
       return {};
     }
     const schema = R.prop(name)(schemas);
-    logger.log('[getFormSchema]', name, schemas, schema);
+    logger.log('[getFormSchema]', name, schema);
 
     if (!schema) {
       logger.error('[getFormSchema]', 'schema is required.', { schemas, name });
@@ -478,6 +478,7 @@ export class ModelAdapterImpl implements ModelAdapter {
               length,
               label: field?.config?.info?.name ?? null,
               selectable: field?.config?.selectable ?? null,
+              relation: field?.config?.relation,
               required: !isNullable || isRequired,
               ...field?.config?.info,
               ...this.getModelConfig(name)?.model?.settings?.[field.name],

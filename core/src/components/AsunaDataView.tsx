@@ -2,6 +2,7 @@ import { AssetsPreview, DynamicFormTypes } from '@asuna-admin/components';
 import { ModelsHelper, resolveModelInPane, useAsunaModels } from '@asuna-admin/helpers';
 import { WithDebugInfo } from '@asuna-admin/helpers/debug';
 import { Button, Collapse, Descriptions, Empty, PageHeader, Tag, Tooltip } from 'antd';
+import { AssetPreview } from 'asuna-components';
 import { Promise } from 'bluebird';
 import * as _ from 'lodash';
 import moment from 'moment';
@@ -80,7 +81,7 @@ export const AsunaDataView: React.FC<AsunaDataViewProps> = ({
     );
   };
 
-  const { modelConfig, primaryKey, columnOpts, schemas } = resolveModelInPane(modelName, extraName);
+  const { modelConfig, primaryKey, columnOpts, schemas } = resolveModelInPane(modelName);
   const vars = {
     title: _.get(data, title || columnOpts?.columnProps?.dataView?.title || 'title'),
     id: _.get(data, primaryKey),
@@ -89,7 +90,7 @@ export const AsunaDataView: React.FC<AsunaDataViewProps> = ({
     updatedAt: _.get(data, 'updatedAt'),
     updatedBy: _.get(data, 'updatedBy'),
   };
-  const leftVars = _.omit(data, _.flatten([_.keys(vars), primaryKey, relations] as string[]));
+  const leftVars = _.omit(data, _.flatten([_.keys(vars), primaryKey, relations]) as string[]);
   const publishedTag = _.has(data, 'isPublished')
     ? renderValue({ value: data['isPublished'], textFn: value => (value ? '已发布' : '未发布') })
     : null;
@@ -194,11 +195,12 @@ export const AsunaDataView: React.FC<AsunaDataViewProps> = ({
                 <div>{moment(vars.updatedAt).fromNow()}</div>
               </Tooltip>
             </Descriptions.Item>
+
             {_.map(leftVars, (value, label: string) => {
               const schemaLabel = _.get(schemas, `${label}.options.label`, '') || label;
               return (
                 <Descriptions.Item key={label} label={schemaLabel}>
-                  <WithDebugInfo info={schemas[label]}>
+                  <WithDebugInfo info={{ schema: schemas[label], value }}>
                     {renderValue({ value, type: schemas[label]?.type })}
                   </WithDebugInfo>
                 </Descriptions.Item>
@@ -256,6 +258,10 @@ function renderValue({
       </>
     );
 */
+  } else if (type === DynamicFormTypes.Image) {
+    return <AssetPreview url={value} />;
+  } else if (type === DynamicFormTypes.Images) {
+    return <AssetsPreview urls={value} clearStyle />;
   } else if (_.isDate(value) || type === DynamicFormTypes.Date || type === DynamicFormTypes.DateTime) {
     return (
       <Tooltip title={value}>
@@ -266,7 +272,7 @@ function renderValue({
   } else if (_.isNull(value)) {
     return <Tag>null</Tag>;
   } else if (_.isObject(value)) {
-    return <pre>{util.inspect(value)}</pre>;
+    return <pre>{util.inspect({ value, type })}</pre>;
   }
   return value;
 }

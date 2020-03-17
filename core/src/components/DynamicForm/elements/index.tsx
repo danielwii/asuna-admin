@@ -83,6 +83,7 @@ type ComponentOptions = {
   labelName: string;
   opts?: GetFieldDecoratorOptions;
   help?: string;
+  extra?: React.ReactNode;
 };
 
 export const generateComponent = (
@@ -101,6 +102,7 @@ export const generateComponent = (
         {...formItemLayout}
         label={labelName || fieldName}
         {...(help ? { help: <div dangerouslySetInnerHTML={{ __html: help }} /> } : null)}
+        extra={options.extra}
       >
         {decorator(Component)}
       </Form.Item>

@@ -112,6 +112,7 @@ export declare module Asuna {
         length: number | null;
         label?: string | null;
         selectable?: string | null;
+        relation?: 'ManyToOne' | 'ManyToMany' | 'OneToMany' | 'OneToOne';
         required?: boolean;
         json?: string;
       };
@@ -123,6 +124,7 @@ export declare module Asuna {
       name: string;
       config: {
         selectable?: string;
+        relation?: 'ManyToOne' | 'ManyToMany' | 'OneToMany' | 'OneToOne';
         type: string;
         primaryKey?: boolean;
         nullable?: boolean;

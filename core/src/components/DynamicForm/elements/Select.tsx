@@ -1,3 +1,4 @@
+import { WrappedFormUtils } from '@ant-design/compatible/es/form/Form';
 import { AppContext } from '@asuna-admin/core';
 import { createLogger } from '@asuna-admin/logger';
 
@@ -8,7 +9,6 @@ import * as React from 'react';
 import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc';
 
 import { generateComponent, horizontalFormItemLayout, IFormItemLayout } from '.';
-import { WrappedFormUtils } from '@ant-design/compatible/es/form/Form';
 
 const logger = createLogger('components:dynamic-form:select');
 
@@ -42,6 +42,7 @@ export type SelectOptions = {
   filterType?: 'Sort';
   onSearch?: (value: string, cb: (items: Item[]) => void) => any;
   enumSelector: { name?: string; value?: string };
+  relation?: 'ManyToOne' | 'ManyToMany' | 'OneToMany' | 'OneToOne';
 };
 
 const defaultFormItemLayout = {};
@@ -90,12 +91,13 @@ export function generateSelect<T>(
     withSortTree = false,
     onSearch,
     enumSelector = {},
+    relation,
   }: SelectOptions,
   formItemLayout: IFormItemLayout = horizontalFormItemLayout,
 ) {
   const fieldName = key || name;
   const labelName = label || name || key;
-  logger.debug('[generateSelect]', { items, enumSelector });
+  logger.log('[generateSelect]', { items, enumSelector, relation });
 
   class MixedSelect extends React.Component<IMixedSelectProps, IMixedSelectState<Item>> {
     constructor(props) {
@@ -311,5 +313,10 @@ export function generateSelect<T>(
     }
   }
 
-  return generateComponent(form, { fieldName, labelName }, <MixedSelect />, formItemLayout);
+  const extra = _.cond([
+    [_.matches('OneToMany'), _.constant('所选项只能赋值给一个对象，已赋值在其他对象中的关联将自动取消。')],
+    [_.stubTrue, _.constant('')],
+  ])(relation);
+
+  return generateComponent(form, { fieldName, labelName, extra }, <MixedSelect />, formItemLayout);
 }

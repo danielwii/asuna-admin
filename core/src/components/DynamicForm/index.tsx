@@ -188,13 +188,9 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
       label: field.options.name ?? field.name,
       help: field.options.tooltip ?? field.options.help,
     };
-    const defaultAssociation = {
-      name: 'name',
-      value: 'id',
-      fields: ['id', 'name'],
-    };
+    const defaultAssociation = { name: 'name', value: 'id', fields: ['id', 'name'] };
 
-    logger.log('[DynamicForm]', '[buildField]', { field, options });
+    console.log('[DynamicForm]', '[buildField]', { field, options, schema });
 
     // all readonly or hidden field will rendered as plain component
     if (_.includes(['readonly'], field?.options?.accessible)) {
@@ -282,6 +278,7 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
             onSearch,
             getName: R.prop(association.name || defaultAssociation.name),
             getValue: R.prop(association.value || defaultAssociation.value),
+            field,
           });
         }
         logger.warn('[buildField]', 'foreignOpts is required in association.', { field });
@@ -327,11 +324,10 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
             onSearch,
             getName: R.prop(association.name || defaultAssociation.name),
             getValue: R.prop(association.value || defaultAssociation.value),
+            field,
           });
         }
-        logger.warn('[DynamicForm]', '[buildField]', 'foreignOpts is required in association.', {
-          field,
-        });
+        logger.warn('[DynamicForm]', '[buildField]', 'foreignOpts is required in association.', { field });
         return <div>association({util.inspect(field)}) need foreignOpts.</div>;
       }
       case DynamicFormTypes.SimpleJSON: // TODO json-type is string-array

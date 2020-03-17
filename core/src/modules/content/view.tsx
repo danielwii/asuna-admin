@@ -3,7 +3,7 @@ import { DebugInfo, extractModelNameFromPane, resolveModelInPane, TenantHelper }
 import 'highlight.js/styles/default.css';
 import * as _ from 'lodash';
 import * as React from 'react';
-import { useAsync } from 'react-use';
+import { useAsync, useLogger } from 'react-use';
 import { FoldingCube } from 'styled-spinkit';
 import * as util from 'util';
 import { ModulesLoaderProps } from '..';
@@ -16,12 +16,11 @@ const ContentView: React.FC<ModulesLoaderProps> = ({ module, basis: { pane } }) 
 
   const { modelName, extraName } = extractModelNameFromPane(pane);
   // const { relations } = useAsunaModels(modelName, { extraName });
-  const { modelConfig, primaryKey, columnOpts } = resolveModelInPane(modelName, extraName);
+  const { modelConfig, primaryKey, columnOpts } = resolveModelInPane(modelName);
 
-  const { loading, value, error } = useAsync(() => {
-    console.log('async load...');
-    return TenantHelper.resolveBindModel();
-  });
+  const { loading, value, error } = useAsync(() => TenantHelper.resolveBindModel());
+
+  useLogger('ContentView', { modelName, extraName, value, modelConfig, primaryKey, columnOpts });
 
   if (loading) return <FoldingCube />;
   if (error)
