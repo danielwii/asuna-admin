@@ -1,5 +1,4 @@
 import { Form } from '@ant-design/compatible';
-import '@ant-design/compatible/assets/index.css';
 import { FormComponentProps } from '@ant-design/compatible/es/form';
 import { WrappedFormUtils } from '@ant-design/compatible/es/form/Form';
 import { adminProxyCaller } from '@asuna-admin/adapters';

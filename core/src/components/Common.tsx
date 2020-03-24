@@ -2,6 +2,7 @@ import { Button } from 'antd';
 import { Promise } from 'bluebird';
 import * as _ from 'lodash';
 import * as React from 'react';
+import { useAsync } from 'react-use';
 import { Circle, FoldingCube } from 'styled-spinkit';
 import * as util from 'util';
 import { ErrorInfo } from './ErrorInfo';
@@ -38,9 +39,22 @@ export function WithFuture<R>({
   fallback?: React.ReactElement;
   children: ((props: R) => React.ReactNode) | React.ReactNode;
 }): React.ReactElement {
+  const { loading, value, error } = useAsync(future);
+
+  if (loading) return fallback ?? <Circle />;
+  if (error)
+    return (
+      <ErrorInfo>
+        <pre>{util.inspect(error)}</pre>
+      </ErrorInfo>
+    );
+
+  return _.isFunction(children) ? <>{children(value as any)}</> : <>{children}</>;
+
+  /*
   const Component = React.lazy(
     () =>
-      new Promise(async resolve => {
+      new Promise(async (resolve) => {
         const data = await future();
         resolve({
           default: () => (_.isFunction(children) ? <>{children(data)}</> : <>{children}</>),
@@ -52,7 +66,7 @@ export function WithFuture<R>({
     <React.Suspense fallback={fallback ?? <Circle />}>
       <Component />
     </React.Suspense>
-  );
+  );*/
 }
 
 export function WithVariable<V>({

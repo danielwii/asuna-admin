@@ -2,7 +2,6 @@ import { getBase64 } from '@asuna-admin/helpers/upload';
 
 import * as React from 'react';
 import ReactCrop, { Crop } from 'react-image-crop';
-import 'react-image-crop/dist/ReactCrop.css';
 import styled from 'styled-components';
 
 const CroppedImage = styled.img`

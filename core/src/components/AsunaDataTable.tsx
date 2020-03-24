@@ -47,7 +47,7 @@ type QueryConditionType = {
   sorter?: SorterResult<any> | SorterResult<any>[];
 };
 
-export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
+export const AsunaDataTable: React.FC<AsunaDataTableProps> = (props) => {
   const {
     creatable = false,
     editable = false,
@@ -95,12 +95,12 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
   const func = {
     createRefresher: (opts: QueryConditionType) => () => func.refresh(opts),
     refresh: (opts?: QueryConditionType) => {
-      logger.log('refresh', { opts, queryCondition });
+      logger.log('refresh', { opts, queryCondition, flag });
       // funcs.handleTableChange(queryCondition.pagination, queryCondition.filters, queryCondition.sorter);
       updateFlag(-flag);
     },
     create: () => ModelsHelper.openCreatePane(modelName),
-    transformQueryCondition: function<RecordType>({
+    transformQueryCondition: function <RecordType>({
       pagination,
       filters,
       sorter,
@@ -136,20 +136,20 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
         )
         .value();
     },
-    handleTableChange: function<RecordType>(
+    handleTableChange: function <RecordType>(
       pagination?: PaginationConfig,
       filters?: Record<string, Key[] | null>,
       sorter?: SorterResult<RecordType> | SorterResult<RecordType>[],
       extra?: TableCurrentDataSource<RecordType>,
     ): void {
-      logger.debug('[handleTableChange]', { pagination, filters, sorter, extra });
+      logger.log('[handleTableChange]', { pagination, filters, sorter, extra });
       const { availableSorter, transformedFilters, transformedSorter } = func.transformQueryCondition({
         pagination,
         filters,
         sorter,
       });
 
-      logger.debug('[handleTableChange]', { availableSorter, transformedSorter, transformedFilters });
+      logger.log('[handleTableChange]', { availableSorter, transformedSorter, transformedFilters });
 
       setQueryCondition({
         pagination,
@@ -159,7 +159,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
       });
     },
     pinActions: (param: ClickParam) => {
-      const column = _.find(columnProps, column => column.key === 'action');
+      const column = _.find(columnProps, (column) => column.key === 'action');
       if (column) {
         if (_.has(column, 'fixed')) {
           delete column['fixed'];
@@ -184,7 +184,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
         cancelText: '取消',
         onOk: () =>
           AppContext.dispatch(
-            modelsActions.remove(modelName, record, response => {
+            modelsActions.remove(modelName, record, (response) => {
               if (/^20\d$/.test(response.status)) modal.destroy();
             }),
           ),
@@ -218,7 +218,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
 
   const { primaryKey } = resolveModelInPane(modelName, extraName);
 
-  const isDeletableSystemRecord = record => !record[castModelKey('isSystem')];
+  const isDeletableSystemRecord = (record) => !record[castModelKey('isSystem')];
   const _import = () => {
     // TODO not implemented
     // AppContext.adapters.api.import();
@@ -228,11 +228,11 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
     // AppContext.adapters.api.export();
   };
 
-  const actionColumn = _.find(columnProps, column => column.key === 'action');
+  const actionColumn = _.find(columnProps, (column) => column.key === 'action');
 
   // 直接从 remote 拉取，未来需要将 models 中缓存的数据清除
   const { loading } = useAsync(async () => {
-    logger.log(`[effect]`, { queryCondition, loadingAsunaModels, flag });
+    logger.log(`remote[effect]`, { loadingAsunaModels, flag }, queryCondition);
     const { transformedFilters, transformedSorter } = func.transformQueryCondition(queryCondition);
     const value = await AppContext.adapters.models
       .loadModels(modelName, {
@@ -243,11 +243,12 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
       })
       .then(fp.get('data'));
     if (value) {
+      logger.log(`remote[effect]`, { value });
       setItems(value);
     }
   }, [queryCondition, loadingAsunaModels, flag]);
 
-  if (AppContext.isDebugMode) useLogger('AsunaDataTable', { flag, queryCondition, loadingAsunaModels });
+  if (AppContext.isDebugMode) useLogger('AsunaDataTable', { flag, loadingAsunaModels, loading }, queryCondition);
 
   if (loadingAsunaModels) {
     return <Skeleton active avatar />;
@@ -349,7 +350,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = props => {
           key={`table-${flag}`}
           size="small"
           className="asuna-content-table"
-          // scroll={{ x: true }}
+          scroll={{ x: true }}
           dataSource={dataSource}
           rowKey={primaryKey}
           loading={loading}

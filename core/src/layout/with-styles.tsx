@@ -6,8 +6,11 @@ import zhCN from 'antd/lib/locale/zh_CN';
 
 import 'antd/dist/antd.css';
 import 'draft-js/dist/Draft.css';
+import 'braft-editor/dist/index.css';
 import 'video.js/dist/video-js.css';
-import 'spinkit/spinkit.min.css';
+import 'spinkit/spinkit.css';
+import 'react-image-crop/dist/ReactCrop.css';
+import '@ant-design/compatible/assets/index.css';
 
 export default ({ children, hideCharacteristics }) => (
   <ConfigProvider locale={zhCN}>

@@ -14,7 +14,6 @@ import * as schemaHelper from '@asuna-admin/schema';
 import { modelsActions, RootState } from '@asuna-admin/store';
 
 import { Form } from '@ant-design/compatible';
-import '@ant-design/compatible/assets/index.css';
 import { AxiosResponse } from 'axios';
 import * as _ from 'lodash';
 import moment from 'moment';

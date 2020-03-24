@@ -81,7 +81,7 @@ function* rehydrateWatcher(action) {
   yield put(appActions.restored());
   const token = action?.payload?.auth?.token;
   const path = action?.payload?.router?.path;
-  logger.log('[rehydrateWatcher]', !!token, path);
+  logger.log('[rehydrateWatcher]', !!token, { action, path });
   if (token) {
     yield put(routerActions.toIndex());
   }

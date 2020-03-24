@@ -10,7 +10,7 @@ const tsconfigPathsPlugin = new TsconfigPathsPlugin({ logLevel: 'INFO' });
 
 // fix: prevents error when .css files are required by node
 if (typeof require !== 'undefined') {
-  require.extensions['.css'] = file => {};
+  require.extensions['.css'] = (file) => {};
 }
 
 function withDefaultNextConfigs(nextConfig = {}) {
@@ -38,7 +38,7 @@ function withDefaultNextConfigs(nextConfig = {}) {
           // config.devtool = 'source-map';
 
           // https://github.com/zeit/next.js/issues/1582
-          config.plugins = config.plugins.filter(plugin => plugin.constructor.name !== 'UglifyJsPlugin');
+          config.plugins = config.plugins.filter((plugin) => plugin.constructor.name !== 'UglifyJsPlugin');
         }
 
         // Fixes npm packages that depend on `fs` module

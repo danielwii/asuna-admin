@@ -1,5 +1,4 @@
 import { Form } from '@ant-design/compatible';
-import '@ant-design/compatible/assets/index.css';
 import { GetFieldDecoratorOptions, WrappedFormUtils } from '@ant-design/compatible/es/form/Form';
 import { FIELD_DATA_PROP } from '@ant-design/compatible/lib/form/constants';
 import { BraftRichEditor } from '@asuna-admin/components/RichEditor';

@@ -5,7 +5,6 @@ import { validateFile } from '@asuna-admin/helpers/upload';
 import { createLogger } from '@asuna-admin/logger';
 import { Asuna } from '@asuna-admin/types';
 
-import 'braft-editor/dist/index.css';
 import { Input } from 'antd';
 import { ExtendControlType } from 'braft-editor';
 import { ContentUtils } from 'braft-utils';

@@ -2,8 +2,6 @@ import { toErrorMessage, toFormErrors } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 
 import { Form } from '@ant-design/compatible';
-import '@ant-design/compatible/assets/index.css';
-
 import { message, Modal } from 'antd';
 import { WrappedFormUtils } from '@ant-design/compatible/es/form/Form';
 import * as _ from 'lodash';

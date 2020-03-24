@@ -14,8 +14,8 @@ export const FlexCenterBox = (styled.div`
 ` as any) as ComponentClass<{} & React.HTMLAttributes<{}>>;
 
 interface IThumbImage {
-  width?: string | number;
-  height?: string | number;
+  width?: number;
+  height?: number;
 }
 
 export const RoundWrapper = styled.div`
@@ -25,8 +25,8 @@ export const RoundWrapper = styled.div`
 `;
 
 export const ThumbImage = (styled.img`
-  max-width: ${({ width }) => width || '200px'};
-  max-height: ${({ height }) => height || '120px'};
+  max-width: ${({ width }) => `${width ?? 200}px`};
+  max-height: ${({ height }) => `${height ?? 120}px`};
 ` as any) as ComponentClass<IThumbImage & React.ImgHTMLAttributes<{}>>;
 
 interface IHighlightTitle {
