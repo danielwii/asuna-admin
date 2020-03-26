@@ -69,7 +69,7 @@ async function generateSearchColumnProps(
 ): Promise<ColumnProps<any>> {
   // console.log('generateSearchColumnProps', { dataIndex, conditionType, conditionExtras });
   // only called in filterDropdown
-  const getSelectedValue = async value => {
+  const getSelectedValue = async (value) => {
     switch (conditionType) {
       case 'like':
         return [{ $like: `%${value}%` }];
@@ -79,7 +79,7 @@ async function generateSearchColumnProps(
         return [value];
     }
   };
-  const getSelectedKey = selectedKeys => {
+  const getSelectedKey = (selectedKeys) => {
     if (_.get(selectedKeys, '[0]')) {
       switch (conditionType) {
         case 'like':
@@ -138,7 +138,7 @@ async function generateSearchColumnProps(
           addonBefore={conditionType}
           placeholder={`搜索 '${dataIndex}' ...`}
           value={getSelectedKey(selectedKeys)}
-          onChange={async e =>
+          onChange={async (e) =>
             setSelectedKeys && setSelectedKeys(e.target.value ? await getSelectedValue(e.target.value) : [])
           }
           onPressEnter={confirm}
@@ -152,7 +152,7 @@ async function generateSearchColumnProps(
         </Button>
       </Content>
     ),
-    filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : 'inherit' }} />,
+    filterIcon: (filtered) => <SearchOutlined style={{ color: filtered ? '#1890ff' : 'inherit' }} />,
   };
 }
 
@@ -238,7 +238,7 @@ export const columnHelper2 = {
       title: titleStr,
       dataIndex: key,
       sorter: true,
-      render: nullProtectRender(record => {
+      render: nullProtectRender((record) => {
         const value = extractValue(record, opts.transformer);
         return (
           <WithDebugInfo info={{ key, title, opts, record }}>
@@ -278,7 +278,7 @@ export const columnHelper2 = {
       dataIndex: key,
       sorter: true,
       // ...generateSearchColumnProps(key, opts.searchType),
-      render: nullProtectRender(record => {
+      render: nullProtectRender((record) => {
         const value = extractValue(record, opts.transformer);
         return (
           <WithDebugInfo info={{ key, title, record, value }}>
@@ -300,14 +300,16 @@ export const columnHelper2 = {
       title: titleStr,
       dataIndex: castModelKey(key),
       sorter: true,
-      render: nullProtectRender(record => {
+      render: nullProtectRender((record) => {
         const value = extractValue(record, opts.transformer);
         if (value) {
           const content = moment(record).calendar();
           return (
             <Tooltip title={value}>
-              {content}
-              <div>{moment(record).fromNow()}</div>
+              <>
+                {content}
+                <div>{moment(record).fromNow()}</div>
+              </>
             </Tooltip>
           );
         }
@@ -325,7 +327,7 @@ export const columnHelper = {
     dataIndex: key,
     sorter: true,
     ...(await generateSearchColumnProps(key, 'like')),
-    render: nullProtectRender(record => (
+    render: nullProtectRender((record) => (
       <WithDebugInfo info={{ key, title, record }}>{transformer ? transformer(record) : record}</WithDebugInfo>
     )),
   }),
@@ -369,7 +371,7 @@ export const columnHelper = {
           filterProps = {
             filterMultiple: false,
             // 关联筛选时的搜索 key 为了区别同一个关联的不同字段，所以会包含非主键信息，这里传递整个包括主键的搜索信息
-            filters: _.map(items, item => ({
+            filters: _.map(items, (item) => ({
               text: `${item[primaryKey]} / ${item[field]}`,
               value: JSON.stringify({ key: [`${ref}.${primaryKey}`], value: [item[primaryKey]] }),
             })),
@@ -387,7 +389,7 @@ export const columnHelper = {
       relation: ref,
       dataIndex: ref,
       ...filterProps,
-      render: nullProtectRender(record => {
+      render: nullProtectRender((record) => {
         const content = extractValue(record, transformer);
         return (
           <WithDebugInfo info={{ key, title, opts, record, content, transformer }}>
@@ -405,7 +407,7 @@ export const columnHelper = {
    * @param title
    * @param opts
    */
-  generateRelation: async function<EntitySchema = object, RelationSchema = object>(
+  generateRelation: async function <EntitySchema = object, RelationSchema = object>(
     key: string,
     title,
     opts: {
@@ -439,7 +441,7 @@ export const columnHelper = {
           });
           filterProps = {
             filterMultiple: false,
-            filters: _.map(items, item => ({ text: item[field], value: item['id'] })),
+            filters: _.map(items, (item) => ({ text: item[field], value: item['id'] })),
           };
         }
         break;
@@ -455,7 +457,7 @@ export const columnHelper = {
       relation: ref,
       dataIndex: ref,
       ...filterProps,
-      render: nullProtectRender(record => {
+      render: nullProtectRender((record) => {
         const content = extractValue(record, opts.transformer);
         return <WithDebugInfo info={{ key, title, opts, record }}>{content}</WithDebugInfo>;
       }),
@@ -517,7 +519,7 @@ export const columnHelper = {
     dataIndex: key,
     sorter: true,
     // ...generateSearchColumnProps(key, opts.searchType),
-    render: nullProtectRender(record => {
+    render: nullProtectRender((record) => {
       const value = extractValue(record, opts.transformer);
       return (
         <WithDebugInfo info={{ key, title, record }}>
@@ -538,7 +540,7 @@ export const columnHelper = {
     dataIndex: key,
     sorter: true,
     ...(await generateSearchColumnProps(key, opts.searchType)),
-    render: nullProtectRender(record => {
+    render: nullProtectRender((record) => {
       const value = extractValue(record, opts.transformer);
       return opts.type === 'badge' ? (
         <Badge count={+value} overflowCount={Number.MAX_SAFE_INTEGER} style={{ backgroundColor: '#52c41a' }} />
@@ -552,8 +554,8 @@ export const columnHelper = {
     title,
     dataIndex: key,
     sorter: true,
-    render: nullProtectRender(record => {
-      const renderLink = value => {
+    render: nullProtectRender((record) => {
+      const renderLink = (value) => {
         // const value = extractValue(v, opts.transformer);
         if (typeof value === 'string' && value.length > 30) {
           return (
@@ -587,7 +589,7 @@ export const columnHelper = {
       if (_.isArray(record)) {
         return (
           <>
-            {record.map(v => (
+            {record.map((v) => (
               <div key={v}>{renderLink(v)}</div>
             ))}
           </>
@@ -601,14 +603,16 @@ export const columnHelper = {
     title,
     dataIndex: castModelKey(key),
     sorter: true,
-    render: nullProtectRender(record => {
+    render: nullProtectRender((record) => {
       const value = extractValue(record, transformer);
       if (value) {
         const content = moment(record).calendar();
         return (
           <Tooltip title={value}>
-            {content}
-            <div>{moment(record).fromNow()}</div>
+            <>
+              {content}
+              <div>{moment(record).fromNow()}</div>
+            </>
           </Tooltip>
         );
       }
@@ -634,7 +638,7 @@ export const columnHelper = {
     title,
     dataIndex: key,
     sorter: true,
-    render: nullProtectRender(record => {
+    render: nullProtectRender((record) => {
       const value = extractValue(record, opts.transformer);
       return (
         <WithDebugInfo info={{ key, title, opts, record }}>
@@ -648,7 +652,7 @@ export const columnHelper = {
     title,
     dataIndex: key,
     sorter: true,
-    render: nullProtectRender(record => {
+    render: nullProtectRender((record) => {
       const value = extractValue(record, opts.transformer);
       if (value) {
         const videoJsOptions: VideoJsPlayerOptions = {
@@ -704,10 +708,10 @@ export const asunaColumnHelper = {
       record &&
       ComponentsHelper.renderDrawerButton({
         future: record,
-        getModel: data => data,
-        getPortrait: info => info?.portrait ?? info?.miniAppUserInfo?.avatar,
-        getTitle: info => info.id,
-        getText: info => `${info.email ? `${info.email}/` : ''}${info.username}`,
+        getModel: (data) => data,
+        getPortrait: (info) => info?.portrait ?? info?.miniAppUserInfo?.avatar,
+        getTitle: (info) => info.id,
+        getText: (info) => `${info.email ? `${info.email}/` : ''}${info.username}`,
         modelName: 'auth__user_profiles',
       }),
   }),
@@ -739,9 +743,9 @@ export const commonColumns = {
   actions: columnHelper.generateActions,
 };
 
-export const defaultColumns = actions => [commonColumns.id, commonColumns.updatedAt, commonColumns.actions(actions)];
+export const defaultColumns = (actions) => [commonColumns.id, commonColumns.updatedAt, commonColumns.actions(actions)];
 
-export const defaultColumnsByPrimaryKey = (primaryKey = 'id') => actions => [
+export const defaultColumnsByPrimaryKey = (primaryKey = 'id') => (actions) => [
   commonColumns.primaryKey(primaryKey, primaryKey.toUpperCase()),
   commonColumns.updatedAt,
   commonColumns.actions(actions),
@@ -829,7 +833,7 @@ type Defer<R> = {
 
 function defer<R>(): Defer<R> {
   let resolve, reject, onCancel;
-  const promise = new Promise(function() {
+  const promise = new Promise(function () {
     resolve = arguments[0];
     reject = arguments[1];
     onCancel = arguments[2];
@@ -862,7 +866,7 @@ export class BatchLoader<T, R> {
       }));
 
     return new Promise((resolve, reject) =>
-      runner.then(data => resolve(this.options?.extractor ? this.options.extractor(data, key) : data), reject),
+      runner.then((data) => resolve(this.options?.extractor ? this.options.extractor(data, key) : data), reject),
     );
   }
 }

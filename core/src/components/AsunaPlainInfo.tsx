@@ -48,9 +48,9 @@ export const AsunaPlainInfo: React.FC<AsunaPlainObjectProps> = ({ modelName, rec
                 title: fields[key]?.options?.name ?? fields[key]?.options?.label ?? fields[key]?.name,
                 value,
               }))}
-              renderItem={item => {
+              renderItem={(item) => {
                 const itemSchema = formSchema?.[item.key];
-                const columnInfo = _.find(schema?.columns, column => column.name === item.key);
+                const columnInfo = _.find(schema?.columns, (column) => column.name === item.key);
 
                 if (!columnInfo || columnInfo.config?.info?.accessible === 'hidden') return <React.Fragment />;
 
@@ -90,14 +90,18 @@ export const AsunaPlainInfo: React.FC<AsunaPlainObjectProps> = ({ modelName, rec
                 if (columnInfo.config?.type === 'datetime') {
                   value = (
                     <Tooltip title={value}>
-                      {moment(value).calendar()}
-                      <div>{moment(value).fromNow()}</div>
+                      <>
+                        {moment(value).calendar()}
+                        <div>{moment(value).fromNow()}</div>
+                      </>
                     </Tooltip>
                   );
                   before = before && (
                     <Tooltip title={before}>
-                      {moment(before).calendar()}
-                      <div>{moment(before).fromNow()}</div>
+                      <>
+                        {moment(before).calendar()}
+                        <div>{moment(before).fromNow()}</div>
+                      </>
                     </Tooltip>
                   );
                 } else {

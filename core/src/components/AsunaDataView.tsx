@@ -71,7 +71,7 @@ export const AsunaDataView: React.FC<AsunaDataViewProps> = ({
     : null;
 
   const { columnProps, relations, originSchemas } = useAsunaModels(modelName, { actions, extraName });
-  const actionColumn = _.find(columnProps, column => column.key === 'action');
+  const actionColumn = _.find(columnProps, (column) => column.key === 'action');
   const Content = ({ children, extra }) => {
     return (
       <div className="content" style={{ display: 'flex' }}>
@@ -92,11 +92,11 @@ export const AsunaDataView: React.FC<AsunaDataViewProps> = ({
   };
   const leftVars = _.omit(data, _.flatten([_.keys(vars), primaryKey, relations]) as string[]);
   const publishedTag = _.has(data, 'isPublished')
-    ? renderValue({ value: data['isPublished'], textFn: value => (value ? '已发布' : '未发布') })
+    ? renderValue({ value: data['isPublished'], textFn: (value) => (value ? '已发布' : '未发布') })
     : null;
 
   const customColumnOpts = useAsync(
-    async () => await Promise.props(_.mapValues(columnOpts?.customColumns, columnOpt => (columnOpt as any)())),
+    async () => await Promise.props(_.mapValues(columnOpts?.customColumns, (columnOpt) => (columnOpt as any)())),
     [columnOpts?.customColumns],
   );
 
@@ -185,14 +185,18 @@ export const AsunaDataView: React.FC<AsunaDataViewProps> = ({
           <Descriptions size="small" column={2}>
             <Descriptions.Item label="创建时间" key="createdAt">
               <Tooltip title={vars.createdAt}>
-                {moment(vars.createdAt).calendar()}
-                <div>{moment(vars.createdAt).fromNow()}</div>
+                <>
+                  {moment(vars.createdAt).calendar()}
+                  <div>{moment(vars.createdAt).fromNow()}</div>
+                </>
               </Tooltip>
             </Descriptions.Item>
             <Descriptions.Item label="更新时间" key="updatedAt">
               <Tooltip title={vars.updatedAt}>
-                {moment(vars.updatedAt).calendar()}
-                <div>{moment(vars.updatedAt).fromNow()}</div>
+                <>
+                  {moment(vars.updatedAt).calendar()}
+                  <div>{moment(vars.updatedAt).fromNow()}</div>
+                </>
               </Tooltip>
             </Descriptions.Item>
 
@@ -265,8 +269,10 @@ function renderValue({
   } else if (_.isDate(value) || type === DynamicFormTypes.Date || type === DynamicFormTypes.DateTime) {
     return (
       <Tooltip title={value}>
-        {moment(value).calendar()}
-        <div>{moment(value).fromNow()}</div>
+        <>
+          {moment(value).calendar()}
+          <div>{moment(value).fromNow()}</div>
+        </>
       </Tooltip>
     );
   } else if (_.isNull(value)) {
