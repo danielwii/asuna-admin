@@ -268,7 +268,7 @@ export class ModelAdapterImpl implements ModelAdapter {
   }
 
   _groupCountsBatchLoader = new BatchLoader<{ modelName; column; relation; id: string }, any>(
-    keys => {
+    (keys) => {
       const { modelName, column, relation } = keys[0];
       const auth = AppContext.fromStore('auth');
       const modelConfig = this.getModelConfig(modelName);
@@ -329,7 +329,7 @@ export class ModelAdapterImpl implements ModelAdapter {
     const selectableRelations = _.chain(schema)
       .pickBy(fp.get('options.selectable'))
       // .pickBy(_.flow([fp.get('options.accessible'), fp.negate(fp.eq('hidden'))]))
-      .pickBy(opts => !_.includes(_.get(opts, 'options.accessible'), ['hidden']))
+      .pickBy((opts) => !_.includes(_.get(opts, 'options.accessible'), ['hidden']))
       .keys()
       .value();
     const relations = _.flow(_.flattenDeep, _.uniq, fp.join(','))([selectableRelations, data.relations]);
@@ -361,21 +361,22 @@ export class ModelAdapterImpl implements ModelAdapter {
       // json 用于描述该字段需要通过字符串转换处理，目前用于服务器端不支持 JSON 数据格式的情况
       return _.eq(fields?.[key]?.options?.json, 'str') ? JSON.stringify(value) : value;
     });
-    logger.debug('[upsert]', 'transformed is', transformed);
+    const convertNullTransformed = _.mapValues(transformed, (v) => (_.isNil(v) ? null : v));
+    logger.debug('[upsert]', 'transformed is', convertNullTransformed);
 
     const id = data?.body?.[primaryKey] as any;
     if (id) {
       return this.service.update(auth, modelName, {
         id,
         primaryKey,
-        body: transformed,
+        body: convertNullTransformed,
         ...data,
         ...this.getModelConfig(modelName),
       });
     }
     return this.service.insert(auth, modelName, {
       ...data,
-      body: transformed,
+      body: convertNullTransformed,
       ...this.getModelConfig(modelName),
     });
   };
@@ -437,7 +438,7 @@ export class ModelAdapterImpl implements ModelAdapter {
     const { schemas } = AppContext.fromStore('models');
     const schema = R.prop(modelName)(schemas);
     if (schema != null) {
-      const primaryKeys = _.filter(schema, opts => !!opts?.config?.primaryKey);
+      const primaryKeys = _.filter(schema, (opts) => !!opts?.config?.primaryKey);
       // logger.debug(TAG, modelName, 'primaryKeys is', primaryKeys);
       if (primaryKeys.length) {
         return _.map(primaryKeys, fp.get('name'));
@@ -514,7 +515,7 @@ export class ModelAdapterImpl implements ModelAdapter {
       fields: configs?.fields,
       filters: _.mapValues<Record<string, [Condition]>, WhereConditions>(
         configs?.filters,
-        _.flow(filter => (_.isArray(filter) ? filter[0] : filter), parseJSONIfCould),
+        _.flow((filter) => (_.isArray(filter) ? filter[0] : filter), parseJSONIfCould),
       ),
       sorter: configs?.sorter,
       relations: configs?.relations,
@@ -533,7 +534,7 @@ export class ModelAdapterImpl implements ModelAdapter {
         fields: configs?.fields,
         filters: _.mapValues<Record<string, [Condition]>, WhereConditions>(
           configs?.filters,
-          _.flow(filter => (_.isArray(filter) ? filter[0] : filter), parseJSONIfCould),
+          _.flow((filter) => (_.isArray(filter) ? filter[0] : filter), parseJSONIfCould),
         ),
         sorter: configs?.sorter,
         relations: configs?.relations,
@@ -599,7 +600,7 @@ export class ModelAdapterImpl implements ModelAdapter {
       const allResponse = await AppContext.ctx.graphql.loadSchemas();
       return Object.assign({}, ..._.map(allResponse, ({ name, schema }) => ({ [name]: schema })));
     } else {
-      const callable = { ...this.allModels.map(modelName => ({ [modelName]: this.loadOriginSchema(modelName) })) };
+      const callable = { ...this.allModels.map((modelName) => ({ [modelName]: this.loadOriginSchema(modelName) })) };
       const allResponse = await Promise.props(callable);
       return Object.assign({}, ..._.map(allResponse, (response, name) => ({ [name]: (response as any).data })));
     }
@@ -610,7 +611,7 @@ export class ModelAdapterImpl implements ModelAdapter {
       const allResponse = await AppContext.ctx.graphql.loadSchemas();
       return Object.assign({}, ..._.map(allResponse, ({ name, schema }) => ({ [name]: schema })));
     } else {
-      const callable = { ...this.allModels.map(modelName => ({ [modelName]: this.loadSchema(modelName) })) };
+      const callable = { ...this.allModels.map((modelName) => ({ [modelName]: this.loadSchema(modelName) })) };
       const allResponse = await Promise.props(callable);
       return Object.assign({}, ..._.map(allResponse, (response, name) => ({ [name]: (response as any).data })));
     }

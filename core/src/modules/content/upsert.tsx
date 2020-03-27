@@ -37,7 +37,7 @@ interface IContentForm {
 
 const ContentForm = Form.create<IContentForm & DynamicFormProps>({
   mapPropsToFields({ fields }) {
-    const mappedFields = R.map(field => {
+    const mappedFields = R.map((field) => {
       // DatePicker for antd using moment instance
       const isDate = R.contains(field.type)([DynamicFormTypes.Date, DynamicFormTypes.DateTime]);
       if (field.value && isDate) {
@@ -58,7 +58,7 @@ const ContentForm = Form.create<IContentForm & DynamicFormProps>({
 
         return oldVar !== newVar || field.errors != null;
       }),
-      R.map(field => {
+      R.map((field) => {
         let { value } = field;
         if (value && value._isAMomentObject) {
           value = value.toDate();
@@ -66,7 +66,7 @@ const ContentForm = Form.create<IContentForm & DynamicFormProps>({
         return { ...field, value };
       }),
       // remove fields when validating=true
-      R.filter(field => !R.prop('validating', field)),
+      R.filter((field) => !R.prop('validating', field)),
     )(changedFields);
     if (!R.isEmpty(filteredChangedFields)) {
       logger.debug('[ContentForm][onFieldsChange]', { filteredChangedFields });
@@ -107,7 +107,7 @@ interface IState {
 }
 
 class ContentUpsert extends React.Component<IProps, IState> {
-  preDecorators = tag => [
+  preDecorators = (tag) => [
     schemaHelper.peek(`before-${tag}`),
     schemaHelper.hiddenComponentDecorator,
     schemaHelper.jsonDecorator,
@@ -116,13 +116,13 @@ class ContentUpsert extends React.Component<IProps, IState> {
     schemaHelper.peek(`after-${tag}`),
   ];
 
-  asyncDecorators = tag => [
+  asyncDecorators = (tag) => [
     // TODO 目前异步数据拉取无法在页面上显示对应字段的 loading 状态
-    async fields => R.curry(schemaHelper.peek(`before-async-${tag}`))(fields),
+    async (fields) => R.curry(schemaHelper.peek(`before-async-${tag}`))(fields),
     // async fields => schemaHelper.hiddenComponentDecorator(fields),
     schemaHelper.asyncLoadAssociationsDecorator,
     schemaHelper.associationDecorator,
-    async fields => R.curry(schemaHelper.peek(`after-async-${tag}`))(fields),
+    async (fields) => R.curry(schemaHelper.peek(`after-async-${tag}`))(fields),
   ];
 
   constructor(props) {
@@ -223,7 +223,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
      */
     if (originalFieldValues && init) {
       logger.debug('[componentWillMount]', 'field values is', originalFieldValues);
-      await this._handleFormChange(R.map(value => ({ value }))(originalFieldValues));
+      await this._handleFormChange(R.map((value) => ({ value }))(originalFieldValues));
     }
   }
 
@@ -254,7 +254,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
     const { dispatch } = this.props;
     const { modelName, primaryKey } = this.state;
 
-    return reduxActionCallbackPromise(callback => {
+    return reduxActionCallbackPromise((callback) => {
       if (record) {
         logger.log('[_reloadEntity]', 'reload model...', record);
         dispatch(modelsActions.fetch(modelName, { id: record[primaryKey], profile: 'ids' }, callback));
@@ -266,7 +266,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
    * Saving changed field values in props
    * @param changedFields
    */
-  _handleFormChange = async changedFields => {
+  _handleFormChange = async (changedFields) => {
     const { isInsertMode, init, modelName } = this.state;
     logger.log('[handleFormChange]', { changedFields, state: this.state });
     if (!R.isEmpty(changedFields)) {
@@ -338,7 +338,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
     }
   };
 
-  _handleFormSubmit = event => {
+  _handleFormSubmit = (event) => {
     event.preventDefault();
     const { originalFieldValues, primaryKey } = this.state;
 
@@ -394,7 +394,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
   render() {
     const { fields, loadings, status, modelName } = this.state;
     TenantHelper.wrapFields(modelName, fields);
-    const isPublishedField = _.find(fields, field => field.name === 'isPublished') as any;
+    const isPublishedField = _.find(fields, (field) => field.name === 'isPublished') as any;
     const auditMode = !TenantHelper.enableModelPublishForCurrentUser(modelName) && !isPublishedField?.value;
 
     logger.log('[render]', { props: this.props, state: this.state });
