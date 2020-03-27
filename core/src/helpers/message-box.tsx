@@ -1,9 +1,9 @@
-import { AppContext } from '@asuna-admin/core';
 import { LoadingOutlined } from '@ant-design/icons';
+import { AppContext } from '@asuna-admin/core';
 import { notification, Timeline } from 'antd';
 import { differenceInSeconds } from 'date-fns';
 import * as _ from 'lodash';
-import nanoid from 'nanoid';
+import { nanoid } from 'nanoid';
 import * as React from 'react';
 import * as util from 'util';
 
@@ -35,7 +35,7 @@ export class TimelineMessageBox {
   private static render = () => {
     return (
       <Timeline>
-        {TimelineMessageBox.messages.map(message =>
+        {TimelineMessageBox.messages.map((message) =>
           message.type !== 'loading' ? (
             <Timeline.Item key={message.key} color={message.type === 'done' ? 'green' : 'red'}>
               <div>{_.isObject(message.content) ? <pre>{util.inspect(message.content)}</pre> : message.content}</div>
