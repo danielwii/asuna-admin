@@ -1,14 +1,13 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const { defaults } = require('jest-config');
+const { defaults } = require('ts-jest/presets');
 
-console.log(defaults);
-
-module.exports = {
+const configs = {
   ...defaults,
-  // verbose: true,
+  verbose: true,
   globals: {
     'ts-jest': {
-      babelConfig: 'babelrc.test.json',
+      babelConfig: 'babel.config.js',
+      // babelConfig: 'babelrc.test.json',
       tsConfig: 'tsconfig.jest.json',
       diagnostics: false,
     },
@@ -20,12 +19,15 @@ module.exports = {
   // moduleFileExtensions: ['js', 'jsx', 'json', 'ts', 'tsx'],
   // moduleDirectories: ['node_modules', 'src'],
   testRegex: '.spec.tsx?$',
-  transform: {
-    '^.+\\.(t|j)sx?$': 'ts-jest',
-    // '^.+\\.js?$': 'babel-jest',
-  },
+  // transform: {
+  //   '^.+\\.(t|j)sx?$': 'ts-jest',
+  //   // '^.+\\.js?$': 'babel-jest',
+  // },
   // coverageThreshold: { global: {} },
   collectCoverage: true,
-  preset: 'ts-jest/presets/js-with-ts',
-  testMatch: null,
+  preset: 'ts-jest',
 };
+
+console.log(configs);
+
+module.exports = configs;
