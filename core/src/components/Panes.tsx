@@ -152,7 +152,7 @@ export class Panes extends React.Component<IPanesProps, IState> {
               activeKey={activeKey}
               onClose={() => this.onEdit(activeKey, 'remove')}
               basis={{ pane }}
-              onTitleChange={newTitle => this.onTitleChange(activeKey, newTitle)}
+              onTitleChange={(newTitle) => this.onTitleChange(activeKey, newTitle)}
               component={pane.component}
             />
           </TabPane>

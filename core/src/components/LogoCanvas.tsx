@@ -20,7 +20,7 @@ export class LogoCanvas extends React.Component {
   }
 
   drawLogo(context, sequenceNo) {
-    _.range(10).forEach(index => {
+    _.range(10).forEach((index) => {
       context.save();
       context.translate(80, 80);
 
@@ -38,6 +38,6 @@ export class LogoCanvas extends React.Component {
   }
 
   render() {
-    return <canvas ref={canvas => (this.canvas = canvas)}>Canvas Not Support?!</canvas>;
+    return <canvas ref={(canvas) => (this.canvas = canvas)}>Canvas Not Support?!</canvas>;
   }
 }

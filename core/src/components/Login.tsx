@@ -28,7 +28,7 @@ export const NormalLoginForm: React.FC<ILoginProps> = ({ login }) => {
 
   const func = {
     onFinish: () => {
-      form.validateFields().then(values => {
+      form.validateFields().then((values) => {
         const { username, password } = values;
         setLoading(true);
 

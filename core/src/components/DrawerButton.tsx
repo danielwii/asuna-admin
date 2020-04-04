@@ -19,8 +19,9 @@ export interface DrawerButtonProps {
   renderChildrenDrawer?: RenderChildrenComponentType;
 }
 
-export const DrawerButtonBuilder: React.FC<DrawerButtonProps &
-  BaseButtonProps & { builder: () => React.ReactNode }> = ({ text, title, width, builder, ...baseButtonProps }) => {
+export const DrawerButtonBuilder: React.FC<
+  DrawerButtonProps & BaseButtonProps & { builder: () => React.ReactNode }
+> = ({ text, title, width, builder, ...baseButtonProps }) => {
   const [visible, setVisible] = useState(false);
 
   const _showDrawer = () => setVisible(true);
@@ -71,8 +72,9 @@ export const DrawerButtonBuilder: React.FC<DrawerButtonProps &
   );
 };
 
-export const DrawerButton: React.FC<DrawerButtonProps &
-  BaseButtonProps & { popoverProps?: PopoverProps; extraButtons?: React.ReactNode }> = ({
+export const DrawerButton: React.FC<
+  DrawerButtonProps & BaseButtonProps & { popoverProps?: PopoverProps; extraButtons?: React.ReactNode }
+> = ({
   text,
   title,
   width,
@@ -115,7 +117,7 @@ export const DrawerButton: React.FC<DrawerButtonProps &
         {render && (
           <RenderComponent
             refreshFlag={refreshFlag}
-            openChildrenDrawer={item => {
+            openChildrenDrawer={(item) => {
               setChildrenItem(item);
               setChildrenVisible(true);
             }}

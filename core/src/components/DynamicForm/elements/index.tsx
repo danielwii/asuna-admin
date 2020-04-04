@@ -187,9 +187,9 @@ export const generateInput = (
   return generateComponent(form, { key, name, label, fieldName, labelName, opts, help }, component, formItemLayout);
 };
 
-const TextAreaHOC: React.FC<Partial<FormComponentProps>> = props => (
+const TextAreaHOC: React.FC<Partial<FormComponentProps>> = (props) => (
   <WithVariable key={props.id} variable={props as FormComponentProps}>
-    {props => {
+    {(props) => {
       const value = _.isObject(props.value) ? JSON.stringify(props.value) : props.value;
       const textArea = <Input.TextArea autoSize={{ minRows: 3 }} allowClear {...props} value={value} />;
       if (props[FIELD_DATA_PROP].type === 'JSON') {
@@ -237,7 +237,7 @@ export const generateTextArea = (form: WrappedFormUtils, options, formItemLayout
   return generateComponent(form, { fieldName, labelName, ...options }, <TextAreaHOC />, formItemLayout);
 };
 
-const StringTmplHOC: React.FC<Partial<FormComponentProps> & Partial<{ fields: any }>> = props => {
+const StringTmplHOC: React.FC<Partial<FormComponentProps> & Partial<{ fields: any }>> = (props) => {
   useLogger(`StringTmpl`, props);
   return (
     <WithVariable
@@ -252,7 +252,7 @@ const StringTmplHOC: React.FC<Partial<FormComponentProps> & Partial<{ fields: an
         >
       }
     >
-      {props => {
+      {(props) => {
         useLogger('generateStringTmpl', props);
         return (
           <StringTmpl

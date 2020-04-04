@@ -111,7 +111,7 @@ export class ImageUploader extends React.Component<IProps, IState> {
     const { onChange, jsonMode } = this.props;
     // const images = _.compact(info.fileList.map(file => file.url)).join(',');
     // 这里只有 status 为 done 的 image 包含 url
-    let images: string | string[] = _.compact(_.flatten(info.fileList.map(file => file.url)));
+    let images: string | string[] = _.compact(_.flatten(info.fileList.map((file) => file.url)));
     if (!jsonMode) {
       images = images.join(',');
     }
@@ -133,7 +133,7 @@ export class ImageUploader extends React.Component<IProps, IState> {
   customRequest = (option: RcCustomRequestOptions): void => {
     logger.log('[ImageUploader][customRequest]', option);
     const { onChange, urlHandler, bucket, jsonMode } = this.props;
-    upload(option.file, {}, { bucket }).then(uploaded => {
+    upload(option.file, {}, { bucket }).then((uploaded) => {
       if (uploaded) {
         logger.log('[ImageUploader][customRequest]', { props: this.props, state: this.state });
         const resolvedUrl = urlHandler ? urlHandler(uploaded[0]) : `${uploaded[0]}`;
@@ -186,7 +186,7 @@ export class ImageUploader extends React.Component<IProps, IState> {
         <Input.TextArea
           value={typeof value === 'string' ? value : value ? JSON.stringify(value) : ''}
           autoSize={{ minRows: 2, maxRows: 6 }}
-          onChange={event => {
+          onChange={(event) => {
             logger.debug('[onChange]', event);
             this.props.onChange!(this.valueToSubmit(event.target.value));
             this.setState({ fileList: ImageUploader.wrapImagesToFileList(event.target.value) });

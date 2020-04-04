@@ -45,13 +45,13 @@ export class BraftRichEditor extends React.Component<IProps, IState> {
     this.setState({ loading: false, editorState });
   }
 
-  _handleEditorChange = editorState => {
+  _handleEditorChange = (editorState) => {
     const { onChange } = this.props;
     if (onChange) onChange(editorState.toHTML());
     this.setState({ editorState });
   };
 
-  _uploadFn = async param => {
+  _uploadFn = async (param) => {
     const { prefix, urlHandler } = this.props;
     logger.debug('[uploadFn]', { prefix, param });
 
@@ -124,7 +124,7 @@ export class BraftRichEditor extends React.Component<IProps, IState> {
 
     return (
       <BraftEditor
-        ref={instance => (this.editorInstance = instance)}
+        ref={(instance) => (this.editorInstance = instance)}
         value={editorState}
         defaultValue={editorState}
         onChange={this._handleEditorChange}

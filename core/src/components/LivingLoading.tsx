@@ -65,7 +65,7 @@ export class LivingLoading extends React.Component<IProps> {
   }
 
   drawLogo(context, sequenceNo, center, speed = 10) {
-    _.range(10).forEach(index => {
+    _.range(10).forEach((index) => {
       context.save();
       context.translate(...center);
 
@@ -95,7 +95,7 @@ export class LivingLoading extends React.Component<IProps> {
             : 'Backend server unavailable.'}
         </StyledHeartbeat>
         <canvas
-          ref={canvas => {
+          ref={(canvas) => {
             this.canvas = canvas;
           }}
         >

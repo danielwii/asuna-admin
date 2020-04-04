@@ -34,7 +34,7 @@ export function GraphTable(props: IGraphTableProps) {
   const { modelName, columns, pagination, creatable, create, onChange } = props;
   const [state, setState] = useState<IGraphTableState>({});
 
-  const keys = _.map(columns, fp.get('key')).filter(key => !['action'].includes(`${key}`));
+  const keys = _.map(columns, fp.get('key')).filter((key) => !['action'].includes(`${key}`));
   const _renderTable = () => (
     <Query
       fetchPolicy={'no-cache'}

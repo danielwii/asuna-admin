@@ -24,7 +24,7 @@ class AddressInline extends React.Component<Partial<FormComponentProps> & { plac
             // console.log('select', { value, selectedOptions });
             this._onChange(
               value,
-              selectedOptions?.map(option => option.label as string),
+              selectedOptions?.map((option) => option.label as string),
               detail,
             );
           }}
@@ -34,7 +34,7 @@ class AddressInline extends React.Component<Partial<FormComponentProps> & { plac
           allowClear
           {...this.props}
           value={detail}
-          onChange={event => {
+          onChange={(event) => {
             // console.log('input', event.target.value, { codes, labels });
             this._onChange(codes, labels, event.target.value);
           }}

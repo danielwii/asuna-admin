@@ -17,7 +17,11 @@ export const WithLoading: React.FC<{ loading: boolean; error: any; retry? }> = (
   if (error)
     return (
       <ErrorInfo>
-        {retry && <Button onClick={() => retry()}>Reload</Button>}
+        {retry && (
+          <Button onClick={() => retry()} loading={loading}>
+            Reload
+          </Button>
+        )}
         <pre>{util.inspect(error)}</pre>
       </ErrorInfo>
     );

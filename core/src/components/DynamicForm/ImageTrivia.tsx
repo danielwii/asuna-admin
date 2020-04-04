@@ -66,9 +66,9 @@ export class ImageTrivia extends React.Component<IProps, IState> {
   private imageRef: HTMLImageElement;
   private uploadElement: HTMLInputElement | null;
 
-  onSelectFile = e => {
+  onSelectFile = (e) => {
     if (e.target.files && e.target.files.length > 0) {
-      upload(e.target.files[0]).then(uploaded => {
+      upload(e.target.files[0]).then((uploaded) => {
         const { onChange, urlHandler, prefix, value } = this.props;
         if (uploaded) {
           logger.log('[onSelectFile]', { props: this.props, state: this.state });
@@ -169,7 +169,7 @@ export class ImageTrivia extends React.Component<IProps, IState> {
     return (
       <div>
         <Button onClick={() => this.uploadElement!.click()}>
-          <input hidden type="file" ref={input => (this.uploadElement = input)} onChange={this.onSelectFile} />
+          <input hidden type="file" ref={(input) => (this.uploadElement = input)} onChange={this.onSelectFile} />
           <UploadOutlined /> Click to Upload
         </Button>
         <div className="asuna-image-crop">
@@ -220,13 +220,13 @@ export class ImageTrivia extends React.Component<IProps, IState> {
                   <Input
                     type="text"
                     addonBefore="Name: "
-                    onChange={e => this._updateTagInfo(index, { name: e.target.value })}
+                    onChange={(e) => this._updateTagInfo(index, { name: e.target.value })}
                     value={item.name}
                   />
                   <Input
                     type="text"
                     addonBefore="Url: "
-                    onChange={e => this._updateTagInfo(index, { url: e.target.value })}
+                    onChange={(e) => this._updateTagInfo(index, { url: e.target.value })}
                     value={item.url}
                   />
                 </Input.Group>

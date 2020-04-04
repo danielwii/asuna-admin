@@ -32,7 +32,7 @@ export class Authorities extends React.Component<IProps, IState> {
         key: 'permission',
         render: ({ parent, menu, active }) => (
           <React.Fragment>
-            <Checkbox checked={active} onChange={e => this.updatePermission(parent, menu, e.target.checked)}>
+            <Checkbox checked={active} onChange={(e) => this.updatePermission(parent, menu, e.target.checked)}>
               激活
             </Checkbox>
           </React.Fragment>
@@ -49,16 +49,16 @@ export class Authorities extends React.Component<IProps, IState> {
     return { dataSource };
   }
 
-  static transformToJson = authorities => (R.is(String, authorities) ? JSON.parse(authorities) : authorities);
+  static transformToJson = (authorities) => (R.is(String, authorities) ? JSON.parse(authorities) : authorities);
 
-  static updateDataSource = authorities => {
+  static updateDataSource = (authorities) => {
     const sideMenus = menuProxy.getSideMenus();
     logger.debug('[updateDataSource]', { sideMenus, authorities });
 
     const dataSource = R.compose(
       R.flatten,
-      R.map(obj =>
-        R.map(menu => {
+      R.map((obj) =>
+        R.map((menu) => {
           const key = `${obj.key}::${menu.key}`;
           const active = R.propOr(false, key)(authorities);
           return {

@@ -1,8 +1,8 @@
+import { InfoCircleOutlined } from '@ant-design/icons';
 import { EasyGroupForm, ErrorInfo, GroupFormFields } from '@asuna-admin/components';
 import { AppContext } from '@asuna-admin/core';
 import { KVHelper } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
-import { InfoCircleOutlined } from '@ant-design/icons';
 import { Button, Divider, Typography } from 'antd';
 
 import 'highlight.js/styles/default.css';
@@ -65,7 +65,9 @@ export function GroupFormKVComponent(props: {
   if (error)
     return (
       <>
-        <Button onClick={() => refetch()}>Reload</Button>
+        <Button onClick={() => refetch()} loading={loading}>
+          Reload
+        </Button>
         <ErrorInfo>
           <pre>{util.inspect(error)}</pre>
         </ErrorInfo>
@@ -77,7 +79,9 @@ export function GroupFormKVComponent(props: {
   return (
     <>
       <Typography>
-        <Button onClick={() => refetch()}>Reload</Button>
+        <Button onClick={() => refetch()} loading={loading}>
+          Reload
+        </Button>
         {info && (
           <Typography.Paragraph>
             <InfoCircleOutlined style={{ margin: '0 0.2rem' }} />
@@ -89,7 +93,7 @@ export function GroupFormKVComponent(props: {
       <EasyGroupForm
         fields={state.body.form}
         fieldValues={state.body.values}
-        onSubmit={values => KVHelper.save({ key, collection }, { form: state.body.form, values }, refetch)}
+        onSubmit={(values) => KVHelper.save({ key, collection }, { form: state.body.form, values }, refetch)}
         onClear={enableClear ? () => KVHelper.clear({ key, collection }, refetch) : undefined}
         onDestroy={enableDestroy ? () => KVHelper.destroy({ key, collection }, refetch) : undefined}
       />

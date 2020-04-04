@@ -62,7 +62,7 @@ export function AssetsPreview({ host, urls, showPdf, clearStyle }: IAssetsPrevie
     <div style={clearStyle ? {} : { display: 'flex', flexWrap: 'wrap', maxWidth: '400px' }}>
       {_.map(parsed, (url, index) => (
         <div key={`viewer-${index}`} style={{ display: 'inline-block' }}>
-          <ReactViewer index={index} images={parsed.map(url => ({ src: url, downloadUrl: url }))}>
+          <ReactViewer index={index} images={parsed.map((url) => ({ src: url, downloadUrl: url }))}>
             <AssetPreview key={url} host={host} url={url} showPdf={showPdf} />
           </ReactViewer>
           <TooltipContent value={url} link />

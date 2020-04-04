@@ -63,7 +63,7 @@ export const uniqueItems = (...items: Item[][]): Item[] => {
     if (_.isArray(first)) {
       result = R.filter(rNotNil)(R.uniqBy(R.prop(0), allItems));
     } else if (_.isObject(first)) {
-      const uniqBy = R.uniqBy(item => {
+      const uniqBy = R.uniqBy((item) => {
         return R.prop('id', item) || R.prop('key', item) || R.prop(_.head(R.keys(item)), item);
       }, allItems);
       result = R.filter(rNotNil)(uniqBy);
@@ -226,7 +226,7 @@ export function generateSelect<T>(
 
     _onChange = (value: any | any[]) => {
       logger.log('[MixedSelect]', '[onChange]', { value, items: this._getAllItems() });
-      const exists = value ? R.filter(item => R.contains(R.prop('id')(item))(value))(this._getAllItems()) : undefined;
+      const exists = value ? R.filter((item) => R.contains(R.prop('id')(item))(value))(this._getAllItems()) : undefined;
       logger.log('[MixedSelect]', '[onChange]', { exists });
 
       this.setState({ existItems: exists });
@@ -238,7 +238,7 @@ export function generateSelect<T>(
         const { existItems } = this.state;
         this.setState({ loading: true });
         logger.log('[MixedSelect]', '[onSearch] call', { value });
-        onSearch(value, items => {
+        onSearch(value, (items) => {
           const filterItems = _.concat(items, existItems);
           logger.log('[MixedSelect]', '[onSearch]', { items, filterItems });
           this.setState({ loading: false, filterItems });
@@ -254,7 +254,7 @@ export function generateSelect<T>(
       const items = this._getAllItems();
       logger.debug('[MixedSelect]', '[render]', { state: this.state, props: this.props, items });
 
-      const renderedItems = items.map(item => {
+      const renderedItems = items.map((item) => {
         const optionName = this._extractName(item);
         const optionValue = this._extractValue(item);
         // prettier-ignore
@@ -278,7 +278,7 @@ export function generateSelect<T>(
             // optionFilterProp="children"
             mode={mode}
             onChange={this._onChange}
-            onSearch={_.debounce(value => this._onSearch(value), 500)}
+            onSearch={_.debounce((value) => this._onSearch(value), 500)}
             filterOption={false}
             /*
             filterOption={

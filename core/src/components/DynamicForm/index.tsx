@@ -175,12 +175,9 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
 
   const _buildField = (fields: FormField[], field: DynamicFormField): React.ReactNode => {
     field.options = field.options || {};
-    const options: DeepPartial<DynamicFormField['options'] &
-      HiddenOptions &
-      PlainOptions &
-      InputOptions &
-      SelectOptions &
-      StringArrayOptions> = {
+    const options: DeepPartial<
+      DynamicFormField['options'] & HiddenOptions & PlainOptions & InputOptions & SelectOptions & StringArrayOptions
+    > = {
       ...field.options,
       // key: field.key ?? field.name,
       name: field.name,
@@ -347,7 +344,7 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
     }
   };
 
-  const _handleOnAuditDraft = e => {
+  const _handleOnAuditDraft = (e) => {
     e.preventDefault();
 
     form.validateFields(async (err, values) => {
@@ -366,7 +363,7 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
     });
   };
 
-  const _handleOnSubmit = e => {
+  const _handleOnSubmit = (e) => {
     e.preventDefault();
 
     form.validateFields((err, values) => {
@@ -385,16 +382,16 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
   // remove fields which type is not included
   // pure component will not trigger error handler
 
-  const typedFields = _.filter(fields, field => _.has(field, 'type'));
+  const typedFields = _.filter(fields, (field) => _.has(field, 'type'));
   const renderFields = _.map(
     // 简单的排序方案
-    _.sortBy(typedFields, field => {
+    _.sortBy(typedFields, (field) => {
       const pos = ['id'].indexOf(field.name) + 1;
       if (pos) return pos;
       if (field.name.startsWith('is')) return 10;
       return field.options.accessible === 'readonly' ? 20 : 30;
     }),
-    field => <EnhancedPureElement key={field.name} field={field} builder={_.curry(_buildField)(fields)} />,
+    (field) => <EnhancedPureElement key={field.name} field={field} builder={_.curry(_buildField)(fields)} />,
   );
 
   const renderedDrafts = loadingDrafts ? (
@@ -407,7 +404,7 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
         <Button>重提交</Button>
       </Popconfirm>{' '}
       待审核：
-      {drafts.map(draft => {
+      {drafts.map((draft) => {
         const values = _.flow(fp.mapValues(fp.get('value')), fp.pick(_.keys(draft.content)))(memoizedFields);
         const filteredValues = _.omitBy(draft.content, (value, key) => _.eq(values[key], value));
         return (
@@ -427,7 +424,7 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
                   value,
                 };
               })}
-              renderItem={item => (
+              renderItem={(item) => (
                 <List.Item>
                   <List.Item.Meta
                     title={item.title}
@@ -506,10 +503,10 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
                                     value,
                                   };
                                 })}
-                                renderItem={item => {
-                                  const columnInfo = _.find(schema?.columns, column => column.name === item.key);
+                                renderItem={(item) => {
+                                  const columnInfo = _.find(schema?.columns, (column) => column.name === item.key);
 
-                                  const { before, after } = (type => {
+                                  const { before, after } = ((type) => {
                                     switch (type) {
                                       case DynamicFormTypes.Address:
                                         return {
@@ -587,7 +584,7 @@ class FormAnchor extends React.Component<IFormAnchorProps> {
     const renderFields = R.compose(
       R.values(),
       R.omit(['id']),
-      R.map(field => {
+      R.map((field) => {
         logger.log('[anchor]', field);
         const noValue = R.isNil(field.value) || R.isEmpty(field.value) || false;
         // 目前使用的 RichText 在点击时会自动设置 value 为 '<p></p>'
@@ -603,8 +600,8 @@ class FormAnchor extends React.Component<IFormAnchorProps> {
         );
         return <Anchor.Link key={field.name} title={title} href={`#dynamic-form-${field.name}`} />;
       }),
-      R.filter(field => field.type),
-      R.filter(field => (field as DynamicFormField)?.options?.accessible !== 'hidden'),
+      R.filter((field) => field.type),
+      R.filter((field) => (field as DynamicFormField)?.options?.accessible !== 'hidden'),
     )(fields);
 
     if (R.anyPass([R.isNil, R.isEmpty])(fields)) {

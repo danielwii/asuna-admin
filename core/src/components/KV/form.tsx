@@ -56,7 +56,9 @@ export function FormKVComponent<ExtraProps = any>(props: {
       {() => (
         <>
           <Typography>
-            <Button onClick={() => refetch()}>Reload</Button>
+            <Button onClick={() => refetch()} loading={loading}>
+              Reload
+            </Button>
             {info && (
               <Typography.Paragraph>
                 <InfoCircleOutlined style={{ margin: '0 0.2rem' }} />
@@ -69,7 +71,7 @@ export function FormKVComponent<ExtraProps = any>(props: {
             <Col span={18}>
               <EasyForm
                 fields={fieldValues}
-                onSubmit={values => KVHelper.save({ key, collection }, values, refetch)}
+                onSubmit={(values) => KVHelper.save({ key, collection }, values, refetch)}
                 onClear={() => KVHelper.clear({ key, collection }, refetch)}
               />
             </Col>

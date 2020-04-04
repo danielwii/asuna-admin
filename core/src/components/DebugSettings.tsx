@@ -25,12 +25,12 @@ interface IDebugSettingsState {
   filter?: string;
 }
 
-export const DebugSettings: React.FC<IDebugSettingsProps> = props => {
+export const DebugSettings: React.FC<IDebugSettingsProps> = (props) => {
   const { modules, updateLoggerLevel } = props;
   const [state, setState] = useState<IDebugSettingsState>({});
 
   const resetLogger = () => {
-    _.keys(modules).forEach(module => (modules[module] = 'warn'));
+    _.keys(modules).forEach((module) => (modules[module] = 'warn'));
     setState({});
   };
 
@@ -39,7 +39,7 @@ export const DebugSettings: React.FC<IDebugSettingsProps> = props => {
     setState({});
   };
 
-  const onChange = _.debounce(value => setState({ regex: new RegExp(value), filter: value }), 300);
+  const onChange = _.debounce((value) => setState({ regex: new RegExp(value), filter: value }), 300);
 
   return (
     <Container>
@@ -51,7 +51,7 @@ export const DebugSettings: React.FC<IDebugSettingsProps> = props => {
           label="filter"
           type="text"
           margin="normal"
-          onChange={e => onChange(e.target.value)}
+          onChange={(e) => onChange(e.target.value)}
           defaultValue={state.filter}
         />
         {_.chain(modules)

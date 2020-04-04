@@ -9,6 +9,7 @@ export enum FormFieldType {
   boolean = 'boolean',
   stringTmpl = 'string-tmpl',
   wxTmplData = 'wx-tmpl-data',
+  emailTmplData = 'email-tmpl-data',
   wxSubscribeData = 'wx-subscribe-data',
 }
 
@@ -19,7 +20,7 @@ export type FormField<ExtraProps = any> = {
   help?: React.ReactChild;
   required?: boolean;
   defaultValue?: boolean | number | string;
-  extra?: ExtraProps
+  extra?: ExtraProps;
 };
 
 export type FormFields<ExtraProps = any> = { [key: string]: FormField<ExtraProps> };

@@ -6,7 +6,7 @@ import { css, jsx } from '@emotion/core';
 import { FormControl, FormControlLabel, FormHelperText, Switch, TextField } from '@material-ui/core';
 import * as antd from 'antd';
 import { Divider, Popconfirm } from 'antd';
-import { DynamicJsonArrayTable, ObjectJsonTableHelper, StringTmpl, Uploader } from 'asuna-components';
+import { DynamicJsonArrayTable, ObjectJsonTableHelper, StringTmpl, Uploader, WithVariable } from 'asuna-components';
 import { changeAntdTheme, getThemeColor } from 'dynamic-antd-theme';
 import * as formik from 'formik';
 import { FieldInputProps, FormikProps } from 'formik';
@@ -73,7 +73,7 @@ export function RenderInputComponent({
               margin: 1rem;
             `}
             color={value}
-            onChange={color => {
+            onChange={(color) => {
               changeAntdTheme(getThemeColor(color.hex));
               field.onChange({ target: { id: field.name, name: field.name, value: color } });
             }}
@@ -89,7 +89,7 @@ export function RenderInputComponent({
           <Uploader
             adapter={new FileUploaderAdapterImpl()}
             value={value}
-            onChange={newValue => {
+            onChange={(newValue) => {
               logger.log('[RenderInputComponent]', { fieldDef, value, newValue });
               field.onChange({ target: { id: field.name, name: field.name, value: newValue } });
             }}
@@ -117,6 +117,39 @@ export function RenderInputComponent({
         </WithDebugInfo>
       );
     }
+    case FormFieldType.emailTmplData: {
+      const label = field.name === fieldDef.name ? field.name : `${field.name} / ${fieldDef.name}`;
+      return (
+        <>
+          <label>{label}</label>
+          <DynamicJsonArrayTable
+            adapter={ObjectJsonTableHelper}
+            value={value}
+            preview={(item) => <div>{util.inspect(ObjectJsonTableHelper.keyParser(item))}</div>}
+            render={({ fieldOpts, index }) => (
+              <antd.Card>
+                <TextField {...fieldOpts('key', index)} label="key" />
+                <TextField {...fieldOpts('subject', index)} label="subject" />
+                {/*<TextField {...fieldOpts('template', index)} label="template" />*/}
+                <WithVariable variable={fieldOpts('template', index)}>
+                  {({ name, value, onChange }) => (
+                    <StringTmpl
+                      tmpl={value}
+                      fields={[]}
+                      onChange={(value) => onChange({ target: { id: name, name, value } } as any)}
+                      htmlMode
+                    />
+                  )}
+                </WithVariable>
+                <pre>{JSON.stringify(field, null, 2)}</pre>
+              </antd.Card>
+            )}
+            onChange={(values) => form.setFieldValue(field.name, values)}
+          />
+          {/*<DebugInfo data={value} type="util" />*/}
+        </>
+      );
+    }
     case FormFieldType.wxTmplData: {
       const label = field.name === fieldDef.name ? field.name : `${field.name} / ${fieldDef.name}`;
       return (
@@ -125,7 +158,7 @@ export function RenderInputComponent({
           <DynamicJsonArrayTable
             adapter={ObjectJsonTableHelper}
             value={value}
-            preview={item => <div>{util.inspect(ObjectJsonTableHelper.keyParser(item))}</div>}
+            preview={(item) => <div>{util.inspect(ObjectJsonTableHelper.keyParser(item))}</div>}
             render={({ fieldOpts, index }) => (
               <antd.Card>
                 <TextField {...fieldOpts('key', index)} label="key" />{' '}
@@ -133,7 +166,7 @@ export function RenderInputComponent({
                 <TextField {...fieldOpts('value', index)} label="value" fullWidth multiline />
               </antd.Card>
             )}
-            onChange={values => form.setFieldValue(field.name, values)}
+            onChange={(values) => form.setFieldValue(field.name, values)}
           />
           {/*<DebugInfo data={value} type="util" />*/}
         </>
@@ -147,14 +180,14 @@ export function RenderInputComponent({
           <DynamicJsonArrayTable
             adapter={ObjectJsonTableHelper}
             value={value}
-            preview={item => <div>{util.inspect(ObjectJsonTableHelper.keyParser(item))}</div>}
+            preview={(item) => <div>{util.inspect(ObjectJsonTableHelper.keyParser(item))}</div>}
             render={({ fieldOpts, index }) => (
               <antd.Card>
                 <TextField {...fieldOpts('key', index)} label="key" />
                 <TextField {...fieldOpts('value', index)} label="value" fullWidth multiline />
               </antd.Card>
             )}
-            onChange={values => {
+            onChange={(values) => {
               console.log('onChange', field.name, values);
               form.setFieldValue(field.name, values);
             }}
@@ -238,7 +271,7 @@ const InnerForm = (props: EasyFormProps & formik.FormikProps<formik.FormikValues
   },*/
 export const EasyForm = formik.withFormik<EasyFormProps, any>({
   // Transform outer props into form values
-  mapPropsToValues: props =>
+  mapPropsToValues: (props) =>
     Object.assign({}, ..._.map(props.fields, (field: FormField, name: string) => ({ [name]: field.defaultValue }))),
 
   validate: (values: formik.FormikValues, props) => {
@@ -366,7 +399,7 @@ const GroupInnerForm = (props: GroupEasyFormProps & formik.FormikProps<formik.Fo
 
 export const EasyGroupForm = formik.withFormik<GroupEasyFormProps, any>({
   // Transform outer props into form values
-  mapPropsToValues: props =>
+  mapPropsToValues: (props) =>
     Object.assign(
       {},
       ..._.flattenDeep(

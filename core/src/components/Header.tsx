@@ -38,10 +38,10 @@ export interface IHeaderProps {
   withDebugSettingsProps?: (fn: (props: IDebugSettingsProps) => any) => any;
 }
 
-export const Header: React.FC<IHeaderProps> = props => {
+export const Header: React.FC<IHeaderProps> = (props) => {
   const { auth, app, env, version, hideLogo, onSync, isAdmin, isSuperAdmin, handleAction, logout } = props;
   const { store, updateStore } = useContext(StoreContext);
-  const appState = useSelector<RootState, AppState>(state => state.app);
+  const appState = useSelector<RootState, AppState>((state) => state.app);
 
   const _renderMenu = () => (
     <Menu>

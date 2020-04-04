@@ -23,7 +23,7 @@ export function PlainImages({ options, formItemLayout }: IPlainImagesProps) {
   // const host = Config.get('UPLOADS_ENDPOINT', '');
   return (
     <Form.Item key={fieldName} {...(formItemLayout || horizontalFormItemLayout)} label={labelName} help={help}>
-      {_.map(assets, asset => (
+      {_.map(assets, (asset) => (
         <AssetPreview key={asset} url={asset} showPdf fullWidth />
       ))}
     </Form.Item>

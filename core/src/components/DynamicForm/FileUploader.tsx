@@ -67,7 +67,7 @@ export class FileUploader extends React.Component<IFilesUploaderProps> {
     logger.log('render', this.props, this.state);
 
     const uploadProps: UploadProps = {
-      customRequest: option => {
+      customRequest: (option) => {
         logger.log('[FileUploader][customRequest]', option);
         const { onChange, urlHandler, bucket, jsonMode } = this.props;
 
@@ -80,7 +80,7 @@ export class FileUploader extends React.Component<IFilesUploaderProps> {
           },
           { bucket },
         )
-          .then(uploaded => {
+          .then((uploaded) => {
             logger.log('[FileUploader][customRequest]', { uploaded });
             if (uploaded) {
               logger.log('[FileUploader][customRequest]', this.props, this.state);
@@ -103,7 +103,7 @@ export class FileUploader extends React.Component<IFilesUploaderProps> {
       },
       multiple: false,
       supportServerRender: true,
-      onChange: info => {
+      onChange: (info) => {
         this.setState({ uploadFiles: [...info.fileList] });
         if (info.file.status !== 'uploading') {
           logger.log('[FileUploader][onChange]', info.file, info.fileList);
@@ -131,7 +131,7 @@ export class FileUploader extends React.Component<IFilesUploaderProps> {
         <Input.TextArea
           value={_.isString(this.props.value) ? this.props.value : JSON.stringify(this.props.value)}
           autoSize={{ minRows: 2, maxRows: 6 }}
-          onChange={event => {
+          onChange={(event) => {
             console.log(event.target.value);
             this.props.onChange!(parseJSONIfCould(event.target.value));
             this.setState({ uploadFiles: transformToUploadFiles(event.target.value) });

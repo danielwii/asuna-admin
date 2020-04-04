@@ -31,7 +31,7 @@ export class ProgressBar extends React.Component {
 
   componentDidMount() {
     const { XMLHttpRequest } = window as any;
-    const isNotWs = xhr => !xhr.responseURL.includes('/socket.io/');
+    const isNotWs = (xhr) => !xhr.responseURL.includes('/socket.io/');
 
     (window as any).XMLHttpRequest = () => {
       this.setState({ counter: this.state.counter + 1, complete: 0 });
@@ -39,7 +39,7 @@ export class ProgressBar extends React.Component {
 
       xhr.addEventListener(
         'progress',
-        evt => {
+        (evt) => {
           const notWs = isNotWs(xhr);
           // console.log('[xhr]', 'progress', { notWs, xhr, evt });
           if (notWs) {

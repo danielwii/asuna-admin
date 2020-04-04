@@ -44,7 +44,7 @@ export class ImageCrop extends React.PureComponent<IProps, IState> {
   private fileUrl: string;
   private imageRef: HTMLImageElement;
 
-  onSelectFile = async e => {
+  onSelectFile = async (e) => {
     if (e.target.files && e.target.files.length > 0) {
       this.setState({ src: await getBase64(e.target.files[0]) });
     }
@@ -69,7 +69,7 @@ export class ImageCrop extends React.PureComponent<IProps, IState> {
     this.makeClientCrop(crop, pixelCrop);
   };
 
-  onCropChange = crop => {
+  onCropChange = (crop) => {
     this.setState({ crop });
   };
 

@@ -46,7 +46,7 @@ export class VideoUploader extends React.Component<IProps> {
     const { onChange, jsonMode } = this.props;
     // const images = _.compact(info.fileList.map(file => file.url)).join(',');
     // 这里只有 status 为 done 的 image 包含 url
-    let videos: string | string[] = _.compact(_.flatten(info.fileList.map(file => file.url)));
+    let videos: string | string[] = _.compact(_.flatten(info.fileList.map((file) => file.url)));
     if (!jsonMode && _.isArray(videos)) {
       videos = videos.join(',');
     }
@@ -58,8 +58,8 @@ export class VideoUploader extends React.Component<IProps> {
   static wrapVideosToFileList = (videosInfo?: string | string[]): UploadFile[] => {
     const videos = valueToArrays(videosInfo);
     const fileList = _.flow([
-      fp.filter<string>(video => typeof video !== 'object'),
-      fp.map<string, Partial<UploadFile>>(video => {
+      fp.filter<string>((video) => typeof video !== 'object'),
+      fp.map<string, Partial<UploadFile>>((video) => {
         return {
           uid: `${video}`,
           status: 'done' as UploadFileStatus,
@@ -92,7 +92,7 @@ export class VideoUploader extends React.Component<IProps> {
   customRequest = ({ file }: RcCustomRequestOptions): void => {
     logger.log('[VideoUploader][customRequest]', file);
     const { onChange, urlHandler, bucket, jsonMode } = this.props;
-    upload(file, {}, { bucket }).then(uploaded => {
+    upload(file, {}, { bucket }).then((uploaded) => {
       if (uploaded) {
         logger.log('[VideoUploader][customRequest]', { props: this.props, state: this.state });
         const resolvedUrl = urlHandler ? urlHandler(uploaded[0]) : `${uploaded[0]}`;
@@ -144,7 +144,7 @@ export class VideoUploader extends React.Component<IProps> {
         <Input.TextArea
           value={typeof videos === 'string' ? videos : videos ? JSON.stringify(videos) : ''}
           autoSize={{ minRows: 2, maxRows: 6 }}
-          onChange={event => {
+          onChange={(event) => {
             logger.debug('[onChange]', event);
             this.props.onChange!(this.valueToSubmit(event.target.value));
             this.setState({ fileList: VideoUploader.wrapVideosToFileList(event.target.value) });
@@ -181,7 +181,7 @@ export class VideoPlayer extends React.Component {
     return (
       <React.Fragment>
         <div data-vjs-player>
-          <video ref={node => (this.videoNode = node)} className="video-js" />
+          <video ref={(node) => (this.videoNode = node)} className="video-js" />
         </div>
         {/* language=CSS */}
         <style jsx>

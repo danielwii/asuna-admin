@@ -11,7 +11,7 @@ type AreaType = typeof areas[0] & { children?: Array<CascaderOptionType> };
 type ProvinceType = typeof provinces[0] & { children?: Array<CascaderOptionType> };
 
 areas.forEach((area: AreaType) => {
-  const matchCity: CascaderOptionType = cities.filter(city => city.code === area.cityCode)[0];
+  const matchCity: CascaderOptionType = cities.filter((city) => city.code === area.cityCode)[0];
   if (matchCity) {
     matchCity.children = matchCity.children || [];
     matchCity.children.push({
@@ -22,7 +22,7 @@ areas.forEach((area: AreaType) => {
 });
 
 cities.forEach((city: CityType) => {
-  const matchProvince: CascaderOptionType = provinces.filter(province => province.code === city.provinceCode)[0];
+  const matchProvince: CascaderOptionType = provinces.filter((province) => province.code === city.provinceCode)[0];
   if (matchProvince) {
     matchProvince.children = matchProvince.children || [];
     matchProvince.children.push({

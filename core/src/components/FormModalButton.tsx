@@ -21,7 +21,7 @@ interface ILightForm {
 
 const LightForm = Form.create<ILightForm>({
   mapPropsToFields({ fields }) {
-    return _.mapValues(fields, field => Form.createFormField({ ...field }));
+    return _.mapValues(fields, (field) => Form.createFormField({ ...field }));
   },
   onFieldsChange({ onChange }, changedFields) {
     onChange(changedFields);
@@ -76,7 +76,7 @@ export class FormModalButton extends React.Component<IFormModalProps, IState> {
           this.setState({
             visible: false,
             loading: false,
-            fields: R.map(field => ({ ...field, value: undefined }))(fields),
+            fields: R.map((field) => ({ ...field, value: undefined }))(fields),
           });
         } catch (e) {
           const errors = toFormErrors(e.response);
@@ -89,7 +89,7 @@ export class FormModalButton extends React.Component<IFormModalProps, IState> {
     });
   };
 
-  handleFormChange = changedFields => {
+  handleFormChange = (changedFields) => {
     const { fields } = this.state;
     const merged = R.mergeDeepRight(fields, changedFields);
     logger.log('[handleFormChange]', { fields, changedFields, merged });
@@ -141,7 +141,7 @@ export class FormModalButton extends React.Component<IFormModalProps, IState> {
           {body}
           {fields && (
             <LightForm
-              formRef={form => (this.form = form)}
+              formRef={(form) => (this.form = form)}
               /*
               wrappedComponentRef={inst => {
                 console.log('wrappedComponentRef', inst);

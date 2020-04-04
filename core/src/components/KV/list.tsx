@@ -67,7 +67,9 @@ export function ListKVComponent(props: {
   return (
     <>
       <Typography>
-        <Button onClick={() => refetch()}>Reload</Button>
+        <Button onClick={() => refetch()} loading={loading}>
+          Reload
+        </Button>
         {info && (
           <Typography.Paragraph>
             <InfoCircleOutlined style={{ margin: '0 0.2rem' }} />
@@ -81,11 +83,9 @@ export function ListKVComponent(props: {
           {body.values && (
             <Formik
               initialValues={{ values: body.values }}
-              onSubmit={(values, formikHelpers) =>
-                KVHelper.save({ key, collection }, { ...body, ...values }, refetch)
-              }
+              onSubmit={(values, formikHelpers) => KVHelper.save({ key, collection }, { ...body, ...values }, refetch)}
             >
-              {formikBag => (
+              {(formikBag) => (
                 <Form>
                   <Field name="values">
                     {({ field, form, meta }: FieldProps<FormikValues>) => (
@@ -101,8 +101,8 @@ export function ListKVComponent(props: {
                         <DynamicJsonArrayTable
                           adapter={ObjectArrayJsonTableHelper}
                           value={(formikBag.values.values ?? formikBag.initialValues.values ?? body.values) as any}
-                          preview={item => <div>{util.inspect(ObjectArrayJsonTableHelper.keyParser(item))}</div>}
-                          onChange={values => form.setFieldValue(field.name, values)}
+                          preview={(item) => <div>{util.inspect(ObjectArrayJsonTableHelper.keyParser(item))}</div>}
+                          onChange={(values) => form.setFieldValue(field.name, values)}
                           render={({ fieldOpts, index }) =>
                             _.map(body.fields, (fieldDef: FormFieldDef) => (
                               <WithDebugInfo

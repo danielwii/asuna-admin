@@ -14,7 +14,7 @@ export const AdvancedButton: React.FC<ButtonProps & { popConfirmProps?: Popconfi
   const view = (
     <Button
       {...baseButtonProps}
-      onClick={async e => {
+      onClick={async (e) => {
         setLoading(true);
         await baseButtonProps?.onClick?.(e);
         setLoading(false);
@@ -29,7 +29,7 @@ export const AdvancedButton: React.FC<ButtonProps & { popConfirmProps?: Popconfi
     return (
       <Popconfirm
         {...popConfirmProps}
-        onConfirm={async e => {
+        onConfirm={async (e) => {
           setLoading(true);
           await popConfirmProps?.onConfirm?.(e);
           setLoading(false);
