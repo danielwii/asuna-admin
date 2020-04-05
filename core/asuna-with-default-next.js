@@ -1,5 +1,4 @@
-// eslint-disable-next-line eslint-comments/disable-enable-pair
-/* eslint-disable import/no-extraneous-dependencies,no-console,no-param-reassign,no-unused-vars,@typescript-eslint/no-var-requires,no-use-before-define,@typescript-eslint/explicit-function-return-type */
+/* eslint-disable import/no-extraneous-dependencies,no-console,no-param-reassign,no-unused-vars,@typescript-eslint/no-var-requires,no-use-before-define,@typescript-eslint/explicit-function-return-type,@typescript-eslint/no-empty-function */
 const webpack = require('webpack');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const { TsconfigPathsPlugin } = require('tsconfig-paths-webpack-plugin');
