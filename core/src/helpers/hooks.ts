@@ -55,11 +55,7 @@ export function useAsunaModels(
   useAsync(async () => {
     logger.log('useAsunaModels getColumns ...');
     // const hasGraphAPI = _.find(await AppContext.ctx.graphql.loadGraphs(), schema => schema === `sys_${modelName}`);
-    const columnProps = await modelProxyCaller().getColumns(
-      modelName,
-      { callRefresh, actions },
-      // extraName ?? modelName,
-    );
+    const columnProps = await modelProxyCaller().getColumns(modelName, { callRefresh, actions }, extraName);
 
     logger.log('useAsunaModels loadOriginSchema ...', columnProps);
     const schemas = await modelProxyCaller().loadOriginSchema(modelName);

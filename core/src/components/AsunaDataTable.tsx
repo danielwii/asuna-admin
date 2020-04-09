@@ -212,7 +212,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = (props) => {
 
   const { loading: loadingAsunaModels, columnProps, relations } = useAsunaModels(
     modelName,
-    { callRefresh: func.createRefresher(queryCondition), extraName: extraName || modelName, actions },
+    { callRefresh: func.createRefresher(queryCondition), extraName, actions },
     [modelName, queryCondition],
   );
 
