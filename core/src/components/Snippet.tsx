@@ -38,10 +38,10 @@ export function ReactViewer({
   );
 }
 
-export const PdfButton: React.FC<{ pdf?: string }> = ({ pdf }) =>
+export const PdfButton: React.FC<{ pdf?: string; name?: string }> = ({ pdf, name }) =>
   pdf ? (
     <Tooltip title="按住 option/ctrl 下载">
-      <Button type="dashed" size="small" href={pdf} target="_blank">
+      <Button type="dashed" size="small" href={pdf} target="_blank" {...(name ? { download: name } : {})}>
         查看 pdf
       </Button>
     </Tooltip>

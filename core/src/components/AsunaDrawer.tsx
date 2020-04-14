@@ -6,7 +6,8 @@ export const AsunaDrawerButton: React.FC<{
   text: React.ReactNode;
   record: object;
   modelName: string;
-}> = ({ text, modelName, record }) => {
+  extra?: React.ReactNode;
+}> = ({ text, modelName, record, extra }) => {
   return (
     <DrawerButton
       text={text}
@@ -18,40 +19,7 @@ export const AsunaDrawerButton: React.FC<{
       width="40%"
     >
       <AsunaPlainInfo modelName={modelName} record={record} />
-      {/*
-      <WithFuture
-        future={() => Promise.all([SchemaHelper.getSchema(modelName), SchemaHelper.getFormSchema(modelName)])}
-      >
-        {([schema, formSchema]) => (
-          <List<{ key: string; title: string; value: any }>
-            itemLayout="horizontal"
-            dataSource={_.map(record, (value, key) => ({
-              key,
-              title: key,
-              // fields[key]?.options?.name ?? fields[key]?.options?.label ?? fields[key]?.name,
-              value,
-            }))}
-            renderItem={item => {
-              const columnInfo = _.find(schema?.columns, column => column.name === item.key);
-              const title = columnInfo?.config?.info?.name ?? item.title;
-
-              return (
-                <List.Item>
-                  <List.Item.Meta
-                    title={title}
-                    description={
-                      <WithDebugInfo info={{ item, record: record[item.key], columnInfo }}>
-                        <div>{parseString(record[item.key] ?? '')}</div>
-                      </WithDebugInfo>
-                    }
-                  />
-                </List.Item>
-              );
-            }}
-          />
-        )}
-      </WithFuture>
-*/}
+      {extra}
     </DrawerButton>
   );
 };

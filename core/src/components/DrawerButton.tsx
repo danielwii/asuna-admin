@@ -9,7 +9,7 @@ import * as React from 'react';
 import { useEffect, useState } from 'react';
 
 type RenderComponentType = React.FC<{ refreshFlag: number; openChildrenDrawer?: any }>;
-type RenderChildrenComponentType = React.FC<{ item: any }>;
+export type RenderChildrenComponentType = React.FC<{ item: any }>;
 
 export interface DrawerButtonProps {
   text: React.ReactNode;
@@ -100,8 +100,8 @@ export const DrawerButton: React.FC<
       <SelectOutlined />
     </Button>
   );
-  const RenderComponent: RenderComponentType = render || ((<></>) as any);
-  const RenderChildrenComponent: RenderChildrenComponentType = renderChildrenDrawer || ((<></>) as any);
+  const RenderComponent: RenderComponentType = render ?? ((<></>) as any);
+  const RenderChildrenComponent: RenderChildrenComponentType = renderChildrenDrawer ?? ((<></>) as any);
 
   return (
     <React.Fragment>
