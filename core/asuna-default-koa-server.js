@@ -7,10 +7,11 @@ const Router = require('koa-router');
 const { parse } = require('url');
 const next = require('next');
 const debug = require('debug');
+const _ = require('lodash');
 
-const logger = { log: debug('http'), error: debug('error') };
 const { createProxy } = require('./asuna-utils');
 
+const logger = { log: debug('http'), error: debug('error') };
 const dev = process.env.NODE_ENV !== 'production';
 const port = process.env.PORT || 3000;
 const app = next({ dev });
@@ -51,7 +52,7 @@ function bootstrap({ root, opts, enableGraphQL }) {
 
       const router = new Router();
 
-      router.all('/s-graphql', async ctx => {
+      router.all('/s-graphql', async (ctx) => {
         const { req, res } = ctx;
         await new Promise((resolve, reject) => {
           let target = PROXY_API;
@@ -59,28 +60,41 @@ function bootstrap({ root, opts, enableGraphQL }) {
             req.url = opts.graphql.dest ? opts.graphql.dest() : 'graphql';
             target = opts.graphql.target ? opts.graphql.target : PROXY_API;
           }
-          proxy.web(req, res, { target }, e => (e ? reject(e) : resolve()));
+          proxy.web(req, res, { target }, (e) => (e ? reject(e) : resolve()));
         });
       });
 
-      router.all('*', async ctx => {
+      router.all('*', async (ctx) => {
         const { req, res } = ctx;
         // Be sure to pass `true` as the second argument to `url.parse`.
         // This tells it to parse the query portion of the URL.
         const parsedUrl = parse(req.url, true);
-        const { pathname } = parsedUrl;
+        const { pathname, query } = parsedUrl;
 
         if (opts && opts.proxy) {
-          const proxyConfig = opts.proxy.find(config => pathname.startsWith(config.pathname));
-          logger.log(
-            `${new Date().toISOString().dim} ${req.method.bold} ${req.url}`,
-            proxyConfig ? util.inspect(proxyConfig, { colors: true }) : 'direct'.cyan,
-          );
+          const proxyConfig = opts.proxy.find((config) => pathname.startsWith(config.pathname));
           if (proxyConfig && proxyConfig.redirectTo) {
             const redirectTo = proxyConfig.redirectTo(req);
-            res.writeHead(308, {
-              Location: redirectTo,
-            });
+            req.url = redirectTo;
+
+            if (_.has(query, 'download')) {
+              const { host, protocol } = parse(redirectTo);
+              // const target = `${protocol}//${host}`;
+              // logger.log(parse(redirectTo));
+              logger.log(`${new Date().toISOString().dim} ${req.method.bold} ${req.url}`, 'download'.magenta);
+              await new Promise((resolve, reject) =>
+                proxy.web(req, res, { target: `${protocol}//${host}`, followRedirects: true }, (e) =>
+                  e ? reject(e) : resolve(),
+                ),
+              );
+              return;
+            }
+
+            logger.log(
+              `${new Date().toISOString().dim} ${req.method.bold} ${req.url}`,
+              proxyConfig ? util.inspect(proxyConfig, { colors: true }) : 'direct'.cyan,
+            );
+            res.writeHead(308, { Location: redirectTo });
             res.end();
             return;
           }
@@ -91,7 +105,7 @@ function bootstrap({ root, opts, enableGraphQL }) {
             }
             // proxy.web(req, res, { target: proxyConfig.target });
             await new Promise((resolve, reject) => {
-              proxy.web(req, res, { target: proxyConfig.target }, e => (e ? reject(e) : resolve()));
+              proxy.web(req, res, { target: proxyConfig.target }, (e) => (e ? reject(e) : resolve()));
             });
           } else {
             await handle(req, res);
@@ -110,7 +124,7 @@ function bootstrap({ root, opts, enableGraphQL }) {
 
       server.use(router.routes());
 
-      server.listen(port, err => {
+      server.listen(port, (err) => {
         if (err) throw err;
         if (opts.enableGraphQL) {
           logger.log(`> 🚀 GraphQL Ready at http://localhost:${port}${graphqlPath}`.bgRed.black.bold);
@@ -120,7 +134,7 @@ function bootstrap({ root, opts, enableGraphQL }) {
         logger.log(`> ENV: ${process.env.ENV}`.bgRed.black.bold);
       });
     })
-    .catch(reason => logger.error(reason));
+    .catch((reason) => logger.error(reason));
 }
 
 module.exports = { bootstrap };
