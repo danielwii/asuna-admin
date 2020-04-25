@@ -430,12 +430,10 @@ export const EasyGroupForm = formik.withFormik<GroupEasyFormProps, any>({
   },
 
   handleSubmit: (values, { props, setSubmitting }) => {
-    props
-      .onSubmit(
-        _.mergeWith(props.fieldValues, values, (objValue, srcValue) =>
-          _.isString(srcValue) ? srcValue : { ...objValue, ...srcValue },
-        ),
-      )
-      .finally(() => setSubmitting(false));
+    const merged = _.mergeWith(props.fieldValues, values, (objValue, srcValue) =>
+      _.isObject(srcValue) ? { ...objValue, ...srcValue } : srcValue,
+    );
+    // logger.log(props.fieldValues, values, merged);
+    props.onSubmit(merged).finally(() => setSubmitting(false));
   },
 })(GroupInnerForm) as any;
