@@ -1,0 +1,138 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.14.1
+ignore: {}
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  SNYK-JS-LODASH-567746:
+    - lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - antd > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - formik > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - asuna-components > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - node-buffs > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - react-color > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - react-visual-diff > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - '@ant-design/compatible > rc-form > lodash':
+        patched: '2020-04-30T23:28:54.559Z'
+    - antd > @ant-design/react-slick > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - antd > rc-steps > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - antd > rc-table > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - antd > rc-tabs > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - asuna-components > antd > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - apollo > @oclif/plugin-not-found > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - apollo > cli-ux > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - apollo > table > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - asuna-components > formik > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - styled-components > @babel/traverse > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - styled-components > babel-plugin-styled-components > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - next > @babel/core > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - next > babel-plugin-transform-define > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - react-color > reactcss > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - '@ant-design/compatible > rc-editor-mention > rc-editor-core > lodash':
+        patched: '2020-04-30T23:28:54.559Z'
+    - styled-components > @babel/traverse > @babel/generator > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - next > @babel/preset-env > @babel/plugin-transform-block-scoping > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - asuna-components > antd > @ant-design/react-slick > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - asuna-components > antd > rc-steps > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - asuna-components > antd > rc-table > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - asuna-components > antd > rc-tabs > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - apollo > @oclif/plugin-plugins > cli-ux > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - apollo > apollo-codegen-core > @babel/types > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - apollo > apollo-codegen-flow > @babel/types > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - apollo > apollo-codegen-typescript > @babel/types > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - apollo > gaze > globule > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - asuna-components > styled-components > @babel/traverse > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - asuna-components > styled-components > babel-plugin-styled-components > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - merge-graphql-schemas > @graphql-toolkit/schema-merging > @graphql-toolkit/common > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - next > styled-jsx > @babel/types > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - styled-components > babel-plugin-styled-components > @babel/helper-annotate-as-pure > @babel/types > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - asuna-components > styled-components > @babel/traverse > @babel/generator > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - next > @babel/preset-env > @babel/plugin-transform-classes > @babel/helper-define-map > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - apollo > apollo-codegen-core > @babel/generator > @babel/types > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - apollo > apollo-codegen-flow > @babel/generator > @babel/types > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - apollo > apollo-codegen-typescript > @babel/generator > @babel/types > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - styled-components > @babel/traverse > @babel/helper-split-export-declaration > @babel/types > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - apollo > apollo-codegen-flow > apollo-codegen-core > @babel/types > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - apollo > apollo-codegen-scala > apollo-codegen-core > @babel/types > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - apollo > apollo-codegen-swift > apollo-codegen-core > @babel/types > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - apollo > apollo-codegen-typescript > apollo-codegen-core > @babel/types > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - '@emotion/core > @emotion/css > babel-plugin-emotion > @babel/helper-module-imports > @babel/types > lodash':
+        patched: '2020-04-30T23:28:54.559Z'
+    - asuna-components > emotion > babel-plugin-emotion > @babel/helper-module-imports > @babel/types > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - react-diff-viewer > emotion > babel-plugin-emotion > @babel/helper-module-imports > @babel/types > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - asuna-components > styled-components > babel-plugin-styled-components > @babel/helper-annotate-as-pure > @babel/types > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - next > @babel/preset-env > @babel/plugin-transform-unicode-regex > @babel/helper-create-regexp-features-plugin > @babel/helper-regex > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - apollo > apollo-codegen-flow > apollo-codegen-core > @babel/generator > @babel/types > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - apollo > apollo-codegen-scala > apollo-codegen-core > @babel/generator > @babel/types > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - apollo > apollo-codegen-swift > apollo-codegen-core > @babel/generator > @babel/types > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - apollo > apollo-codegen-typescript > apollo-codegen-core > @babel/generator > @babel/types > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - asuna-components > styled-components > @babel/traverse > @babel/helper-split-export-declaration > @babel/types > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - styled-components > @babel/traverse > @babel/helper-function-name > @babel/template > @babel/types > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - react-spinners > @emotion/core > @emotion/css > babel-plugin-emotion > @babel/helper-module-imports > @babel/types > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - next > @babel/preset-env > @babel/plugin-transform-exponentiation-operator > @babel/helper-builder-binary-assignment-operator-visitor > @babel/helper-explode-assignable-expression > @babel/traverse > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - asuna-components > styled-components > @babel/traverse > @babel/helper-function-name > @babel/template > @babel/types > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - next > @babel/preset-env > @babel/plugin-transform-exponentiation-operator > @babel/helper-builder-binary-assignment-operator-visitor > @babel/helper-explode-assignable-expression > @babel/traverse > @babel/generator > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - next > @babel/preset-env > @babel/plugin-transform-exponentiation-operator > @babel/helper-builder-binary-assignment-operator-visitor > @babel/helper-explode-assignable-expression > @babel/traverse > @babel/helper-split-export-declaration > @babel/types > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
+    - next > @babel/preset-env > @babel/plugin-transform-exponentiation-operator > @babel/helper-builder-binary-assignment-operator-visitor > @babel/helper-explode-assignable-expression > @babel/traverse > @babel/helper-function-name > @babel/template > @babel/types > lodash:
+        patched: '2020-04-30T23:28:54.559Z'
