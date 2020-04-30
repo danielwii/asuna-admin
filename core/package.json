@@ -37,7 +37,9 @@
     "changelog": "conventional-changelog -p asuna-admin -i CHANGELOG.md",
     "init-changelog": "conventional-changelog -p asuna-admin -i CHANGELOG.md -r 0",
     "check:circular": "npx madge --circular --extensions ts ./",
-    "codegen:generate": "apollo codegen:generate --endpoint http://localhost:5100/graphql --target typescript --includes=services/*.ts --tagName gql --addTypename"
+    "codegen:generate": "apollo codegen:generate --endpoint http://localhost:5100/graphql --target typescript --includes=services/*.ts --tagName gql --addTypename",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "peerDependencies": {},
   "dependencies": {
@@ -117,7 +119,8 @@
     "styled-components": "^5.1.0",
     "styled-spinkit": "^1.1.0",
     "url-join": "^4.0.1",
-    "video.js": "^7.7.5"
+    "video.js": "^7.7.5",
+    "snyk": "^1.316.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.8.4",
@@ -185,5 +188,6 @@
       "pre-commit": "pretty-quick --staged",
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
-  }
+  },
+  "snyk": true
 }
