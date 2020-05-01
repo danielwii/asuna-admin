@@ -2,7 +2,7 @@ import { AppContext } from '@asuna-admin/core';
 import { RelationColumnProps } from '@asuna-admin/helpers';
 import { Button, Divider, Table } from 'antd';
 import { PaginationConfig } from 'antd/es/pagination';
-import { SorterResult, TableCurrentDataSource } from 'antd/es/table/interface';
+import { SorterResult, TableCurrentDataSource, TablePaginationConfig } from 'antd/es/table/interface';
 import { gql } from 'apollo-boost';
 import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
@@ -14,7 +14,7 @@ import * as util from 'util';
 interface IGraphTableProps {
   modelName: string;
   columns?: RelationColumnProps[];
-  pagination: PaginationConfig;
+  pagination: TablePaginationConfig;
   filters?: Record<any, string[]>;
   sorter?: Partial<SorterResult<any>>;
   relations?: string[];

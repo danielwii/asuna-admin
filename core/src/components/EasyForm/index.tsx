@@ -378,7 +378,9 @@ const GroupInnerForm = (props: GroupEasyFormProps & formik.FormikProps<formik.Fo
               cancelText="No"
               disabled={isSubmitting}
             >
-              <antd.Button type="danger">{isSubmitting ? 'Destroying' : 'Destroy'}</antd.Button>
+              <antd.Button type="primary" danger>
+                {isSubmitting ? 'Destroying' : 'Destroy'}
+              </antd.Button>
             </Popconfirm>
           )}
         </formik.Form>

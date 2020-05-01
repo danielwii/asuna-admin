@@ -83,7 +83,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = (props) => {
         {isDeletableSystemRecord(record) && deletable && (
           <>
             <Divider type="vertical" />
-            <Button size="small" type="danger" onClick={() => func.remove(text, record)}>
+            <Button size="small" type="primary" danger onClick={() => func.remove(text, record)}>
               删除
             </Button>
           </>
@@ -356,7 +356,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = (props) => {
           loading={loading}
           columns={columnProps}
           expandedRowRender={expandedRowRender}
-          pagination={{ ...pagination, position: 'both' }}
+          pagination={{ ...pagination, position: ['topRight', 'bottomRight'] }}
           onChange={func.handleTableChange}
           rowClassName={rowClassName}
         />
