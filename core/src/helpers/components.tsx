@@ -34,13 +34,13 @@ export const ComponentsHelper = {
     getExtra,
     future,
   }: {
-    getModel: (profile) => T | undefined | null;
-    getPortrait?: (info: T) => React.ReactNode;
+    getModel: (profile) => T;
+    getPortrait?: (info) => React.ReactNode;
     modelName: string;
-    getTitle?: (info) => T | React.ReactNode;
-    getTooltip?: (info) => T | React.ReactNode;
-    getText: (info: T) => React.ReactNode;
-    getExtra?: (info: T) => React.ReactNode;
+    getTitle?: (info) => React.ReactNode;
+    getTooltip?: (info) => React.ReactNode;
+    getText: (info) => React.ReactNode;
+    getExtra?: (info) => React.ReactNode;
     future: Promise<any>;
   }): React.ReactElement => (
     <WithFuture future={() => future}>

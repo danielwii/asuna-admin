@@ -176,7 +176,12 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
   const _buildField = (fields: FormField[], field: DynamicFormField): React.ReactNode => {
     field.options = field.options || {};
     const options: DeepPartial<
-      DynamicFormField['options'] & HiddenOptions & PlainOptions & InputOptions & SelectOptions & StringArrayOptions
+      DynamicFormField['options'] &
+        HiddenOptions &
+        PlainOptions &
+        InputOptions &
+        // SelectOptions & // will cause never type issue
+        StringArrayOptions
     > = {
       ...field.options,
       // key: field.key ?? field.name,

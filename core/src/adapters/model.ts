@@ -156,16 +156,7 @@ export interface ModelAdapter {
     } & Asuna.Schema.ModelConfig,
   ): Promise<T>;
   getPrimaryKey(modelName: string): string;
-  loadModels2<T>(
-    modelName: string,
-    configs?: {
-      relations?: string[];
-      fields?: string[];
-      pagination?: Asuna.Pageable;
-      filters?: WhereConditions;
-      sorter?: any;
-    } & Asuna.Schema.ModelConfig,
-  ): Promise<Asuna.PageableResponse<T>>;
+  loadModels2<T>(modelName: string, configs?: ModelListConfig): Promise<Asuna.PageableResponse<T>>;
   uniq(modelName: string, column: string, where?: object): Promise<string[]>;
   groupCounts(modelName: string, column: string, relation: string, id: string): Promise<{ [name: string]: number }>;
   loadOriginSchema(modelName: string): Promise<Asuna.Schema.OriginSchema>;
@@ -369,8 +360,8 @@ export class ModelAdapterImpl implements ModelAdapter {
       return this.service.update(auth, modelName, {
         id,
         primaryKey,
-        body: convertNullTransformed,
         ...data,
+        body: convertNullTransformed,
         ...this.getModelConfig(modelName),
       });
     }
