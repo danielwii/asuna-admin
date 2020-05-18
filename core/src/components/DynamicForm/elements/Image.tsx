@@ -16,7 +16,7 @@ import { FormComponentProps } from './interfaces';
 const logger = createLogger('components:dynamic-form:image');
 
 const UploaderHOC: React.FC<Partial<FormComponentProps> & Partial<IUploaderProps>> = (props) => {
-  useLogger(`Images(key=${name})`, props);
+  useLogger(`Images(key=${UploaderHOC.name})`, props);
   return (
     <WithVariable key={props.id} variable={props as FormComponentProps & Partial<IUploaderProps>}>
       {(props) => {

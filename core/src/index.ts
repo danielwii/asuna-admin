@@ -3,7 +3,7 @@
 
 import * as _ from 'lodash';
 
-console.log('replace lodash cache to WeakMap');
+console.log('[asuna-admin] replace lodash cache to WeakMap');
 _.memoize.Cache = WeakMap;
 
 export * from './adapters';

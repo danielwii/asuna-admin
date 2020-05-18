@@ -1,6 +1,7 @@
-import { createLogger } from '@asuna-admin/logger';
 import { WrappedFormUtils } from '@ant-design/compatible/es/form/Form';
-import { StringArray } from 'asuna-components';
+import { FormComponentProps } from '@asuna-admin/components/DynamicForm/elements/interfaces';
+import { createLogger } from '@asuna-admin/logger';
+import { IStringArrayProps, StringArray, WithVariable } from 'asuna-components';
 import * as React from 'react';
 
 import { generateComponent, horizontalFormItemLayout, IFormItemLayout } from '.';
@@ -16,6 +17,15 @@ export type StringArrayOptions = {
   mode?: 'input' | 'tag';
 };
 
+const StringArrayHOC: React.FC<Partial<FormComponentProps> & Partial<IStringArrayProps>> = (props) => {
+  // useLogger(`StringArray(key=${StringArrayHOC.name})`, props);
+  return (
+    <WithVariable key={props.id} variable={props as FormComponentProps & Partial<IStringArrayProps>}>
+      {(props) => <StringArray {...props} onChange={(items) => props.onChange(items)} />}
+    </WithVariable>
+  );
+};
+
 export function generateStringArray(
   form: WrappedFormUtils,
   { key, name, label, items, onChange, mode }: StringArrayOptions,
@@ -28,7 +38,7 @@ export function generateStringArray(
   return generateComponent(
     form,
     { fieldName, labelName },
-    <StringArray mode={mode} items={items || []} onChange={onChange} />,
+    <StringArrayHOC mode={mode} items={[...(items ?? [])]} />, // todo
     formItemLayout,
   );
 }

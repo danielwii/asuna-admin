@@ -68,10 +68,8 @@ const ContentForm = Form.create<IContentForm & DynamicFormProps>({
       // remove fields when validating=true
       R.filter((field) => !R.prop('validating', field)),
     )(changedFields);
-    if (!R.isEmpty(filteredChangedFields)) {
-      logger.debug('[ContentForm][onFieldsChange]', { filteredChangedFields });
-      props.onChange(filteredChangedFields);
-    }
+    logger.debug('[ContentForm][onFieldsChange]', { filteredChangedFields });
+    if (!R.isEmpty(filteredChangedFields)) props.onChange(filteredChangedFields);
   },
 })(DynamicForm);
 

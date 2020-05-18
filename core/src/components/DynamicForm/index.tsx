@@ -191,7 +191,7 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
     };
     const defaultAssociation = { name: 'name', value: 'id', fields: ['id', 'name'] };
 
-    console.log('[DynamicForm]', '[buildField]', { field, options, schema });
+    // console.log('[DynamicForm]', '[buildField]', { field, options, schema });
 
     // all readonly or hidden field will rendered as plain component
     if (_.includes(['readonly'], field?.options?.accessible)) {
