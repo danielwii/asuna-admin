@@ -183,7 +183,7 @@ export const generateInput = (
     component = <Input placeholder={placeholder} allowClear />;
   }
 
-  const opts = { rules: [{ required, message: requiredMessage }, { max: length }] };
+  const opts = { rules: [{ required, message: requiredMessage }, { max: length || 255 }] };
   return generateComponent(form, { key, name, label, fieldName, labelName, opts, help }, component, formItemLayout);
 };
 
@@ -203,26 +203,6 @@ const TextAreaHOC: React.FC<Partial<FormComponentProps>> = (props) => (
             placeholder={_.isString(props.value) ? JSON.parse(props.value) : props.value ?? {}}
           />
         );
-        /*
-        return (
-          <Row gutter={4}>
-            <Col>
-              <JSONInput
-                id={`${props.id}_json_input`}
-                locale={locale}
-                height="15rem"
-                width="100%"
-                onChange={({ json, jsObject }) => jsObject && props.onChange(json)}
-                placeholder={_.isString(props.value) ? JSON.parse(props.value) : props.value ?? {}}
-              />
-              <Divider type="horizontal" dashed style={{ margin: '0.5rem 0' }} />
-            </Col>
-            <Col>
-              <Preview text={_.isString(props.value) ? props.value : JSON.stringify(props.value)} jsonMode />
-            </Col>
-          </Row>
-        );
-*/
       }
       return textArea;
     }}

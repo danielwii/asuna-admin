@@ -221,6 +221,9 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
       case DynamicFormTypes.Plain:
         return generatePlain({ text: field.value, ...options } as PlainOptions);
       case DynamicFormTypes.Input:
+        if (options.length && options.length > 200) {
+          return generateTextArea(form, options);
+        }
         return generateInput(form, options as InputOptions);
       case DynamicFormTypes.Address:
         return generateAddress(form, options as InputOptions);
