@@ -17,7 +17,7 @@ import { Asuna, Condition } from '@asuna-admin/types';
 import { Button, Divider, Dropdown, Menu, Modal, Skeleton, Switch, Table, Tag, Tooltip } from 'antd';
 import { ClickParam } from 'antd/es/menu';
 import { PaginationConfig } from 'antd/es/pagination';
-import { SorterResult, TableCurrentDataSource } from 'antd/es/table/interface';
+import { SorterResult, TableCurrentDataSource, TablePaginationConfig } from 'antd/es/table/interface';
 import { Key } from 'antd/lib/table/interface';
 import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
@@ -42,7 +42,7 @@ export interface AsunaDataTableProps {
 }
 
 type QueryConditionType = {
-  pagination?: PaginationConfig;
+  pagination?: TablePaginationConfig;
   filters?: Record<string, Key[] | null>;
   sorter?: SorterResult<any> | SorterResult<any>[];
 };
@@ -137,7 +137,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = (props) => {
         .value();
     },
     handleTableChange: function <RecordType>(
-      pagination?: PaginationConfig,
+      pagination?: TablePaginationConfig,
       filters?: Record<string, Key[] | null>,
       sorter?: SorterResult<RecordType> | SorterResult<RecordType>[],
       extra?: TableCurrentDataSource<RecordType>,

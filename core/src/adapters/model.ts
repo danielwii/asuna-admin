@@ -17,6 +17,7 @@ import { Condition, WhereConditions } from '@asuna-admin/types/meta';
 import { message } from 'antd';
 
 import { PaginationConfig } from 'antd/es/pagination';
+import { TablePaginationConfig } from 'antd/es/table/interface';
 import { AxiosResponse } from 'axios';
 import { Promise } from 'bluebird';
 import * as _ from 'lodash';
@@ -136,7 +137,7 @@ export interface ModelListConfig {
   endpoint?: string;
   fields?: string[];
   // distinct?: boolean;
-  pagination?: PaginationConfig;
+  pagination?: TablePaginationConfig;
   filters?: Record<string, [Condition]>;
   sorter?: Sorter | null;
   relations?: string[];

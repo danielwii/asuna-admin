@@ -5,7 +5,7 @@ import { createLogger } from '@asuna-admin/logger';
 import { appActions, AppState, AuthState, RootState } from '@asuna-admin/store';
 
 import ApolloClient, { gql } from 'apollo-boost';
-import { changeAntdTheme, getThemeColor } from 'dynamic-antd-theme';
+import { changeAntdTheme, generateThemeColor } from 'dynamic-antd-theme';
 import * as _ from 'lodash';
 import 'moment/locale/zh-cn';
 import fetch from 'node-fetch';
@@ -37,7 +37,7 @@ export class IndexPage extends React.Component<IIndexPageProps> {
     AppContext.regDispatch(dispatch);
 
     if (site?.primaryColor) {
-      const themeColor = getThemeColor(site?.primaryColor.hex);
+      const themeColor = generateThemeColor(site?.primaryColor.hex);
       changeAntdTheme(themeColor);
     }
   }
