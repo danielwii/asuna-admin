@@ -7,7 +7,7 @@ import { FormControl, FormControlLabel, FormHelperText, Switch, TextField } from
 import * as antd from 'antd';
 import { Divider, Popconfirm } from 'antd';
 import { DynamicJsonArrayTable, ObjectJsonTableHelper, StringTmpl, Uploader, WithVariable } from 'asuna-components';
-import { changeAntdTheme, getThemeColor } from 'dynamic-antd-theme';
+import { changeAntdTheme, generateThemeColor } from 'dynamic-antd-theme';
 import * as formik from 'formik';
 import { FieldInputProps, FormikProps } from 'formik';
 import * as _ from 'lodash';
@@ -74,7 +74,7 @@ export function RenderInputComponent({
             `}
             color={value}
             onChange={(color) => {
-              changeAntdTheme(getThemeColor(color.hex));
+              changeAntdTheme(generateThemeColor(color.hex));
               field.onChange({ target: { id: field.name, name: field.name, value: color } });
             }}
           />

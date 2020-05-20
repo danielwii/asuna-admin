@@ -10,7 +10,7 @@ import { AppState, RootState } from '@asuna-admin/store';
 import { jsx } from '@emotion/core';
 
 import ApolloClient, { gql } from 'apollo-boost';
-import { changeAntdTheme, getThemeColor } from 'dynamic-antd-theme';
+import { changeAntdTheme, generateThemeColor } from 'dynamic-antd-theme';
 import * as _ from 'lodash';
 import { NextPageContext } from 'next';
 import fetch from 'node-fetch';
@@ -66,7 +66,7 @@ export class LoginPage extends React.Component<ILoginPageProps> {
     AppContext.regDispatch(dispatch);
 
     if (site?.primaryColor) {
-      const themeColor = getThemeColor(site?.primaryColor.hex);
+      const themeColor = generateThemeColor(site?.primaryColor.hex);
       changeAntdTheme(themeColor);
     }
   }
@@ -163,11 +163,13 @@ export const wechatLoginGetInitial = async (ctx: NextPageContext): Promise<Login
   return {};
 };
 
-export const LoginPageRender: React.FC<Omit<ILoginPageProps, 'app' | 'dispatch'> & {
-  nextConfig: INextConfig;
-}> = props => {
+export const LoginPageRender: React.FC<
+  Omit<ILoginPageProps, 'app' | 'dispatch'> & {
+    nextConfig: INextConfig;
+  }
+> = (props) => {
   AppContext.init(props.nextConfig);
-  const appState = useSelector<RootState, AppState>(state => state.app);
+  const appState = useSelector<RootState, AppState>((state) => state.app);
   const dispatch = useDispatch();
 
   return <LoginPage {...props} app={appState} dispatch={dispatch} />;

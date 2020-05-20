@@ -20,7 +20,7 @@ export type StringArrayOptions = {
 const StringArrayHOC: React.FC<Partial<FormComponentProps> & Partial<IStringArrayProps>> = (props) => {
   // useLogger(`StringArray(key=${StringArrayHOC.name})`, props);
   return (
-    <WithVariable key={props.id} variable={props as FormComponentProps & Partial<IStringArrayProps>}>
+    <WithVariable key={props.id} variable={props as FormComponentProps & IStringArrayProps}>
       {(props) => <StringArray {...props} onChange={(items) => props.onChange(items)} />}
     </WithVariable>
   );
