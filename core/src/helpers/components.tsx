@@ -45,7 +45,7 @@ export const ComponentsHelper = {
     getExtra?: (info) => React.ReactNode;
     future: Promise<any>;
   }): React.ReactElement => (
-    <WithFuture future={() => future}>
+    <WithFuture future={() => future} async>
       {(result) => (
         <WithVariable variable={getModel(result)}>
           {(info) => (
