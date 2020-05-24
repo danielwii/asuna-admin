@@ -1,13 +1,13 @@
 /** @jsx jsx */
 import { useQuery } from '@apollo/react-hooks';
-import { AsunaDrawerButton, WithVariable } from '@asuna-admin/components';
+import { AsunaDrawerButton, WithVariable, WithFuture } from '@asuna-admin/components';
 import { AppContext } from '@asuna-admin/core/context';
 import { createLogger } from '@asuna-admin/logger';
 import { css, jsx } from '@emotion/core';
 import { createStyles, Theme } from '@material-ui/core';
 import { Avatar, Tooltip } from 'antd';
 import { gql } from 'apollo-boost';
-import { WithFuture } from 'asuna-components';
+// import { WithFuture } from 'asuna-components';
 import * as _ from 'lodash';
 import * as React from 'react';
 
@@ -29,6 +29,7 @@ export const ComponentsHelper = {
     getPortrait,
     modelName,
     getTitle,
+    getBody,
     getTooltip,
     getText,
     getExtra,
@@ -38,8 +39,9 @@ export const ComponentsHelper = {
     getPortrait?: (info) => React.ReactNode;
     modelName: string;
     getTitle?: (info) => React.ReactNode;
+    getBody?: (info) => React.ReactNode;
     getTooltip?: (info) => React.ReactNode;
-    getText: (info) => React.ReactNode;
+    getText?: (info) => React.ReactNode;
     getExtra?: (info) => React.ReactNode;
     future: Promise<any>;
   }): React.ReactElement => (
@@ -47,49 +49,56 @@ export const ComponentsHelper = {
       {(result) => (
         <WithVariable variable={getModel(result)}>
           {(info) => (
-            <div
-              css={css`
-                display: flex;
-                align-items: center;
-                > div {
-                  padding: 0 0.5rem;
-                }
-              `}
-            >
-              {getPortrait && (
-                <WithVariable variable={getPortrait(info)}>
-                  {(portrait) =>
-                    _.isString(portrait) ? (
-                      <Avatar style={{ margin: '1px' }} shape="square" size="large" src={portrait} />
-                    ) : (
-                      portrait
-                    ) /*
+            <div>
+              <div
+                css={css`
+                  display: flex;
+                  align-items: center;
+                  > div {
+                    padding: 0 0.5rem;
+                  }
+                `}
+              >
+                {getPortrait && (
+                  <WithVariable variable={getPortrait(info)}>
+                    {
+                      (portrait) =>
+                        _.isString(portrait) ? (
+                          <Avatar style={{ margin: '1px' }} shape="square" size="large" src={portrait} />
+                        ) : (
+                          portrait
+                        ) /*
                     <RoundWrapper>
                       <ThumbImage
                         height={50}
                         width={50}
                         src={valueToUrl(portrait, { type: 'image', thumbnail: { height: 100, width: 100 } })}
                       />
-                    </RoundWrapper>*/}
-                </WithVariable>
-              )}
-              <Tooltip title={getTooltip?.(info)}>
-                <>
-                  {getTitle && (
-                    <React.Fragment>
-                      <b>{getTitle(info)}</b>
-                      <br />
-                    </React.Fragment>
-                  )}
-                  <AsunaDrawerButton text={getText(info)} modelName={modelName} record={info as any} />
-                  {getExtra && (
-                    <React.Fragment>
-                      <br />
-                      {getExtra(info)}
-                    </React.Fragment>
-                  )}
-                </>
-              </Tooltip>
+                    </RoundWrapper>*/
+                    }
+                  </WithVariable>
+                )}
+                {getText && (
+                  <Tooltip title={getTooltip?.(info)}>
+                    <>
+                      {getTitle && (
+                        <React.Fragment>
+                          <b>{getTitle(info)}</b>
+                          <br />
+                        </React.Fragment>
+                      )}
+                      <AsunaDrawerButton text={getText(info)} modelName={modelName} record={info as any} />
+                      {getExtra && (
+                        <React.Fragment>
+                          <br />
+                          {getExtra(info)}
+                        </React.Fragment>
+                      )}
+                    </>
+                  </Tooltip>
+                )}
+              </div>
+              {getBody?.(info)}
             </div>
           )}
         </WithVariable>

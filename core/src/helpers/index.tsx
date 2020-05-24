@@ -707,7 +707,7 @@ export const asunaColumnHelper = {
     render: (content, record) =>
       record &&
       ComponentsHelper.renderDrawerButton({
-        future: record,
+        future: Promise.resolve(record),
         getModel: (data) => data,
         getPortrait: (info) => info?.portrait ?? info?.miniAppUserInfo?.avatar,
         getTitle: (info) => info.id,
