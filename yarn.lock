@@ -5366,10 +5366,10 @@ astral-regex@^1.0.0:
   resolved "https://registry.yarnpkg.com/astral-regex/-/astral-regex-1.0.0.tgz#6c8c3fb827dd43ee3918f27b82782ab7658a6fd9"
   integrity sha512-+Ryf6g3BKoRc7jfp7ad8tM4TtMiaWvbF/1/sQcZPkkS7ag3D5nMBCe2UfOTONtAkaG0tO0ij3C5Lwmf1EiyjHg==
 
-asuna-components@^0.4.11:
-  version "0.4.11"
-  resolved "https://registry.yarnpkg.com/asuna-components/-/asuna-components-0.4.11.tgz#6ff2d9e809a961534aef64a3ad4ca74cec27f104"
-  integrity sha512-f4VjAqs6dYVVIHiQkjfqR11kLpzHdsSOB514t4sDXJirohKBgKJeZkwz8X/xjhq23XZS047KCzpWS6E+n0sJcg==
+asuna-components@^0.4.12:
+  version "0.4.12"
+  resolved "https://registry.yarnpkg.com/asuna-components/-/asuna-components-0.4.12.tgz#457d157f7d2222e4632b20d5d3a227439828220e"
+  integrity sha512-s4g6XBEP3571sHzh3D19n5tIuVFmsnTVpYdlCEfXR2Q9axamBGux+EHBGcr66f5rNhE2XQeXZiug5skRfCxKCg==
   dependencies:
     "@ant-design/icons" "^4.1.0"
     "@projectstorm/react-diagrams" "^6.1.1"

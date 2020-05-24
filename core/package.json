@@ -54,7 +54,7 @@
     "apollo": "^2.28.0",
     "apollo-boost": "^0.4.9",
     "apollo-server-koa": "^2.13.1",
-    "asuna-components": "^0.4.11",
+    "asuna-components": "^0.4.12",
     "axios": "^0.19.2",
     "bluebird": "^3.7.2",
     "braft-editor": "^2.3.9",
