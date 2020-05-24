@@ -2,10 +2,11 @@ import { Button } from 'antd';
 import { Promise } from 'bluebird';
 import * as _ from 'lodash';
 import * as React from 'react';
-import { useAsync } from 'react-use';
+import { useAsync, useLogger } from 'react-use';
 import { Circle, FoldingCube } from 'styled-spinkit';
 import * as util from 'util';
 import { ErrorInfo } from './ErrorInfo';
+import { Loading } from 'asuna-components';
 
 export const WithLoading: React.FC<{ loading: boolean; error: any; retry? }> = ({
   loading,
@@ -35,27 +36,30 @@ export const WithLoading: React.FC<{ loading: boolean; error: any; retry? }> = (
 };
 
 export function WithFuture<R>({
+  async,
   future,
   fallback,
   children,
 }: {
+  async?: boolean;
   future: () => Promise<R>;
   fallback?: React.ReactElement;
   children: ((props: R) => React.ReactNode) | React.ReactNode;
 }): React.ReactElement {
-  const { loading, value, error } = useAsync(future);
+  if (async) {
+    const { loading, value, error } = useAsync(future);
 
-  if (loading) return fallback ?? <Circle />;
-  if (error)
-    return (
-      <ErrorInfo>
-        <pre>{util.inspect(error)}</pre>
-      </ErrorInfo>
-    );
+    if (loading) return fallback ?? <Loading type="circle" />;
+    if (error)
+      return (
+        <ErrorInfo>
+          <pre>{util.inspect(error)}</pre>
+        </ErrorInfo>
+      );
 
-  return _.isFunction(children) ? <>{children(value as any)}</> : <>{children}</>;
+    return _.isFunction(children) ? <>{children(value as any)}</> : <>{children}</>;
+  }
 
-  /*
   const Component = React.lazy(
     () =>
       new Promise(async (resolve) => {
@@ -66,11 +70,13 @@ export function WithFuture<R>({
       }),
   );
 
+  useLogger(WithFuture.name);
+
   return (
-    <React.Suspense fallback={fallback ?? <Circle />}>
+    <React.Suspense fallback={fallback ?? <Loading type="circle" />}>
       <Component />
     </React.Suspense>
-  );*/
+  );
 }
 
 export function WithVariable<V>({
