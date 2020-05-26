@@ -1,12 +1,13 @@
+import { WrappedFormUtils } from '@ant-design/compatible/es/form/Form';
 import { ChinaDivisionOptions, parseAddress } from '@asuna-admin/components';
 import { Cascader, Input } from 'antd';
-import { WrappedFormUtils } from '@ant-design/compatible/es/form/Form';
+import { CascaderValueType } from 'antd/es/cascader';
 import * as React from 'react';
 import { generateComponent, horizontalFormItemLayout, IFormItemLayout, InputOptions } from '.';
 import { FormComponentProps } from './interfaces';
 
 class AddressInline extends React.Component<Partial<FormComponentProps> & { placeholder: string }> {
-  _onChange(codes: string[] | undefined, labels: string[] | undefined, detail: string | null): void {
+  _onChange(codes: CascaderValueType | undefined, labels: string[] | undefined, detail: string | null): void {
     const { onChange } = this.props;
     onChange!(JSON.stringify([codes?.join(','), labels?.join(','), detail || '']));
   }
