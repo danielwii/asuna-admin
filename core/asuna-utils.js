@@ -26,7 +26,7 @@ function createProxy(api) {
             host: parsedUrl.host,
             port: parsedUrl.port,
           }
-        : null,
+        : undefined,
   });
   proxy.on('error', (error, request, response) => {
     logger.error(`${new Date().toISOString().dim} ${request.method.bold} ${request.url} `, error);

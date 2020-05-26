@@ -1,8 +1,10 @@
+import { Config } from '@asuna-admin/config';
 import { AppContext } from '@asuna-admin/core';
 import { createLogger } from '@asuna-admin/logger';
 import { Asuna } from '@asuna-admin/types';
 
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
+import * as _ from 'lodash';
 
 const logger = createLogger('adapters:api');
 
@@ -10,7 +12,7 @@ export interface IApiService {
   upload(
     auth: { token: string | null },
     file: any,
-    options: { bucket?: string },
+    options: { bucket?: string; prefix?: string },
     requestConfig?: AxiosRequestConfig,
   ): Promise<AxiosResponse<Asuna.Schema.UploadResponse[]>>;
 
@@ -64,9 +66,16 @@ export interface IApiService {
 export const apiProxy = {
   upload: (
     file,
-    options = {},
+    options: { bucket?: string; prefix?: string } = {},
     requestConfig?: AxiosRequestConfig,
-  ): Promise<AxiosResponse<Asuna.Schema.UploadResponse[]>> => AppContext.ctx.api.upload(file, options, requestConfig),
+  ): Promise<AxiosResponse<Asuna.Schema.UploadResponse[]>> => {
+    if (Config.get('CLIENT_GEN_UPLOADER_PREFIX')) {
+      const now = new Date();
+      const yearMonth = `${now.getFullYear()}/${now.getMonth() + 1}`;
+      _.assign(options, { prefix: `fixed/${yearMonth}` });
+    }
+    return AppContext.ctx.api.upload(file, options, requestConfig);
+  },
   getVersion: (): Promise<AxiosResponse> => AppContext.ctx.api.getVersion(),
   acquireOperationToken: (service: string): Promise<AxiosResponse> => AppContext.ctx.api.acquireOperationToken(service),
   useOperationToken: (token: string): Promise<AxiosResponse> => AppContext.ctx.api.useOperationToken(token),
@@ -88,12 +97,12 @@ export class ApiAdapterImpl implements ApiAdapter {
   }
 
   getWxTicket(data): Promise<{ url: string }> {
-    return AppContext.withAuth(auth => this.service.getWxTicket(auth, data).then(res => res.data));
+    return AppContext.withAuth((auth) => this.service.getWxTicket(auth, data).then((res) => res.data));
   }
 
   upload = (
     file,
-    options: { bucket?: string },
+    options: { bucket?: string; prefix?: string },
     requestConfig?: AxiosRequestConfig,
   ): Promise<AxiosResponse<Asuna.Schema.UploadResponse[]>> => {
     logger.log('[upload] file', file, options);

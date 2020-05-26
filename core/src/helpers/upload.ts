@@ -1,8 +1,8 @@
 import { apiProxy } from '@asuna-admin/adapters';
 import { createLogger } from '@asuna-admin/logger';
 import { Asuna } from '@asuna-admin/types';
-import { message } from 'antd';
 
+import { message } from 'antd';
 import { AxiosRequestConfig } from 'axios';
 
 const logger = createLogger('helpers:upload');
@@ -11,7 +11,7 @@ export async function getBase64(image): Promise<string | ArrayBuffer | null> {
   const reader = new FileReader();
   return new Promise((resolve, reject) => {
     reader.addEventListener('load', () => (reader.result ? resolve(reader.result) : resolve()));
-    reader.addEventListener('error', ev => reject(ev));
+    reader.addEventListener('error', (ev) => reject(ev));
     reader.readAsDataURL(image);
   });
 }
@@ -47,10 +47,10 @@ export function validateFile(file: { type: string; size: number }): boolean {
 export async function upload(
   file: object,
   requestConfig?: AxiosRequestConfig,
-  opts: { bucket?: string } = {},
+  opts: { bucket?: string; prefix?: string } = {},
 ): Promise<Asuna.Schema.UploadResponse[] | undefined> {
   logger.log('[upload]', { file });
-  const response = await apiProxy.upload(file, {}, requestConfig);
+  const response = await apiProxy.upload(file, opts, requestConfig);
   logger.log('[upload]', { response });
 
   return new Promise((resolve, reject) => {

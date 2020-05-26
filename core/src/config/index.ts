@@ -68,6 +68,7 @@ interface ConfigOpts {
   ATTACHE_RES_HANDLER?: (res: Asuna.Schema.UploadResponse) => string;
 
   GRAPHQL_HOST?: string;
+  CLIENT_GEN_UPLOADER_PREFIX?: boolean;
 }
 
 const defaultConfiguration: ConfigOpts = {
