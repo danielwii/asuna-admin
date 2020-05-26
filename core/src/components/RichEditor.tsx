@@ -8,8 +8,8 @@ import { Asuna } from '@asuna-admin/types';
 import { Input } from 'antd';
 import { ExtendControlType } from 'braft-editor';
 import { ContentUtils } from 'braft-utils';
-import * as React from 'react';
 import * as _ from 'lodash';
+import * as React from 'react';
 import { FoldingCube } from 'styled-spinkit';
 
 const logger = createLogger('components:rich-editor');
@@ -55,13 +55,16 @@ export class BraftRichEditor extends React.Component<IProps, IState> {
     const { prefix, urlHandler } = this.props;
     logger.debug('[uploadFn]', { prefix, param });
 
-    const response = await apiProxy.upload(param.file, {
-      prefix,
-      onUploadProgress(progressEvent) {
-        logger.debug('[uploadFn][progressFn]', 'event is', progressEvent);
-        param.progress((progressEvent.loaded / progressEvent.total) * 100);
+    const response = await apiProxy.upload(
+      param.file,
+      { prefix },
+      {
+        onUploadProgress(progressEvent) {
+          logger.debug('[uploadFn][progressFn]', 'event is', progressEvent);
+          param.progress((progressEvent.loaded / progressEvent.total) * 100);
+        },
       },
-    });
+    );
 
     logger.debug('[uploadFn]', 'response is', response);
 
