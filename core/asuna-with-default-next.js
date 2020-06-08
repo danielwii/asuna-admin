@@ -1,6 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies,no-console,no-param-reassign,no-unused-vars,@typescript-eslint/no-var-requires,no-use-before-define,@typescript-eslint/explicit-function-return-type,@typescript-eslint/no-empty-function */
 const webpack = require('webpack');
-const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+// const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const { TsconfigPathsPlugin } = require('tsconfig-paths-webpack-plugin');
 const pkg = require('./package.json');
 
@@ -28,8 +28,8 @@ function withDefaultNextConfigs(nextConfig = {}) {
 
       if (isServer) {
         if (dev) {
-          console.log('> [webpack] [Server] load bundleAnalyzerPlugin...');
-          config.plugins.push(new BundleAnalyzerPlugin({ openAnalyzer: false }));
+          // console.log('> [webpack] [Server] load bundleAnalyzerPlugin...');
+          // config.plugins.push(new BundleAnalyzerPlugin({ openAnalyzer: false }));
         }
       } else {
         if (!dev) {

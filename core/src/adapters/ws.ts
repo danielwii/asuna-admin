@@ -26,7 +26,13 @@ export class WsAdapter {
     this.namespace = opts.namespace || 'admin';
 
     if (!AppContext.isServer && !WsAdapter.socket) {
-      WsAdapter.socket = io.connect('/admin', { secure: true, reconnectionDelay: 10e3, reconnectionDelayMax: 60e3 });
+      WsAdapter.socket = io.connect('/admin', {
+        secure: true,
+        transports: ['websocket'],
+        rememberUpgrade: true,
+        reconnectionDelay: 10e3,
+        reconnectionDelayMax: 60e3,
+      });
 
       WsAdapter.socket.on('connect', () => {
         logger.log('[connect]', WsAdapter.socket.id);
@@ -39,14 +45,14 @@ export class WsAdapter {
         AppContext.dispatch(appActions.heartbeat());
       });
       WsAdapter.socket.on('disconnect', () => {
-        const { heartbeat } = AppContext.store.select(state => state.app);
+        const { heartbeat } = AppContext.store.select((state) => state.app);
         logger.error('[disconnect]', WsAdapter.socket.id, { heartbeat });
         if (heartbeat) {
           AppContext.dispatch(appActions.heartbeatStop());
         }
       });
-      WsAdapter.socket.on('error', error => {
-        const { heartbeat } = AppContext.store.select(state => state.app);
+      WsAdapter.socket.on('error', (error) => {
+        const { heartbeat } = AppContext.store.select((state) => state.app);
         logger.error('[error]', WsAdapter.socket.id, { heartbeat, error });
         if (heartbeat) {
           AppContext.dispatch(appActions.heartbeatStop());
