@@ -10,7 +10,7 @@ import { END } from 'redux-saga';
 const asunaStore = AsunaStore.instance;
 
 function withReduxSaga(config) {
-  return BaseComponent => {
+  return (BaseComponent) => {
     const componentName = BaseComponent.displayName || BaseComponent.name || 'BaseComponent';
     class WrappedComponent extends Component {
       static displayName = `withReduxSaga(${componentName})`;

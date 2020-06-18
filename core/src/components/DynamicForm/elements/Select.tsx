@@ -43,6 +43,7 @@ export type SelectOptions = {
   onSearch?: (value: string, cb: (items: Item[]) => void) => any;
   enumSelector: { name?: string; value?: string };
   relation?: 'ManyToOne' | 'ManyToMany' | 'OneToMany' | 'OneToOne';
+  required?: boolean;
 };
 
 const defaultFormItemLayout = {};
@@ -92,6 +93,7 @@ export function generateSelect<T>(
     onSearch,
     enumSelector = {},
     relation,
+    required,
   }: SelectOptions,
   formItemLayout: IFormItemLayout = horizontalFormItemLayout,
 ) {
@@ -318,5 +320,6 @@ export function generateSelect<T>(
     [_.stubTrue, _.constant('')],
   ])(relation);
 
-  return generateComponent(form, { fieldName, labelName, extra }, <MixedSelect />, formItemLayout);
+  const opts = { rules: [{ required }] };
+  return generateComponent(form, { fieldName, labelName, opts, extra }, <MixedSelect />, formItemLayout);
 }

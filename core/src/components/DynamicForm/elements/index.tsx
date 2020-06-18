@@ -140,11 +140,12 @@ export const generateInputNumber = (
   options,
   formItemLayout: IFormItemLayout = horizontalFormItemLayout,
 ) => {
-  const { key, name, label } = options;
+  const { key, name, label, required } = options;
   logger.debug('[generateInputNumber]', options);
   const fieldName = key || name;
   const labelName = label || name || key;
-  return generateComponent(form, { fieldName, labelName, ...options }, <InputNumber />, formItemLayout);
+  const opts = { rules: [{ required }] };
+  return generateComponent(form, { fieldName, labelName, opts, ...options }, <InputNumber />, formItemLayout);
 };
 
 export type InputOptions = {

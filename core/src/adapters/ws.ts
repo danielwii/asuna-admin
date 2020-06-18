@@ -28,7 +28,7 @@ export class WsAdapter {
     if (!AppContext.isServer && !WsAdapter.socket) {
       WsAdapter.socket = io.connect('/admin', {
         secure: true,
-        transports: ['websocket', 'polling'],
+        transports: ['websocket', 'xhr-polling'],
         rememberUpgrade: true,
         reconnectionDelay: 10e3,
         reconnectionDelayMax: 60e3,

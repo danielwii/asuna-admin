@@ -49,36 +49,32 @@ export class IndexPage extends React.Component<IIndexPageProps> {
       environments: { production: process.env.NODE_ENV === 'production' },
     };
 
-    try {
-      // const tempId = shortid.generate();
-      // const userAgent = req ? req.headers['user-agent'] : navigator.userAgent;
-      const host = Config.get('GRAPHQL_HOST') || 'localhost';
-      const port = process.env.PORT || 3000;
-      logger.log(`call http://${host}:${port}/s-graphql`);
-      const client = new ApolloClient({
-        uri: `http://${host}:${port}/s-graphql`,
-        headers: { 'X-ApiKey': 'todo:app-key-001' }, // todo temp auth
-        fetch: fetch as any,
-      });
-      const { data } = await client.query({
-        query: gql`
-          {
-            site: kv(collection: "app.settings", key: "site") {
-              key
-              name
-              type
-              value
-            }
+    // const tempId = shortid.generate();
+    // const userAgent = req ? req.headers['user-agent'] : navigator.userAgent;
+    const host = Config.get('GRAPHQL_HOST') || 'localhost';
+    const port = process.env.PORT || 3000;
+    logger.log(`call http://${host}:${port}/s-graphql`);
+    const client = new ApolloClient({
+      uri: `http://${host}:${port}/s-graphql`,
+      headers: { 'X-ApiKey': 'todo:app-key-001' }, // todo temp auth
+      fetch: fetch as any,
+    });
+    const { data } = await client.query({
+      query: gql`
+        {
+          site: kv(collection: "app.settings", key: "site") {
+            key
+            name
+            type
+            value
           }
-        `,
-      });
+        }
+      `,
+    });
 
-      const site = _.get(data, 'site.value');
-      // console.log({ appInfo, site });
-      return { appInfo, site };
-    } catch (e) {
-      console.error(e);
-    }
+    const site = _.get(data, 'site.value');
+    // console.log({ appInfo, site });
+    return { appInfo, site };
   }
 
   render() {

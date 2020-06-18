@@ -95,7 +95,7 @@ export const DrawerButton: React.FC<
   const _onChildrenClose = () => setChildrenVisible(false);
 
   const _renderButton = (
-    <Button {...baseButtonProps} onClick={_showDrawer}>
+    <Button size="small" {...baseButtonProps} onClick={_showDrawer}>
       {text}
       <SelectOutlined />
     </Button>
