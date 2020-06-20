@@ -4,10 +4,10 @@ node_js:
   - '12'
 os: linux
 install:
-  - travis_wait yarn
+  - yarn
   - yarn workspace asuna-admin build
   - yarn global add codecov
 after_success:
   - codecov
-cache:
-  yarn: true
+#cache:
+#  yarn: true
