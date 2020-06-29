@@ -96,8 +96,8 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = (props) => {
     createRefresher: (opts: QueryConditionType) => () => func.refresh(opts),
     refresh: (opts?: QueryConditionType) => {
       logger.log('refresh', { opts, queryCondition, flag });
-      // funcs.handleTableChange(queryCondition.pagination, queryCondition.filters, queryCondition.sorter);
-      updateFlag(-flag);
+      func.handleTableChange(queryCondition.pagination, queryCondition.filters, queryCondition.sorter);
+      // updateFlag(-flag);
     },
     create: () => ModelsHelper.openCreatePane(modelName),
     transformQueryCondition: function <RecordType>({
