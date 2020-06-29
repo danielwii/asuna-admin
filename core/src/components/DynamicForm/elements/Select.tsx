@@ -1,12 +1,13 @@
-import { WrappedFormUtils } from '@ant-design/compatible/es/form/Form';
 import { AppContext } from '@asuna-admin/core';
 import { createLogger } from '@asuna-admin/logger';
 
-import { Select } from 'antd';
+import { Divider, Input, Select } from 'antd';
 import * as _ from 'lodash';
 import * as R from 'ramda';
 import * as React from 'react';
 import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc';
+import { WrappedFormUtils } from '@ant-design/compatible/es/form/Form';
+import { PlusOutlined } from '@ant-design/icons';
 
 import { generateComponent, horizontalFormItemLayout, IFormItemLayout } from '.';
 
@@ -22,6 +23,7 @@ interface IMixedSelectState<T> {
   filterItems: T[];
   existItems: T[];
   loading: boolean;
+  extraName: string;
 }
 
 type ObjectItem = { [key: string]: any } & { id?: string | number; key?: string | number };
@@ -44,6 +46,7 @@ export type SelectOptions = {
   enumSelector: { name?: string; value?: string };
   relation?: 'ManyToOne' | 'ManyToMany' | 'OneToMany' | 'OneToOne';
   required?: boolean;
+  editable?: boolean;
 };
 
 const defaultFormItemLayout = {};
@@ -94,6 +97,7 @@ export function generateSelect<T>(
     enumSelector = {},
     relation,
     required,
+    editable,
   }: SelectOptions,
   formItemLayout: IFormItemLayout = horizontalFormItemLayout,
 ) {
@@ -111,6 +115,7 @@ export function generateSelect<T>(
         filterItems: _.compact(items) || [],
         existItems: _.compact(existItems) || [],
         loading: false,
+        extraName: '',
       };
     }
 
@@ -248,6 +253,17 @@ export function generateSelect<T>(
       }
     };
 
+    _onExtraNameChange = (event) => !_.isEmpty(event.target.value) && this.setState({ extraName: event.target.value });
+
+    _addItem = () => {
+      this.setState({
+        filterItems: _.compact([
+          ...this.state.filterItems,
+          { key: this.state.extraName, value: this.state.extraName },
+        ]) as any,
+      });
+    };
+
     componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
       logger.error(error, errorInfo);
     }
@@ -306,6 +322,29 @@ export function generateSelect<T>(
               );
             }}
 */
+            {...(editable
+              ? {
+                  dropdownRender: (menu) => (
+                    <div>
+                      {menu}
+                      <Divider style={{ margin: '4px 0' }} />
+                      <div style={{ display: 'flex', flexWrap: 'nowrap', padding: 8 }}>
+                        <Input
+                          style={{ flex: 'auto' }}
+                          value={this.state.extraName}
+                          onChange={this._onExtraNameChange}
+                        />
+                        <a
+                          style={{ flex: 'none', padding: '8px', display: 'block', cursor: 'pointer' }}
+                          onClick={this._addItem}
+                        >
+                          <PlusOutlined /> Add item
+                        </a>
+                      </div>
+                    </div>
+                  ),
+                }
+              : {})}
           >
             {renderedItems}
           </Select>

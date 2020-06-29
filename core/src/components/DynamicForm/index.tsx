@@ -91,6 +91,7 @@ export enum DynamicFormTypes {
   Switch = 'Switch',
   Authorities = 'Authorities',
   Enum = 'Enum',
+  EditableEnum = 'EditableEnum',
   EnumFilter = 'EnumFilter',
   StringTmpl = 'StringTmpl',
   SimpleJSON = 'SimpleJSON',
@@ -289,6 +290,7 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
         return <div>association({util.inspect(field)}) need foreignOpts.</div>;
       }
       case DynamicFormTypes.Enum:
+      case DynamicFormTypes.EditableEnum:
       //   // --------------------------------------------------------------
       //   // Enum / RelationShip
       //   // --------------------------------------------------------------
@@ -309,7 +311,12 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
         const items: Item[] = _.map(enumData, (value, key) => ({ key, value: [key, value] }));
         const type = (field.options as EnumFilterMetaInfoOptions)?.filterType;
         logger.log('[DynamicForm]', '[buildField][EnumFilter|Enum]', { type, items });
-        return generateSelect(form, { ...(options as any), items, getName: R.prop('key') });
+        return generateSelect(form, {
+          ...(options as any),
+          items,
+          getName: R.prop('key'),
+          editable: field.type === DynamicFormTypes.EditableEnum,
+        });
       }
       case DynamicFormTypes.Association: {
         // --------------------------------------------------------------
