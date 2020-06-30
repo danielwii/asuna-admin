@@ -68,7 +68,7 @@
     "deep-diff": "1.0.2",
     "dynamic-antd-theme": "^0.6.1",
     "formik": "^2.1.4",
-    "graphql": "~15.0.0",
+    "graphql": "~15.2.0",
     "http-proxy": "1.18.1",
     "koa": "^2.13.0",
     "koa-router": "^8.0.8",
