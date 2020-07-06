@@ -15,8 +15,6 @@ import { createLogger } from '@asuna-admin/logger';
 import { modelsActions } from '@asuna-admin/store';
 import { Asuna, Condition } from '@asuna-admin/types';
 import { Button, Divider, Dropdown, Menu, Modal, Skeleton, Switch, Table, Tag, Tooltip } from 'antd';
-import { ClickParam } from 'antd/es/menu';
-import { PaginationConfig } from 'antd/es/pagination';
 import { SorterResult, TableCurrentDataSource, TablePaginationConfig } from 'antd/es/table/interface';
 import { Key } from 'antd/lib/table/interface';
 import * as _ from 'lodash';
@@ -158,7 +156,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = (props) => {
         sorter: _.isEmpty(sorter) ? availableSorter : sorter,
       });
     },
-    pinActions: (param: ClickParam) => {
+    pinActions: (param) => {
       const column = _.find(columnProps, (column) => column.key === 'action');
       if (column) {
         if (_.has(column, 'fixed')) {

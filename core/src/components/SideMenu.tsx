@@ -23,12 +23,10 @@ export class SideMenu extends React.Component<ISideMenuProps, IState> {
   /**
    * item's props contains all properties set in menu item
    */
-  open = ({
-    key,
-    item: {
+  open = ({ key, keyPath, domEvent, item }) => {
+    const {
       props: { model, title, link, component },
-    },
-  }) => {
+    } = item;
     logger.log('open', { key, model, title, link, component });
     const { onOpen } = this.props;
     onOpen({ key, model, title, linkTo: link, component });
