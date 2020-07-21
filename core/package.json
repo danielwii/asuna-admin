@@ -72,7 +72,7 @@
     "http-proxy": "1.18.1",
     "koa": "^2.13.0",
     "koa-router": "^8.0.8",
-    "localforage": "1.7.4",
+    "localforage": "1.8.0",
     "lodash": "^4.17.19",
     "lru-cache": "^5.1.1",
     "moment": "^2.27.0",
