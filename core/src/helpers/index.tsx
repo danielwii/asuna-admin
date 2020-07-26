@@ -1,6 +1,14 @@
 /** @jsx jsx */
 import { LinkOutlined, SearchOutlined } from '@ant-design/icons';
-import { AssetsPreview, Content, DynamicFormTypes, parseAddressStr, PdfButton } from '@asuna-admin/components';
+import { modelProxyCaller } from '@asuna-admin/adapters';
+import {
+  AssetsPreview,
+  Content,
+  DynamicFormTypes,
+  parseAddressStr,
+  PdfButton,
+  WithFuture,
+} from '@asuna-admin/components';
 import { VideoPlayer } from '@asuna-admin/components/DynamicForm/Videos';
 import { Config } from '@asuna-admin/config';
 import { AppContext } from '@asuna-admin/core';
@@ -331,6 +339,60 @@ export const columnHelper = {
       <WithDebugInfo info={{ key, title, record }}>{transformer ? transformer(record) : record}</WithDebugInfo>
     )),
   }),
+  fpGenerateSubRelation: <RelationSchema extends any = object>(
+    key: string,
+    title: string,
+    opts: {
+      ref?: string;
+      subRef: string;
+      transformer: keyof RelationSchema;
+      render?: (content, record?, extras?: Asuna.Schema.RecordRenderExtras) => React.ReactNode;
+    },
+  ) => async (
+    laterKey: string,
+    actions: Asuna.Schema.RecordRenderActions,
+    extras: Asuna.Schema.RecordRenderExtras,
+  ): Promise<RelationColumnProps> => {
+    let ref, transformer;
+    if (!opts.ref && !opts.transformer) {
+      [ref, transformer] = key.split('.');
+    }
+
+    ref = ref || opts.ref || key;
+    transformer = transformer || opts.transformer;
+
+    return {
+      key,
+      title,
+      relation: ref,
+      dataIndex: ref,
+      // ...filterProps,
+      render: nullProtectRender((record) => {
+        return (
+          <div style={record?.isPublished == false || record?.isActive == false ? { color: 'darkred' } : {}}>
+            {record?.id ? (
+              <WithFuture
+                future={() =>
+                  modelProxyCaller().batchFetch(opts.subRef, { id: record.id, relations: [opts.transformer as string] })
+                }
+                async
+              >
+                {(data) => (
+                  <WithDebugInfo info={{ key, title, opts, record, transformer }}>
+                    {opts.render
+                      ? opts.render(extractValue(data, transformer), data, extras)
+                      : extractValue(data, transformer)}
+                  </WithDebugInfo>
+                )}
+              </WithFuture>
+            ) : (
+              'n/a'
+            )}
+          </div>
+        );
+      }),
+    };
+  },
   fpGenerateRelation: <RelationSchema extends any = object>(
     key: string,
     title: string,

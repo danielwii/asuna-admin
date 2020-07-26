@@ -118,7 +118,7 @@ export class LoginPage extends React.Component<ILoginPageProps> {
 
 export const wechatLoginGetInitial = async (ctx: NextPageContext): Promise<LoginInitialProps> => {
   if ((process as any).browser) {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     return __NEXT_DATA__.props.pageProps;
   }

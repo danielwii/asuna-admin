@@ -15,8 +15,6 @@ import { AuthState } from '@asuna-admin/store';
 import { Asuna } from '@asuna-admin/types';
 import { Condition, WhereConditions } from '@asuna-admin/types/meta';
 import { message } from 'antd';
-
-import { PaginationConfig } from 'antd/es/pagination';
 import { TablePaginationConfig } from 'antd/es/table/interface';
 import { AxiosResponse } from 'axios';
 import { Promise } from 'bluebird';
@@ -144,6 +142,7 @@ export interface ModelListConfig {
 }
 
 export interface ModelAdapter {
+  batchFetch<T>(modelName: string, data: { id: string | number; relations?: string[] }): Promise<T>;
   fetch2<T>(
     modelName: string,
     data: {
@@ -271,20 +270,27 @@ export class ModelAdapterImpl implements ModelAdapter {
       const where = JSON.stringify({ [relation]: { $in: ids } });
       return this.service.groupCounts({ auth, modelConfig }, modelName, { column, where }).then(fp.get('data'));
     },
-    {
-      extractor: (data, key) => _.get(data, key?.id),
-    },
+    { extractor: (data, key) => _.get(data, key?.id) },
   );
-  async groupCounts(
+  groupCounts = async (
     modelName: string,
     column: string,
     relation: string,
     id: string,
-  ): Promise<{ [name: string]: number }> {
-    // const auth = AppContext.fromStore('auth');
-    // const modelConfig = this.getModelConfig(modelName);
-    return this._groupCountsBatchLoader.load({ modelName, column, relation, id }).catch(console.error);
-  }
+  ): Promise<{ [name: string]: number }> =>
+    this._groupCountsBatchLoader.load({ modelName, column, relation, id }).catch(console.error);
+
+  _fetchBatchLoader = new BatchLoader<{ modelName: string; data: { id: string | number; relations?: string[] } }, any>(
+    (keys) => {
+      const { modelName, data } = keys[0];
+      const ids = _.map(keys, fp.get('data.id'));
+      return this.loadModels2(modelName, { filters: { id: [{ $in: ids }] }, relations: data.relations });
+    },
+    { extractor: (data, key) => _.find(data.items, ({ id }) => id === key?.data?.id) },
+  );
+
+  batchFetch = (modelName: string, data: { id: string | number; relations?: string[] }) =>
+    this._fetchBatchLoader.load({ modelName, data }).catch(console.error);
 
   fetch2<T = any>(
     modelName: string,

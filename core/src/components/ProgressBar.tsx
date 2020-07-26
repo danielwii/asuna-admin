@@ -74,13 +74,7 @@ export class ProgressBar extends React.Component {
 
     return (
       <FadeDiv out={hidden}>
-        <Progress
-          strokeWidth={2}
-          // percent={percent}
-          successPercent={complete}
-          status="active"
-          showInfo={false}
-        />
+        <Progress strokeWidth={2} success={{ percent: complete }} status="active" showInfo={false} />
       </FadeDiv>
     );
   }
