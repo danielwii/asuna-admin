@@ -1,7 +1,7 @@
 import { authHeader } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 
-import ApolloClient, { gql } from 'apollo-boost';
+import ApolloClient, { gql, InMemoryCache } from 'apollo-boost';
 import * as fp from 'lodash/fp';
 
 // --------------------------------------------------------------
@@ -29,8 +29,8 @@ export type KeyValuePairVo = { collection: string; key: string; name: string; ty
 export type KeyValueModelVo = { name: string; description: string; formatType: string; pair: KeyValuePairVo };
 
 export class GraphqlAdapterImpl {
-  public client: ApolloClient<any>;
-  public serverClient: ApolloClient<any>;
+  public client: ApolloClient<InMemoryCache>;
+  public serverClient: ApolloClient<InMemoryCache>;
   constructor(uri?: string) {
     if (uri) {
       this.client = new ApolloClient({ uri });
