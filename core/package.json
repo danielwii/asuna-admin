@@ -79,7 +79,7 @@
     "nanoid": "^3.1.11",
     "next": "^9.5.0",
     "next-redux-wrapper": "^5.0.0",
-    "next-transpile-modules": "^3.3.0",
+    "next-transpile-modules": "^4.0.0",
     "node-buffs": "^0.8.4",
     "node-cache": "^5.1.2",
     "object-hash": "^2.0.3",
