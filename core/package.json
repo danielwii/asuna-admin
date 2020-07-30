@@ -61,7 +61,7 @@
     "braft-editor": "^2.3.9",
     "braft-utils": "^3.0.12",
     "china-division": "^2.3.1",
-    "class-transformer": "^0.2.3",
+    "class-transformer": "^0.3.1",
     "colors": "^1.4.0",
     "date-fns": "^2.15.0",
     "debug": "^4.1.1",
