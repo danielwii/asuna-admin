@@ -38,9 +38,7 @@ const urlToUploadFile = (url, index) => ({
   type: '',
 });
 
-function transformToUploadFiles(value?: string | string[]): UploadFile[] {
-  return valueToArrays(value).map(urlToUploadFile);
-}
+const transformToUploadFiles = (value?: string | string[]): UploadFile[] => valueToArrays(value).map(urlToUploadFile);
 
 export class FileUploader extends React.Component<IFilesUploaderProps> {
   state = {
@@ -64,7 +62,8 @@ export class FileUploader extends React.Component<IFilesUploaderProps> {
   render() {
     const { uploadFiles } = this.state;
 
-    logger.log('render', this.props, this.state);
+    const uploadOpts = _.get(this.props, 'data-__field.options.uploadOpts');
+    logger.log('render', this.props, this.state, uploadOpts);
 
     const uploadProps: UploadProps = {
       customRequest: (option) => {
@@ -78,7 +77,7 @@ export class FileUploader extends React.Component<IFilesUploaderProps> {
               option.onProgress({ percent: +Math.round((loaded / total) * 100).toFixed(2) }, option.file);
             },
           },
-          { bucket },
+          uploadOpts ?? { bucket },
         )
           .then((uploaded) => {
             logger.log('[FileUploader][customRequest]', { uploaded });
@@ -132,7 +131,6 @@ export class FileUploader extends React.Component<IFilesUploaderProps> {
           value={_.isString(this.props.value) ? this.props.value : JSON.stringify(this.props.value)}
           autoSize={{ minRows: 2, maxRows: 6 }}
           onChange={(event) => {
-            console.log(event.target.value);
             this.props.onChange!(parseJSONIfCould(event.target.value));
             this.setState({ uploadFiles: transformToUploadFiles(event.target.value) });
           }}

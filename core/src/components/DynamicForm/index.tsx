@@ -274,6 +274,16 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
           const items = R.path(['associations', modelName, 'items'])(field);
           const existItems = R.path(['associations', modelName, 'existItems'])(field);
           const type = (field.options as EnumFilterMetaInfoOptions)?.filterType;
+          const getName = R.ifElse(
+            _.isString,
+            (v) => R.prop(v),
+            (v) => v,
+          )(association.name ?? defaultAssociation.name);
+          const getValue = R.ifElse(
+            _.isString,
+            (v) => R.prop(v),
+            (v) => v,
+          )(association.value ?? defaultAssociation.value);
           return generateSelect(form, {
             ...(options as any),
             items,
@@ -281,8 +291,8 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
             mode: 'multiple',
             withSortTree: type === 'Sort',
             onSearch,
-            getName: R.prop(association.name || defaultAssociation.name),
-            getValue: R.prop(association.value || defaultAssociation.value),
+            getName,
+            getValue,
             field,
           });
         }
@@ -328,15 +338,17 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
 
           const items = R.path(['associations', modelName, 'items'])(field);
           const existItems = R.path(['associations', modelName, 'existItems'])(field);
-          return generateSelect(form, {
-            ...(options as any),
-            items,
-            existItems,
-            onSearch,
-            getName: R.prop(association.name || defaultAssociation.name),
-            getValue: R.prop(association.value || defaultAssociation.value),
-            field,
-          });
+          const getName = R.ifElse(
+            _.isString,
+            (v) => R.prop(v),
+            (v) => v,
+          )(association.name ?? defaultAssociation.name);
+          const getValue = R.ifElse(
+            _.isString,
+            (v) => R.prop(v),
+            (v) => v,
+          )(association.value ?? defaultAssociation.value);
+          return generateSelect(form, { ...(options as any), items, existItems, onSearch, getName, getValue, field });
         }
         logger.warn('[DynamicForm]', '[buildField]', 'foreignOpts is required in association.', { field });
         return <div>association({util.inspect(field)}) need foreignOpts.</div>;

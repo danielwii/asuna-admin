@@ -153,7 +153,7 @@ export declare module Asuna {
     }
 
     interface Association {
-      name?: string;
+      name?: ((record: any) => React.ReactElement) | string;
       value?: string;
       ref?: string;
       fields?: string[];

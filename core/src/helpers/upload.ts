@@ -49,7 +49,7 @@ export async function upload(
   requestConfig?: AxiosRequestConfig,
   opts: { bucket?: string; prefix?: string } = {},
 ): Promise<Asuna.Schema.UploadResponse[] | undefined> {
-  logger.log('[upload]', { file });
+  logger.log('[upload]', { file, opts });
   const response = await apiProxy.upload(file, opts, requestConfig);
   logger.log('[upload]', { response });
 

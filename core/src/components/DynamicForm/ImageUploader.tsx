@@ -131,9 +131,11 @@ export class ImageUploader extends React.Component<IProps, IState> {
   };
 
   customRequest = (option: RcCustomRequestOptions): void => {
-    logger.log('[ImageUploader][customRequest]', option);
+    logger.log('[ImageUploader][customRequest]', option, this.props);
+
     const { onChange, urlHandler, bucket, jsonMode } = this.props;
-    upload(option.file, {}, { bucket }).then((uploaded) => {
+    const uploadOpts = _.get(this.props, 'data-__field.options.uploadOpts');
+    upload(option.file, uploadOpts ?? { bucket }, { bucket }).then((uploaded) => {
       if (uploaded) {
         logger.log('[ImageUploader][customRequest]', { props: this.props, state: this.state });
         const resolvedUrl = urlHandler ? urlHandler(uploaded[0]) : `${uploaded[0]}`;

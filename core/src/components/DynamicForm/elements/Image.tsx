@@ -8,6 +8,7 @@ import { IUploadedFile, IUploaderProps, Uploader, UploaderAdapter } from 'asuna-
 import { AxiosRequestConfig } from 'axios';
 import * as React from 'react';
 import { useLogger } from 'react-use';
+import * as _ from 'lodash';
 
 import { generateComponent, horizontalFormItemLayout, IFormItemLayout } from '.';
 import { ImageTrivia } from '../ImageTrivia';
@@ -21,7 +22,8 @@ const UploaderHOC: React.FC<Partial<FormComponentProps> & Partial<IUploaderProps
     <WithVariable key={props.id} variable={props as FormComponentProps & Partial<IUploaderProps>}>
       {(props) => {
         useLogger('generateImages', { props });
-        return <Uploader adapter={new FileUploaderAdapterImpl()} {...props} />;
+        const uploadOpts = _.get(props, 'data-__field.options.uploadOpts');
+        return <Uploader adapter={new FileUploaderAdapterImpl(uploadOpts)} {...props} />;
       }}
     </WithVariable>
   );
@@ -50,11 +52,9 @@ export const generateImages = (
 };
 
 export class FileUploaderAdapterImpl implements UploaderAdapter {
-  upload(
-    file: File,
-    extra?: { params?: { bucket: string }; requestConfig?: AxiosRequestConfig },
-  ): Promise<IUploadedFile[]> {
-    return upload(file, extra?.requestConfig, extra?.params) as any;
+  constructor(private params?: { bucket?: string; prefix?: string }) {}
+  upload(file: File, requestConfig?: AxiosRequestConfig): Promise<IUploadedFile[]> {
+    return upload(file, requestConfig, this.params) as any;
   }
 
   validate(file: File): boolean {
