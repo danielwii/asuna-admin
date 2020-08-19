@@ -50,7 +50,7 @@ type AssociationField = {
   };
 };
 
-const extractItemsBy = primaryKey =>
+const extractItemsBy = (primaryKey) =>
   R.compose(R.uniqBy(R.prop(primaryKey)), R.flatten, R.map(R.path(['data', 'items'])), R.flatten);
 
 /**
@@ -70,7 +70,7 @@ export const asyncLoadAssociationsDecorator = async ({
   logger.log(TAG, { fields });
 
   const relationShips = [DynamicFormTypes.Association, DynamicFormTypes.ManyToMany];
-  const associations = R.filter(field => R.contains(field.type)(relationShips))(fields);
+  const associations = R.filter((field) => R.contains(field.type)(relationShips))(fields);
 
   if (R.not(R.isEmpty(associations))) {
     logger.debug(TAG, 'associations is', associations);
@@ -78,7 +78,7 @@ export const asyncLoadAssociationsDecorator = async ({
     // 当已经拉取过数据后不再进行拉取，在这里认为如果已存在的 items 数量和 value 中的不一致，则重新拉取
     // TODO 如果按第一次已经拉取过来看，其实不需要再次拉取，相关数据应该从组件中传出
     // const filteredAssociations = R.pickBy(field => R.not(R.has('associations', field)))(
-    const filteredAssociations = R.pickBy(field => {
+    const filteredAssociations = R.pickBy((field) => {
       const loaded = field?.associations?.[field.name];
       if (loaded) {
         return loaded.existItems?.length != field?.value?.length;
@@ -92,8 +92,9 @@ export const asyncLoadAssociationsDecorator = async ({
 
     // TODO add onSearch query in options
     const wrappedAssociations = await Promise.all(
-      R.values(filteredAssociations).map(async field => {
+      R.values(filteredAssociations).map(async (field) => {
         const selectable = R.pathOr([], ['options', 'selectable'])(field);
+        console.log('loadAssociation', { selectable, field, select: field?.options?.selectable });
         logger.debug(TAG, { field, selectable });
         if (selectable) {
           const primaryKey = AppContext.adapters.models.getPrimaryKey(selectable);
@@ -108,11 +109,11 @@ export const asyncLoadAssociationsDecorator = async ({
 
                 AppContext.adapters.models
                   .loadAssociation(selectable, { keywords: value })
-                  .then(response => {
+                  .then((response) => {
                     const items = extractItemsBy(primaryKey)([response]);
                     callback(items);
                   })
-                  .catch(reason => {
+                  .catch((reason) => {
                     logger.error(TAG, reason);
                   });
               },
@@ -148,13 +149,13 @@ export const asyncLoadAssociationsDecorator = async ({
     logger.debug(TAG, { pairedWrappedAssociations });
 
     // FIXME 临时解决关联数据从 entities 到 ids 的转换
-    const transformedAssociations = R.map(association => {
+    const transformedAssociations = R.map((association) => {
       const primaryKey = AppContext.adapters.models.getPrimaryKey(association.name);
       let value;
 
       if (_.isArray(association.value)) {
         value = association.value
-          ? R.map(entity => R.propOr(entity, primaryKey, entity))(association.value)
+          ? R.map((entity) => R.propOr(entity, primaryKey, entity))(association.value)
           : undefined;
       } else {
         value = association.value ? R.propOr(association.value, primaryKey, association.value) : undefined;

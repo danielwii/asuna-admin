@@ -256,6 +256,31 @@ export const columnHelper2 = {
       }),
     };
   },
+  generateNumber: async (
+    key,
+    { model, title }: ModelOpts,
+    opts: { transformer?; searchType?: ConditionType; type: 'badge' | 'statistics' } = {
+      type: 'badge',
+    },
+  ): Promise<ColumnProps<any>> => {
+    const columnInfo = model ? await SchemaHelper.getColumnInfo(model, key) : undefined;
+    const titleStr = title ?? columnInfo?.config?.info?.name ?? key;
+    return {
+      key,
+      title: titleStr,
+      dataIndex: key,
+      sorter: true,
+      ...(await generateSearchColumnProps(key, opts.searchType)),
+      render: nullProtectRender((record) => {
+        const value = extractValue(record, opts.transformer);
+        return opts.type === 'badge' ? (
+          <Badge count={+value} overflowCount={Number.MAX_SAFE_INTEGER} style={{ backgroundColor: '#52c41a' }} />
+        ) : (
+          <Statistic value={+value} />
+        );
+      }),
+    };
+  },
   generateTag: async (
     key,
     { model, title }: ModelOpts,
