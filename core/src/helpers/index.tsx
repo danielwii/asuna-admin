@@ -31,6 +31,7 @@ import * as R from 'ramda';
 import * as React from 'react';
 import * as util from 'util';
 import { VideoJsPlayerOptions } from 'video.js';
+import NumberFormat from 'react-number-format';
 
 import { castModelKey } from './cast';
 import { WithDebugInfo } from './debug';
@@ -259,9 +260,7 @@ export const columnHelper2 = {
   generateNumber: async (
     key,
     { model, title }: ModelOpts,
-    opts: { transformer?; searchType?: ConditionType; type: 'badge' | 'statistics' } = {
-      type: 'badge',
-    },
+    opts: { transformer?; searchType?: ConditionType; type: 'badge' | 'statistics' | 'number' } = { type: 'number' },
   ): Promise<ColumnProps<any>> => {
     const columnInfo = model ? await SchemaHelper.getColumnInfo(model, key) : undefined;
     const titleStr = title ?? columnInfo?.config?.info?.name ?? key;
@@ -273,8 +272,8 @@ export const columnHelper2 = {
       ...(await generateSearchColumnProps(key, opts.searchType)),
       render: nullProtectRender((record) => {
         const value = extractValue(record, opts.transformer);
-        return opts.type === 'badge' ? (
-          _.isNil(value) ? (
+        if (opts.type === 'badge') {
+          return _.isNil(value) ? (
             <span />
           ) : (
             <Badge
@@ -283,10 +282,13 @@ export const columnHelper2 = {
               overflowCount={Number.MAX_SAFE_INTEGER}
               style={{ backgroundColor: '#52c41a' }}
             />
-          )
-        ) : (
-          <Statistic value={+value} />
-        );
+          );
+        } else if (opts.type === 'number') {
+          const value = extractValue(record, opts.transformer);
+          return <NumberFormat value={value} displayType="text" thousandSeparator />;
+        } else {
+          return <Statistic value={+value} />;
+        }
       }),
     };
   },

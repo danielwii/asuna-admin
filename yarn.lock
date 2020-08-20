@@ -4908,10 +4908,10 @@ astral-regex@^1.0.0:
   resolved "https://registry.yarnpkg.com/astral-regex/-/astral-regex-1.0.0.tgz#6c8c3fb827dd43ee3918f27b82782ab7658a6fd9"
   integrity sha512-+Ryf6g3BKoRc7jfp7ad8tM4TtMiaWvbF/1/sQcZPkkS7ag3D5nMBCe2UfOTONtAkaG0tO0ij3C5Lwmf1EiyjHg==
 
-asuna-components@^0.4.17:
-  version "0.4.17"
-  resolved "https://registry.yarnpkg.com/asuna-components/-/asuna-components-0.4.17.tgz#faa7ac5752b1161b4d34af461603772ff3098e00"
-  integrity sha512-h39me46UX76bKtx8GsEvWJKdsZu3XYwcG8gMl5tfpBtmbOH6N5yiEZPoKJOOKGx6IFXAV82cmJ6RKdT678zcNg==
+asuna-components@^0.4.18:
+  version "0.4.18"
+  resolved "https://registry.yarnpkg.com/asuna-components/-/asuna-components-0.4.18.tgz#6ff5e68cb3f9a42f1cfe2d4575aeead24d5bc2c7"
+  integrity sha512-fO7Xy7HBY3Z4WbGO+idFVe/hmI29vMGBiOOtF3oSxoQJjpNiVC5IpU+5Vc7wNurVejhLx21Y1OFcQEUfRJSDKA==
   dependencies:
     "@ant-design/icons" "^4.2.2"
     "@projectstorm/react-diagrams" "^6.2.0"
@@ -4936,7 +4936,7 @@ asuna-components@^0.4.17:
     react-dom "^16.13.1"
     react-json-tree "^0.12.1"
     react-pdf "^4.2.0"
-    react-syntax-highlighter "^13.4.0"
+    react-syntax-highlighter "^13.5.0"
     react-use "^15.3.3"
     spinkit "^2.0.1"
     styled-components "^5.1.1"
@@ -14724,6 +14724,13 @@ react-lifecycles-compat@^3.0.4:
   resolved "https://registry.yarnpkg.com/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
   integrity sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==
 
+react-number-format@^4.4.1:
+  version "4.4.1"
+  resolved "https://registry.yarnpkg.com/react-number-format/-/react-number-format-4.4.1.tgz#d5614dd25edfc21ed48b97356213440081437a94"
+  integrity sha512-ZGFMXZ0U7DcmQ3bSZY3FULOA1mfqreT9NIMYZNoa/ouiSgiTQiYA95Uj2KN8ge6BRr+ghA5vraozqWqsHZQw3Q==
+  dependencies:
+    prop-types "^15.7.2"
+
 react-pdf@^4.2.0:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/react-pdf/-/react-pdf-4.2.0.tgz#b83a01eb070912522075b7a51aee7d63b2c912ed"
@@ -14775,10 +14782,10 @@ react-spinners@^0.9.0:
   dependencies:
     "@emotion/core" "^10.0.15"
 
-react-syntax-highlighter@^13.4.0:
-  version "13.5.0"
-  resolved "https://registry.yarnpkg.com/react-syntax-highlighter/-/react-syntax-highlighter-13.5.0.tgz#c0f3fd826a52b2a6ce5786d4ce60c3e0665b65c0"
-  integrity sha512-2nKo8spFxe9shcjbdUiqxkrf/IMDqKUZLx7JVIxEJ17P+fYFGL4CRsZZC66UPeQ2o/f29eKu31CrkKGCK1RHuA==
+react-syntax-highlighter@^13.5.0:
+  version "13.5.1"
+  resolved "https://registry.yarnpkg.com/react-syntax-highlighter/-/react-syntax-highlighter-13.5.1.tgz#f21737cf6d582474a0f18b06b52613f4349c0e64"
+  integrity sha512-VVYTnFXF55WMRGdr3QNEzAzcypFZqH45kS7rqh90+AFeNGtui8/gV5AIOIJjwTsuP2UxcO9qvEq94Jq9BYFUhw==
   dependencies:
     "@babel/runtime" "^7.3.1"
     highlight.js "^10.1.1"

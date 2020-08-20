@@ -95,6 +95,7 @@
     "react-image-crop": "^8.6.5",
     "react-json-editor-ajrm": "^2.5.9",
     "react-json-tree": "^0.12.1",
+    "react-number-format": "^4.4.1",
     "react-pdf": "^4.2.0",
     "react-query": "^2.5.14",
     "react-redux": "^7.2.1",
