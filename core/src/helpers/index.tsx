@@ -274,7 +274,16 @@ export const columnHelper2 = {
       render: nullProtectRender((record) => {
         const value = extractValue(record, opts.transformer);
         return opts.type === 'badge' ? (
-          <Badge count={+value} overflowCount={Number.MAX_SAFE_INTEGER} style={{ backgroundColor: '#52c41a' }} />
+          _.isNil(value) ? (
+            <span />
+          ) : (
+            <Badge
+              showZero
+              count={+value}
+              overflowCount={Number.MAX_SAFE_INTEGER}
+              style={{ backgroundColor: '#52c41a' }}
+            />
+          )
         ) : (
           <Statistic value={+value} />
         );
