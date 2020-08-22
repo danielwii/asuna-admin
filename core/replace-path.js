@@ -15,7 +15,7 @@ const opts = {
 
 let importExportCounts = 0;
 
-const handleSourceFile = root => async sourceFile => {
+const handleSourceFile = (root) => async (sourceFile) => {
   // console.log({ sourceFile, importDeclarations: sourceFile.getImportDeclarations(), exportDeclarations: sourceFile.getExportDeclarations() });
   const importExportDeclarations = [...sourceFile.getImportDeclarations(), ...sourceFile.getExportDeclarations()];
   importExportCounts += importExportDeclarations.length;
@@ -23,7 +23,7 @@ const handleSourceFile = root => async sourceFile => {
   // console.log({ importExportDeclarations });
   // console.log('source:', sourceFileAbsolutePath);
   let sourceFileWasChanged = false;
-  importExportDeclarations.forEach(declaration => {
+  importExportDeclarations.forEach((declaration) => {
     // if module seems like absolute
     if (!declaration.isModuleSpecifierRelative()) {
       const value = declaration.getModuleSpecifierValue();
@@ -74,7 +74,7 @@ const handleSourceFile = root => async sourceFile => {
   }
 };
 
-opts.roots.forEach(root => {
+opts.roots.forEach((root) => {
   // use `tsconfig-extends` module cause it can recursively apply "extends" field
   const compilerOptions = tsconfig.load_file_sync('./tsconfig.json');
   // const absoluteBaseUrl = join(process.cwd(), compilerOptions.baseUrl, root);
