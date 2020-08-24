@@ -57,19 +57,23 @@ const ContentSearch: React.FC<ModulesLoaderProps> = props => {
       <PageHeader title={pane.title}>
         <EasyForm
           fields={fields}
-          onSubmit={async values => {
-            const hasFields = _.filter(values, value => !(_.isUndefined(value) || _.isNull(value)));
+          onSubmit={async (values) => {
+            const valuesByFields = _.mapValues(fields, (v, k) => {
+              const v1 = _.get(values, k);
+              const v2 = _.get(_.omit(values, k), k);
+              return v1 ?? v2;
+            });
+            const hasFields = _.filter(valuesByFields, (value) => !(_.isUndefined(value) || _.isNull(value)));
             if (!_.isEmpty(hasFields)) {
               const keys = _.keys(fields);
               if (keys.length === 1 && keys.includes(primaryKey)) {
                 const record = await AppContext.ctx.models
-                  .fetch(modelName, { id: values[primaryKey], relations })
+                  .fetch2(modelName, { id: valuesByFields[primaryKey], relations })
                   .then(fp.get('data'));
                 setViewRecord(record);
               } else {
                 const data = await AppContext.ctx.models
-                  .loadModels(modelName, { filters: values, relations })
-                  .then(fp.get('data'));
+                  .loadModels2(modelName, { filters: valuesByFields, relations });
                 setViewRecord(_.head(data.items));
               }
             }
@@ -97,7 +101,4 @@ const ContentSearch: React.FC<ModulesLoaderProps> = props => {
   );
 };
 
-// const mapStateToProps = (rootState: RootState): { rootState: RootState } => ({ rootState });
-//
-// export default connect(mapStateToProps)(ContentSearch);
 export default ContentSearch;
