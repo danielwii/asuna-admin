@@ -21,7 +21,7 @@ const UploaderHOC: React.FC<Partial<FormComponentProps> & Partial<IUploaderProps
   return (
     <WithVariable key={props.id} variable={props as FormComponentProps & Partial<IUploaderProps>}>
       {(props) => {
-        useLogger('generateImages', { props });
+        useLogger('generateImages', props);
         const uploadOpts = _.get(props, 'data-__field.options.uploadOpts');
         return <Uploader adapter={new FileUploaderAdapterImpl(uploadOpts)} {...props} />;
       }}
@@ -38,14 +38,9 @@ export const generateImages = (
 
   const fieldName = key || name;
   const labelName = label || name || key;
-  // const host = Config.get('IMAGE_HOST');
-  const handler = Config.get('IMAGE_RES_HANDLER');
-
   return generateComponent(
     form,
     { fieldName, labelName, ...options },
-    // TODO jsonMode need to setup dynamically later
-    // <ImageUploader key={fieldName} many={true} urlHandler={handler} jsonMode />,
     <UploaderHOC multiple jsonMode />,
     formItemLayout,
   );
@@ -71,15 +66,7 @@ export const generateImage = (
 
   const fieldName = key || name;
   const labelName = label || name || key;
-  // const host = Config.get('IMAGE_HOST');
-  const handler = Config.get('IMAGE_RES_HANDLER');
-  return generateComponent(
-    form,
-    { fieldName, labelName, ...options },
-    <UploaderHOC />,
-    // <ImageUploader key={fieldName} many={false} urlHandler={handler} />,
-    formItemLayout,
-  );
+  return generateComponent(form, { fieldName, labelName, ...options }, <UploaderHOC />, formItemLayout);
 };
 
 export function generateRichImage(
