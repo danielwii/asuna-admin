@@ -1,49 +1,7 @@
 {
-  "env": {
-    "browser": true,
-    "jest/globals": true
-  },
-  "extends": [
-    "airbnb",
-    "plugin:jest/recommended",
-    "plugin:@typescript-eslint/recommended",
-    "prettier"
-  ],
+  "env": {},
+  "extends": ["alloy", "alloy/react", "alloy/typescript"],
   "settings": {},
-  "parser": "@typescript-eslint/parser",
-  "plugins": [
-    "jest",
-    "prettier",
-    "react-hooks",
-    "@typescript-eslint"
-  ],
-  "rules": {
-    "no-underscore-dangle": "off",
-    "camelcase": "off",
-    "prettier/prettier": "error",
-    "import/extensions": ["error", "never", { "packages": "always" }],
-    "import/no-unresolved": "off",
-    "import/no-extraneous-dependencies": "off",
-    "function-paren-newline": ["error", "consistent"],
-    "func-names": ["error", "never"],
-    "key-spacing": 0,
-    "arrow-parens": 0,
-    "react/jsx-closing-tag-location": 0,
-    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
-    "react/require-default-props": [0, { "forbidDefaultForRequired": false }],
-    "react/jsx-one-expression-per-line": 0,
-    "no-multi-spaces": 0,
-    "class-methods-use-this": 0,
-    "object-curly-newline": [0],
-    "react-hooks/rules-of-hooks": "error",
-    "react-hooks/exhaustive-deps": "warn",
-    "react/prop-types": [2, {
-      "ignore": [
-        "dispatch", //
-        "children", //
-        "form"      // supported by Form.create()
-      ]
-    }],
-    "global-require": "off"
-  }
+  "plugins": [],
+  "rules": {}
 }
