@@ -38,8 +38,8 @@ export type SelectOptions = {
   items: Item[];
   existItems?: Item[];
   mode: 'multiple' | 'tags';
-  getName: () => string;
-  getValue: () => string;
+  getName: (record) => string;
+  getValue: (record) => string;
   withSortTree: boolean;
   filterType?: 'Sort';
   onSearch?: (value: string, cb: (items: Item[]) => void) => any;
@@ -61,14 +61,14 @@ const rNotNil = R.compose(R.not, R.isNil);
  */
 export const uniqueItems = (...items: Item[][]): Item[] => {
   const allItems = _.concat([], ...items);
-  let result = [];
+  let result: Item[] = [];
   if (allItems && _.isArray(allItems)) {
     const first = _.head(allItems);
     if (_.isArray(first)) {
-      result = R.filter(rNotNil)(R.uniqBy(R.prop(0), allItems));
+      result = R.filter(rNotNil)(R.uniqBy(R.prop<any>(0), allItems));
     } else if (_.isObject(first)) {
-      const uniqBy = R.uniqBy((item) => {
-        return R.prop('id', item) || R.prop('key', item) || R.prop(_.head(R.keys(item)), item);
+      const uniqBy = R.uniqBy((item: any) => {
+        return R.prop('id', item) || R.prop('key', item) || R.prop(_.head(R.keys(item)) as string, item);
       }, allItems);
       result = R.filter(rNotNil)(uniqBy);
     } else if (_.isNil(first)) {
@@ -135,10 +135,13 @@ export function generateSelect<T>(
     // prettier-ignore
     _extractName = item => {
       if (enumSelector.name) {
-        return R.compose(enumSelector.name, getValue)(item);
+        if (_.isString(enumSelector.name)) {
+          console.warn("enumSelector.name is string, not function", enumSelector);
+        }
+        return R.compose(enumSelector.name as any, getValue)(item);
       }
       if (_.isArray((getValue as any)(item))) {
-        return R.compose(R.prop(1), getValue)(item);
+        return R.compose(R.prop<any>(1) as any, getValue)(item);
       }
       return (getName as any)(item);
     };
@@ -146,10 +149,13 @@ export function generateSelect<T>(
     // prettier-ignore
     _extractValue = item => {
       if (enumSelector.value) {
-        return R.compose(enumSelector.value, getValue)(item);
+        if (_.isString(enumSelector.name)) {
+          console.warn("enumSelector.name is string, not function", enumSelector);
+        }
+        return R.compose(enumSelector.value as any, getValue)(item);
       }
       if (_.isArray((getValue as any)(item))) {
-        return R.compose(R.prop(0), getValue)(item);
+        return R.compose(R.prop<any>(0) as any, getValue)(item);
       }
       return (getValue as any)(item);
     };
@@ -233,7 +239,9 @@ export function generateSelect<T>(
 
     _onChange = (value: any | any[]) => {
       logger.log('[MixedSelect]', '[onChange]', { value, items: this._getAllItems() });
-      const exists = value ? R.filter((item) => R.contains(R.prop('id')(item))(value))(this._getAllItems()) : undefined;
+      const exists: Item[] = value
+        ? R.filter((item) => R.contains(R.prop('id', item as any), value) as any)(this._getAllItems())
+        : [];
       logger.log('[MixedSelect]', '[onChange]', { exists });
 
       this.setState({ existItems: exists });

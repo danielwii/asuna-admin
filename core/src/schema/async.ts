@@ -51,7 +51,7 @@ type AssociationField = {
 };
 
 const extractItemsBy = (primaryKey) =>
-  R.compose(R.uniqBy(R.prop(primaryKey)), R.flatten, R.map(R.path(['data', 'items'])), R.flatten);
+  R.compose(R.uniqBy(R.prop(primaryKey)), R.flatten as any, R.map(R.path(['data', 'items'])), R.flatten);
 
 /**
  * 异步加载所有的关联对象，用于下拉菜单提示
@@ -70,7 +70,7 @@ export const asyncLoadAssociationsDecorator = async ({
   logger.log(TAG, { fields });
 
   const relationShips = [DynamicFormTypes.Association, DynamicFormTypes.ManyToMany];
-  const associations = R.filter((field) => R.contains(field.type)(relationShips))(fields);
+  const associations = R.filter((field: any) => R.contains(field.type)(relationShips))(fields);
 
   if (R.not(R.isEmpty(associations))) {
     logger.debug(TAG, 'associations is', associations);
@@ -92,8 +92,8 @@ export const asyncLoadAssociationsDecorator = async ({
 
     // TODO add onSearch query in options
     const wrappedAssociations = await Promise.all(
-      R.values(filteredAssociations).map(async (field) => {
-        const selectable = R.pathOr([], ['options', 'selectable'])(field);
+      R.values(filteredAssociations as any).map(async (field) => {
+        const selectable = R.pathOr([], ['options', 'selectable'])(field) as any;
         console.log('loadAssociation', { selectable, field, select: field?.options?.selectable });
         logger.debug(TAG, { field, selectable });
         if (selectable) {
@@ -149,7 +149,7 @@ export const asyncLoadAssociationsDecorator = async ({
     logger.debug(TAG, { pairedWrappedAssociations });
 
     // FIXME 临时解决关联数据从 entities 到 ids 的转换
-    const transformedAssociations = R.map((association) => {
+    const transformedAssociations = R.map<any, any>((association) => {
       const primaryKey = AppContext.adapters.models.getPrimaryKey(association.name);
       let value;
 
@@ -162,7 +162,7 @@ export const asyncLoadAssociationsDecorator = async ({
       }
       logger.debug(TAG, 'handle association', { association, value, primaryKey });
       return { ...association, value };
-    })(pairedWrappedAssociations);
+    })(pairedWrappedAssociations as any);
 
     logger.debug(TAG, { transformedAssociations });
 

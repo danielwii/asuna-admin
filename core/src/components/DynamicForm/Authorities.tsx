@@ -56,9 +56,9 @@ export class Authorities extends React.Component<IProps, IState> {
     logger.debug('[updateDataSource]', { sideMenus, authorities });
 
     const dataSource = R.compose(
-      R.flatten,
-      R.map((obj) =>
-        R.map((menu) => {
+      R.flatten as any,
+      R.map<any, any>((obj) =>
+        R.map<any, any>((menu) => {
           const key = `${obj.key}::${menu.key}`;
           const active = R.propOr(false, key)(authorities);
           return {

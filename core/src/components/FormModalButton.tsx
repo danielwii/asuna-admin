@@ -76,7 +76,7 @@ export class FormModalButton extends React.Component<IFormModalProps, IState> {
           this.setState({
             visible: false,
             loading: false,
-            fields: R.map((field) => ({ ...field, value: undefined }))(fields),
+            fields: R.map<any, any>((field) => ({ ...field, value: undefined }))(fields as any) as any,
           });
         } catch (e) {
           const errors = toFormErrors(e.response);
@@ -91,7 +91,7 @@ export class FormModalButton extends React.Component<IFormModalProps, IState> {
 
   handleFormChange = (changedFields) => {
     const { fields } = this.state;
-    const merged = R.mergeDeepRight(fields, changedFields);
+    const merged = R.mergeDeepRight(fields as any, changedFields);
     logger.log('[handleFormChange]', { fields, changedFields, merged });
     this.setState({ fields: merged });
   };

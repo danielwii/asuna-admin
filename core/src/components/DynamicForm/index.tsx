@@ -45,7 +45,7 @@ import { generateAddress } from './elements/Address';
 import { generateFile, generateFiles } from './elements/Files';
 import { generateImage, generateImages, generateRichImage } from './elements/Image';
 import { PlainImages } from './elements/Plain';
-import { generateSelect, Item, SelectOptions } from './elements/Select';
+import { generateSelect, Item } from './elements/Select';
 import { generateStringArray, StringArrayOptions } from './elements/StringArray';
 
 const logger = createLogger('components:dynamic-form');
@@ -334,7 +334,9 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
         // --------------------------------------------------------------
         logger.debug('[DynamicForm]', '[buildField][Association]', field);
         if (R.has('foreignOpts')(field)) {
-          const { modelName, association = defaultAssociation, onSearch } = R.path(['foreignOpts', 0])(field);
+          const { modelName, association = defaultAssociation, onSearch } = R.path(['foreignOpts', 0])(
+            field,
+          ) as Asuna.Schema.ForeignOpt;
 
           const items = R.path(['associations', modelName, 'items'])(field);
           const existItems = R.path(['associations', modelName, 'existItems'])(field);
@@ -609,9 +611,9 @@ class FormAnchor extends React.Component<IFormAnchorProps> {
   render() {
     const { fields } = this.props;
     const renderFields = R.compose(
-      R.values(),
-      R.omit(['id']),
-      R.map((field) => {
+      R.values,
+      R.omit(['id']) as any,
+      R.map<FormField & any, any>((field) => {
         logger.log('[anchor]', field);
         const noValue = R.isNil(field.value) || R.isEmpty(field.value) || false;
         // 目前使用的 RichText 在点击时会自动设置 value 为 '<p></p>'
@@ -627,7 +629,7 @@ class FormAnchor extends React.Component<IFormAnchorProps> {
         );
         return <Anchor.Link key={field.name} title={title} href={`#dynamic-form-${field.name}`} />;
       }),
-      R.filter((field) => field.type),
+      R.filter<any>((field) => field.type),
       R.filter((field) => (field as DynamicFormField)?.options?.accessible !== 'hidden'),
     )(fields);
 
@@ -651,9 +653,9 @@ interface IPureElementProps {
 const pureLogger = createLogger('components:dynamic-form:pure-element');
 
 class EnhancedPureElement extends React.Component<IPureElementProps> {
-  shouldComponentUpdate(nextProps, nextState) {
+  shouldComponentUpdate(nextProps: Readonly<IPureElementProps>, nextState: Readonly<{}>, nextContext: any): boolean {
     pureLogger.log('[EnhancedPureElement][shouldComponentUpdate]', nextProps.field, nextState);
-    const isRequired = R.path(['options', 'required'])(nextProps.field);
+    const isRequired = R.path(['options', 'required'])(nextProps.field) as boolean;
     const propsDiff = diff(this.props, nextProps, { exclude: ['builder'] });
     const stateDiff = diff(this.state, nextState);
     const shouldUpdate = isRequired || propsDiff.isDifferent || stateDiff.isDifferent;

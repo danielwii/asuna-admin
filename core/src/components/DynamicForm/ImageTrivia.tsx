@@ -78,7 +78,7 @@ export class ImageTrivia extends React.Component<IProps, IState> {
             image = join(prefix || '', resolvedUrl);
           }
           logger.log('[onSelectFile]', { uploaded, image });
-          onChange!(R.mergeDeepRight(value, { url: image }));
+          onChange!(R.mergeDeepRight(value as ImageWithTags, { url: image }));
         }
       });
     }
@@ -120,7 +120,7 @@ export class ImageTrivia extends React.Component<IProps, IState> {
     logger.log('_add', this.state);
     const { value, onChange } = this.props;
     const tags = value?.tags || [];
-    onChange!(R.mergeDeepRight(value, { tags: tags.concat({} as any) }));
+    onChange!(R.mergeDeepRight(value as ImageWithTags, { tags: tags.concat({} as any) } as any));
     this.setState({ updateIndex: tags.length, crop: DEFAULT_CROP });
   };
 
@@ -141,7 +141,7 @@ export class ImageTrivia extends React.Component<IProps, IState> {
       tags[index] = tags[index] ? { ...tags[index], ...tag } : ((tag as any) as Tag);
       onChange!({ ...value, tags });
     } else {
-      onChange!(R.mergeDeepRight(value, { tags: [tag] }));
+      onChange!(R.mergeDeepRight(value as ImageWithTags, { tags: [tag] } as any));
     }
   };
 

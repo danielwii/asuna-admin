@@ -105,5 +105,5 @@ const mapStateToProps = (state: RootState): { auth: AuthState; app: AppState } =
 
 export const renderIndexPage = (props: Partial<IIndexPageProps>, nextConfig: INextConfig) => {
   AppContext.init(nextConfig);
-  return connect(R.compose(R.merge(props), mapStateToProps))(IndexPage);
+  return connect(R.compose(R.merge(props), mapStateToProps))(IndexPage) as any;
 };

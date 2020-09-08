@@ -1,3 +1,4 @@
+import { Form } from '@ant-design/compatible';
 import { DynamicFormProps, Pane } from '@asuna-admin/components';
 import { DynamicForm, DynamicFormTypes } from '@asuna-admin/components/DynamicForm';
 import { AppContext, EventBus, EventType } from '@asuna-admin/core';
@@ -12,8 +13,6 @@ import {
 import { createLogger } from '@asuna-admin/logger';
 import * as schemaHelper from '@asuna-admin/schema';
 import { modelsActions, RootState } from '@asuna-admin/store';
-
-import { Form } from '@ant-design/compatible';
 import { AxiosResponse } from 'axios';
 import * as _ from 'lodash';
 import moment from 'moment';
@@ -37,7 +36,7 @@ interface IContentForm {
 
 const ContentForm = Form.create<IContentForm & DynamicFormProps>({
   mapPropsToFields({ fields }) {
-    const mappedFields = R.map((field) => {
+    const mappedFields = R.map<any, any>((field) => {
       // DatePicker for antd using moment instance
       const isDate = R.contains(field.type)([DynamicFormTypes.Date, DynamicFormTypes.DateTime]);
       if (field.value && isDate) {
@@ -58,7 +57,7 @@ const ContentForm = Form.create<IContentForm & DynamicFormProps>({
 
         return oldVar !== newVar || field.errors != null;
       }),
-      R.map((field) => {
+      R.map<any, any>((field) => {
         let { value } = field;
         if (value && value._isAMomentObject) {
           value = value.toDate();
@@ -66,7 +65,7 @@ const ContentForm = Form.create<IContentForm & DynamicFormProps>({
         return { ...field, value };
       }),
       // remove fields when validating=true
-      R.filter((field) => !R.prop('validating', field)),
+      R.filter<any>((field) => !R.prop('validating', field)),
     )(changedFields);
     logger.debug('[ContentForm][onFieldsChange]', { filteredChangedFields });
     if (!R.isEmpty(filteredChangedFields)) props.onChange(filteredChangedFields);
@@ -129,7 +128,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
     const { basis } = this.props;
 
     // content::create::name::timestamp => name
-    const modelName = R.compose(R.nth(2), R.split(/::/), R.path(['pane', 'key']))(basis);
+    const modelName = R.compose(R.nth(2), R.split(/::/), R.path(['pane', 'key']))(basis) as string;
     logger.log('[constructor]', 'model name is ', modelName);
 
     const isInsertMode = !R.path(['pane', 'data', 'record'])(basis);
@@ -158,7 +157,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
     const { isInsertMode, init, primaryKey } = this.state;
 
     // content::create::name::timestamp => name
-    const modelName = R.compose(R.nth(2), R.split(/::/), R.path(['pane', 'key']))(basis);
+    const modelName = R.compose(R.nth(2), R.split(/::/), R.path(['pane', 'key']))(basis) as string;
     logger.debug('[componentWillMount]', 'model name is ', modelName);
 
     // --------------------------------------------------------------
@@ -178,12 +177,12 @@ class ContentUpsert extends React.Component<IProps, IState> {
     // Using pre decorators instead
     // --------------------------------------------------------------
 
-    let { fields: decoratedFields } = R.pipe(...this.preDecorators('INIT'))({ modelName, fields: formFields });
+    let { fields: decoratedFields } = (R.pipe as any)(...this.preDecorators('INIT'))({ modelName, fields: formFields });
     let originalFieldValues;
 
     // INSERT-MODE: 仅在新增模式下拉取关联数据
     if (isInsertMode) {
-      ({ fields: decoratedFields } = await R.pipeP(...this.asyncDecorators('ASSOCIATIONS'))({
+      ({ fields: decoratedFields } = await (R.pipeP as any)(...this.asyncDecorators('ASSOCIATIONS'))({
         modelName,
         fields: decoratedFields,
       }));
@@ -271,10 +270,10 @@ class ContentUpsert extends React.Component<IProps, IState> {
       const { wrappedFormSchema, fields } = this.state;
 
       const currentChangedFields = R.map(R.pick(['value', 'errors']))(changedFields);
-      const changedFieldsBefore = R.mergeDeepRight(wrappedFormSchema, fields);
+      const changedFieldsBefore = R.mergeDeepRight(wrappedFormSchema as any, fields);
       const allChangedFields = R.mergeDeepRight(changedFieldsBefore, currentChangedFields);
       // 这里只装饰变化的 fields
-      const { fields: decoratedFields } = R.pipe(...this.preDecorators('LOAD'))({
+      const { fields: decoratedFields } = (R.pipe as any)(...this.preDecorators('LOAD'))({
         modelName,
         fields: allChangedFields,
       });
@@ -292,7 +291,12 @@ class ContentUpsert extends React.Component<IProps, IState> {
       const updateModeAtTheFirstTime = !isInsertMode && init;
 
       const hasEnumFilter = !R.isEmpty(R.filter(R.propEq('type', DynamicFormTypes.EnumFilter), changedFields));
-      const hasSelectable = !R.isEmpty(R.filter(R.path(['options', 'selectable']), changedFields));
+      const hasSelectable = !R.isEmpty(
+        R.filter(
+          R.path<any>(['options', 'selectable']),
+          changedFields,
+        ),
+      );
 
       logger.debug('[handleFormChange]', {
         changedFields,
@@ -308,7 +312,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
           loadings: { ...this.state.loadings, ASSOCIATIONS: true },
         });
         logger.debug('[handleFormChange]', 'load async decorated fields');
-        const { fields: asyncDecoratedFields } = await R.pipeP(...this.asyncDecorators('ASSOCIATIONS'))({
+        const { fields: asyncDecoratedFields } = await (R.pipeP as any)(...this.asyncDecorators('ASSOCIATIONS'))({
           modelName,
           fields: decoratedFields,
         });
@@ -340,7 +344,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
     event.preventDefault();
     const { originalFieldValues, primaryKey } = this.state;
 
-    const fieldPairs = R.compose(
+    const fieldPairs: any = R.compose(
       R.pickBy((value, key) =>
         originalFieldValues
           ? !_.isEqual(value, originalFieldValues[key]) ||
@@ -348,7 +352,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
             (this.state.fields[key] as any).type === 'SimpleJSON'
           : true,
       ),
-      R.map(R.prop('value')),
+      R.map<any, any>(R.prop('value')),
     )(this.state.fields);
     logger.debug('[handleFormSubmit]', {
       fieldPairs,
@@ -359,7 +363,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
     const { dispatch, onClose } = this.props;
     const { modelName, isInsertMode } = this.state;
 
-    const id = R.prop(primaryKey)(originalFieldValues);
+    const id: any = R.prop(primaryKey)(originalFieldValues as any);
 
     dispatch(
       modelsActions.upsert(modelName, { body: { ...fieldPairs, [primaryKey]: id } }, ({ response, error }) => {
@@ -437,4 +441,4 @@ class ContentUpsert extends React.Component<IProps, IState> {
 
 const mapStateToProps = (state: RootState) => R.pick(['models'])(state.models);
 
-export default connect(mapStateToProps)(ContentUpsert);
+export default connect(mapStateToProps)(ContentUpsert as any);

@@ -47,7 +47,9 @@ export function toErrorMessage(e) {
 
 export function isErrorResponse(error) {
   const isError = R.pathEq(['response', 'data', 'name'], 'Error')(error);
-  const isAsuna = /^ASUNA__.+/.test(R.path(['response', 'data', 'code'])(error));
+  const isAsuna = /^ASUNA__.+/.test(
+    R.path<any>(['response', 'data', 'code'])(error),
+  );
   return isError || isAsuna;
 }
 

@@ -212,7 +212,7 @@ export class ModelAdapterImpl implements ModelAdapter {
       // --------------------------------------------------------------
       // plain types
       // --------------------------------------------------------------
-      [_.conforms({ name: R.contains(R.__, plainKeys) }), _.constant(DynamicFormTypes.Plain)],
+      [_.conforms({ name: R.contains<any[]>(R.__, plainKeys) }), _.constant(DynamicFormTypes.Plain)],
       // --------------------------------------------------------------
       // association types
       // --------------------------------------------------------------
@@ -437,12 +437,12 @@ export class ModelAdapterImpl implements ModelAdapter {
   getPrimaryKeys = (modelName: string): string[] => {
     const TAG = '[getPrimaryKey]';
     const { schemas } = AppContext.fromStore('models');
-    const schema = R.prop(modelName)(schemas);
+    const schema: Asuna.Schema.ModelSchema[] = R.prop(modelName)(schemas as any);
     if (schema != null) {
       const primaryKeys = _.filter(schema, (opts) => !!opts?.config?.primaryKey);
       // logger.debug(TAG, modelName, 'primaryKeys is', primaryKeys);
       if (primaryKeys.length) {
-        return _.map(primaryKeys, fp.get('name'));
+        return _.map(primaryKeys as any[], fp.get('name'));
       }
     }
     return ['id']; // by default
@@ -464,7 +464,7 @@ export class ModelAdapterImpl implements ModelAdapter {
 
     logger.log('[getFormSchema]', 'schema is', schema, 'name is', name);
     return R.compose(
-      R.mergeAll,
+      R.mergeAll as any,
       R.map((formatted: Asuna.Schema.FormSchema) => ({ [formatted.name]: formatted })),
       R.map(
         (field: Asuna.Schema.ModelSchema): Asuna.Schema.FormSchema => {
@@ -499,7 +499,7 @@ export class ModelAdapterImpl implements ModelAdapter {
     const defaultValue = { name: 'name', value: primaryKey, fields: [primaryKey, 'name'] };
     const defaultAssociation = R.pathOr(defaultValue, [associationName])(this.associations);
     return modelName
-      ? this.modelConfigs?.[modelName]?.model?.associations?.[associationName] ?? defaultAssociation
+      ? this.modelConfigs?.[modelName]?.model?.associations?.[associationName] ?? (defaultAssociation as any)
       : defaultAssociation;
   };
 

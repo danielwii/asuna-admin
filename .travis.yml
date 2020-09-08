@@ -4,7 +4,7 @@ node_js:
   - '12'
 os: linux
 install:
-  - yarn
+  - yarn --frozen-lockfile
   - yarn workspace asuna-admin build
   - yarn global add codecov
 after_success:

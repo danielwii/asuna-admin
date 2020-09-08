@@ -19,7 +19,7 @@ const menuActionTypes = {
   INIT_SUCCESS: 'menu::init-success',
 };
 
-export const isMenuModule = action => action.type.startsWith('menu::') && !action.transient;
+export const isMenuModule = (action) => action.type.startsWith('menu::') && !action.transient;
 
 // --------------------------------------------------------------
 // Module menuActions
@@ -43,11 +43,11 @@ const menuSagaFunctions = {
 
       if (user) {
         if (roles && roles.items) {
-          const currentRoles = R.compose(
-            R.filter(role => {
+          const currentRoles: any = R.compose(
+            R.filter<any>((role) => {
               // 判断返回的是否是 ids
               if (user.roles && _.isObjectLike(user.roles[0])) {
-                return R.contains(role.id)(R.values(R.pluck('id', user.roles)));
+                return R.contains(role.id)(R.values(R.pluck('id' as any, user.roles)));
               }
               return R.contains(role.id)(user.roles);
             }),
@@ -55,15 +55,15 @@ const menuSagaFunctions = {
           )(roles);
           logger.debug('[init]', 'current roles is', currentRoles);
 
-          const isSysAdmin = !!R.find(role => role.name === 'SYS_ADMIN')(currentRoles);
+          const isSysAdmin = !!R.find<any>((r) => r.name === 'SYS_ADMIN')(currentRoles);
           logger.debug('[init]', 'current user isSysAdmin', isSysAdmin);
 
           const authoritiesList = R.compose(
             // remove null values
-            R.filter(R.identity),
+            R.filter<any>(R.identity),
             // 后端返回字符串时需要反序列化为 JSON
-            R.map(role => {
-              const each = R.prop('authorities')(role);
+            R.map<any, any>((role) => {
+              const each: any = R.prop('authorities')(role);
               return R.is(String, each) ? JSON.parse(each) : each;
             }),
           )(currentRoles);

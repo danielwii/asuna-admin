@@ -43,9 +43,9 @@ export class MenuAdapter {
       );
 
     const menus = R.compose(
-      R.filter(menu => R.not(R.isEmpty(R.prop('subMenus', menu)))),
-      R.map(menu => ({ ...menu, subMenus: includedSubMenus(menu) })),
-    )(this.getSideMenus()) as Asuna.Schema.Menu[];
+      R.filter<Asuna.Schema.Menu>((menu) => R.not(R.isEmpty(R.prop('subMenus', menu)))),
+      R.map<Asuna.Schema.Menu, Asuna.Schema.Menu>((menu) => ({ ...menu, subMenus: includedSubMenus(menu) })),
+    )(this.getSideMenus());
     logger.log('[MenuAdapter][init]', 'filtered menus is', menus);
 
     return [...menus];

@@ -10,7 +10,7 @@ const logger = createLogger('helpers:schema');
 export * from './async';
 export * from './helper';
 
-export const peek = (message, callback?) => fields => {
+export const peek = (message, callback?) => (fields) => {
   if (callback) callback();
   logger.log('[peek]', { message, fields });
   return fields;
@@ -41,7 +41,7 @@ export const hiddenComponentDecorator = ({
   logger.log(TAG, { fields });
 
   const primaryKey = AppContext.adapters.models.getPrimaryKey(modelName);
-  let wrappedFields = R.omit([castModelKey('createdAt'), castModelKey('updatedAt')])(fields);
+  let wrappedFields: any = R.omit([castModelKey('createdAt'), castModelKey('updatedAt')])(fields);
   if (R.has(primaryKey, wrappedFields)) {
     const hidden = R.isNil(wrappedFields[primaryKey].value);
     wrappedFields = R.mergeDeepRight(wrappedFields, {
@@ -51,10 +51,10 @@ export const hiddenComponentDecorator = ({
 
   const positions = R.filter(R.pathEq(['options', 'type'], 'SortPosition'))(wrappedFields);
   if (!R.isEmpty(positions)) {
-    const hiddenPositions: DynamicFormFieldOptions = R.map(position => ({
+    const hiddenPositions = R.map<any, any>((position) => ({
       ...position,
       options: { accessible: 'hidden' } as DynamicFormFieldOptions,
-    }))(positions);
+    }))(positions as any) as DynamicFormFieldOptions;
 
     wrappedFields = R.mergeDeepRight(wrappedFields, { ...hiddenPositions });
   }
@@ -94,11 +94,11 @@ export const associationDecorator = ({ modelName, fields }: { modelName: string;
   const associationFields = R.filter(R.compose(R.not, R.isNil, R.prop('associations')))(fields);
   logger.log(TAG, { associationFields }, R.not(R.isEmpty(associationFields)));
   if (R.not(R.isEmpty(associationFields))) {
-    const wrapForeignOpt = R.map(opt => ({
+    const wrapForeignOpt = R.map<any, any>((opt) => ({
       ...opt,
       association: AppContext.adapters.models.getAssociationConfigs(opt.modelName),
     }));
-    const withAssociations = R.mapObjIndexed(field => ({
+    const withAssociations = R.mapObjIndexed<any, any>((field) => ({
       ...field,
       foreignOpts: wrapForeignOpt(field.foreignOpts),
     }))(associationFields);
@@ -127,7 +127,7 @@ export const jsonDecorator = ({
   if (R.not(R.isEmpty(jsonFields))) {
     logger.debug(TAG, { jsonFields });
 
-    const toJson = value => {
+    const toJson = (value) => {
       if (R.is(String, value) && value.length) {
         try {
           return JSON.parse(value);
@@ -143,7 +143,7 @@ export const jsonDecorator = ({
     };
 
     const transformValue = R.over(R.lens(R.prop('value'), R.assoc('value')), toJson);
-    const transformedFields = R.map(transformValue)(jsonFields);
+    const transformedFields = R.map(transformValue)(jsonFields as any);
     const wrappedFields = R.mergeDeepRight(fields, transformedFields);
 
     logger.log(TAG, 'wrappedFields', { wrappedFields });
@@ -177,7 +177,7 @@ export const enumDecorator = ({
   const TAG = '[enumDecorator]';
   logger.log(TAG, { fields });
 
-  const enumFilterFields = R.filter(R.propEq('type', DynamicFormTypes.EnumFilter))(fields);
+  const enumFilterFields = R.filter(R.propEq('type', DynamicFormTypes.EnumFilter))(fields as any);
   if (R.not(R.isEmpty(enumFilterFields))) {
     const [, enumFilterField] = R.toPairs(enumFilterFields)[0];
     logger.debug(TAG, { enumFilterField });
@@ -190,7 +190,7 @@ export const enumDecorator = ({
     // save positions value if no value exists, update models' sequence for else
     const positionsFieldPair = R.compose(
       R.toPairs,
-      R.map(field => {
+      R.map<any, any>((field) => {
         // raw is the original value, if exists, means it's update request
         if (field.value && !field.raw) {
           const value = R.is(String, field.value) ? JSON.parse(field.value) : field.value;
@@ -202,8 +202,8 @@ export const enumDecorator = ({
     )(fields);
 
     const filteredNames = R.without(current)(enums);
-    const filteredFields = R.omit(filteredNames)(fields);
-    const wrappedFields = current
+    const filteredFields = R.omit(filteredNames as any)(fields);
+    const wrappedFields: any = current
       ? R.mergeDeepRight(filteredFields, {
           [current]: {
             isFilterField: true,
