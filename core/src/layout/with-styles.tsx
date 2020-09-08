@@ -12,7 +12,7 @@ import 'spinkit/spinkit.css';
 import 'react-image-crop/dist/ReactCrop.css';
 import '@ant-design/compatible/assets/index.css';
 
-export default ({ children, hideCharacteristics }) => (
+const WithStyles = ({ children, hideCharacteristics }) => (
   <ConfigProvider locale={zhCN}>
     <NextHead>
       <title>
@@ -28,7 +28,7 @@ export default ({ children, hideCharacteristics }) => (
       .ant-legacy-form-item-control pre {
         line-height: 1rem;
       }
-      .ant-legacy-form-item-control [name=outer-box] {
+      .ant-legacy-form-item-control [name='outer-box'] {
         line-height: 1rem;
       }
       pre {
@@ -44,3 +44,5 @@ export default ({ children, hideCharacteristics }) => (
     `}</style>
   </ConfigProvider>
 );
+
+export default WithStyles;

@@ -20,7 +20,7 @@ const StyledContentDiv = styled.div`
   min-height: 280px;
 `;
 
-export default ({ loading, heartbeat, auth, appInfo, hideCharacteristics }) => {
+const Main = ({ loading, heartbeat, auth, appInfo, hideCharacteristics }) => {
   logger.log('status', { loading, heartbeat, auth, appInfo });
   return (
     <StoreContextProvider>
@@ -44,3 +44,5 @@ export default ({ loading, heartbeat, auth, appInfo, hideCharacteristics }) => {
     </StoreContextProvider>
   );
 };
+
+export default Main;
