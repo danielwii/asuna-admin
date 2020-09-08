@@ -30,7 +30,7 @@ function getModule(components, module) {
 
 export class ModuleRegister {
   static renders = {
-    DebugSettings: props => withDebugSettingsProps(innerProps => <DebugSettings {...props} {...innerProps} />),
+    DebugSettings: (props) => withDebugSettingsProps((innerProps) => <DebugSettings {...props} {...innerProps} />),
   };
 }
 
@@ -52,7 +52,7 @@ export interface ModulesLoaderProps {
   component?: any;
 }
 
-export default function(props: ModulesLoaderProps & { children?: React.ReactNode }) {
+const ModulesIndex = (props: ModulesLoaderProps & { children?: React.ReactNode }) => {
   logger.log({ props });
   const { module, component } = props as any;
 
@@ -74,4 +74,6 @@ export default function(props: ModulesLoaderProps & { children?: React.ReactNode
 
   const Component = getModule(components, module);
   return <Component {...props} />;
-}
+};
+
+export default ModulesIndex;

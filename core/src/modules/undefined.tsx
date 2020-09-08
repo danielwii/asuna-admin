@@ -1,3 +1,4 @@
 import * as React from 'react';
 
-export default () => <div>module undefined.</div>;
+const ModulesUndefined = () => <div>module undefined.</div>;
+export default ModulesUndefined;
