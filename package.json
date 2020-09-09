@@ -111,7 +111,7 @@
     "styled-components": "^5.2.0",
     "styled-spinkit": "^1.1.0",
     "url-join": "^4.0.1",
-    "video.js": "^7.8.4"
+    "video.js": "^7.9.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.11.6",
