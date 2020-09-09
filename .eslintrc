@@ -1,6 +1,6 @@
 {
   "env": {},
-  "extends": ["alloy", "alloy/react", "alloy/typescript"],
+  "extends": ["alloy", "alloy/react", "alloy/typescript", "plugin:react-hooks/recommended"],
   "settings": {},
   "plugins": [],
   "rules": {}
