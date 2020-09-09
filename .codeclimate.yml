@@ -1,5 +1,5 @@
 version: '2'
 exclude_patterns:
   - '**/*'
-  - '!core/src/'
+  - '!src/'
   - '.scannerwork/'
