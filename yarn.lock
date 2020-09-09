@@ -4052,10 +4052,10 @@ astral-regex@^2.0.0:
   resolved "https://registry.yarnpkg.com/astral-regex/-/astral-regex-2.0.0.tgz#483143c567aeed4785759c0865786dc77d7d2e31"
   integrity sha512-Z7tMw1ytTXt5jqMcOP+OQteU1VuNK9Y02uuJtKQ1Sv69jXQKKg5cibLwGJow8yzZP+eAc18EmLGPal0bp36rvQ==
 
-asuna-components@^0.4.24:
-  version "0.4.24"
-  resolved "https://registry.yarnpkg.com/asuna-components/-/asuna-components-0.4.24.tgz#aedfbb73639bde4efaf296dd352444a29e4d3099"
-  integrity sha512-1TyJt95zDnW+3hM0jHMWYqS31ej/c5u0q4bnFKKhlx0F4Cg8fLeZgpdeT142zH5+QBKNTVewAsF70JXQAz5UmA==
+asuna-components@^0.4.25:
+  version "0.4.25"
+  resolved "https://registry.yarnpkg.com/asuna-components/-/asuna-components-0.4.25.tgz#b20904dcd630a05aececf2e6024f859d0e30fc6a"
+  integrity sha512-GI7HhZH0de4bDRVRmE4Q2uUXCyYNKcvqQ9hLQl9yyPQOhMNv+/cn0wWZUAGvSZv7z14zaoKY2ABaj9wcDjny5w==
   dependencies:
     "@ant-design/icons" "^4.2.2"
     "@emotion/core" "^10.0.35"
