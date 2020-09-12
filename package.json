@@ -86,7 +86,7 @@
     "react-json-tree": "^0.13.0",
     "react-number-format": "^4.4.1",
     "react-pdf": "^5.0.0",
-    "react-query": "^2.15.4",
+    "react-query": "^2.16.1",
     "react-redux": "^7.2.1",
     "react-sortable-hoc": "1.11.0",
     "react-spinners": "^0.9.0",
