@@ -1424,10 +1424,10 @@
     ts-node "^8"
     tslib "^1"
 
-"@graphql-tools/load-files@^6.2.1":
-  version "6.2.1"
-  resolved "https://registry.yarnpkg.com/@graphql-tools/load-files/-/load-files-6.2.1.tgz#cb1c4a2e498f4c596951d0caf214fa3cd92255e0"
-  integrity sha512-P43Eod4OF1BMedBWRLRO32TRuKcPOZgnUYfMfTx+FJvwoUl8midR3EahTFTxmvJbSR02Tf0D0HJV8VLvbepNkA==
+"@graphql-tools/load-files@^6.2.2":
+  version "6.2.2"
+  resolved "https://registry.yarnpkg.com/@graphql-tools/load-files/-/load-files-6.2.2.tgz#8c67e28b714d2f7cced28066ec97a9472c6950f2"
+  integrity sha512-fyE8X2vohEHbHntyDHXXJaQkflHWaK8OkaIlbmi1A9CVuXdvhDcEBaUrbC69Wu02vOYeNgmwPB22qyeh6a3FHw==
   dependencies:
     fs-extra "9.0.1"
     globby "11.0.1"

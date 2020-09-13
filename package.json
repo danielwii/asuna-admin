@@ -32,7 +32,7 @@
     "@ant-design/icons": "^4.2.2",
     "@apollo/react-hooks": "^4.0.0",
     "@emotion/core": "^10.0.35",
-    "@graphql-tools/load-files": "^6.2.1",
+    "@graphql-tools/load-files": "^6.2.2",
     "@graphql-tools/merge": "^6.2.1",
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
