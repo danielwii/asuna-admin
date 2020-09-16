@@ -1,14 +1,7 @@
 /** @jsx jsx */
 import { LinkOutlined, SearchOutlined } from '@ant-design/icons';
 import { modelProxyCaller } from '@asuna-admin/adapters';
-import {
-  AssetsPreview,
-  Content,
-  DynamicFormTypes,
-  parseAddressStr,
-  PdfButton,
-  WithFuture,
-} from '@asuna-admin/components';
+import { AssetsPreview, Content, DynamicFormTypes, parseAddressStr } from '@asuna-admin/components';
 import { VideoPlayer } from '@asuna-admin/components/DynamicForm/Videos';
 import { Config } from '@asuna-admin/config';
 import { AppContext } from '@asuna-admin/core';
@@ -22,6 +15,7 @@ import { jsx } from '@emotion/core';
 import { Badge, Button, Checkbox, Divider, Input, Modal, Popconfirm, Statistic, Tag, Tooltip } from 'antd';
 import { ColumnProps } from 'antd/es/table';
 import { FilterDropdownProps } from 'antd/es/table/interface';
+import { PdfButton, WithFuture } from 'asuna-components';
 import { Promise } from 'bluebird';
 import * as deepDiff from 'deep-diff';
 import { Diff } from 'deep-diff';
@@ -29,9 +23,9 @@ import * as _ from 'lodash';
 import moment from 'moment';
 import * as R from 'ramda';
 import * as React from 'react';
+import NumberFormat from 'react-number-format';
 import * as util from 'util';
 import { VideoJsPlayerOptions } from 'video.js';
-import NumberFormat from 'react-number-format';
 
 import { castModelKey } from './cast';
 import { WithDebugInfo } from './debug';
@@ -411,7 +405,6 @@ export const columnHelper = {
                 future={() =>
                   modelProxyCaller().batchFetch(opts.subRef, { id: record.id, relations: [opts.transformer as string] })
                 }
-                async
               >
                 {(data) => (
                   <WithDebugInfo info={{ key, title, opts, record, transformer }}>

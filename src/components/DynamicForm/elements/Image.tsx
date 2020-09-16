@@ -1,14 +1,12 @@
-import { WithVariable } from '@asuna-admin/components/Common';
+import { WrappedFormUtils } from '@ant-design/compatible/es/form/Form';
 import { Config } from '@asuna-admin/config';
 import { upload, validateFile } from '@asuna-admin/helpers/upload';
 import { createLogger } from '@asuna-admin/logger';
-
-import { WrappedFormUtils } from '@ant-design/compatible/es/form/Form';
-import { IUploadedFile, IUploaderProps, Uploader, UploaderAdapter } from 'asuna-components';
+import { IUploadedFile, IUploaderProps, Uploader, UploaderAdapter, WithVariable } from 'asuna-components';
 import { AxiosRequestConfig } from 'axios';
+import * as _ from 'lodash';
 import * as React from 'react';
 import { useLogger } from 'react-use';
-import * as _ from 'lodash';
 
 import { generateComponent, horizontalFormItemLayout, IFormItemLayout } from '.';
 import { ImageTrivia } from '../ImageTrivia';

@@ -1,13 +1,13 @@
 /** @jsx jsx */
 import { useQuery } from '@apollo/react-hooks';
-import { AsunaDrawerButton, WithVariable, WithFuture } from '@asuna-admin/components';
+import { AsunaDrawerButton } from '@asuna-admin/components';
 import { AppContext } from '@asuna-admin/core/context';
 import { createLogger } from '@asuna-admin/logger';
 import { css, jsx } from '@emotion/core';
 import { createStyles, Theme } from '@material-ui/core';
 import { Avatar, Tooltip } from 'antd';
 import { gql } from 'apollo-boost';
-// import { WithFuture } from 'asuna-components';
+import { WithFuture, WithVariable } from 'asuna-components';
 import * as _ from 'lodash';
 import * as React from 'react';
 
@@ -45,7 +45,7 @@ export const ComponentsHelper = {
     getExtra?: (info) => React.ReactNode;
     future: Promise<any>;
   }): React.ReactElement => (
-    <WithFuture future={() => future} async>
+    <WithFuture future={() => future}>
       {(result) => (
         <WithVariable variable={getModel(result)}>
           {(info) => (

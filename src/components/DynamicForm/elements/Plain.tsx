@@ -1,7 +1,6 @@
-import { AssetPreview } from '@asuna-admin/components';
-import { createLogger } from '@asuna-admin/logger';
-
 import { Form } from '@ant-design/compatible';
+import { createLogger } from '@asuna-admin/logger';
+import { AssetPreview } from 'asuna-components';
 import * as _ from 'lodash';
 import * as React from 'react';
 

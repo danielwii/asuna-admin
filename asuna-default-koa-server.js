@@ -62,7 +62,7 @@ function bootstrap({ root, opts, enableGraphQL }) {
         });
       });
 
-      router.all('*', async (ctx) => {
+      router.all('/(.*)', async (ctx) => {
         const { req, res } = ctx;
         // Be sure to pass `true` as the second argument to `url.parse`.
         // This tells it to parse the query portion of the URL.
@@ -121,6 +121,7 @@ function bootstrap({ root, opts, enableGraphQL }) {
       });
 
       server.use(router.routes());
+      server.use(router.allowedMethods());
 
       server.listen(port, (err) => {
         if (err) throw err;

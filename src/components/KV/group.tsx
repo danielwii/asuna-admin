@@ -57,7 +57,7 @@ export function GroupFormKVComponent(props: {
   const initialState = !preInitialState && !fields ? { body: { form: {}, values: {} } } : preInitialState;
 
   const [state, setState] = useState(initialState);
-  const { loading, error, data, refetch, networkStatus } = KVHelper.loadByKey(key, collection);
+  const { loading, error, data, refetch } = KVHelper.loadByKey(key, collection);
   useEffect(() => setState({ body: _.get(data, 'kv.value', {}) }), [JSON.stringify(data)]);
 
   if (loading) return <FoldingCube />;
@@ -83,10 +83,13 @@ export function GroupFormKVComponent(props: {
           Reload
         </Button>
         {info && (
-          <Typography.Paragraph>
-            <InfoCircleOutlined style={{ margin: '0 0.2rem' }} />
-            {info}
-          </Typography.Paragraph>
+          <>
+            <Divider />
+            <Typography.Paragraph>
+              <InfoCircleOutlined style={{ margin: '0 0.2rem' }} />
+              {info}
+            </Typography.Paragraph>
+          </>
         )}
       </Typography>
       <Divider />

@@ -1,10 +1,10 @@
-import Document, { Head, Main, NextScript } from 'next/document';
+import Document, { DocumentContext, Head, Html, Main, NextScript } from 'next/document';
 import { ServerStyleSheet } from 'styled-components';
 
 export class StyledDocument extends Document {
   props: any;
 
-  static async getInitialProps(ctx) {
+  static async getInitialProps(ctx: DocumentContext) {
     // Step 1: Create an instance of ServerStyleSheet
     const sheet = new ServerStyleSheet();
 
@@ -27,14 +27,14 @@ export class StyledDocument extends Document {
 
   render() {
     return (
-      <html lang="zh">
+      <Html lang="zh">
         <meta charSet="utf-8" />
         <Head>{this.props.styleTags}</Head>
         <body>
           <Main />
           <NextScript />
         </body>
-      </html>
+      </Html>
     );
   }
 }

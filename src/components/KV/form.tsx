@@ -1,11 +1,10 @@
-import { EasyForm, FormFields, WithLoading } from '@asuna-admin/components';
+import { InfoCircleOutlined } from '@ant-design/icons';
 import { AppContext } from '@asuna-admin/core';
 import { KVHelper } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 
-import { InfoCircleOutlined } from '@ant-design/icons';
-
 import { Button, Col, Divider, Row, Typography } from 'antd';
+import { EasyForm, FormFields, WithLoading } from 'asuna-components';
 
 import 'highlight.js/styles/default.css';
 import * as _ from 'lodash';
@@ -16,32 +15,30 @@ import * as util from 'util';
 
 const logger = createLogger('components:kv-form:form');
 
-type FormBody<ExtraProps> = { form: FormFields<ExtraProps>; values: object };
-
 export function FormKVComponent(props: {
   kvCollection?: string;
   kvKey: string;
   // initialState: { body: FormBody };
   enableClear?: boolean;
-  info: React.ReactChild;
+  info?: React.ReactChild;
 });
 
-export function FormKVComponent<ExtraProps = any>(props: {
+export function FormKVComponent(props: {
   kvCollection?: string;
   kvKey: string;
   // initialState: { body: any };
   enableClear?: boolean;
-  info: React.ReactChild;
-  fields: (state) => FormFields<ExtraProps>;
+  info?: React.ReactChild;
+  fields: (state) => FormFields;
 });
 
-export function FormKVComponent<ExtraProps = any>(props: {
+export function FormKVComponent(props: {
   kvCollection?: string;
   kvKey: string;
   // initialState: { body: FormBody | any };
   enableClear?: boolean;
-  info: React.ReactChild;
-  fields: (state) => FormFields<ExtraProps>;
+  info?: React.ReactChild;
+  fields: (state) => FormFields;
 }) {
   const { kvCollection: collection, kvKey: key, info, /*initialState, */ fields } = props;
   const { loading, error, data, refetch } = KVHelper.loadByKey(key, collection);
@@ -60,16 +57,20 @@ export function FormKVComponent<ExtraProps = any>(props: {
               Reload
             </Button>
             {info && (
-              <Typography.Paragraph>
-                <InfoCircleOutlined style={{ margin: '0 0.2rem' }} />
-                {info}
-              </Typography.Paragraph>
+              <>
+                <Divider />
+                <Typography.Paragraph>
+                  <InfoCircleOutlined style={{ margin: '0 0.2rem' }} />
+                  {info}
+                </Typography.Paragraph>
+              </>
             )}
           </Typography>
           <Divider />
           <Row gutter={16}>
             <Col span={18}>
               <EasyForm
+                initialValues={body}
                 fields={fieldValues}
                 onSubmit={(values) => KVHelper.save({ key, collection }, values, refetch)}
                 onClear={() => KVHelper.clear({ key, collection }, refetch)}

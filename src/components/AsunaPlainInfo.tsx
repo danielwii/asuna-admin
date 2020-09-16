@@ -3,6 +3,7 @@ import { parseString, TooltipContent, WithDebugInfo } from '@asuna-admin/helpers
 import { SchemaHelper } from '@asuna-admin/schema';
 import { EnumFilterMetaInfoOptions } from '@asuna-admin/types';
 import { List, Tooltip } from 'antd';
+import { WithLoading, WithVariable } from 'asuna-components';
 import { Promise } from 'bluebird';
 import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
@@ -10,7 +11,6 @@ import moment from 'moment';
 import React from 'react';
 import { useAsync } from 'react-use';
 import VisualDiff from 'react-visual-diff';
-import { WithLoading, WithVariable } from './Common';
 import { DynamicFormTypes } from './DynamicForm';
 import { AssetsPreview } from './Snippet';
 

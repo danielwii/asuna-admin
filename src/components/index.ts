@@ -4,7 +4,6 @@ export * from './AsunaDataView';
 export * from './AsunaDrawer';
 export * from './AsunaPlainInfo';
 export * from './Button';
-export * from './Common';
 export * from './DataDisplay';
 export * from './ProgressBar';
 export * from './Snow';
