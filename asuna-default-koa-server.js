@@ -1,5 +1,3 @@
-// eslint-disable-next-line eslint-comments/disable-enable-pair
-/* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/explicit-function-return-type */
 require('colors');
 const util = require('util');
 const Koa = require('koa');
