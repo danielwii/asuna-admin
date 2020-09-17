@@ -24,8 +24,8 @@ static/libs
 # project
 examples/*
 declaration
-dist
-adapters
-components
-pages
-services
+dist/
+adapters/
+components/
+pages/
+services/
