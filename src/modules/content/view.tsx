@@ -1,4 +1,4 @@
-import { AsunaDataView, ErrorInfo, FormFieldType } from '@asuna-admin/components';
+import { AsunaDataView, ErrorInfo } from '@asuna-admin/components';
 import { DebugInfo, extractModelNameFromPane, resolveModelInPane, TenantHelper } from '@asuna-admin/helpers';
 import 'highlight.js/styles/default.css';
 import * as _ from 'lodash';
@@ -31,9 +31,10 @@ const ContentView: React.FC<ModulesLoaderProps> = ({ module, basis: { pane } }) 
     );
 
   const fields = _.fromPairs(
-    _.map(columnOpts?.columnProps?.queryFields || [primaryKey], (value) => {
-      return [value, { name: value as string, type: FormFieldType.string }];
-    }),
+    _.map(columnOpts?.columnProps?.queryFields || [primaryKey], (value) => [
+      value,
+      { name: value as string, type: 'string' },
+    ]),
   );
 
   return (

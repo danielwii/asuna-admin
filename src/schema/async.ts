@@ -94,7 +94,6 @@ export const asyncLoadAssociationsDecorator = async ({
     const wrappedAssociations = await Promise.all(
       R.values(filteredAssociations as any).map(async (field) => {
         const selectable = R.pathOr([], ['options', 'selectable'])(field) as any;
-        console.log('loadAssociation', { selectable, field, select: field?.options?.selectable });
         logger.debug(TAG, { field, selectable });
         if (selectable) {
           const primaryKey = AppContext.adapters.models.getPrimaryKey(selectable);

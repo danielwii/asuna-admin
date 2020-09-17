@@ -1,12 +1,13 @@
-import { AsunaDataView, EasyForm, FormFieldType } from '@asuna-admin/components';
+import { AsunaDataView } from '@asuna-admin/components';
 import { AppContext } from '@asuna-admin/core';
 import { extractModelNameFromPane, resolveModelInPane, useAsunaModels } from '@asuna-admin/helpers';
 import { Divider, PageHeader } from 'antd';
+import { EasyForm, FormFieldType } from 'asuna-components';
 import 'highlight.js/styles/default.css';
 import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
 import * as React from 'react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { ModulesLoaderProps } from '..';
 
 export type QueryFieldsColumnProps<EntitySchema> = (keyof EntitySchema)[];
@@ -56,6 +57,7 @@ const ContentSearch: React.FC<ModulesLoaderProps> = (props) => {
 
       <PageHeader title={pane.title}>
         <EasyForm
+          initialValues={{}}
           fields={fields}
           onSubmit={async (values) => {
             const valuesByFields = _.mapValues(fields, (v, k) => {

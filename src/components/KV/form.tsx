@@ -38,14 +38,16 @@ export function FormKVComponent(props: {
   // initialState: { body: FormBody | any };
   enableClear?: boolean;
   info?: React.ReactChild;
-  fields: (state) => FormFields;
+  fields?: (state) => FormFields;
 }) {
   const { kvCollection: collection, kvKey: key, info, /*initialState, */ fields } = props;
   const { loading, error, data, refetch } = KVHelper.loadByKey(key, collection);
-  const body = _.get(data, 'kv.value', {});
-  useLogger('FormKVComponent', props, body, { loading, error, data });
+  const body = _.get(data, 'kv.value', {}) as { type: string; fields: FormFields; values: Record<string, unknown> };
 
-  const fieldValues = fields(body);
+  const initialValues = body.values;
+  const fieldValues = fields ? fields(body) : body.fields;
+
+  useLogger('FormKVComponent', props, body, { loading, error, data }, { initialValues, fieldValues });
   logger.log('render', props, body, { loading, error, data, fields, /*initialState, */ fieldValues });
 
   return (
@@ -70,7 +72,7 @@ export function FormKVComponent(props: {
           <Row gutter={16}>
             <Col span={18}>
               <EasyForm
-                initialValues={body}
+                initialValues={initialValues}
                 fields={fieldValues}
                 onSubmit={(values) => KVHelper.save({ key, collection }, values, refetch)}
                 onClear={() => KVHelper.clear({ key, collection }, refetch)}
