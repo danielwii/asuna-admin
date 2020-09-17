@@ -10,6 +10,7 @@ import 'highlight.js/styles/default.css';
 import * as _ from 'lodash';
 import React, { useEffect, useState } from 'react';
 import Highlight from 'react-highlight';
+import { useLogger } from 'react-use';
 import { FoldingCube } from 'styled-spinkit';
 import * as util from 'util';
 
@@ -58,7 +59,14 @@ export function GroupFormKVComponent(props: {
 
   const [state, setState] = useState(initialState);
   const { loading, error, data, refetch } = KVHelper.loadByKey(key, collection);
-  useEffect(() => setState({ body: _.get(data, 'kv.value', {}) }), [JSON.stringify(data)]);
+  const value = _.get(data, 'kv.value', {});
+  useEffect(
+    () =>
+      setState({
+        body: { form: { ...initialState.body.form, ...value.form }, values: value.values },
+      }),
+    [JSON.stringify(data)],
+  );
 
   if (loading) return <FoldingCube />;
 
