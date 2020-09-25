@@ -39,7 +39,7 @@
     "antd": "^4.6.5",
     "apollo": "^2.31.0",
     "apollo-boost": "^0.4.9",
-    "apollo-server-koa": "^2.18.0",
+    "apollo-server-koa": "^2.18.1",
     "asuna-components": "^0.4.30",
     "axios": "^0.20.0",
     "bluebird": "^3.7.2",
