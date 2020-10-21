@@ -4,7 +4,10 @@
     "module": "esnext",
     "target": "es2020",
     "esModuleInterop": true,
-    "lib": ["esnext", "dom"],
+    "lib": [
+      "esnext",
+      "dom"
+    ],
     "jsx": "preserve",
     "allowJs": false,
     "moduleResolution": "node",
@@ -23,10 +26,24 @@
     "outDir": "dist",
     "baseUrl": "./src",
     "paths": {
-      "asuna-admin": ["index.ts"],
-      "@asuna-admin/*": ["*"]
-    }
+      "asuna-admin": [
+        "index.ts"
+      ],
+      "@asuna-admin/*": [
+        "*"
+      ]
+    },
+    "noEmit": true
   },
-  "include": ["next-env.d.ts", "src/**/*.ts*", "./services/**/*.ts*", "./components/**/*.ts*", "./pages/**/*.ts*"],
-  "exclude": ["**/*.spec.*", "node_modules"]
+  "include": [
+    "next-env.d.ts",
+    "src/**/*.ts*",
+    "./services/**/*.ts*",
+    "./components/**/*.ts*",
+    "./pages/**/*.ts*"
+  ],
+  "exclude": [
+    "**/*.spec.*",
+    "node_modules"
+  ]
 }
