@@ -4,6 +4,9 @@ describe('upload', () => {
   it('should return joined url', () => {
     expect(
       responseToUrl({
+        extension: '',
+        mimetype: '',
+        path: '',
         filename: 'filename.ext',
         prefix: '2019/07',
         mode: 'local',

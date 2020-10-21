@@ -18,10 +18,7 @@ describe('schemaHelper.enumDecorator', () => {
           type: 'EnumFilter',
           options: {
             filterType: 'Sort',
-            enumData: {
-              refInclude: 'refValue1',
-              refNotInclude: 'refValue2',
-            },
+            enumData: { refInclude: 'refValue1', refNotInclude: 'refValue2' },
           },
           value: 'refInclude',
         },
