@@ -357,7 +357,9 @@ export class ModelAdapterImpl implements ModelAdapter {
     const primaryKey = AppContext.adapters.models.getPrimaryKey(modelName);
     logger.debug('[upsert]', 'fields is', fields);
 
-    const fixKeys = _.mapKeys(data?.body, (value, key) => fields?.[key]?.ref || key);
+    const id: any = _.get(data?.body, 'id') ?? _.get(data?.body, primaryKey); // data?.body?.[primaryKey] as any;
+    const removedPrimaryKey = _.omit(data?.body, 'id') as any; // data?.body?.[primaryKey] as any;
+    const fixKeys = _.mapKeys(removedPrimaryKey, (value, key) => fields?.[key]?.ref || key);
     const transformed = _.mapValues(fixKeys, (value, key) => {
       // json 用于描述该字段需要通过字符串转换处理，目前用于服务器端不支持 JSON 数据格式的情况
       return _.eq(fields?.[key]?.options?.json, 'str') ? JSON.stringify(value) : value;
@@ -365,7 +367,6 @@ export class ModelAdapterImpl implements ModelAdapter {
     const convertNullTransformed = _.mapValues(transformed, (v) => (_.isNil(v) ? null : v));
     logger.debug('[upsert]', 'transformed is', convertNullTransformed);
 
-    const id = data?.body?.[primaryKey] as any;
     if (id) {
       return this.service.update(auth, modelName, {
         id,

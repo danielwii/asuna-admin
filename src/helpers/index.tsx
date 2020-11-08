@@ -772,14 +772,16 @@ export const columnHelper = {
     key: castModelKey(key),
     ...(await generateSearchColumnProps(castModelKey(key), 'boolean')),
     render: (isActive, record) => {
+      const primaryKey = AppContext.adapters.models.getPrimaryKey(extras.modelName);
+      const id = _.get(record, primaryKey);
       const component = extras.readonly ? (
         <Checkbox checked={isActive} disabled={true} />
       ) : (
         <Popconfirm
-          title={isActive ? `是否注销: ${record.id}` : `是否激活: ${record.id}`}
+          title={isActive ? `是否注销: ${id}` : `是否激活: ${id}`}
           onConfirm={async () => {
             // const { modelProxy } = require('../adapters');
-            await AppContext.adapters.models.upsert(extras.modelName, { body: { id: record.id, [key]: !isActive } });
+            await AppContext.adapters.models.upsert(extras.modelName, { body: { id, [key]: !isActive } });
             extras.callRefresh();
           }}
         >
