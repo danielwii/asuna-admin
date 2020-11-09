@@ -1,3 +1,4 @@
+/** @jsxRuntime classic */
 /** @jsx jsx */
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { createLogger } from '@asuna-admin/logger';

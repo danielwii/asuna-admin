@@ -1,3 +1,4 @@
+/** @jsxRuntime classic */
 /** @jsx jsx */
 import { Snow } from '@asuna-admin/components';
 import { Config } from '@asuna-admin/config';

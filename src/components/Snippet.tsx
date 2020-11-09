@@ -1,3 +1,4 @@
+/** @jsxRuntime classic */
 /** @jsx jsx */
 import { valueToArrays } from '@asuna-admin/core/url-rewriter';
 import { TooltipContent } from '@asuna-admin/helpers';

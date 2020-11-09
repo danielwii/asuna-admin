@@ -1,3 +1,4 @@
+/** @jsxRuntime classic */
 /** @jsx jsx */
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { AppContext } from '@asuna-admin/core';

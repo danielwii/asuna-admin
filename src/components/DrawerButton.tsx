@@ -1,3 +1,4 @@
+/** @jsxRuntime classic */
 /** @jsx jsx */
 import { SelectOutlined } from '@ant-design/icons';
 import { css, jsx } from '@emotion/core';

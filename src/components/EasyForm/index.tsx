@@ -1,3 +1,4 @@
+/** @jsxRuntime classic */
 /** @jsx jsx */
 import { AppContext } from '@asuna-admin/core';
 import { createLogger } from '@asuna-admin/logger';

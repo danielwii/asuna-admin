@@ -101,7 +101,7 @@ export const associationDecorator = ({ modelName, fields }: { modelName: string;
     const withAssociations = R.mapObjIndexed<any, any>((field) => ({
       ...field,
       foreignOpts: wrapForeignOpt(field.foreignOpts),
-    }))(associationFields);
+    }), associationFields);
     logger.debug(TAG, { withAssociations, wrapForeignOpt });
 
     const wrappedFields = R.mergeDeepRight(fields, withAssociations);

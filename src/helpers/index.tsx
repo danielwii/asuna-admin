@@ -1,3 +1,4 @@
+/** @jsxRuntime classic */
 /** @jsx jsx */
 import { LinkOutlined, SearchOutlined } from '@ant-design/icons';
 import { modelProxyCaller } from '@asuna-admin/adapters';
@@ -882,9 +883,9 @@ export function TooltipContent({ value, link }: { value: any; link?: boolean }) 
         <div style={{ maxWidth: '15rem' }}>{shortValue}</div>
       </Tooltip>
     );
-    return <>{component}</>;
+    return <React.Fragment>{component}</React.Fragment>;
   }
-  return link ? <TextLink url={component} text={component} /> : <>{component}</>;
+  return link ? <TextLink url={component} text={component} /> : <React.Fragment>{component}</React.Fragment>;
 }
 
 function TextLink({ url, text }: { url: string; text?: string }) {
