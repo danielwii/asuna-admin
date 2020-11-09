@@ -22,9 +22,7 @@
     "pre-commit": "jest",
     "test": "ENV=test jest",
     "check:circular": "npx madge --circular --extensions ts ./",
-    "codegen:generate": "apollo codegen:generate --endpoint http://localhost:5100/graphql --target typescript --includes=services/*.ts --tagName gql --addTypename",
-    "snyk-protect": "snyk protect",
-    "prepublish": "npm run snyk-protect"
+    "codegen:generate": "apollo codegen:generate --endpoint http://localhost:5100/graphql --target typescript --includes=services/*.ts --tagName gql --addTypename"
   },
   "dependencies": {
     "@ant-design/compatible": "^1.0.8",
@@ -100,7 +98,6 @@
     "redux-saga": "^1.1.3",
     "rxjs": "^6.6.3",
     "shortid": "^2.2.16",
-    "snyk": "^1.424.4",
     "socket.io-client": "^2.3.1",
     "spinkit": "^2.0.1",
     "stream-array": "^1.1.2",
@@ -170,6 +167,5 @@
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"
-  },
-  "snyk": true
+  }
 }
