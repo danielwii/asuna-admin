@@ -2,7 +2,7 @@
 /** @jsx jsx */
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { createLogger } from '@asuna-admin/logger';
-import { css, jsx } from '@emotion/core';
+import { css, jsx } from '@emotion/react';
 import { Button, Form, Input } from 'antd';
 import * as React from 'react';
 import { FoldingCube } from 'styled-spinkit';

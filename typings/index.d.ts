@@ -3,7 +3,7 @@
 //   export default value;
 // }
 
-import { InterpolationWithTheme } from '@emotion/core';
+import { InterpolationWithTheme } from '@emotion/react';
 
 declare global {
   namespace JSX {

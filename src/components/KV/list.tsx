@@ -5,7 +5,7 @@ import { AppContext } from '@asuna-admin/core';
 import { KVHelper, WithDebugInfo } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 
-import { jsx } from '@emotion/core';
+import { jsx } from '@emotion/react';
 import { TextField } from '@material-ui/core';
 import { Button, Col, Divider, Row, Typography } from 'antd';
 import { DynamicJsonArrayTable, FormFieldDef, FormFields, ObjectArrayJsonTableHelper } from 'asuna-components';

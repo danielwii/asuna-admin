@@ -14,7 +14,7 @@ interface IPlainImagesProps {
 }
 
 export function PlainImages({ options, formItemLayout }: IPlainImagesProps) {
-  const { key, label, text, help } = options;
+  const { key, label, text, help, name } = options;
   logger.log('[PlainImages]', { options });
   const fieldName = key || name;
   const labelName = label || name || key;

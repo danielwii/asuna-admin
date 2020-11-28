@@ -11,7 +11,7 @@ import { ComponentsHelper, RelationColumnProps } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 import { SchemaHelper } from '@asuna-admin/schema';
 import { Asuna } from '@asuna-admin/types';
-import { jsx } from '@emotion/core';
+import { jsx } from '@emotion/react';
 
 import { Badge, Button, Checkbox, Divider, Input, Modal, Popconfirm, Statistic, Tag, Tooltip } from 'antd';
 import { ColumnProps } from 'antd/es/table';

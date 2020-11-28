@@ -1,7 +1,7 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { SelectOutlined } from '@ant-design/icons';
-import { css, jsx } from '@emotion/core';
+import { css, jsx } from '@emotion/react';
 import { Button, Divider, Drawer, Empty, Popover, Skeleton, Timeline } from 'antd';
 import { BaseButtonProps } from 'antd/es/button/button';
 import { PopoverProps } from 'antd/lib/popover';

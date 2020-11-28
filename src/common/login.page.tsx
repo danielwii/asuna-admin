@@ -8,7 +8,7 @@ import { diff } from '@asuna-admin/helpers';
 import { WithStyles } from '@asuna-admin/layout';
 import { createLogger } from '@asuna-admin/logger';
 import { AppState, RootState } from '@asuna-admin/store';
-import { jsx } from '@emotion/core';
+import { jsx } from '@emotion/react';
 
 import ApolloClient, { gql } from 'apollo-boost';
 import { changeAntdTheme, generateThemeColor } from 'dynamic-antd-theme';

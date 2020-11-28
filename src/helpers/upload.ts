@@ -10,7 +10,7 @@ const logger = createLogger('helpers:upload');
 export async function getBase64(image): Promise<string | ArrayBuffer | null> {
   const reader = new FileReader();
   return new Promise((resolve, reject) => {
-    reader.addEventListener('load', () => (reader.result ? resolve(reader.result) : resolve()));
+    reader.addEventListener('load', () => (reader.result ? resolve(reader.result) : resolve(null)));
     reader.addEventListener('error', (ev) => reject(ev));
     reader.readAsDataURL(image);
   });

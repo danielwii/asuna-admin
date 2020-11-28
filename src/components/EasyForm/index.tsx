@@ -2,7 +2,7 @@
 /** @jsx jsx */
 import { AppContext } from '@asuna-admin/core';
 import { createLogger } from '@asuna-admin/logger';
-import { jsx } from '@emotion/core';
+import { jsx } from '@emotion/react';
 import { FormControl, FormHelperText } from '@material-ui/core';
 import * as antd from 'antd';
 import { Divider, Popconfirm } from 'antd';
@@ -71,7 +71,7 @@ const GroupInnerForm = (props: GroupEasyFormProps & formik.FormikProps<formik.Fo
                         <FormControl error={hasError} fullWidth={true}>
                           {/*<InputLabel htmlFor={field.name}>{field.name} / {fieldDef.name}</InputLabel>*/}
                           {/*<Input id={field.name} type={formField.type} {...field} value={value} />*/}
-                          <RenderInputComponent form={form} fieldDef={fieldDef} field={field} value={value} />
+                          <RenderInputComponent form={form} fieldDef={fieldDef} field={field as any} value={value} />
                           {formField.help && <FormHelperText>{formField.help}</FormHelperText>}
                           {hasError && <FormHelperText>{form.errors[formField.name]}</FormHelperText>}
                           <Divider type="horizontal" style={{ margin: '0.5rem 0' }} />

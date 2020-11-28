@@ -4,7 +4,7 @@ import { useQuery } from '@apollo/react-hooks';
 import { AsunaDrawerButton } from '@asuna-admin/components';
 import { AppContext } from '@asuna-admin/core/context';
 import { createLogger } from '@asuna-admin/logger';
-import { css, jsx } from '@emotion/core';
+import { css, jsx } from '@emotion/react';
 import { createStyles, Theme } from '@material-ui/core';
 import { Avatar, Tooltip } from 'antd';
 import { gql } from 'apollo-boost';

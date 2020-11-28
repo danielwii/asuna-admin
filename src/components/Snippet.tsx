@@ -2,7 +2,7 @@
 /** @jsx jsx */
 import { valueToArrays } from '@asuna-admin/core/url-rewriter';
 import { TooltipContent } from '@asuna-admin/helpers';
-import { jsx } from '@emotion/core';
+import { jsx } from '@emotion/react';
 import { AssetPreview } from 'asuna-components';
 import * as _ from 'lodash';
 import dynamic from 'next/dynamic';

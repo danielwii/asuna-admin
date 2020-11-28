@@ -333,7 +333,7 @@ export class ModelAdapterImpl implements ModelAdapter {
       .pickBy((opts) => !_.includes(_.get(opts, 'options.accessible'), ['hidden']))
       .keys()
       .value();
-    const relations = _.flow(_.flattenDeep, _.uniq, fp.join(','))([selectableRelations, data.relations]);
+    const relations = _.flow(_.flattenDeep, _.uniq, fp.join(','))([selectableRelations, data.relations ?? []]);
     logger.log({ schema, selectableRelations, data, relations });
     return this.service.fetch(auth, modelName, Object.assign(data, modelConfig, { relations }));
   };
