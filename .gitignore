@@ -29,3 +29,11 @@ adapters/
 components/
 pages/
 services/
+
+.yarn/*
+#!.yarn/cache
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+.clinic/

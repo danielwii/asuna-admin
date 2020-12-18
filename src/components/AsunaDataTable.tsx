@@ -41,7 +41,7 @@ export interface AsunaDataTableProps {
 
 type QueryConditionType = {
   pagination?: TablePaginationConfig;
-  filters?: Record<string, Key[] | null>;
+  filters?: Record<string, (Key | boolean)[] | null>;
   sorter?: SorterResult<any> | SorterResult<any>[];
 };
 
@@ -120,7 +120,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = (props) => {
         return { transformedFilters, availableSorter, transformedSorter };
       }
     },
-    transformFilters: (filters?: Record<string, Key[] | null>): Record<string, [Condition]> => {
+    transformFilters: (filters?: Record<string, (Key | boolean)[] | null>): Record<string, [Condition]> => {
       return _.chain(_.omitBy(filters, _.isNil))
         .mapKeys((filterArr, key) =>
           key.includes('.') && _.isString(_.head(filterArr))
@@ -136,7 +136,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = (props) => {
     },
     handleTableChange: function <RecordType>(
       pagination?: TablePaginationConfig,
-      filters?: Record<string, Key[] | null>,
+      filters?: Record<string, (Key | boolean)[] | null>,
       sorter?: SorterResult<RecordType> | SorterResult<RecordType>[],
       extra?: TableCurrentDataSource<RecordType>,
     ): void {
