@@ -122,16 +122,21 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = (props) => {
     },
     transformFilters: (filters?: Record<string, (Key | boolean)[] | null>): Record<string, [Condition]> => {
       return _.chain(_.omitBy(filters, _.isNil))
-        .mapKeys((filterArr, key) =>
-          key.includes('.') && _.isString(_.head(filterArr))
-            ? _.get(parseJSONIfCould(_.head(filterArr) as any), 'key')
-            : key,
-        )
-        .mapValues((filterArr, key) =>
-          key.includes('.') && _.isString(_.head(filterArr))
-            ? _.get(parseJSONIfCould(_.head(filterArr) as any), 'value')
-            : filterArr,
-        )
+        .mapKeys((filterArr, key) => {
+          if (key.includes(".") && _.isString(_.head(filterArr))) {
+            return _.get(parseJSONIfCould(_.head(filterArr) as any), "key");
+          } else {
+            const parsed = parseJSONIfCould(filterArr);
+            if (_.isObject(parsed) && _.get(parsed, 'key')) {
+              return _.head(_.get(parsed, 'key'));
+            }
+          }
+          return key;
+        })
+        .mapValues((filterArr, key) => {
+          const parsed = parseJSONIfCould(filterArr);
+          return _.isObject(parsed) && _.get(parsed, 'key') ? _.head(_.get(parsed, 'value')) : filterArr;
+        })
         .value();
     },
     handleTableChange: function <RecordType>(
@@ -208,9 +213,15 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = (props) => {
     };
   }, [modelName]);
 
+  const ctx: Asuna.Schema.TableContext = {
+    onSearch: ({ searchText, searchedColumn }) => {
+      logger.log('onSearch', { searchText, searchedColumn });
+      setQueryCondition({ ...queryCondition, filters: { ...queryCondition.filters, [searchedColumn]: [searchText] } });
+    },
+  };
   const { loading: loadingAsunaModels, columnProps, relations } = useAsunaModels(
     modelName,
-    { callRefresh: func.createRefresher(queryCondition), extraName, actions },
+    { callRefresh: func.createRefresher(queryCondition), extraName, actions, ctx },
     [modelName, queryCondition],
   );
 
@@ -299,7 +310,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = (props) => {
 
       {renderActions && (
         <>
-          {renderActions({ modelName, callRefresh: func.refresh })}
+          {renderActions({ modelName, callRefresh: func.refresh, ctx })}
           <Divider type="vertical" />
         </>
       )}

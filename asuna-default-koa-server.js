@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 require('colors');
 const util = require('util');
 const Koa = require('koa');
@@ -69,9 +70,9 @@ function bootstrap({ root, opts, enableGraphQL }) {
         const parsedUrl = parse(req.url, true);
         const { pathname, query } = parsedUrl;
 
-        if (opts && opts.proxy) {
+        if (opts?.proxy) {
           const proxyConfig = opts.proxy.find((config) => pathname.startsWith(config.pathname));
-          if (proxyConfig && proxyConfig.redirectTo) {
+          if (proxyConfig?.redirectTo) {
             const redirectTo = proxyConfig.redirectTo(req);
             req.url = redirectTo;
 
@@ -80,11 +81,11 @@ function bootstrap({ root, opts, enableGraphQL }) {
               // const target = `${protocol}//${host}`;
               // logger.log(parse(redirectTo));
               logger.log(`${new Date().toISOString().dim} ${req.method.bold} ${req.url}`, 'download'.magenta);
-              await new Promise((resolve, reject) =>
+              await new Promise((resolve, reject) => {
                 proxy.web(req, res, { target: `${protocol}//${host}`, followRedirects: true }, (e) =>
                   e ? reject(e) : resolve(),
-                ),
-              );
+                );
+              });
               return;
             }
 

@@ -1,5 +1,7 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
+// noinspection ES6UnusedImports
+import { jsx } from '@emotion/react';
 import { LinkOutlined, SearchOutlined } from '@ant-design/icons';
 import { modelProxyCaller } from '@asuna-admin/adapters';
 import { AssetsPreview, Content, DynamicFormTypes, parseAddressStr } from '@asuna-admin/components';
@@ -11,10 +13,9 @@ import { ComponentsHelper, RelationColumnProps } from '@asuna-admin/helpers';
 import { createLogger } from '@asuna-admin/logger';
 import { SchemaHelper } from '@asuna-admin/schema';
 import { Asuna } from '@asuna-admin/types';
-import { jsx } from '@emotion/react';
 
-import { Badge, Button, Checkbox, Divider, Input, Modal, Popconfirm, Statistic, Tag, Tooltip } from 'antd';
-import { ColumnProps } from 'antd/es/table';
+import { Badge, Button, Checkbox, Divider, Input, Modal, Popconfirm, Space, Statistic, Tag, Tooltip } from 'antd';
+import { ColumnProps, ColumnType } from "antd/es/table";
 import { FilterDropdownProps } from 'antd/es/table/interface';
 import { PdfButton, WithFuture } from 'asuna-components';
 import { Promise } from 'bluebird';
@@ -68,12 +69,13 @@ type SwitchConditionExtras = { model: string; relationSearchField?: string };
 
 async function generateSearchColumnProps(
   dataIndex: string,
+  onSearch: (data: { searchText: string; searchedColumn: string }) => void,
   conditionType?: ConditionType,
   conditionExtras?: SwitchConditionExtras,
 ): Promise<ColumnProps<any>> {
   // console.log('generateSearchColumnProps', { dataIndex, conditionType, conditionExtras });
   // only called in filterDropdown
-  const getSelectedValue = async (value) => {
+  const getSelectedValue = (value) => {
     switch (conditionType) {
       case 'like':
         return [{ $like: `%${value}%` }];
@@ -104,6 +106,11 @@ async function generateSearchColumnProps(
       ],
     };
   }
+
+  const handleSearch = (selectedKeys, confirm, dataIndex) => {
+    confirm();
+    onSearch({ searchText: selectedKeys[0], searchedColumn: dataIndex });
+  };
 
   /*
   if (conditionType === 'list' && conditionExtras) {
@@ -142,25 +149,30 @@ async function generateSearchColumnProps(
           addonBefore={conditionType}
           placeholder={`搜索 '${dataIndex}' ...`}
           value={getSelectedKey(selectedKeys)}
-          onChange={async (e) =>
-            setSelectedKeys && setSelectedKeys(e.target.value ? await getSelectedValue(e.target.value) : [])
-          }
-          onPressEnter={confirm}
+          onChange={(e) => setSelectedKeys(e.target.value ? getSelectedValue(e.target.value) : [])}
+          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
         />
         <Divider type="horizontal" style={{ margin: '0.2rem 0' }} />
-        <Button type="primary" onClick={confirm} icon={<SearchOutlined />} size="small">
-          搜索
-        </Button>{' '}
-        <Button onClick={clearFilters} size="small">
-          重置
-        </Button>
+        <Space>
+          <Button
+            type="primary"
+            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+            icon={<SearchOutlined />}
+            size="small"
+          >
+            搜索
+          </Button>
+          <Button onClick={clearFilters} size="small">
+            重置
+          </Button>
+        </Space>
       </Content>
     ),
     filterIcon: (filtered) => <SearchOutlined style={{ color: filtered ? '#1890ff' : 'inherit' }} />,
   };
 }
 
-type ModelOpts = { model: string; title?: string };
+type ModelOpts = { model: string; title?: string; ctx: Asuna.Schema.TableContext };
 type TextColumnOpts = {
   mode?: 'html' | 'text' | 'button';
   /**
@@ -181,15 +193,28 @@ type TextColumnOpts = {
 };
 type CommonColumnOpts = { transformer? };
 
+export const columnCreator: (
+  modelOpts: { model: string; title?: string },
+  columnOpts?: TextColumnOpts,
+) => Asuna.Schema.ColumnPropsCreator = (modelOpts, columnOpts) => (key, actions, { ctx }) =>
+  columnHelper2.generate(key, { ...modelOpts, ctx }, columnOpts);
+
+export const fpColumnCreator = (title?: string, columnOpts?: TextColumnOpts) => (model: string) =>
+  columnCreator({ model, title }, columnOpts);
+
 export const columnHelper2 = {
-  generate: async (key, { model, title }: ModelOpts, opts: TextColumnOpts = {}): Promise<ColumnProps<any>> => {
+  generate: async (
+    key: string,
+    { model, title, ctx }: ModelOpts,
+    opts: TextColumnOpts = {},
+  ): Promise<ColumnProps<any>> => {
     const columnInfo = model ? await SchemaHelper.getColumnInfo(model, key) : undefined;
     return {
       key,
       title: title ?? columnInfo?.config?.info?.name ?? key,
       dataIndex: key,
       sorter: true,
-      ...(await generateSearchColumnProps(key, opts.searchType, { model })),
+      ...(await generateSearchColumnProps(key, ctx.onSearch, opts.searchType, { model })),
       render: nullProtectRender((value, record) => {
         let extracted = extractValue(value, opts.transformer);
         if (opts.parseBy) extracted = parseType(opts.parseBy, extracted);
@@ -254,7 +279,7 @@ export const columnHelper2 = {
   },
   generateNumber: async (
     key,
-    { model, title }: ModelOpts,
+    { model, title, ctx }: ModelOpts,
     opts: { transformer?; searchType?: ConditionType; type: 'badge' | 'statistics' | 'number' } = { type: 'number' },
   ): Promise<ColumnProps<any>> => {
     const columnInfo = model ? await SchemaHelper.getColumnInfo(model, key) : undefined;
@@ -264,7 +289,7 @@ export const columnHelper2 = {
       title: titleStr,
       dataIndex: key,
       sorter: true,
-      ...(await generateSearchColumnProps(key, opts.searchType)),
+      ...(await generateSearchColumnProps(key, ctx.onSearch, opts.searchType)),
       render: nullProtectRender((record) => {
         const value = extractValue(record, opts.transformer);
         if (opts.type === 'badge') {
@@ -356,16 +381,21 @@ export const columnHelper2 = {
       }),
     };
   },
-  fpGenerateSwitch: (key, title) => _.curry(columnHelper.generateSwitch)(key, title),
+  fpGenerateSwitch: (key, opts: ModelOpts, extras: Asuna.Schema.RecordRenderExtras) =>
+    _.curry(columnHelper.generateSwitch)(key, opts, extras),
 };
 
 export const columnHelper = {
-  generateID: async (key = 'id', title = 'ID', transformer?): Promise<ColumnProps<any>> => ({
+  generateID: ({ ctx }: Asuna.Schema.RecordRenderExtras) => async (
+    key = 'id',
+    title = 'ID',
+    transformer?,
+  ): Promise<ColumnProps<any>> => ({
     key,
     title,
     dataIndex: key,
     sorter: true,
-    ...(await generateSearchColumnProps(key, 'like')),
+    ...(await generateSearchColumnProps(key, ctx.onSearch, 'like')),
     render: nullProtectRender((record) => (
       <WithDebugInfo info={{ key, title, record }}>{transformer ? transformer(record) : record}</WithDebugInfo>
     )),
@@ -432,7 +462,7 @@ export const columnHelper = {
       filterType?: 'list' | 'search';
       relationSearchField?: string;
       render?: (content, record?, extras?: Asuna.Schema.RecordRenderExtras) => React.ReactNode;
-    } = {},
+    },
   ) => async (
     laterKey: string,
     actions: Asuna.Schema.RecordRenderActions,
@@ -445,7 +475,7 @@ export const columnHelper = {
 
     ref = ref || opts.ref || key;
     transformer = transformer || opts.transformer;
-    let filterProps = {};
+    let filterProps: ColumnType<string> = {};
     switch (opts.filterType) {
       case 'list':
         const modelName = extras.modelName;
@@ -471,7 +501,11 @@ export const columnHelper = {
         }
         break;
       case 'search':
-        filterProps = await generateSearchColumnProps(`${ref}.${opts.relationSearchField || 'name'}`, 'like');
+        filterProps = await generateSearchColumnProps(
+          `${ref}.${opts.relationSearchField || 'name'}`,
+          extras.ctx.onSearch,
+          'like',
+        );
         break;
     }
 
@@ -493,154 +527,6 @@ export const columnHelper = {
       }),
     };
   },
-  /**
-   * @deprecated {@see generateRelationFp}
-   * @param key
-   * @param title
-   * @param opts
-   */
-  generateRelation: async function <EntitySchema = object, RelationSchema = object>(
-    key: string,
-    title,
-    opts: {
-      ref?: keyof EntitySchema;
-      transformer?;
-      filterType?:
-        | 'list'
-        /**
-         * @deprecated not implemented
-         */
-        | 'search';
-      relationField?: string;
-      actions;
-      extras;
-    },
-  ): Promise<RelationColumnProps> {
-    const ref = (opts.ref || key) as string;
-    let filterProps = {};
-    switch (opts.filterType) {
-      case 'list':
-        const modelName = opts?.extras?.modelName;
-        const relation = AppContext.adapters.models.getFormSchema(modelName)[ref];
-        const relationName = relation?.options?.selectable;
-        if (relationName) {
-          const field = opts.relationField || 'name';
-          const {
-            data: { items },
-          } = await AppContext.adapters.models.loadModels(relationName, {
-            fields: [field],
-            pagination: { pageSize: 500 },
-          });
-          filterProps = {
-            filterMultiple: false,
-            filters: _.map(items, (item) => ({ text: item[field], value: item['id'] })),
-          };
-        }
-        break;
-      case 'search':
-        // fixme not implemented
-        filterProps = await generateSearchColumnProps(`${ref}.${opts.relationField || 'name'}`, 'like');
-        break;
-    }
-
-    return {
-      key: key as string,
-      title,
-      relation: ref,
-      dataIndex: ref,
-      ...filterProps,
-      render: nullProtectRender((record) => {
-        const content = extractValue(record, opts.transformer);
-        return <WithDebugInfo info={{ key, title, opts, record }}>{content}</WithDebugInfo>;
-      }),
-    };
-  },
-  /**
-   * @deprecated {@see columnHelper2.generate}
-   */
-  generate: async (
-    key,
-    title,
-    opts: {
-      transformer?: ((record) => string) | string;
-      searchType?: ConditionType;
-      render?: (content, record?) => React.ReactChild;
-    } = {},
-  ): Promise<ColumnProps<any>> => ({
-    key,
-    title,
-    dataIndex: key,
-    sorter: true,
-    ...(await generateSearchColumnProps(key, opts.searchType)),
-    render: nullProtectRender((value, record) => {
-      const extracted = extractValue(value, opts.transformer);
-      return (
-        <WithDebugInfo info={{ key, title, value, record, extracted, opts }}>
-          {opts.render ? opts.render(extracted, record) : <TooltipContent value={extracted} />}
-        </WithDebugInfo>
-      );
-    }),
-  }),
-  /**
-   * @deprecated {@see columnHelper2.generateTag}
-   */
-  generateTag: (
-    key,
-    title,
-    opts: {
-      transformer?;
-      colorMap?: {
-        [key: string]:
-          | null
-          | 'magenta'
-          | 'red'
-          | 'volcano'
-          | 'orange'
-          | 'gold'
-          | 'lime'
-          | 'green'
-          | 'cyan'
-          | 'blue'
-          | 'geekblue'
-          | 'purple';
-      };
-    } = {},
-  ): ColumnProps<any> => ({
-    key,
-    title,
-    dataIndex: key,
-    sorter: true,
-    // ...generateSearchColumnProps(key, opts.searchType),
-    render: nullProtectRender((record) => {
-      const value = extractValue(record, opts.transformer);
-      return (
-        <WithDebugInfo info={{ key, title, record }}>
-          <Tag color={_.get(opts, `colorMap['${value}']`)}>{value}</Tag>
-        </WithDebugInfo>
-      );
-    }),
-  }),
-  generateNumber: async (
-    key,
-    title,
-    opts: { transformer?; searchType?: ConditionType; type: 'badge' | 'statistics' } = {
-      type: 'badge',
-    },
-  ): Promise<ColumnProps<any>> => ({
-    key,
-    title,
-    dataIndex: key,
-    sorter: true,
-    ...(await generateSearchColumnProps(key, opts.searchType)),
-    render: nullProtectRender((record) => {
-      const value = extractValue(record, opts.transformer);
-      return opts.type === 'badge' ? (
-        <Badge count={+value} overflowCount={Number.MAX_SAFE_INTEGER} style={{ backgroundColor: '#52c41a' }} />
-      ) : (
-        <Statistic value={+value} />
-      );
-    }),
-  }),
   generateLink: (key, title, opts: { transformer?; host?: string } = {}): ColumnProps<any> => ({
     key,
     title,
@@ -767,11 +653,15 @@ export const columnHelper = {
   /**
    * 生成切换按钮
    */
-  generateSwitch: async (key, title, extras: Asuna.Schema.RecordRenderExtras): Promise<ColumnProps<any>> => ({
+  generateSwitch: async (
+    key,
+    { title, ctx }: ModelOpts,
+    extras: Asuna.Schema.RecordRenderExtras,
+  ): Promise<ColumnProps<any>> => ({
     title,
     dataIndex: castModelKey(key),
     key: castModelKey(key),
-    ...(await generateSearchColumnProps(castModelKey(key), 'boolean')),
+    ...(await generateSearchColumnProps(castModelKey(key), ctx.onSearch, 'boolean')),
     render: (isActive, record) => {
       const primaryKey = AppContext.adapters.models.getPrimaryKey(extras.modelName);
       const id = _.get(record, primaryKey);
@@ -815,32 +705,36 @@ export const asunaColumnHelper = {
  * 通用配置
  */
 export const commonColumns = {
-  any: (key, title?) => columnHelper.generate(key, title || key.toUpperCase()),
-  primaryKey: (key, title) => columnHelper.generateID(key, title),
+  // any: (key, title?) => columnHelper.generate(key, title || key.toUpperCase()),
+  primaryKey: (key, title, extras: Asuna.Schema.RecordRenderExtras) => columnHelper.generateID(extras)(key, title),
   primaryKeyByExtra: (extras: Asuna.Schema.RecordRenderExtras) => {
     const primaryKey = AppContext.adapters.models.getPrimaryKey(_.get(extras, 'modelName'));
-    return columnHelper.generateID(primaryKey, primaryKey.toUpperCase());
+    return columnHelper.generateID(extras)(primaryKey, primaryKey.toUpperCase());
   },
-  id: columnHelper.generateID(),
-  name: columnHelper.generate('name', '名称', { searchType: 'like' }),
-  ordinal: columnHelper.generate('ordinal', '序号'),
-  description: columnHelper.generate('description', '描述', { searchType: 'like' }),
-  title: columnHelper.generate('title', 'Title', { searchType: 'like' }),
-  nameCn: columnHelper.generate('nameCn', '中文名称', { searchType: 'like' }),
-  nameEn: columnHelper.generate('nameEn', '英文名称', { searchType: 'like' }),
-  email: columnHelper.generate('email', 'Email', { searchType: 'like' }),
-  type: columnHelper.generate('type', '类型'),
-  // eduType: columnHelper.generate('eduType', '类型'),
+  id: (extras: Asuna.Schema.RecordRenderExtras) => columnHelper.generateID(extras)(),
+  fpName: fpColumnCreator('名称', { searchType: 'like' }),
+  fpOrdinal: fpColumnCreator('序号'),
+  fpDescription: fpColumnCreator('描述', { searchType: 'like' }),
+  fpTitle: fpColumnCreator('Title', { searchType: 'like' }),
+  fpNameCn: fpColumnCreator('中文名称', { searchType: 'like' }),
+  fpNameEn: fpColumnCreator('英文名称', { searchType: 'like' }),
+  fpEmail: fpColumnCreator('Email', { searchType: 'like' }),
+  fpType: fpColumnCreator('类型'),
+  fpCategory: (model) =>
+    columnHelper.fpGenerateRelation('category', '分类', { transformer: 'name', filterType: 'list' }),
+  fpEduType: fpColumnCreator('类型'),
+  fpUpdatedBy: fpColumnCreator('Updated By', { searchType: 'list' }),
   createdAt: columnHelper.generateCalendar('createdAt', '创建时间'),
   updatedAt: columnHelper.generateCalendar('updatedAt', '更新时间'),
-  isPublished: columnHelper2.fpGenerateSwitch('isPublished', '发布'),
+  isPublished: (model: string, extras: Asuna.Schema.RecordRenderExtras) =>
+    columnHelper2.fpGenerateSwitch('isPublished', { model, title: '发布', ctx: extras.ctx }, extras),
   actions: columnHelper.generateActions,
 };
 
 export const defaultColumns = (actions) => [commonColumns.id, commonColumns.updatedAt, commonColumns.actions(actions)];
 
-export const defaultColumnsByPrimaryKey = (primaryKey = 'id') => (actions) => [
-  commonColumns.primaryKey(primaryKey, primaryKey.toUpperCase()),
+export const defaultColumnsByPrimaryKey = (primaryKey = 'id') => (actions, extras) => [
+  commonColumns.primaryKey(primaryKey, primaryKey.toUpperCase(), extras),
   commonColumns.updatedAt,
   commonColumns.actions(actions),
 ];

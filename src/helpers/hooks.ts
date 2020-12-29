@@ -34,7 +34,7 @@ export function useAsunaDrafts(
 
 export function useAsunaModels(
   modelName: string,
-  { extraName, callRefresh, actions }: { actions?; extraName?; callRefresh? } = {},
+  { extraName, callRefresh, actions, ctx }: { actions?; extraName?; callRefresh?; ctx: Asuna.Schema.TableContext },
   deps?: DependencyList,
 ): {
   loading: boolean;
@@ -55,7 +55,7 @@ export function useAsunaModels(
   useAsync(async () => {
     logger.log('useAsunaModels getColumns ...');
     // const hasGraphAPI = _.find(await AppContext.ctx.graphql.loadGraphs(), schema => schema === `sys_${modelName}`);
-    const columnProps = await modelProxyCaller().getColumns(modelName, { callRefresh, actions }, extraName);
+    const columnProps = await modelProxyCaller().getColumns(modelName, { callRefresh, actions, ctx }, extraName);
 
     logger.log('useAsunaModels loadOriginSchema ...', columnProps);
     const schemas = await modelProxyCaller().loadOriginSchema(modelName);

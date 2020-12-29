@@ -1,6 +1,8 @@
 import { AssetsPreview, DynamicFormTypes } from '@asuna-admin/components';
 import { ModelsHelper, resolveModelInPane, useAsunaModels } from '@asuna-admin/helpers';
 import { WithDebugInfo } from '@asuna-admin/helpers/debug';
+import { createLogger } from "@asuna-admin/logger";
+import { Asuna } from "@asuna-admin/types";
 import { Button, Collapse, Descriptions, Empty, PageHeader, Tag, Tooltip } from 'antd';
 import { AssetPreview } from 'asuna-components';
 import { Promise } from 'bluebird';
@@ -10,6 +12,8 @@ import * as React from 'react';
 import { useAsync } from 'react-use';
 import { FoldingCube } from 'styled-spinkit';
 import * as util from 'util';
+
+const logger = createLogger('components:data-view');
 
 export interface DataViewColumnProps<EntitySchema> {
   title?: keyof EntitySchema;
@@ -70,7 +74,12 @@ export const AsunaDataView: React.FC<AsunaDataViewProps> = ({
       )
     : null;
 
-  const { columnProps, relations, originSchemas } = useAsunaModels(modelName, { actions, extraName });
+  const ctx: Asuna.Schema.TableContext = {
+    onSearch: ({ searchText, searchedColumn }) => {
+      logger.log('onSearch', { searchText, searchedColumn });
+    },
+  };
+  const { columnProps, relations, originSchemas } = useAsunaModels(modelName, { actions, extraName, ctx });
   const actionColumn = _.find(columnProps, (column) => column.key === 'action');
   const Content = ({ children, extra }) => {
     return (

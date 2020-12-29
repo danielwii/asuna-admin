@@ -58,7 +58,7 @@ export class AsunaDefinitions<T extends Asuna.Schema.ModelOpts = {}> {
           ...Object.values(_.map(opts.customColumns, (func, key) => func(key, actions, extras))),
           commonColumns.updatedAt,
           commonColumns.createdAt,
-          ...[opts.enablePublished ? commonColumns.isPublished(extras) : null],
+          ...[opts.enablePublished ? commonColumns.isPublished(entity, extras) : null],
           opts.recordActions ? opts.recordActions(actions, extras) : commonColumns.actions(actions),
         ]),
     };

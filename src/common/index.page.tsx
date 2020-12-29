@@ -5,6 +5,7 @@ import { createLogger } from '@asuna-admin/logger';
 import { appActions, AppState, AuthState, RootState } from '@asuna-admin/store';
 
 import ApolloClient, { gql } from 'apollo-boost';
+import { LivingLoading } from 'asuna-components';
 import { changeAntdTheme, generateThemeColor } from 'dynamic-antd-theme';
 import * as _ from 'lodash';
 import 'moment/locale/zh-cn';
@@ -26,6 +27,7 @@ export interface IIndexPageProps extends ReduxProps {
   hideCharacteristics?: boolean;
   appInfo: { userAgent: string; environments: object };
   site: { logo?: string; title?: string; primaryColor?: { hex: string } };
+  error?: object;
 }
 
 export class IndexPage extends React.Component<IIndexPageProps> {
@@ -59,22 +61,26 @@ export class IndexPage extends React.Component<IIndexPageProps> {
       headers: { 'X-ApiKey': 'todo:app-key-001' }, // todo temp auth
       fetch: fetch as any,
     });
-    const { data } = await client.query({
-      query: gql`
-        {
-          site: kv(collection: "app.settings", key: "site") {
-            key
-            name
-            type
-            value
+    const { data } = await client
+      .query({
+        query: gql`
+          {
+            site: kv(collection: "app.settings", key: "site") {
+              key
+              name
+              type
+              value
+            }
           }
-        }
-      `,
-    });
+        `,
+      })
+      .catch((reason) => {
+        console.error('error occurred', reason);
+        return { data: { error: reason } };
+      });
 
     const site = _.get(data, 'site.value');
-    // console.log({ appInfo, site });
-    return { appInfo, site };
+    return { appInfo, site, error: data.error };
   }
 
   render() {
@@ -83,8 +89,13 @@ export class IndexPage extends React.Component<IIndexPageProps> {
       app: { loading, heartbeat },
       appInfo,
       hideCharacteristics,
+      error,
     } = this.props;
     logger.debug('[render]', this.props);
+
+    if (error) {
+      return <LivingLoading heartbeat />;
+    }
 
     return (
       <MainLayout

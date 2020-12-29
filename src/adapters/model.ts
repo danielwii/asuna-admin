@@ -162,7 +162,7 @@ export interface ModelAdapter {
   loadOriginSchema(modelName: string): Promise<Asuna.Schema.OriginSchema>;
   getColumns(
     modelName: string,
-    opts: { callRefresh: () => void; actions: (text, record, extras) => any },
+    opts: { callRefresh: () => void; actions: (text, record, extras) => any, ctx: Asuna.Schema.TableContext },
     extraName?: string,
   ): Promise<RelationColumnProps[]>;
 }
@@ -387,7 +387,7 @@ export class ModelAdapterImpl implements ModelAdapter {
 
   getColumns = async (
     modelName: string,
-    opts: { callRefresh: () => void; actions: (text, record, extras) => any },
+    opts: { callRefresh: () => void; actions: (text, record, extras) => any; ctx: Asuna.Schema.TableContext },
     extraName?: string,
   ): Promise<RelationColumnProps[]> => {
     logger.log('[getColumns]', { modelName, extraName, opts });
@@ -395,7 +395,7 @@ export class ModelAdapterImpl implements ModelAdapter {
     const { table: columnsRender } = this.getModelConfig(extraName || modelName);
     const readonly = !TenantHelper.enableModelPublishForCurrentUser(modelName);
     const columns = columnsRender
-      ? await Promise.all(columnsRender(opts.actions, { modelName, callRefresh: opts.callRefresh, readonly }))
+      ? await Promise.all(columnsRender(opts.actions, { modelName, callRefresh: opts.callRefresh, readonly, ctx: opts.ctx }))
       : [];
 
     return _.map(columns, (column: RelationColumnProps) => {

@@ -79,13 +79,12 @@ export declare module Asuna {
        * 用于处理完毕后的的页面刷新
        */
       callRefresh: () => void;
+      ctx: TableContext;
     };
 
     interface FRecordRender {
       (
-        /**
-         * 用于渲染额外的功能按钮
-         */
+        // 用于渲染额外的功能按钮
         actions: RecordRenderActions,
         opts: RecordRenderExtras,
       ): any;
@@ -177,6 +176,10 @@ export declare module Asuna {
       actions: RecordRenderActions,
       extras: RecordRenderExtras,
     ) => ColumnProps<any> | Promise<ColumnProps<any>>;
+
+    type TableContext = {
+      onSearch: (data: { searchText: string; searchedColumn: string }) => void;
+    };
 
     type TableColumnOpts<EntitySchema> = {
       creatable?: TableColumnOptCreatable;

@@ -1,6 +1,9 @@
 import { AsunaDataView } from '@asuna-admin/components';
 import { AppContext } from '@asuna-admin/core';
 import { extractModelNameFromPane, resolveModelInPane, useAsunaModels } from '@asuna-admin/helpers';
+import { createLogger } from '@asuna-admin/logger';
+import { Asuna } from "@asuna-admin/types";
+
 import { Divider, PageHeader } from 'antd';
 import { EasyForm, FormFieldType } from 'asuna-components';
 import 'highlight.js/styles/default.css';
@@ -8,7 +11,11 @@ import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
 import * as React from 'react';
 import { useState } from 'react';
+
 import { ModulesLoaderProps } from '..';
+
+
+const logger = createLogger('content:query');
 
 export type QueryFieldsColumnProps<EntitySchema> = (keyof EntitySchema)[];
 
@@ -20,7 +27,12 @@ const ContentSearch: React.FC<ModulesLoaderProps> = (props) => {
   const [viewRecord, setViewRecord] = useState<any>();
 
   const { modelName, extraName } = extractModelNameFromPane(props.basis.pane);
-  const { relations } = useAsunaModels(modelName, { extraName });
+  const ctx: Asuna.Schema.TableContext = {
+    onSearch: ({ searchText, searchedColumn }) => {
+      logger.log('onSearch', { searchText, searchedColumn });
+    },
+  };
+  const { relations } = useAsunaModels(modelName, { extraName, ctx });
   const { modelConfig, primaryKey, columnOpts } = resolveModelInPane(modelName, extraName);
 
   /*
