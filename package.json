@@ -82,7 +82,7 @@
     "react-json-editor-ajrm": "^2.5.13",
     "react-json-tree": "^0.13.0",
     "react-number-format": "^4.4.1",
-    "react-query": "^3.5.5",
+    "react-query": "^3.5.6",
     "react-redux": "^7.2.2",
     "react-sortable-hoc": "^1.11.0",
     "react-spinners": "^0.9.0",

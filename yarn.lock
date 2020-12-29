@@ -4524,6 +4524,8 @@ __metadata:
     axios: ^0.21.1
     babel-jest: ^26.6.3
     babel-loader: ^8.2.2
+    babel-plugin-import: ^1.13.3
+    babel-plugin-module-resolver: ^4.1.0
     babel-plugin-styled-components: ^1.12.0
     bluebird: ^3.7.2
     braft-editor: ^2.3.9
@@ -4572,7 +4574,7 @@ __metadata:
     react-json-editor-ajrm: ^2.5.13
     react-json-tree: ^0.13.0
     react-number-format: ^4.4.1
-    react-query: ^3.5.5
+    react-query: ^3.5.6
     react-redux: ^7.2.2
     react-sortable-hoc: ^1.11.0
     react-spinners: ^0.9.0
@@ -4600,7 +4602,7 @@ __metadata:
     typescript: ^4.1.3
     url-join: ^4.0.1
     video.js: ^7.11.1
-    webpack: ^5.11.0
+    webpack: ^5.11.1
   languageName: unknown
   linkType: soft
 
@@ -4809,6 +4811,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"babel-plugin-import@npm:^1.13.3":
+  version: 1.13.3
+  resolution: "babel-plugin-import@npm:1.13.3"
+  dependencies:
+    "@babel/helper-module-imports": ^7.0.0
+    "@babel/runtime": ^7.0.0
+  checksum: 4a21b12990922ff32544f48b6e6df0bd22980bf52d33814ded548fc2d98412ada4991782b390bc8415088ad0c8ef9175698c730e2e39dce5f1ef2fedaf9391bc
+  languageName: node
+  linkType: hard
+
 "babel-plugin-istanbul@npm:^6.0.0":
   version: 6.0.0
   resolution: "babel-plugin-istanbul@npm:6.0.0"
@@ -4842,6 +4854,19 @@ __metadata:
     cosmiconfig: ^6.0.0
     resolve: ^1.12.0
   checksum: fc4e1224df180d88f44f6f31e448cf51a75c8aa7e0fd828e30c4143f69af6d49ce933f36952478a4e372485db35b6219628bcff16d7f5add724230addbc19e7d
+  languageName: node
+  linkType: hard
+
+"babel-plugin-module-resolver@npm:^4.1.0":
+  version: 4.1.0
+  resolution: "babel-plugin-module-resolver@npm:4.1.0"
+  dependencies:
+    find-babel-config: ^1.2.0
+    glob: ^7.1.6
+    pkg-up: ^3.1.0
+    reselect: ^4.0.0
+    resolve: ^1.13.1
+  checksum: c3efeaac63b63761d253408c120469b13817ae00d05f5ba6f8d25bcb5970affe42b01aabb91db63332993796ece1f57a3680d66317523484bc57ba479e720e89
   languageName: node
   linkType: hard
 
@@ -8021,6 +8046,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"find-babel-config@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "find-babel-config@npm:1.2.0"
+  dependencies:
+    json5: ^0.5.1
+    path-exists: ^3.0.0
+  checksum: da8fdf080a8ef29e02f4f309b66f89e11406bf0f0e2a559d333903846b28e9f01121739ef8b4a02a19c79284812e10bc9284a4fb4de9b3c85981aa1071251d86
+  languageName: node
+  linkType: hard
+
 "find-cache-dir@npm:3.3.1, find-cache-dir@npm:^3.3.1":
   version: 3.3.1
   resolution: "find-cache-dir@npm:3.3.1"
@@ -9491,12 +9526,12 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"is-core-module@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "is-core-module@npm:2.0.0"
+"is-core-module@npm:^2.1.0":
+  version: 2.2.0
+  resolution: "is-core-module@npm:2.2.0"
   dependencies:
     has: ^1.0.3
-  checksum: de99dfbdf14d254f6d078aa37113512295acef3cfff5fb39fdf8020b04788535eae6da39e02b0c4ad07f7bc79594de8d5aeb4fce66f97feb9c597d7d6d6d43d4
+  checksum: 2344744de98a3bc22e2bb30895f307d7889f09e963f9bcb1cc321788f508c8b463f75e0a9ca009eeeb8eb9465181b5c15f1ec9299a6bb6921cfbb2423892e0ba
   languageName: node
   linkType: hard
 
@@ -10564,6 +10599,15 @@ fsevents@^1.2.7:
   bin:
     json5: lib/cli.js
   checksum: 957e4937106cf59975aa0281e68911534d65c8a25be5b4d3559aa55eba351ccab516a943a60ba33e461e4b8af749939986e311de910cbcfd197410b57d971741
+  languageName: node
+  linkType: hard
+
+"json5@npm:^0.5.1":
+  version: 0.5.1
+  resolution: "json5@npm:0.5.1"
+  bin:
+    json5: lib/cli.js
+  checksum: 002ce9e56c4159e5a62fc4891dc2fba1fdc077fba417042e9dd54f8c37da80c0274feb5fa4c0acb3efbc8906d5763b4ff292d512269e1951967d530130bd80b8
   languageName: node
   linkType: hard
 
@@ -12992,6 +13036,15 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"pkg-up@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "pkg-up@npm:3.1.0"
+  dependencies:
+    find-up: ^3.0.0
+  checksum: df82763250b5283c175918f9410f9651afc1750f951249b31c7c49a6918d9faf13a9ef11e9355cbb0d4d5039a5c9d4c7162755b3e6c26235d2e3baea086e4a54
+  languageName: node
+  linkType: hard
+
 "platform@npm:1.3.3":
   version: 1.3.3
   resolution: "platform@npm:1.3.3"
@@ -14332,9 +14385,9 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"react-query@npm:^3.5.5":
-  version: 3.5.5
-  resolution: "react-query@npm:3.5.5"
+"react-query@npm:^3.5.6":
+  version: 3.5.6
+  resolution: "react-query@npm:3.5.6"
   dependencies:
     "@babel/runtime": ^7.5.5
     match-sorter: ^6.0.2
@@ -14345,7 +14398,7 @@ fsevents@^1.2.7:
       optional: true
     react-native:
       optional: true
-  checksum: 2ec5182ebdf4459fd7b8cc43ed3cfcff772bbd4d268bef8299ad0df445c3b863234a280b16265cb5ca42628f384c47936c10b7377be8ebfb53ce95a0b4d3358e
+  checksum: 8d07c21113bbe7e90275d2fd29eea22da1e66c6cf29bdd159cf53b92fad5eed39bf92b72f6be2b98b0a160b9bea001b92ae970f1c2b02aa78a3f088fab248bb9
   languageName: node
   linkType: hard
 
@@ -14812,6 +14865,13 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"reselect@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "reselect@npm:4.0.0"
+  checksum: 3480930929f673f12962cdde140dce48ea8ba171cd428bb2c7639672e41770bd6b64e935bc0400f47cfa960f617c7ac068c4309527373825d11e27262f08c0a3
+  languageName: node
+  linkType: hard
+
 "resize-observer-polyfill@npm:^1.5.0, resize-observer-polyfill@npm:^1.5.1":
   version: 1.5.1
   resolution: "resize-observer-polyfill@npm:1.5.1"
@@ -14874,23 +14934,23 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"resolve@^1.1.6, resolve@^1.10.0, resolve@^1.12.0, resolve@^1.18.1, resolve@^1.3.2":
-  version: 1.18.1
-  resolution: "resolve@npm:1.18.1"
+"resolve@^1.1.6, resolve@^1.10.0, resolve@^1.12.0, resolve@^1.13.1, resolve@^1.18.1, resolve@^1.3.2":
+  version: 1.19.0
+  resolution: "resolve@npm:1.19.0"
   dependencies:
-    is-core-module: ^2.0.0
+    is-core-module: ^2.1.0
     path-parse: ^1.0.6
-  checksum: deb5ba746e1c038ba8fb7ca5c35ee3fe88665e2f79be3e9a706e5254eeea55eb12b6f1830dd60a11bbafa327bcd868284fbf5caf428cf5761b3f094abdffee77
+  checksum: 8b23c7fde1224898ffb9fec2a2295a44d1564981343bdbf5fd3769465658f6a6f6647bb7ea66dfb3c1291ca86046b0233be2edfcd8ca05b38886521e8869677c
   languageName: node
   linkType: hard
 
-"resolve@patch:resolve@^1.1.6#builtin<compat/resolve>, resolve@patch:resolve@^1.10.0#builtin<compat/resolve>, resolve@patch:resolve@^1.12.0#builtin<compat/resolve>, resolve@patch:resolve@^1.18.1#builtin<compat/resolve>, resolve@patch:resolve@^1.3.2#builtin<compat/resolve>":
-  version: 1.18.1
-  resolution: "resolve@patch:resolve@npm%3A1.18.1#builtin<compat/resolve>::version=1.18.1&hash=3388aa"
+"resolve@patch:resolve@^1.1.6#builtin<compat/resolve>, resolve@patch:resolve@^1.10.0#builtin<compat/resolve>, resolve@patch:resolve@^1.12.0#builtin<compat/resolve>, resolve@patch:resolve@^1.13.1#builtin<compat/resolve>, resolve@patch:resolve@^1.18.1#builtin<compat/resolve>, resolve@patch:resolve@^1.3.2#builtin<compat/resolve>":
+  version: 1.19.0
+  resolution: "resolve@patch:resolve@npm%3A1.19.0#builtin<compat/resolve>::version=1.19.0&hash=3388aa"
   dependencies:
-    is-core-module: ^2.0.0
+    is-core-module: ^2.1.0
     path-parse: ^1.0.6
-  checksum: 9e62d2803ad1ec21b13780cc6a45b72bb7b6525eb5b44f0ede7cde37c00a8eb310c06ebfcc7de7dc10c2234d7d271bc4f1eed9783fb87acac141597cd4efaeec
+  checksum: 188d5167e8578a9af8d194faf382b8f3526aad5145391c24ecdc6246c6fc82c10fc66d6352267f8e93c5977c503d61803169c91b9e2ee36dd2de759915c9b673
   languageName: node
   linkType: hard
 
@@ -17540,9 +17600,9 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"webpack@npm:^5.11.0":
-  version: 5.11.0
-  resolution: "webpack@npm:5.11.0"
+"webpack@npm:^5.11.1":
+  version: 5.11.1
+  resolution: "webpack@npm:5.11.1"
   dependencies:
     "@types/eslint-scope": ^3.7.0
     "@types/estree": ^0.0.45
@@ -17573,7 +17633,7 @@ fsevents@^1.2.7:
       optional: true
   bin:
     webpack: bin/webpack.js
-  checksum: 573cdf80bd1cc2ef27a6abbf47b132898a6cd8b1514e7884a4788c521f307dd8c287888a36a40f8402cba5555a553d5a681c7932fed23b654bd922152117691a
+  checksum: c3130daeaa37c5acde0e8d75462d41914349522f8c85d20e7da669aa7997eb3ba3b051d3f25fc2c7ff76e87c8dab25f09a791fbad66c696e09cb2dd0fbcda0ad
   languageName: node
   linkType: hard
 
