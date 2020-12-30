@@ -81,7 +81,7 @@ export const ComponentsHelper = {
                 )}
                 {getText && (
                   <Tooltip title={getTooltip?.(info)}>
-                    <>
+                    <React.Fragment>
                       {getTitle && (
                         <React.Fragment>
                           <b>{getTitle(info)}</b>
@@ -95,7 +95,7 @@ export const ComponentsHelper = {
                           {getExtra(info)}
                         </React.Fragment>
                       )}
-                    </>
+                    </React.Fragment>
                   </Tooltip>
                 )}
               </div>

@@ -19,7 +19,7 @@ export function ReactViewer({
   const [visible, setVisible] = React.useState(false);
 
   return (
-    <>
+    <React.Fragment>
       <a onClick={() => setVisible(true)}>{children}</a>
       <Viewer
         activeIndex={index}
@@ -30,7 +30,7 @@ export function ReactViewer({
         downloadable
         downloadInNewWindow
       />
-    </>
+    </React.Fragment>
   );
 }
 

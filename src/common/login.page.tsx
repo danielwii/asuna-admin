@@ -1,6 +1,7 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
-import { Snow } from '@asuna-admin/components';
+// noinspection ES6UnusedImports
+import { jsx } from '@emotion/react';
 import { Config } from '@asuna-admin/config';
 import { LoginContainer } from '@asuna-admin/containers';
 import { AppContext, IIndexRegister, ILoginRegister, INextConfig } from '@asuna-admin/core';
@@ -8,8 +9,8 @@ import { diff } from '@asuna-admin/helpers';
 import { WithStyles } from '@asuna-admin/layout';
 import { createLogger } from '@asuna-admin/logger';
 import { AppState, RootState } from '@asuna-admin/store';
-import { jsx } from '@emotion/react';
 
+import { Snow } from 'asuna-components';
 import ApolloClient, { gql } from 'apollo-boost';
 import { changeAntdTheme, generateThemeColor } from 'dynamic-antd-theme';
 import * as _ from 'lodash';
@@ -99,7 +100,7 @@ export class LoginPage extends React.Component<ILoginPageProps> {
       <WithStyles hideCharacteristics>
         <StyledFullFlexContainer>
           {!hideCharacteristics && (
-            <>
+            <React.Fragment>
               <Snow color={site?.primaryColor?.hex} />
               {/*
               <Sun />
@@ -107,7 +108,7 @@ export class LoginPage extends React.Component<ILoginPageProps> {
                 <LogoCanvas />
               </StyledLogoWrapper>
 */}
-            </>
+            </React.Fragment>
           )}
 
           {customLogin ? customLogin(site, weChatLoginEnable) : <LoginContainer {...this.props} />}

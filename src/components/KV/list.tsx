@@ -53,10 +53,10 @@ export function ListKVComponent(props: {
 
   if (error)
     return (
-      <>
+      <React.Fragment>
         <p>Error :(</p>
         <p>{JSON.stringify(error)}</p>
-      </>
+      </React.Fragment>
     );
 
   // return <pre>{JSON.stringify({ fields, body }, null, 2)}</pre>;
@@ -65,7 +65,7 @@ export function ListKVComponent(props: {
   // logger.log('render', props, body, { data, fields, /*initialState, */ fieldValues });
 
   return (
-    <>
+    <React.Fragment>
       <Typography>
         <Button onClick={() => refetch()} loading={loading}>
           Reload
@@ -146,11 +146,11 @@ export function ListKVComponent(props: {
         )}
       </Row>
       {AppContext.isDebugMode && (
-        <>
+        <React.Fragment>
           <Divider />
           <Highlight className="json">{util.inspect(data, false, 10)}</Highlight>
-        </>
+        </React.Fragment>
       )}
-    </>
+    </React.Fragment>
   );
 }

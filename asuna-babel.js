@@ -9,7 +9,7 @@ module.exports = (api) => {
         'next/babel',
         {
           'preset-env': {},
-          'transform-runtime': {},
+          'plugin-transform-runtime': {},
           'styled-jsx': {},
           'class-properties': {},
         },

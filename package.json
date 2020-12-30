@@ -12,7 +12,7 @@
     "clean": "rm -rf ./dist ./.next services pages components adapters __generated__ config.js",
     "prebuild-ignore": "yarn clean",
     "create-type-schema": "node ./type-loader.js && quicktype schema.json --just-types --no-combine-classes --no-maps --alphabetize-properties -o ./services/type-schema.ts",
-    "build": "tsc --noEmit false",
+    "build": "yarn clean && tsc --noEmit false && yarn compile:replace-path",
     "build-types": "tsc -p tsconfig-types.json",
     "postinstall-ignore": "yarn build",
     "postbuild": "yarn compile:replace-path",

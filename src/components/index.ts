@@ -6,8 +6,6 @@ export * from './AsunaPlainInfo';
 export * from './Button';
 export * from './DataDisplay';
 export * from './ProgressBar';
-export * from './Snow';
-export * from './Sun';
 export * from './DrawerButton';
 export * from './EasyForm';
 export * from './ErrorInfo';

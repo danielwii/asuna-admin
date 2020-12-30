@@ -370,10 +370,10 @@ export const columnHelper2 = {
           const content = moment(record).calendar();
           return (
             <Tooltip title={value}>
-              <>
+              <React.Fragment>
                 {content}
                 <div>{moment(record).fromNow()}</div>
-              </>
+              </React.Fragment>
             </Tooltip>
           );
         }
@@ -566,11 +566,11 @@ export const columnHelper = {
 
       if (_.isArray(record)) {
         return (
-          <>
+          <React.Fragment>
             {record.map((v) => (
               <div key={v}>{renderLink(v)}</div>
             ))}
-          </>
+          </React.Fragment>
         );
       }
       return renderLink(record);
@@ -587,10 +587,10 @@ export const columnHelper = {
         const content = moment(record).calendar();
         return (
           <Tooltip title={value}>
-            <>
+            <React.Fragment>
               {content}
               <div>{moment(record).fromNow()}</div>
-            </>
+            </React.Fragment>
           </Tooltip>
         );
       }
@@ -641,10 +641,10 @@ export const columnHelper = {
           sources: [{ src: value /*type: 'video/mp4',*/ }],
         };
         return (
-          <>
+          <React.Fragment>
             <VideoPlayer key={key} {...videoJsOptions} />
             <TooltipContent value={value} link />
-          </>
+          </React.Fragment>
         );
       }
       return record;

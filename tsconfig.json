@@ -1,16 +1,13 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "module": "esnext",
-    "target": "es2020",
+    "module": "ESNext",
+    "target": "ES2020",
     "esModuleInterop": true,
-    "lib": [
-      "esnext",
-      "dom"
-    ],
-    "jsx": "preserve",
+    "lib": ["ESNext", "DOM"],
+    "jsx": "react",
     "allowJs": false,
-    "moduleResolution": "node",
+    "moduleResolution": "Node",
     "allowSyntheticDefaultImports": true,
     "strictNullChecks": true,
     "removeComments": false,
@@ -26,24 +23,11 @@
     "outDir": "dist",
     "baseUrl": "./src",
     "paths": {
-      "asuna-admin": [
-        "index.ts"
-      ],
-      "@asuna-admin/*": [
-        "*"
-      ]
+      "asuna-admin": ["index.ts"],
+      "@asuna-admin/*": ["*"]
     },
     "noEmit": true
   },
-  "include": [
-    "next-env.d.ts",
-    "src/**/*.ts*",
-    "./services/**/*.ts*",
-    "./components/**/*.ts*",
-    "./pages/**/*.ts*"
-  ],
-  "exclude": [
-    "**/*.spec.*",
-    "node_modules"
-  ]
+  "include": ["next-env.d.ts", "src/**/*.ts*", "./services/**/*.ts*", "./components/**/*.ts*", "./pages/**/*.ts*"],
+  "exclude": ["**/*.spec.*", "node_modules"]
 }

@@ -29,7 +29,7 @@ export const DrawerButtonBuilder: React.FC<
   const _onClose = () => setVisible(false);
 
   return (
-    <>
+    <React.Fragment>
       <Button {...baseButtonProps} onClick={_showDrawer}>
         {text}
         <SelectOutlined />
@@ -69,7 +69,7 @@ export const DrawerButtonBuilder: React.FC<
           </Button>*/}
         </div>
       </Drawer>
-    </>
+    </React.Fragment>
   );
 };
 
@@ -101,8 +101,8 @@ export const DrawerButton: React.FC<
       <SelectOutlined />
     </Button>
   );
-  const RenderComponent: RenderComponentType = render ?? ((<></>) as any);
-  const RenderChildrenComponent: RenderChildrenComponentType = renderChildrenDrawer ?? ((<></>) as any);
+  const RenderComponent: RenderComponentType = render ?? ((<React.Fragment />) as any);
+  const RenderChildrenComponent: RenderChildrenComponentType = renderChildrenDrawer ?? ((<React.Fragment />) as any);
 
   return (
     <React.Fragment>
@@ -150,18 +150,18 @@ export const DrawerButton: React.FC<
           }}
         >
           {extraButtons && (
-            <>
+            <React.Fragment>
               {extraButtons}
               <Divider type="vertical" />
-            </>
+            </React.Fragment>
           )}
           {render && (
-            <>
+            <React.Fragment>
               <Button type="primary" onClick={() => setRefreshFlag(refreshFlag + 1)}>
                 刷新
               </Button>
               <Divider type="vertical" />
-            </>
+            </React.Fragment>
           )}
           <Button onClick={_onClose}>关闭</Button>
         </div>
