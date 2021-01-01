@@ -6,6 +6,17 @@
   "license": "MIT",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "src",
+    "dist",
+    "typings",
+    "package.json",
+    "asuna-babel.js",
+    "asuna-default-http-server.js",
+    "asuna-default-koa-server.js",
+    "asuna-utils.js",
+    "asuna-with-default-next.js"
+  ],
   "scripts": {
     "autod": "autod",
     "dev": "NODE_ENV=development node -r ts-node/register ./server.js",
