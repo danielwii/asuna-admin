@@ -8,7 +8,7 @@ const configs = {
     'ts-jest': {
       babelConfig: 'babel.config.js',
       // babelConfig: 'babelrc.test.json',
-      tsConfig: 'tsconfig.jest.json',
+      tsconfig: 'tsconfig.jest.json',
       diagnostics: false,
     },
   },
