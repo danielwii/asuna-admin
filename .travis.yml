@@ -6,8 +6,9 @@ os: linux
 install:
   - yarn
   - yarn build
-  - yarn global add codecov
 after_success:
-  - codecov
-#cache:
-#  yarn: true
+  - yarn dlx codecov
+cache:
+  yarn: false
+  directories:
+    - ./.yarn/cache
