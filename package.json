@@ -24,9 +24,6 @@
     "check:circular": "npx madge --circular --extensions ts ./",
     "codegen:generate": "apollo codegen:generate --endpoint http://localhost:5100/graphql --target typescript --includes=services/*.ts --tagName gql --addTypename"
   },
-  "resolutions": {
-    "@videojs/vhs-utils": "^2"
-  },
   "dependencies": {
     "@ant-design/compatible": "^1.0.8",
     "@ant-design/icons": "^4.3.0",
@@ -36,7 +33,7 @@
     "@graphql-tools/merge": "^6.2.6",
     "@material-ui/core": "^4.11.2",
     "@material-ui/icons": "^4.11.2",
-    "@videojs/vhs-utils": "^3.0.0",
+    "@videojs/vhs-utils": "^2.3.0",
     "@zeit/next-css": "^1.0.1",
     "antd": "^4.9.4",
     "apollo": "^2.32.0",

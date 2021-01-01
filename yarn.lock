@@ -3053,7 +3053,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@videojs/vhs-utils@npm:^2":
+"@videojs/vhs-utils@npm:^2.2.1, @videojs/vhs-utils@npm:^2.3.0":
   version: 2.3.0
   resolution: "@videojs/vhs-utils@npm:2.3.0"
   dependencies:
@@ -4556,7 +4556,7 @@ __metadata:
     "@types/url-join": ^4.0.0
     "@types/video.js": ^7.3.11
     "@types/webpack": ^4.41.25
-    "@videojs/vhs-utils": ^3.0.0
+    "@videojs/vhs-utils": ^2.3.0
     "@zeit/next-css": ^1.0.1
     "@zeit/next-typescript": ^1.1.1
     antd: ^4.9.4
