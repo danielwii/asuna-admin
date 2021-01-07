@@ -7,13 +7,7 @@ import { Asuna } from '@asuna-admin/types';
 import { UploadOutlined } from '@ant-design/icons';
 
 import { Button, Input, Modal, Upload } from 'antd';
-import {
-  RcCustomRequestOptions,
-  RcFile,
-  UploadChangeParam,
-  UploadFile,
-  UploadFileStatus,
-} from 'antd/es/upload/interface';
+import { UploadProps, RcFile, UploadChangeParam, UploadFile, UploadFileStatus } from 'antd/es/upload/interface';
 import * as _ from 'lodash';
 import * as React from 'react';
 
@@ -130,7 +124,7 @@ export class ImageUploader extends React.Component<IProps, IState> {
     return images;
   };
 
-  customRequest = (option: RcCustomRequestOptions): void => {
+  customRequest = ((option) => {
     logger.log('[ImageUploader][customRequest]', option, this.props);
 
     const { onChange, urlHandler, bucket, jsonMode } = this.props;
@@ -145,7 +139,7 @@ export class ImageUploader extends React.Component<IProps, IState> {
         this.setState({ fileList: ImageUploader.wrapImagesToFileList(images) });
       }
     });
-  };
+  }) as UploadProps['customRequest'];
 
   render() {
     const { key, value } = this.props;

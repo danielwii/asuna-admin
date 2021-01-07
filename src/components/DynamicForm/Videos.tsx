@@ -6,14 +6,7 @@ import { Asuna } from '@asuna-admin/types';
 import { UploadOutlined } from '@ant-design/icons';
 
 import { Button, Input, Upload, Divider } from 'antd';
-import {
-  RcCustomRequestOptions,
-  RcFile,
-  UploadChangeParam,
-  UploadFile,
-  UploadFileStatus,
-  UploadProps,
-} from 'antd/es/upload/interface';
+import { RcFile, UploadChangeParam, UploadFile, UploadFileStatus, UploadProps } from 'antd/es/upload/interface';
 import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
 import * as React from 'react';
@@ -89,7 +82,7 @@ export class VideoUploader extends React.Component<IProps> {
     return videos;
   };
 
-  customRequest = ({ file }: RcCustomRequestOptions): void => {
+  customRequest = (({ file }) => {
     logger.log('[VideoUploader][customRequest]', file);
     const { onChange, urlHandler, bucket, jsonMode } = this.props;
     upload(file, {}, { bucket }).then((uploaded) => {
@@ -102,7 +95,7 @@ export class VideoUploader extends React.Component<IProps> {
         this.setState({ fileList: VideoUploader.wrapVideosToFileList(videos) });
       }
     });
-  };
+  }) as UploadProps['customRequest'];
 
   renderPlayer = (video?: string) => {
     logger.debug('[VideoUploader][renderPlayer]', video);

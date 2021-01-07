@@ -74,7 +74,7 @@ export class FileUploader extends React.Component<IFilesUploaderProps> {
           option.file,
           {
             onUploadProgress: ({ total, loaded }) => {
-              option.onProgress({ percent: +Math.round((loaded / total) * 100).toFixed(2) }, option.file);
+              (option.onProgress as any)({ percent: +Math.round((loaded / total) * 100).toFixed(2) }, option.file);
             },
           },
           uploadOpts ?? { bucket },
@@ -94,7 +94,7 @@ export class FileUploader extends React.Component<IFilesUploaderProps> {
               const files = this.valueToSubmit(this.props.value, fileUrl);
               logger.log('[FileUploader][customRequest]', { files });
               onChange!(files);
-              option.onSuccess(uploaded, option.file);
+              (option.onSuccess as any)(uploaded, option.file);
               // wrapFilesToFileList(option.file, files);
             }
           })
