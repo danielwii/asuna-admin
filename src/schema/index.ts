@@ -41,7 +41,7 @@ export const hiddenComponentDecorator = ({
   logger.log(TAG, { fields });
 
   const primaryKey = AppContext.adapters.models.getPrimaryKey(modelName);
-  let wrappedFields: any = R.omit([castModelKey('createdAt'), castModelKey('updatedAt')])(fields);
+  let wrappedFields = R.omit([castModelKey('createdAt'), castModelKey('updatedAt')])(fields) as Fields & WithHidden;
   if (R.has(primaryKey, wrappedFields)) {
     const hidden = R.isNil(wrappedFields[primaryKey].value);
     wrappedFields = R.mergeDeepRight(wrappedFields, {
