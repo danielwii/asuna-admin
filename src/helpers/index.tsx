@@ -314,7 +314,7 @@ export const columnHelper2 = {
   },
   generateTag: async (
     key,
-    { model, title }: ModelOpts,
+    { model, title, ctx }: ModelOpts,
     opts: {
       transformer?: (value) => string;
       colorMap?: {
