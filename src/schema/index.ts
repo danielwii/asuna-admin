@@ -98,10 +98,13 @@ export const associationDecorator = ({ modelName, fields }: { modelName: string;
       ...opt,
       association: AppContext.adapters.models.getAssociationConfigs(opt.modelName),
     }));
-    const withAssociations = R.mapObjIndexed<any, any>((field) => ({
-      ...field,
-      foreignOpts: wrapForeignOpt(field.foreignOpts),
-    }), associationFields);
+    const withAssociations = R.mapObjIndexed<any, any>(
+      (field) => ({
+        ...field,
+        foreignOpts: wrapForeignOpt(field.foreignOpts),
+      }),
+      associationFields,
+    );
     logger.debug(TAG, { withAssociations, wrapForeignOpt });
 
     const wrappedFields = R.mergeDeepRight(fields, withAssociations);
@@ -197,7 +200,7 @@ export const enumDecorator = ({
           return { ...field, value, raw: field.value };
         }
         return { ...field, value: R.path([current, 'value'])(fields), raw: field.value };
-      }),
+      }) as any,
       R.filter(R.pathEq(['options', 'type'], 'SortPosition')),
     )(fields);
 
