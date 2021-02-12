@@ -4,8 +4,11 @@
     "module": "ESNext",
     "target": "ES2020",
     "esModuleInterop": true,
-    "lib": ["ESNext", "DOM"],
-    "jsx": "react",
+    "lib": [
+      "ESNext",
+      "DOM"
+    ],
+    "jsx": "preserve",
     "allowJs": false,
     "moduleResolution": "Node",
     "allowSyntheticDefaultImports": true,
@@ -23,11 +26,24 @@
     "outDir": "dist",
     "baseUrl": "./src",
     "paths": {
-      "asuna-admin": ["index.ts"],
-      "@asuna-admin/*": ["*"]
+      "asuna-admin": [
+        "index.ts"
+      ],
+      "@asuna-admin/*": [
+        "*"
+      ]
     },
     "noEmit": true
   },
-  "include": ["next-env.d.ts", "src/**/*.ts*", "./services/**/*.ts*", "./components/**/*.ts*", "./pages/**/*.ts*"],
-  "exclude": ["**/*.spec.*", "node_modules"]
+  "include": [
+    "next-env.d.ts",
+    "src/**/*.ts*",
+    "./services/**/*.ts*",
+    "./components/**/*.ts*",
+    "./pages/**/*.ts*"
+  ],
+  "exclude": [
+    "**/*.spec.*",
+    "node_modules"
+  ]
 }

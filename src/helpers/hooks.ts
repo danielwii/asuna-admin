@@ -53,9 +53,15 @@ export function useAsunaModels(
     loading: true,
   });
   useAsync(async () => {
-    logger.log('useAsunaModels getColumns ...');
+    logger.log('[useAsunaModels] getColumns ...', { modelName, extraName });
     // const hasGraphAPI = _.find(await AppContext.ctx.graphql.loadGraphs(), schema => schema === `sys_${modelName}`);
-    const columnProps = await modelProxyCaller().getColumns(modelName, { callRefresh, actions, ctx }, extraName);
+    // extraName 是作为 key 重复时的一个别名，这里假定 modelName 一定是 model 的原名，所以忽略 extraName
+    const columnProps = await modelProxyCaller()
+      .getColumns(modelName, { callRefresh, actions, ctx }, extraName)
+      .catch((reason) => {
+        console.error('ERROR Occurred',reason);
+        return {} as any;
+      });
 
     logger.log('useAsunaModels loadOriginSchema ...', columnProps);
     const schemas = await modelProxyCaller().loadOriginSchema(modelName);
@@ -65,6 +71,6 @@ export function useAsunaModels(
 
   const relations = _.flow([fp.mapValues(fp.get('relation')), _.values, _.compact, _.uniq])(state.columnProps);
 
-  logger.log('useAsunaModels', modelName, state, { relations });
+  logger.log('[useAsunaModels]', modelName, state, { relations });
   return { loading: state.loading, columnProps: state.columnProps, relations, originSchemas: state.schemas };
 }

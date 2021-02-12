@@ -1,6 +1,7 @@
 const webpack = require('webpack');
 // const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const { TsconfigPathsPlugin } = require('tsconfig-paths-webpack-plugin');
+const withLess = require('@zeit/next-less');
 const pkg = require('./package.json');
 
 const contextReplacementPlugin = new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /zh/);
@@ -12,7 +13,16 @@ if (typeof require !== 'undefined') {
 }
 
 function withDefaultNextConfigs(nextConfig = {}) {
-  return {
+  return withLess({
+    lessLoaderOptions: {
+      javascriptEnabled: true,
+      // modifyVars: themeVariables, // make your antd custom effective
+      importLoaders: 0,
+    },
+    cssLoaderOptions: {
+      importLoaders: 3,
+      localIdentName: '[local]___[hash:base64:5]',
+    },
     ...nextConfig,
     webpack(config, options) {
       const { dev, isServer, buildId } = options;
@@ -26,6 +36,21 @@ function withDefaultNextConfigs(nextConfig = {}) {
       config.resolve.plugins = config.resolve.plugins || [];
 
       if (isServer) {
+        const antStyles = /antd\/.*?\/style.*?/;
+        const origExternals = [...config.externals];
+        config.externals = [
+          (context, request, callback) => {
+            if (request.match(antStyles)) return callback();
+            if (typeof origExternals[0] === 'function') {
+              origExternals[0](context, request, callback);
+            } else {
+              callback();
+            }
+          },
+          ...(typeof origExternals[0] === 'function' ? [] : origExternals),
+        ];
+
+        config.module.rules.unshift({ test: antStyles, use: 'null-loader' });
         if (dev) {
           // console.log('> [webpack] [Server] load bundleAnalyzerPlugin...');
           // config.plugins.push(new BundleAnalyzerPlugin({ openAnalyzer: false }));
@@ -57,7 +82,7 @@ function withDefaultNextConfigs(nextConfig = {}) {
       env: process.env.ENV || 'dev',
       version: pkg.version,
     },
-  };
+  });
 }
 
 module.exports = { withDefaultNextConfigs };

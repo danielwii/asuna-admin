@@ -123,8 +123,8 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = (props) => {
     transformFilters: (filters?: Record<string, (Key | boolean)[] | null>): Record<string, [Condition]> => {
       return _.chain(_.omitBy(filters, _.isNil))
         .mapKeys((filterArr, key) => {
-          if (key.includes(".") && _.isString(_.head(filterArr))) {
-            return _.get(parseJSONIfCould(_.head(filterArr) as any), "key");
+          if (key.includes('.') && _.isString(_.head(filterArr))) {
+            return _.get(parseJSONIfCould(_.head(filterArr) as any), 'key');
           } else {
             const parsed = parseJSONIfCould(filterArr);
             if (_.isObject(parsed) && _.get(parsed, 'key')) {
@@ -241,7 +241,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = (props) => {
 
   // 直接从 remote 拉取，未来需要将 models 中缓存的数据清除
   const { loading } = useAsync(async () => {
-    logger.log(`remote[effect]`, { loadingAsunaModels, flag }, queryCondition);
+    console.log(`remote[effect]`, { loadingAsunaModels, flag }, queryCondition);
     const { transformedFilters, transformedSorter } = func.transformQueryCondition(queryCondition);
     const value = await AppContext.adapters.models
       .loadModels(modelName, {
@@ -258,6 +258,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = (props) => {
   }, [queryCondition, loadingAsunaModels, flag]);
 
   if (AppContext.isDebugMode) useLogger('AsunaDataTable', { flag, loadingAsunaModels, loading }, queryCondition);
+  useLogger('AsunaDataTable2', columnProps);
 
   if (loadingAsunaModels) {
     return <Skeleton active avatar />;
@@ -360,7 +361,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = (props) => {
           size="small"
           className="asuna-content-table"
           scroll={{ x: true }}
-          dataSource={dataSource}
+          dataSource={dataSource ?? []}
           rowKey={primaryKey}
           loading={loading}
           columns={columnProps}
