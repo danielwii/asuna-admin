@@ -1,8 +1,8 @@
 import { AssetsPreview, DynamicFormTypes } from '@asuna-admin/components';
 import { ModelsHelper, resolveModelInPane, useAsunaModels } from '@asuna-admin/helpers';
 import { WithDebugInfo } from '@asuna-admin/helpers/debug';
-import { createLogger } from "@asuna-admin/logger";
-import { Asuna } from "@asuna-admin/types";
+import { createLogger } from '@asuna-admin/logger';
+import { Asuna } from '@asuna-admin/types';
 import { Button, Collapse, Descriptions, Empty, PageHeader, Tag, Tooltip } from 'antd';
 import { AssetPreview } from 'asuna-components';
 import { Promise } from 'bluebird';
@@ -76,7 +76,7 @@ export const AsunaDataView: React.FC<AsunaDataViewProps> = ({
 
   const ctx: Asuna.Schema.TableContext = {
     onSearch: ({ searchText, searchedColumn }) => {
-      logger.log('onSearch', { searchText, searchedColumn });
+      logger.warn('onSearch', { searchText, searchedColumn });
     },
   };
   const { columnProps, relations, originSchemas } = useAsunaModels(modelName, { actions, extraName, ctx });
@@ -223,18 +223,16 @@ export const AsunaDataView: React.FC<AsunaDataViewProps> = ({
             {customColumnOpts.loading ? (
               <FoldingCube />
             ) : (
-              _.map(customColumnOpts.value, (columnOpt, label) => {
-                return (
-                  <Descriptions.Item key={columnOpt.key} label={columnOpt.title}>
-                    {columnOpt.render(data[columnOpt.relation], data[columnOpt.relation], 0)}
-                    <WithDebugInfo info={{ label, columnOpt }}>
-                      {/*<div>value: {_.get(data, columnOpt.key)}</div>*/}
-                      {/*<pre>{util.inspect({ label, columnOpt })}</pre>*/}
-                      {columnOpt.render(data, data, 0)}
-                    </WithDebugInfo>
-                  </Descriptions.Item>
-                );
-              })
+              _.map(customColumnOpts.value, (columnOpt, label) => (
+                <Descriptions.Item key={columnOpt.key} label={columnOpt.title}>
+                  {columnOpt.render(data[columnOpt.relation], data[columnOpt.relation], 0)}
+                  <WithDebugInfo info={{ label, columnOpt }}>
+                    {/*<div>value: {_.get(data, columnOpt.key)}</div>*/}
+                    {/*<pre>{util.inspect({ label, columnOpt })}</pre>*/}
+                    {columnOpt.render(data, data, 0)}
+                  </WithDebugInfo>
+                </Descriptions.Item>
+              ))
             )}
           </Descriptions>
         </Content>

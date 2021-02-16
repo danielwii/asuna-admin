@@ -696,7 +696,7 @@ export const asunaColumnHelper = {
         getPortrait: (info) => info?.portrait ?? info?.miniAppUserInfo?.avatar,
         getTitle: (info) => info.id,
         getText: (info) => `${info.email ? `${info.email}/` : ''}${info.username}`,
-        modelName: 'auth__user_profiles',
+        modelName: 'user__profiles',
       }),
   }),
 };

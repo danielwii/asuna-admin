@@ -54,8 +54,8 @@ export class AsunaDefinitions<T extends Asuna.Schema.ModelOpts = {}> {
       [entity]: (actions, extras) =>
         _.compact([
           commonColumns.primaryKeyByExtra(extras),
-          ...Object.values(_.map(columns, (func, key) => func(key, actions, extras))),
-          ...Object.values(_.map(opts.customColumns, (func, key) => func(key, actions, extras))),
+          ...Object.values(_.map(columns, (func, key) => func(key, actions ?? {}, extras))),
+          ...Object.values(_.map(opts.customColumns, (func, key) => func(key, actions ?? {}, extras))),
           commonColumns.updatedAt,
           commonColumns.createdAt,
           ...[opts.enablePublished ? commonColumns.isPublished(entity, extras) : null],
