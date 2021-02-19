@@ -9,7 +9,6 @@ const debug = require('debug');
 const _ = require('lodash');
 
 const { createProxy } = require('./asuna-utils');
-
 const logger = { log: debug('http'), error: debug('error') };
 const dev = process.env.NODE_ENV !== 'production';
 const port = process.env.PORT || 3000;
