@@ -12,7 +12,7 @@ import { AppState, RootState } from '@asuna-admin/store';
 
 import { Snow } from 'asuna-components';
 import ApolloClient, { gql } from 'apollo-boost';
-import { changeAntdTheme, generateThemeColor } from 'dynamic-antd-theme';
+import { changeAntdTheme } from 'dynamic-antd-theme';
 import * as _ from 'lodash';
 import { NextPageContext } from 'next';
 import fetch from 'node-fetch';
@@ -68,8 +68,7 @@ export class LoginPage extends React.Component<ILoginPageProps> {
     AppContext.regDispatch(dispatch);
 
     if (site?.primaryColor) {
-      const themeColor = generateThemeColor(site?.primaryColor.hex);
-      changeAntdTheme(themeColor);
+      changeAntdTheme(site?.primaryColor);
     }
   }
 
