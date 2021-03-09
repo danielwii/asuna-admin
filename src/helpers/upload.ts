@@ -3,7 +3,9 @@ import { createLogger } from '@asuna-admin/logger';
 import { Asuna } from '@asuna-admin/types';
 
 import { message } from 'antd';
-import { AxiosRequestConfig } from 'axios';
+
+import type { RcFile } from 'antd/es/upload/interface';
+import type { AxiosRequestConfig } from 'axios';
 
 const logger = createLogger('helpers:upload');
 
@@ -45,7 +47,7 @@ export function validateFile(file: { type: string; size: number }): boolean {
 }
 
 export async function upload(
-  file: object,
+  file: string | Blob | RcFile,
   requestConfig?: AxiosRequestConfig,
   opts: { bucket?: string; prefix?: string } = {},
 ): Promise<Asuna.Schema.UploadResponse[] | undefined> {
