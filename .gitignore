@@ -38,3 +38,5 @@ services/
 !.yarn/sdks
 !.yarn/versions
 .clinic/
+
+/.buildinfo.json
