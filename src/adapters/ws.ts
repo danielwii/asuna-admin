@@ -13,7 +13,7 @@ const logger = createLogger('adapters:ws');
 export type NextSocketType = { id: string; socket: typeof io.Socket };
 
 export class WsAdapter {
-  private static socket: typeof io.Socket;
+  private static socket: any; // typeof io.Socket;
   private port?: number;
   private namespace: string;
 
@@ -26,7 +26,7 @@ export class WsAdapter {
     this.namespace = opts.namespace || 'admin';
 
     if (!AppContext.isServer && !WsAdapter.socket) {
-      WsAdapter.socket = io.connect('/admin', {
+      WsAdapter.socket = (io as any).connect('/admin', {
         secure: true,
         transports: ['websocket', 'xhr-polling'],
         rememberUpgrade: true,
