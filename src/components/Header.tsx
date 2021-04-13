@@ -1,16 +1,17 @@
-import { StoreContext } from '@asuna-admin/context/store';
-import { AppState, AuthState, RootState } from '@asuna-admin/store';
-
 import { LoadingOutlined } from '@ant-design/icons';
+import { StoreContext } from '@asuna-admin/context/store';
 
 import { Badge, Button, Dropdown, Layout, Menu, Modal, Tag } from 'antd';
 import getConfig from 'next/config';
 import * as React from 'react';
 import { useContext } from 'react';
 import { useSelector } from 'react-redux';
+import { useLogger } from 'react-use';
 import styled from 'styled-components';
 
 import { DebugSettings, IDebugSettingsProps } from './DebugSettings';
+
+import type { AppState, AuthState, RootState } from '@asuna-admin/store';
 
 const StyledLogoImg = styled.img`
   width: 120px;
@@ -113,10 +114,9 @@ export const Header: React.FC<IHeaderProps> = (props) => {
           <StyledLogoImg src={asuna} alt="mast" />
         </div>
       )}
-      {/*prettier-ignore*/}
       <StyledVersion>
-          {env}-v{version}::{app.version}
-        </StyledVersion>
+        {env}-v{version}::{app.version}
+      </StyledVersion>
       <Button
         size="small"
         type="link"

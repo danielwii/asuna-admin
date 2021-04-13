@@ -102,7 +102,7 @@ function* heartbeat({ force }) {
     // 版本不一致时执行同步操作
     if (force /*|| app.version !== response.data*/) {
       yield put(appActions.sync());
-      yield put(appActions.loadVersionSuccess(response.data));
+      yield put(appActions.loadVersionSuccess(response.data.version));
     }
 
     if (!app.heartbeat) {

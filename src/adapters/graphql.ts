@@ -38,7 +38,7 @@ export class GraphqlAdapterImpl {
       logger.log('graphql uri not defined, using /graphql for default');
       this.client = new ApolloClient({ uri: '/graphql' });
     }
-    this.serverClient = new ApolloClient({ uri: '/s-graphql', headers: authHeader().headers });
+    this.serverClient = new ApolloClient({ uri: '/graphql', headers: authHeader().headers });
   }
 
   async query(queryString: string, client = this.client) {

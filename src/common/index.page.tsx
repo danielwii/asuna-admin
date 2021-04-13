@@ -1,4 +1,3 @@
-import { Config } from '@asuna-admin/config';
 import { AppContext, IIndexRegister, ILoginRegister, INextConfig } from '@asuna-admin/core';
 import { MainLayout } from '@asuna-admin/layout';
 import { createLogger } from '@asuna-admin/logger';
@@ -14,7 +13,7 @@ import * as R from 'ramda';
 import * as React from 'react';
 import { connect } from 'react-redux';
 
-const logger = createLogger('pages:index');
+const logger = createLogger('pages:index', 'debug');
 
 // --------------------------------------------------------------
 // Index Component
@@ -52,11 +51,15 @@ export class IndexPage extends React.Component<IIndexPageProps> {
 
     // const tempId = shortid.generate();
     // const userAgent = req ? req.headers['user-agent'] : navigator.userAgent;
-    const host = Config.get('GRAPHQL_HOST') || 'localhost';
-    const port = process.env.PORT || 3000;
-    logger.log(`call http://${host}:${port}/s-graphql`);
+    // const host = Config.get('GRAPHQL_HOST') || 'localhost';
+    // const port = process.env.PORT || 3000;
+    // logger.log(`call http://${host}:${port}/s-graphql`);
+
+    const uri = `${process.env.PROXY_API}/graphql`;
+    logger.log(`call ${uri}`);
     const client = new ApolloClient({
-      uri: `http://${host}:${port}/s-graphql`,
+      // uri: `http://${host}:${port}/s-graphql`,
+      uri,
       headers: { 'X-ApiKey': 'todo:app-key-001' }, // todo temp auth
       fetch: fetch as any,
     });

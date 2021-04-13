@@ -1,26 +1,27 @@
 /** @jsxRuntime classic */
+
 /** @jsx jsx */
 // noinspection ES6UnusedImports
-import { jsx } from '@emotion/react';
 import { Config } from '@asuna-admin/config';
 import { LoginContainer } from '@asuna-admin/containers';
 import { AppContext, IIndexRegister, ILoginRegister, INextConfig } from '@asuna-admin/core';
 import { diff } from '@asuna-admin/helpers';
 import { WithStyles } from '@asuna-admin/layout';
 import { createLogger } from '@asuna-admin/logger';
-import { AppState, RootState } from '@asuna-admin/store';
 
-import { Snow } from 'asuna-components';
 import ApolloClient, { gql } from 'apollo-boost';
+import { Snow } from 'asuna-components';
 import { changeAntdTheme } from 'dynamic-antd-theme';
 import * as _ from 'lodash';
-import { NextPageContext } from 'next';
 import fetch from 'node-fetch';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Subscription } from 'rxjs';
 import * as shortid from 'shortid';
 import styled from 'styled-components';
+
+import type { NextPageContext } from 'next';
+import type { AppState, RootState } from '@asuna-admin/store';
 
 const logger = createLogger('common:login');
 
@@ -127,11 +128,15 @@ export const wechatLoginGetInitial = async (ctx: NextPageContext): Promise<Login
   try {
     const tempId = shortid.generate();
     const userAgent = ctx.req ? ctx.req.headers['user-agent'] : navigator.userAgent;
-    const host = Config.get('GRAPHQL_HOST') || 'localhost';
-    const port = process.env.PORT || 3000;
-    logger.log(`call http://${host}:${port}/s-graphql`);
+    // const host = Config.get('GRAPHQL_HOST') || 'localhost';
+    // const port = process.env.PORT || 3000;
+    // logger.log(`call http://${host}:${port}/s-graphql`);
+
+    const uri = `${process.env.PROXY_API}/graphql`;
+    logger.log(`call ${uri}`);
     const client = new ApolloClient({
-      uri: `http://${host}:${port}/s-graphql`,
+      // uri: `http://${host}:${port}/s-graphql`,
+      uri,
       headers: { 'X-ApiKey': 'todo:app-key-001' }, // todo temp auth
       fetch: fetch as any,
     });

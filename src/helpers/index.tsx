@@ -1,4 +1,5 @@
 /** @jsxRuntime classic */
+
 /** @jsx jsx */
 // noinspection ES6UnusedImports
 import { jsx } from '@emotion/react';
@@ -15,23 +16,24 @@ import { SchemaHelper } from '@asuna-admin/schema';
 import { Asuna } from '@asuna-admin/types';
 
 import { Badge, Button, Checkbox, Divider, Input, Modal, Popconfirm, Space, Statistic, Tag, Tooltip } from 'antd';
-import { ColumnProps, ColumnType } from "antd/es/table";
-import { FilterDropdownProps } from 'antd/es/table/interface';
 import { PdfButton, WithFuture } from 'asuna-components';
 import { Promise } from 'bluebird';
 import * as deepDiff from 'deep-diff';
-import { Diff } from 'deep-diff';
 import * as _ from 'lodash';
 import moment from 'moment';
 import * as R from 'ramda';
 import * as React from 'react';
 import NumberFormat from 'react-number-format';
 import * as util from 'util';
-import { VideoJsPlayerOptions } from 'video.js';
 
 import { castModelKey } from './cast';
 import { WithDebugInfo } from './debug';
 import { extractValue, removePreAndSuf } from './func';
+
+import type { ColumnProps, ColumnType } from 'antd/es/table';
+import type { FilterDropdownProps } from 'antd/es/table/interface';
+import type { Diff } from 'deep-diff';
+import type { VideoJsPlayerOptions } from 'video.js';
 
 const logger = createLogger('helpers');
 
@@ -720,6 +722,7 @@ export const commonColumns = {
   fpNameEn: fpColumnCreator('英文名称', { searchType: 'like' }),
   fpEmail: fpColumnCreator('Email', { searchType: 'like' }),
   fpType: fpColumnCreator('类型'),
+  fpLang: fpColumnCreator('语言', { searchType: 'list' }),
   fpCategory: (model) =>
     columnHelper.fpGenerateRelation('category', '分类', { transformer: 'name', filterType: 'list' }),
   fpEduType: fpColumnCreator('类型'),

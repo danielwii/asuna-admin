@@ -1,6 +1,6 @@
 {
-  "name": "asuna-admin",
-  "version": "0.13.5",
+  "name": "@danielwii/asuna-admin",
+  "version": "0.14.0",
   "repository": "git@github.com:danielwii/asuna-admin.git",
   "author": "Daniel Wei <danielwii0326@gmail.com>",
   "license": "MIT",
@@ -19,7 +19,8 @@
   ],
   "scripts": {
     "autod": "autod",
-    "dev": "NODE_ENV=development node -r ts-node/register ./server.js",
+    "dev": "NODE_ENV=development next dev",
+    "dev:proxy": "NODE_ENV=development node ./server.js",
     "clean": "rm -rf ./dist ./.next services pages components adapters __generated__ config.js",
     "prebuild-ignore": "yarn clean",
     "create-type-schema": "node ./type-loader.js && quicktype schema.json --just-types --no-combine-classes --no-maps --alphabetize-properties -o ./services/type-schema.ts",
@@ -150,7 +151,6 @@
     "@types/react-redux": "^7.1.16",
     "@types/redux-logger": "^3.0.8",
     "@types/shortid": "^0.0.29",
-    "@types/socket.io-client": "^1.4.35",
     "@types/socket.io-redis": "^1.0.27",
     "@types/styled-components": "^5.1.7",
     "@types/styled-jsx": "^2.2.8",
