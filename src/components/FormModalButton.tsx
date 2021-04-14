@@ -1,13 +1,13 @@
-import { toErrorMessage, toFormErrors } from '@asuna-admin/helpers';
-import { createLogger } from '@asuna-admin/logger';
-
 import { Form } from '@ant-design/compatible';
-import { message, Modal } from 'antd';
 import { WrappedFormUtils } from '@ant-design/compatible/es/form/Form';
+
+import { message, Modal } from 'antd';
 import * as _ from 'lodash';
 import * as R from 'ramda';
 import * as React from 'react';
 
+import { toErrorMessage, toFormErrors } from '../helpers';
+import { createLogger } from '../logger';
 import { DynamicForm, DynamicFormField } from './DynamicForm';
 
 const logger = createLogger('components:form-modal-button');

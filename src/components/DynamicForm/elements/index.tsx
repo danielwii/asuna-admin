@@ -1,9 +1,6 @@
 import { Form } from '@ant-design/compatible';
 import { GetFieldDecoratorOptions, WrappedFormUtils } from '@ant-design/compatible/es/form/Form';
 import { FIELD_DATA_PROP } from '@ant-design/compatible/lib/form/constants';
-import { BraftRichEditor } from '@asuna-admin/components/RichEditor';
-import { Config } from '@asuna-admin/config';
-import { createLogger } from '@asuna-admin/logger';
 
 import { Checkbox, DatePicker, Input, InputNumber, Switch, TimePicker } from 'antd';
 import { StringTmpl, WithVariable } from 'asuna-components';
@@ -13,6 +10,9 @@ import JSONInput from 'react-json-editor-ajrm';
 import locale from 'react-json-editor-ajrm/locale/zh-cn';
 import { useLogger } from 'react-use';
 
+import { BraftRichEditor } from '../../../components/RichEditor';
+import { Config } from '../../../config';
+import { createLogger } from '../../../logger';
 import { Authorities } from '../Authorities';
 import { VideoUploader } from '../Videos';
 import { FormComponentProps } from './interfaces';

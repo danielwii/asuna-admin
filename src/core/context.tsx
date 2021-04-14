@@ -1,3 +1,8 @@
+import * as _ from 'lodash';
+import * as fp from 'lodash/fp';
+import * as React from 'react';
+import { Subject } from 'rxjs';
+
 import {
   AdminAdapter,
   AdminAdapterImpl,
@@ -13,18 +18,15 @@ import {
   ResponseAdapter,
   SecurityAdapterImpl,
   WsAdapter,
-} from '@asuna-admin/adapters';
-import { GraphqlAdapterImpl, KeyValueModelVo } from '@asuna-admin/adapters/graphql';
-import { GroupFormKVComponent } from '@asuna-admin/components';
-import { ListKVComponent } from '@asuna-admin/components/KV/list';
-import { Config } from '@asuna-admin/config';
-import { AsunaDefinitions } from '@asuna-admin/core/definitions';
-import { AuthState, IStoreConnector, RootState } from '@asuna-admin/store';
-import * as _ from 'lodash';
-import * as fp from 'lodash/fp';
-import * as React from 'react';
-import { AnyAction, Dispatch } from 'redux';
-import { Subject } from 'rxjs';
+} from '../adapters';
+import { GraphqlAdapterImpl, KeyValueModelVo } from '../adapters/graphql';
+import { GroupFormKVComponent } from '../components';
+import { ListKVComponent } from '../components/KV/list';
+import { Config } from '../config';
+import { AsunaDefinitions } from '../core/definitions';
+
+import type { AuthState, IStoreConnector, RootState } from '../store';
+import type { AnyAction, Dispatch } from 'redux';
 
 // --------------------------------------------------------------
 // Types

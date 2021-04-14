@@ -1,11 +1,11 @@
-import { AsunaStore } from '@asuna-admin/store';
-
 import withRedux from 'next-redux-wrapper';
 import App from 'next/app';
 import React, { Component } from 'react';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { END } from 'redux-saga';
+
+import { AsunaStore } from '../store';
 
 const asunaStore = AsunaStore.instance;
 

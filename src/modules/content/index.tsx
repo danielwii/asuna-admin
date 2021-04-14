@@ -1,6 +1,10 @@
-import { AsunaDataTable, Pane } from '@asuna-admin/components';
-import { Config } from '@asuna-admin/config';
-import { ActionEvent, AppContext, EventBus, EventType } from '@asuna-admin/core';
+import * as _ from 'lodash';
+import * as React from 'react';
+import { Subscription } from 'rxjs';
+
+import { AsunaDataTable, Pane } from '../../components';
+import { Config } from '../../config';
+import { ActionEvent, AppContext, EventBus, EventType } from '../../core';
 import {
   castModelKey,
   DebugInfo,
@@ -8,13 +12,11 @@ import {
   extractModelNameFromPane,
   resolveModelInPane,
   TenantHelper,
-} from '@asuna-admin/helpers';
-import { createLogger } from '@asuna-admin/logger';
-import { Asuna } from '@asuna-admin/types';
-import { SorterResult } from 'antd/es/table/interface';
-import * as _ from 'lodash';
-import * as React from 'react';
-import { Subscription } from 'rxjs';
+} from '../../helpers';
+import { createLogger } from '../../logger';
+import { Asuna } from '../../types';
+
+import type { SorterResult } from 'antd/es/table/interface';
 
 const logger = createLogger('modules:content:index');
 

@@ -1,8 +1,8 @@
-import { Panes } from '@asuna-admin/components';
-import { panesActions, RootState } from '@asuna-admin/store';
-
 import * as React from 'react';
 import { connect } from 'react-redux';
+
+import { Panes } from '../components';
+import { panesActions, RootState } from '../store';
 
 const mapStateToProps = (state: RootState) => ({ ...state.panes });
 const mapDispatchToProps = (dispatch) => ({

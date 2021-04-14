@@ -1,9 +1,3 @@
-import { AsunaDataView } from '@asuna-admin/components';
-import { AppContext } from '@asuna-admin/core';
-import { extractModelNameFromPane, resolveModelInPane, useAsunaModels } from '@asuna-admin/helpers';
-import { createLogger } from '@asuna-admin/logger';
-import { Asuna } from "@asuna-admin/types";
-
 import { Divider, PageHeader } from 'antd';
 import { EasyForm, FormFieldType } from 'asuna-components';
 import 'highlight.js/styles/default.css';
@@ -12,8 +6,13 @@ import * as fp from 'lodash/fp';
 import * as React from 'react';
 import { useState } from 'react';
 
-import { ModulesLoaderProps } from '..';
+import { AsunaDataView } from '../../components';
+import { AppContext } from '../../core';
+import { extractModelNameFromPane, resolveModelInPane, useAsunaModels } from '../../helpers';
+import { createLogger } from '../../logger';
+import { Asuna } from '../../types';
 
+import type { ModulesLoaderProps } from '..';
 
 const logger = createLogger('content:query');
 

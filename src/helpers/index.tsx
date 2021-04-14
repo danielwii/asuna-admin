@@ -1,19 +1,9 @@
 /** @jsxRuntime classic */
 
 /** @jsx jsx */
+import { LinkOutlined, SearchOutlined } from '@ant-design/icons';
 // noinspection ES6UnusedImports
 import { jsx } from '@emotion/react';
-import { LinkOutlined, SearchOutlined } from '@ant-design/icons';
-import { modelProxyCaller } from '@asuna-admin/adapters';
-import { AssetsPreview, Content, DynamicFormTypes, parseAddressStr } from '@asuna-admin/components';
-import { VideoPlayer } from '@asuna-admin/components/DynamicForm/Videos';
-import { Config } from '@asuna-admin/config';
-import { AppContext } from '@asuna-admin/core';
-import { valueToArrays } from '@asuna-admin/core/url-rewriter';
-import { ComponentsHelper, RelationColumnProps } from '@asuna-admin/helpers';
-import { createLogger } from '@asuna-admin/logger';
-import { SchemaHelper } from '@asuna-admin/schema';
-import { Asuna } from '@asuna-admin/types';
 
 import { Badge, Button, Checkbox, Divider, Input, Modal, Popconfirm, Space, Statistic, Tag, Tooltip } from 'antd';
 import { PdfButton, WithFuture } from 'asuna-components';
@@ -26,6 +16,16 @@ import * as React from 'react';
 import NumberFormat from 'react-number-format';
 import * as util from 'util';
 
+import { modelProxyCaller } from '../adapters';
+import { AssetsPreview, Content, DynamicFormTypes, parseAddressStr } from '../components';
+import { VideoPlayer } from '../components/DynamicForm/Videos';
+import { Config } from '../config';
+import { AppContext } from '../core';
+import { valueToArrays } from '../core/url-rewriter';
+import { ComponentsHelper, RelationColumnProps } from '../helpers';
+import { createLogger } from '../logger';
+import { SchemaHelper } from '../schema';
+import { Asuna } from '../types';
 import { castModelKey } from './cast';
 import { WithDebugInfo } from './debug';
 import { extractValue, removePreAndSuf } from './func';

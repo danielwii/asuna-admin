@@ -1,7 +1,7 @@
-import { AppContext } from '@asuna-admin/core';
-import { createLogger } from '@asuna-admin/logger';
-
 import { AxiosResponse } from 'axios';
+
+import { AppContext } from '../core';
+import { createLogger } from '../logger';
 
 // --------------------------------------------------------------
 // Types

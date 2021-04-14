@@ -1,6 +1,6 @@
-import { Config } from '@asuna-admin/config';
-
 import localForage from 'localforage';
+
+import { Config } from '../config';
 
 type TTLItem<T = any> = { value: T; timestamp: number; ttl?: number };
 

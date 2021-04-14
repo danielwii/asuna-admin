@@ -1,19 +1,5 @@
 import { InfoOutlined } from '@ant-design/icons';
-import { responseProxy } from '@asuna-admin/adapters';
-import { StoreContext } from '@asuna-admin/context';
-import { ActionEvent, AppContext, EventBus, EventType } from '@asuna-admin/core';
-import {
-  castModelKey,
-  DebugInfo,
-  ModelsHelper,
-  parseJSONIfCould,
-  resolveModelInPane,
-  useAsunaModels,
-} from '@asuna-admin/helpers';
-import { WithDebugInfo } from '@asuna-admin/helpers/debug';
-import { createLogger } from '@asuna-admin/logger';
-import { modelsActions } from '@asuna-admin/store';
-import { Asuna, Condition } from '@asuna-admin/types';
+
 import { Button, Divider, Dropdown, Menu, Modal, Skeleton, Switch, Table, Tag, Tooltip } from 'antd';
 import { SorterResult, TableCurrentDataSource, TablePaginationConfig } from 'antd/es/table/interface';
 import { Key } from 'antd/lib/table/interface';
@@ -21,6 +7,22 @@ import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
 import React, { useContext, useEffect, useState } from 'react';
 import { useAsync, useLogger } from 'react-use';
+
+import { responseProxy } from '../adapters';
+import { StoreContext } from '../context';
+import { ActionEvent, AppContext, EventBus, EventType } from '../core';
+import {
+  castModelKey,
+  DebugInfo,
+  ModelsHelper,
+  parseJSONIfCould,
+  resolveModelInPane,
+  useAsunaModels,
+} from '../helpers';
+import { WithDebugInfo } from '../helpers/debug';
+import { createLogger } from '../logger';
+import { modelsActions } from '../store';
+import { Asuna, Condition } from '../types';
 import { AsunaDrawerButton } from './AsunaDrawer';
 
 const logger = createLogger('components:data-table');

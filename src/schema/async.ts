@@ -1,13 +1,13 @@
-import { DynamicFormTypes } from '@asuna-admin/components';
-import { AppContext } from '@asuna-admin/core';
-import { createLogger } from '@asuna-admin/logger';
-import { Asuna } from '@asuna-admin/types';
-
 import { Promise } from 'bluebird';
 import * as _ from 'lodash';
 import * as R from 'ramda';
 
-import { EnumField, Fields, PositionsField, WithHidden } from '.';
+import { DynamicFormTypes } from '../components';
+import { AppContext } from '../core';
+import { createLogger } from '../logger';
+import { Asuna } from '../types';
+
+import type { EnumField, Fields, PositionsField, WithHidden } from '.';
 
 const logger = createLogger('helpers:schema:async');
 

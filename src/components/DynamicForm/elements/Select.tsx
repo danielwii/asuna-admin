@@ -1,15 +1,15 @@
-import { AppContext } from '@asuna-admin/core';
-import { createLogger } from '@asuna-admin/logger';
+import { WrappedFormUtils } from '@ant-design/compatible/es/form/Form';
+import { PlusOutlined } from '@ant-design/icons';
 
 import { Divider, Input, Select } from 'antd';
 import * as _ from 'lodash';
 import * as R from 'ramda';
 import * as React from 'react';
 import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc';
-import { WrappedFormUtils } from '@ant-design/compatible/es/form/Form';
-import { PlusOutlined } from '@ant-design/icons';
 
 import { generateComponent, horizontalFormItemLayout, IFormItemLayout } from '.';
+import { AppContext } from '../../../core';
+import { createLogger } from '../../../logger';
 
 const logger = createLogger('components:dynamic-form:select');
 

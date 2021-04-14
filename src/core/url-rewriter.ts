@@ -1,7 +1,8 @@
-import { isJson } from '@asuna-admin/helpers';
-import { createLogger } from '@asuna-admin/logger';
 import * as _ from 'lodash';
+
 import { AppContext } from '.';
+import { isJson } from '../helpers';
+import { createLogger } from '../logger';
 
 const logger = createLogger('core:url-rewriter');
 

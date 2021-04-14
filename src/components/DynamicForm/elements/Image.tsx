@@ -1,7 +1,5 @@
 import { WrappedFormUtils } from '@ant-design/compatible/es/form/Form';
-import { Config } from '@asuna-admin/config';
-import { upload, validateFile } from '@asuna-admin/helpers/upload';
-import { createLogger } from '@asuna-admin/logger';
+
 import { IUploadedFile, IUploaderProps, Uploader, UploaderAdapter, WithVariable } from 'asuna-components';
 import { AxiosRequestConfig } from 'axios';
 import * as _ from 'lodash';
@@ -9,6 +7,9 @@ import * as React from 'react';
 import { useLogger } from 'react-use';
 
 import { generateComponent, horizontalFormItemLayout, IFormItemLayout } from '.';
+import { Config } from '../../../config';
+import { upload, validateFile } from '../../../helpers/upload';
+import { createLogger } from '../../../logger';
 import { ImageTrivia } from '../ImageTrivia';
 import { FormComponentProps } from './interfaces';
 

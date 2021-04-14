@@ -1,7 +1,14 @@
 import { Form } from '@ant-design/compatible';
-import { DynamicFormProps, Pane } from '@asuna-admin/components';
-import { DynamicForm, DynamicFormTypes } from '@asuna-admin/components/DynamicForm';
-import { AppContext, EventBus, EventType } from '@asuna-admin/core';
+
+import * as _ from 'lodash';
+import moment from 'moment';
+import * as R from 'ramda';
+import * as React from 'react';
+import { connect } from 'react-redux';
+import { PropagateLoader } from 'react-spinners';
+
+import { DynamicForm, DynamicFormTypes } from '../../components/DynamicForm';
+import { AppContext, EventBus, EventType } from '../../core';
 import {
   DebugInfo,
   diff,
@@ -9,17 +16,13 @@ import {
   reduxActionCallbackPromise,
   TenantHelper,
   toFormErrors,
-} from '@asuna-admin/helpers';
-import { createLogger } from '@asuna-admin/logger';
-import * as schemaHelper from '@asuna-admin/schema';
-import { modelsActions, RootState } from '@asuna-admin/store';
-import { AxiosResponse } from 'axios';
-import * as _ from 'lodash';
-import moment from 'moment';
-import * as R from 'ramda';
-import * as React from 'react';
-import { connect } from 'react-redux';
-import { PropagateLoader } from 'react-spinners';
+} from '../../helpers';
+import { createLogger } from '../../logger';
+import * as schemaHelper from '../../schema';
+import { modelsActions, RootState } from '../../store';
+
+import type { DynamicFormProps, Pane } from '../../components';
+import type { AxiosResponse } from 'axios';
 
 const logger = createLogger('modules:content:upsert');
 

@@ -1,8 +1,3 @@
-import { AssetsPreview, DynamicFormTypes } from '@asuna-admin/components';
-import { ModelsHelper, resolveModelInPane, useAsunaModels } from '@asuna-admin/helpers';
-import { WithDebugInfo } from '@asuna-admin/helpers/debug';
-import { createLogger } from '@asuna-admin/logger';
-import { Asuna } from '@asuna-admin/types';
 import { Button, Collapse, Descriptions, Empty, PageHeader, Tag, Tooltip } from 'antd';
 import { AssetPreview } from 'asuna-components';
 import { Promise } from 'bluebird';
@@ -12,6 +7,12 @@ import * as React from 'react';
 import { useAsync } from 'react-use';
 import { FoldingCube } from 'styled-spinkit';
 import * as util from 'util';
+
+import { AssetsPreview, DynamicFormTypes } from '../components';
+import { ModelsHelper, resolveModelInPane, useAsunaModels } from '../helpers';
+import { WithDebugInfo } from '../helpers/debug';
+import { createLogger } from '../logger';
+import { Asuna } from '../types';
 
 const logger = createLogger('components:data-view');
 

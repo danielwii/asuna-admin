@@ -1,16 +1,16 @@
-import { apiProxy } from '@asuna-admin/adapters';
-import { AppContext } from '@asuna-admin/core';
-import { htmlEntities } from '@asuna-admin/helpers/cast';
-import { validateFile } from '@asuna-admin/helpers/upload';
-import { createLogger } from '@asuna-admin/logger';
-import { Asuna } from '@asuna-admin/types';
-
 import { Input } from 'antd';
 import { ExtendControlType } from 'braft-editor';
 import { ContentUtils } from 'braft-utils';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { FoldingCube } from 'styled-spinkit';
+
+import { apiProxy } from '../adapters';
+import { AppContext } from '../core';
+import { htmlEntities } from '../helpers/cast';
+import { validateFile } from '../helpers/upload';
+import { createLogger } from '../logger';
+import { Asuna } from '../types';
 
 const logger = createLogger('components:rich-editor');
 

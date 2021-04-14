@@ -1,9 +1,10 @@
-import { DynamicFormField, DynamicFormFieldOptions, DynamicFormTypes } from '@asuna-admin/components';
-import { AppContext } from '@asuna-admin/core';
-import { castModelKey, castModelName, diff } from '@asuna-admin/helpers';
-import { createLogger } from '@asuna-admin/logger';
 import * as _ from 'lodash';
 import * as R from 'ramda';
+
+import { DynamicFormField, DynamicFormFieldOptions, DynamicFormTypes } from '../components';
+import { AppContext } from '../core';
+import { castModelKey, castModelName, diff } from '../helpers';
+import { createLogger } from '../logger';
 
 const logger = createLogger('helpers:schema');
 
@@ -42,7 +43,7 @@ export const hiddenComponentDecorator = ({
 
   const primaryKey = AppContext.adapters.models.getPrimaryKey(modelName);
   let wrappedFields = R.omit([castModelKey('createdAt'), castModelKey('updatedAt')])(fields) as Fields & WithHidden;
-  if (R.has(primaryKey, wrappedFields)) {
+  if (_.has(wrappedFields, primaryKey)) {
     const hidden = R.isNil(wrappedFields[primaryKey].value);
     wrappedFields = R.mergeDeepRight(wrappedFields, {
       [primaryKey]: { options: { accessible: hidden ? 'hidden' : null } as DynamicFormFieldOptions },

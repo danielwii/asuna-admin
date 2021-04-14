@@ -1,9 +1,9 @@
-import { createLogger } from '@asuna-admin/logger';
-
 import { Progress } from 'antd';
 import * as React from 'react';
 import { fadeIn, fadeOut } from 'react-animations';
 import styled, { keyframes } from 'styled-components';
+
+import { createLogger } from '../logger';
 
 const logger = createLogger('components:progress-bar');
 

@@ -1,12 +1,14 @@
-import { AsunaDataView, ErrorInfo } from '@asuna-admin/components';
-import { DebugInfo, extractModelNameFromPane, resolveModelInPane, TenantHelper } from '@asuna-admin/helpers';
 import 'highlight.js/styles/default.css';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { useAsync, useLogger } from 'react-use';
 import { FoldingCube } from 'styled-spinkit';
 import * as util from 'util';
-import { ModulesLoaderProps } from '..';
+
+import { AsunaDataView, ErrorInfo } from '../../components';
+import { DebugInfo, extractModelNameFromPane, resolveModelInPane, TenantHelper } from '../../helpers';
+
+import type { ModulesLoaderProps } from '..';
 
 export type QueryFieldsColumnProps<EntitySchema> = (keyof EntitySchema)[];
 

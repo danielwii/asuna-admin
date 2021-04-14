@@ -1,9 +1,9 @@
 /** @jsxRuntime classic */
+
 /** @jsx jsx */
-import { AppContext } from '@asuna-admin/core';
-import { createLogger } from '@asuna-admin/logger';
 import { jsx } from '@emotion/react';
 import { FormControl, FormHelperText } from '@material-ui/core';
+
 import * as antd from 'antd';
 import { Divider, Popconfirm } from 'antd';
 import { FormFieldDef, FormFieldsGroup, RenderInputComponent } from 'asuna-components';
@@ -11,6 +11,9 @@ import * as formik from 'formik';
 import * as _ from 'lodash';
 import * as React from 'react';
 import Highlight from 'react-highlight';
+
+import { AppContext } from '../../core';
+import { createLogger } from '../../logger';
 
 const logger = createLogger('components:easy-form');
 

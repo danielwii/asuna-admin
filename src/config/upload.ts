@@ -1,6 +1,6 @@
-import { Asuna } from '@asuna-admin/types';
-
 import join from 'url-join';
+
+import { Asuna } from '../types';
 
 /**
  * 上传组件会返回一个 UploadResponse，包含必要的信息

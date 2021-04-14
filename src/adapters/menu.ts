@@ -1,7 +1,8 @@
-import { AppContext } from '@asuna-admin/core';
-import { createLogger } from '@asuna-admin/logger';
-import { Asuna } from '@asuna-admin/types';
 import * as R from 'ramda';
+
+import { AppContext } from '../core';
+import { createLogger } from '../logger';
+import { Asuna } from '../types';
 
 // --------------------------------------------------------------
 // Types

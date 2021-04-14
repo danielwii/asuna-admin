@@ -2,13 +2,6 @@
 
 /** @jsx jsx */
 // noinspection ES6UnusedImports
-import { Config } from '@asuna-admin/config';
-import { LoginContainer } from '@asuna-admin/containers';
-import { AppContext, IIndexRegister, ILoginRegister, INextConfig } from '@asuna-admin/core';
-import { diff } from '@asuna-admin/helpers';
-import { WithStyles } from '@asuna-admin/layout';
-import { createLogger } from '@asuna-admin/logger';
-
 import ApolloClient, { gql } from 'apollo-boost';
 import { Snow } from 'asuna-components';
 import { changeAntdTheme } from 'dynamic-antd-theme';
@@ -20,8 +13,15 @@ import { Subscription } from 'rxjs';
 import * as shortid from 'shortid';
 import styled from 'styled-components';
 
+import { Config } from '../config';
+import { LoginContainer } from '../containers';
+import { AppContext, IIndexRegister, ILoginRegister, INextConfig } from '../core';
+import { diff } from '../helpers';
+import { WithStyles } from '../layout';
+import { createLogger } from '../logger';
+
 import type { NextPageContext } from 'next';
-import type { AppState, RootState } from '@asuna-admin/store';
+import type { AppState, RootState } from '../store';
 
 const logger = createLogger('common:login');
 

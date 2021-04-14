@@ -1,9 +1,3 @@
-import { Title } from '@asuna-admin/components';
-import { valueToUrl } from '@asuna-admin/core/url-rewriter';
-import { upload } from '@asuna-admin/helpers/upload';
-import { createLogger } from '@asuna-admin/logger';
-import { Asuna } from '@asuna-admin/types';
-
 import { UploadOutlined } from '@ant-design/icons';
 
 import { Button, Input, List } from 'antd';
@@ -14,6 +8,12 @@ import * as React from 'react';
 import ReactCrop, { Crop, PixelCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
 import * as util from 'util';
+
+import { Title } from '../../components';
+import { valueToUrl } from '../../core/url-rewriter';
+import { upload } from '../../helpers/upload';
+import { createLogger } from '../../logger';
+import { Asuna } from '../../types';
 
 const logger = createLogger('components:dynamic-form:image-trivia');
 

@@ -1,7 +1,9 @@
 import { ApolloProvider } from '@apollo/react-hooks';
-import { AppContext, IComponentService } from '@asuna-admin/core/context';
+
 import { gql } from 'apollo-boost';
 import * as React from 'react';
+
+import { AppContext, IComponentService } from '../core/context';
 
 export interface IRegGraphqlProps {
   kvGql: (KVOpts: { collection: string; key: string }) => any;

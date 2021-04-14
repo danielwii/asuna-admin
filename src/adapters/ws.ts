@@ -1,8 +1,9 @@
-import { AppContext } from '@asuna-admin/core';
-import { createLogger } from '@asuna-admin/logger';
-import { appActions } from '@asuna-admin/store';
 import * as Rx from 'rxjs';
 import io from 'socket.io-client';
+
+import { AppContext } from '../core';
+import { createLogger } from '../logger';
+import { appActions } from '../store';
 
 // --------------------------------------------------------------
 // Main

@@ -26,10 +26,10 @@ static/libs
 examples/*
 declaration
 dist/
-adapters/
-components/
-pages/
-services/
+/adapters
+/components
+/pages
+/services
 
 .yarn/*
 #!.yarn/cache

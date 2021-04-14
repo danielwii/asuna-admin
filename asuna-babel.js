@@ -20,6 +20,7 @@ module.exports = (api) => {
       'babel-plugin-styled-components',
       '@babel/plugin-syntax-dynamic-import',
       '@babel/plugin-proposal-optional-chaining',
+      // '@babel/plugin-proposal-private-methods',
       '@babel/plugin-proposal-nullish-coalescing-operator',
       // fix Error: StyleSheet: `insertRule` accepts only strings
       // ['styled-components', { ssr: true, displayName: true, preprocess: false }],

@@ -1,12 +1,10 @@
 /** @jsxRuntime classic */
+
 /** @jsx jsx */
 import { InfoCircleOutlined } from '@ant-design/icons';
-import { AppContext } from '@asuna-admin/core';
-import { KVHelper, WithDebugInfo } from '@asuna-admin/helpers';
-import { createLogger } from '@asuna-admin/logger';
-
 import { jsx } from '@emotion/react';
 import { TextField } from '@material-ui/core';
+
 import { Button, Col, Divider, Row, Typography } from 'antd';
 import { DynamicJsonArrayTable, FormFieldDef, FormFields, ObjectArrayJsonTableHelper } from 'asuna-components';
 import { Field, FieldProps, Form, Formik, FormikValues } from 'formik';
@@ -16,6 +14,10 @@ import React, { useEffect, useState } from 'react';
 import Highlight from 'react-highlight';
 import { FoldingCube } from 'styled-spinkit';
 import * as util from 'util';
+
+import { AppContext } from '../../core';
+import { KVHelper, WithDebugInfo } from '../../helpers';
+import { createLogger } from '../../logger';
 
 const logger = createLogger('components:kv-form:form');
 

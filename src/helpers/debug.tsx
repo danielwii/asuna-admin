@@ -1,5 +1,3 @@
-import { AppContext } from '@asuna-admin/core';
-
 import { InfoCircleOutlined } from '@ant-design/icons';
 
 import { Button, Divider, Popover } from 'antd';
@@ -7,6 +5,8 @@ import * as React from 'react';
 import { useState } from 'react';
 import JSONTree from 'react-json-tree';
 import * as util from 'util';
+
+import { AppContext } from '../core';
 
 export const WithDebugInfo: React.FC<{ info: any }> = ({ info, children }) => {
   if (AppContext.isDevMode) {

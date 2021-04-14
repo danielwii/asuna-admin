@@ -1,4 +1,4 @@
-import { Asuna, Json } from '@asuna-admin/types';
+import { Asuna, Json } from '../types';
 
 export type StateMachine = {
   key: string;

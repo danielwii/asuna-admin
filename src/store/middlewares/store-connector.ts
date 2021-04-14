@@ -1,7 +1,7 @@
-import { createLogger } from '@asuna-admin/logger';
-import { RootState } from '@asuna-admin/store';
+import { createLogger } from '../../logger';
 
-import { DeepPartial } from 'redux';
+import type { DeepPartial } from 'redux';
+import type { RootState } from '../../store';
 
 const logger = createLogger('store:connector');
 

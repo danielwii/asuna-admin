@@ -1,6 +1,7 @@
-import { createLogger } from '@asuna-admin/logger';
 import * as R from 'ramda';
 import { takeLatest } from 'redux-saga/effects';
+
+import { createLogger } from '../logger';
 
 const logger = createLogger('store:router');
 

@@ -1,13 +1,14 @@
-import { ISideMenuProps, SideMenu } from '@asuna-admin/components';
-import { StoreContext } from '@asuna-admin/context/store';
-import { DebugInfo, TenantHelper } from '@asuna-admin/helpers';
-import { panesActions, RootState } from '@asuna-admin/store';
-import { Asuna } from '@asuna-admin/types';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { CubeGrid } from 'styled-spinkit';
+
+import { ISideMenuProps, SideMenu } from '../components';
+import { StoreContext } from '../context/store';
+import { DebugInfo, TenantHelper } from '../helpers';
+import { panesActions, RootState } from '../store';
+import { Asuna } from '../types';
 
 export const SideMenuRender: React.FC = (props) => {
   // const [tenantInfo, setTenantInfo] = useState<TenantInfo>();

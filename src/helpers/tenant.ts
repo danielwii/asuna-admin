@@ -1,9 +1,10 @@
-import { adminProxyCaller, modelProxyCaller, TenantInfo } from '@asuna-admin/adapters';
-import { diff, RelationColumnProps } from '@asuna-admin/helpers';
-import { createLogger } from '@asuna-admin/logger';
 import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
 import * as Rx from 'rxjs';
+
+import { adminProxyCaller, modelProxyCaller, TenantInfo } from '../adapters';
+import { diff, RelationColumnProps } from '../helpers';
+import { createLogger } from '../logger';
 
 const logger = createLogger('helpers:tenant');
 

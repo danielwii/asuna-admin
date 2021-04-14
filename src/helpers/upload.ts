@@ -1,8 +1,8 @@
-import { apiProxy } from '@asuna-admin/adapters';
-import { createLogger } from '@asuna-admin/logger';
-import { Asuna } from '@asuna-admin/types';
-
 import { message } from 'antd';
+
+import { apiProxy } from '../adapters';
+import { createLogger } from '../logger';
+import { Asuna } from '../types';
 
 import type { RcFile } from 'antd/es/upload/interface';
 import type { AxiosRequestConfig } from 'axios';

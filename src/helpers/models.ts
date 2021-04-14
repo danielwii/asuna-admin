@@ -1,10 +1,12 @@
-import { Pane } from '@asuna-admin/components';
-import { AppContext } from '@asuna-admin/core';
-import { createLogger } from '@asuna-admin/logger';
-import { SchemaHelper } from '@asuna-admin/schema';
-import { panesActions } from '@asuna-admin/store';
-import { Asuna } from '@asuna-admin/types';
 import * as _ from 'lodash';
+
+import { AppContext } from '../core';
+import { createLogger } from '../logger';
+import { SchemaHelper } from '../schema';
+import { panesActions } from '../store';
+import { Asuna } from '../types';
+
+import type { Pane } from '../components';
 
 const logger = createLogger('helpers:models');
 

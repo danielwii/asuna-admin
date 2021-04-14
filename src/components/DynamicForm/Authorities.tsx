@@ -1,9 +1,9 @@
-import { menuProxy } from '@asuna-admin/adapters';
-import { createLogger } from '@asuna-admin/logger';
-
 import { Checkbox, Table } from 'antd';
 import * as R from 'ramda';
 import * as React from 'react';
+
+import { menuProxy } from '../../adapters';
+import { createLogger } from '../../logger';
 
 const logger = createLogger('components:authorities');
 

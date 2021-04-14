@@ -1,10 +1,10 @@
-import { Config } from '@asuna-admin/config';
-import { AppContext } from '@asuna-admin/core';
-import { createLogger } from '@asuna-admin/logger';
-import { Asuna } from '@asuna-admin/types';
-
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import * as _ from 'lodash';
+
+import { Config } from '../config';
+import { AppContext } from '../core';
+import { createLogger } from '../logger';
+import { Asuna } from '../types';
 
 const logger = createLogger('adapters:api');
 

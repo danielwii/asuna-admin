@@ -1,8 +1,3 @@
-import { valueToArrays, valueToUrl } from '@asuna-admin/core/url-rewriter';
-import { upload, validateFile } from '@asuna-admin/helpers/upload';
-import { createLogger } from '@asuna-admin/logger';
-import { Asuna } from '@asuna-admin/types';
-
 import { UploadOutlined } from '@ant-design/icons';
 
 import { Button, Input, Upload, Divider } from 'antd';
@@ -11,6 +6,11 @@ import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
 import * as React from 'react';
 import videojs from 'video.js';
+
+import { valueToArrays, valueToUrl } from '../../core/url-rewriter';
+import { upload, validateFile } from '../../helpers/upload';
+import { createLogger } from '../../logger';
+import { Asuna } from '../../types';
 
 const logger = createLogger('components:dynamic-form:video');
 

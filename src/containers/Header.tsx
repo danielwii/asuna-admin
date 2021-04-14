@@ -1,10 +1,9 @@
-import { Header, IHeaderProps } from '@asuna-admin/components';
-import { AppContext } from '@asuna-admin/core';
-import { appActions, authActions, panesActions, RootState } from '@asuna-admin/store';
-
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { Header, IHeaderProps } from '../components';
+import { AppContext } from '../core';
+import { appActions, authActions, panesActions, RootState } from '../store';
 import { withDebugSettingsProps } from './DebugSettings';
 
 export const HeaderRender: React.FC<Pick<IHeaderProps, 'hideLogo'>> = (props) => {

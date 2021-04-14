@@ -1,7 +1,3 @@
-import { AppContext, AsunaDefinitions } from '@asuna-admin/core';
-import { parseString, TooltipContent, WithDebugInfo } from '@asuna-admin/helpers';
-import { SchemaHelper } from '@asuna-admin/schema';
-import { EnumFilterMetaInfoOptions } from '@asuna-admin/types';
 import { List, Tooltip } from 'antd';
 import { WithLoading, WithVariable } from 'asuna-components';
 import { Promise } from 'bluebird';
@@ -11,6 +7,11 @@ import moment from 'moment';
 import React from 'react';
 import { useAsync } from 'react-use';
 import VisualDiff from 'react-visual-diff';
+
+import { AppContext, AsunaDefinitions } from '../core';
+import { parseString, TooltipContent, WithDebugInfo } from '../helpers';
+import { SchemaHelper } from '../schema';
+import { EnumFilterMetaInfoOptions } from '../types';
 import { DynamicFormTypes } from './DynamicForm';
 import { AssetsPreview } from './Snippet';
 

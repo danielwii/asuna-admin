@@ -1,10 +1,11 @@
 import { Form } from '@ant-design/compatible';
-import { createLogger } from '@asuna-admin/logger';
+
 import { AssetPreview } from 'asuna-components';
 import * as _ from 'lodash';
 import * as React from 'react';
 
 import { horizontalFormItemLayout, IFormItemLayout, PlainOptions } from '.';
+import { createLogger } from '../../../logger';
 
 const logger = createLogger('components:dynamic-form:elements:plain');
 

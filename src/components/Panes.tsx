@@ -1,10 +1,4 @@
 import { CloseCircleOutlined, CloseSquareOutlined, MinusSquareOutlined } from '@ant-design/icons';
-import { ErrorInfo } from '@asuna-admin/components';
-import { diff, TenantHelper } from '@asuna-admin/helpers';
-import { DebugInfo } from '@asuna-admin/helpers/debug';
-import { createLogger } from '@asuna-admin/logger';
-import ModulesLoader from '@asuna-admin/modules';
-import { TenantWelcome } from '@asuna-admin/tenant';
 import { Tooltip } from '@material-ui/core';
 
 import { Button, Divider, Tabs } from 'antd';
@@ -13,6 +7,13 @@ import * as R from 'ramda';
 import * as React from 'react';
 import { Async } from 'react-async';
 import { FoldingCube } from 'styled-spinkit';
+
+import { ErrorInfo } from '../components';
+import { diff, TenantHelper } from '../helpers';
+import { DebugInfo } from '../helpers/debug';
+import { createLogger } from '../logger';
+import ModulesLoader from '../modules';
+import { TenantWelcome } from '../tenant';
 
 const logger = createLogger('components:panes');
 

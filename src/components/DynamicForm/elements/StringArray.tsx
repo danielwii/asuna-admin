@@ -1,10 +1,11 @@
 import { WrappedFormUtils } from '@ant-design/compatible/es/form/Form';
-import { FormComponentProps } from '@asuna-admin/components/DynamicForm/elements/interfaces';
-import { createLogger } from '@asuna-admin/logger';
+
 import { IStringArrayProps, StringArray, WithVariable } from 'asuna-components';
 import * as React from 'react';
 
 import { generateComponent, horizontalFormItemLayout, IFormItemLayout } from '.';
+import { FormComponentProps } from '../../../components/DynamicForm/elements/interfaces';
+import { createLogger } from '../../../logger';
 
 const logger = createLogger('components:dynamic-form:string-array');
 

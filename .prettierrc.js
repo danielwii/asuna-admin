@@ -4,4 +4,5 @@ module.exports = {
   singleQuote: true,
   importOrder: ['^@nestjs/(.*)$', '^@danielwii/(.*)$', '^@local/(.*)$', '^([a-zA-Z].*)', '^[./]'],
   importOrderSeparation: true,
+  experimentalBabelParserPluginsList: ['classPrivateProperties', 'classPrivateMethods'],
 };

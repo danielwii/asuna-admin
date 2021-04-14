@@ -1,13 +1,16 @@
 /** @jsxRuntime classic */
+
 /** @jsx jsx */
-import { valueToArrays } from '@asuna-admin/core/url-rewriter';
-import { TooltipContent } from '@asuna-admin/helpers';
 import { jsx } from '@emotion/react';
+
 import { AssetPreview } from 'asuna-components';
 import * as _ from 'lodash';
 import dynamic from 'next/dynamic';
 import React from 'react';
 import { ImageDecorator } from 'react-viewer/lib/ViewerProps';
+
+import { valueToArrays } from '../core/url-rewriter';
+import { TooltipContent } from '../helpers';
 
 const Viewer = dynamic(import('react-viewer'), { ssr: false });
 

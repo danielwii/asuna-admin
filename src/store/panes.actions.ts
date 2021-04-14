@@ -1,6 +1,6 @@
-import { Asuna } from '@asuna-admin/types';
-
 import { reduxAction } from 'node-buffs';
+
+import { Asuna } from '../types';
 
 // --------------------------------------------------------------
 // Module actionTypes

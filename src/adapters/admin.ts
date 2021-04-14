@@ -1,9 +1,10 @@
-import { AppContext } from '@asuna-admin/core';
-import { Json } from '@asuna-admin/types';
 import { AxiosResponse } from 'axios';
 import { plainToClass } from 'class-transformer';
 import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
+
+import { AppContext } from '../core';
+import { Json } from '../types';
 import { Draft, StateMachines, Tenant, TenantInfo } from './admin.plain';
 
 export interface IAdminService {

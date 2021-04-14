@@ -1,8 +1,9 @@
-import { commonColumns, extend } from '@asuna-admin/helpers';
-import { createLogger } from '@asuna-admin/logger';
-import { Asuna } from '@asuna-admin/types';
 import * as _ from 'lodash';
 import * as React from 'react';
+
+import { commonColumns, extend } from '../helpers';
+import { createLogger } from '../logger';
+import { Asuna } from '../types';
 
 const logger = createLogger('core:definition');
 

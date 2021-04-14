@@ -1,11 +1,3 @@
-import { adminProxyCaller, TenantInfo } from '@asuna-admin/adapters';
-import { DynamicFormTypes, ErrorInfo, FormModalButton } from '@asuna-admin/components';
-import { StoreContext } from '@asuna-admin/context/store';
-import { AppContext } from '@asuna-admin/core';
-import { ModelsHelper, parseResponseError, TenantHelper } from '@asuna-admin/helpers';
-import { DebugInfo } from '@asuna-admin/helpers/debug';
-import { createLogger } from '@asuna-admin/logger';
-import { Asuna } from '@asuna-admin/types';
 import { Button, Col, Descriptions, Divider, Popconfirm, Row, Statistic } from 'antd';
 import { Promise } from 'bluebird';
 import * as _ from 'lodash';
@@ -13,6 +5,15 @@ import React, { useContext, useState } from 'react';
 import { useAsync, useLogger } from 'react-use';
 import { FoldingCube } from 'styled-spinkit';
 import * as util from 'util';
+
+import { adminProxyCaller, TenantInfo } from '../adapters';
+import { DynamicFormTypes, ErrorInfo, FormModalButton } from '../components';
+import { StoreContext } from '../context/store';
+import { AppContext } from '../core';
+import { ModelsHelper, parseResponseError, TenantHelper } from '../helpers';
+import { DebugInfo } from '../helpers/debug';
+import { createLogger } from '../logger';
+import { Asuna } from '../types';
 
 const logger = createLogger('tenant:welcome');
 

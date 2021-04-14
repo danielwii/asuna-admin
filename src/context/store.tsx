@@ -1,8 +1,9 @@
-import { TenantInfo } from '@asuna-admin/adapters';
-import { TenantHelper } from '@asuna-admin/helpers';
 import * as React from 'react';
 import { useState } from 'react';
 import { useEffectOnce } from 'react-use';
+
+import { TenantInfo } from '../adapters';
+import { TenantHelper } from '../helpers';
 
 export type StoreContextKey = 'tenantInfo';
 

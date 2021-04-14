@@ -1,12 +1,12 @@
-import { DebugSettings, Pane } from '@asuna-admin/components';
-import { withDebugSettingsProps } from '@asuna-admin/containers/DebugSettings';
-import { AppContext } from '@asuna-admin/core';
-import { DebugInfo } from '@asuna-admin/helpers';
-import { createLogger } from '@asuna-admin/logger';
-
 import * as _ from 'lodash';
 import dynamic from 'next/dynamic';
 import * as React from 'react';
+
+import { DebugSettings, Pane } from '../components';
+import { withDebugSettingsProps } from '../containers/DebugSettings';
+import { AppContext } from '../core';
+import { DebugInfo } from '../helpers';
+import { createLogger } from '../logger';
 
 const logger = createLogger('modules:index');
 

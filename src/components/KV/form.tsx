@@ -1,17 +1,17 @@
 import { InfoCircleOutlined } from '@ant-design/icons';
-import { AppContext } from '@asuna-admin/core';
-import { KVHelper } from '@asuna-admin/helpers';
-import { createLogger } from '@asuna-admin/logger';
 
 import { Button, Col, Divider, Row, Typography } from 'antd';
 import { EasyForm, FormFields, WithLoading } from 'asuna-components';
-
 import 'highlight.js/styles/default.css';
 import * as _ from 'lodash';
 import React from 'react';
 import Highlight from 'react-highlight';
 import { useLogger } from 'react-use';
 import * as util from 'util';
+
+import { AppContext } from '../../core';
+import { KVHelper } from '../../helpers';
+import { createLogger } from '../../logger';
 
 const logger = createLogger('components:kv-form:form');
 

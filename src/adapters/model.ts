@@ -1,19 +1,3 @@
-import { DynamicFormTypes } from '@asuna-admin/components';
-import { Config } from '@asuna-admin/config';
-import { AppContext, AsunaDefinitions, CacheHelper } from '@asuna-admin/core';
-import {
-  BatchLoader,
-  castModelKey,
-  defaultColumns,
-  defaultColumnsByPrimaryKey,
-  parseJSONIfCould,
-  RelationColumnProps,
-  TenantHelper,
-} from '@asuna-admin/helpers';
-import { createLogger } from '@asuna-admin/logger';
-import { AuthState } from '@asuna-admin/store';
-import { Asuna } from '@asuna-admin/types';
-import { Condition, WhereConditions } from '@asuna-admin/types/meta';
 import { message } from 'antd';
 import { TablePaginationConfig } from 'antd/es/table/interface';
 import { AxiosResponse } from 'axios';
@@ -22,6 +6,23 @@ import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
 import NodeCache, { NodeCacheLegacyCallbacks } from 'node-cache';
 import * as R from 'ramda';
+
+import { DynamicFormTypes } from '../components';
+import { Config } from '../config';
+import { AppContext, AsunaDefinitions, CacheHelper } from '../core';
+import {
+  BatchLoader,
+  castModelKey,
+  defaultColumns,
+  defaultColumnsByPrimaryKey,
+  parseJSONIfCould,
+  RelationColumnProps,
+  TenantHelper,
+} from '../helpers';
+import { createLogger } from '../logger';
+import { AuthState } from '../store';
+import { Asuna } from '../types';
+import { Condition, WhereConditions } from '../types/meta';
 
 // --------------------------------------------------------------
 // Types
@@ -162,7 +163,7 @@ export interface ModelAdapter {
   loadOriginSchema(modelName: string): Promise<Asuna.Schema.OriginSchema>;
   getColumns(
     modelName: string,
-    opts: { callRefresh: () => void; actions: (text, record, extras) => any, ctx: Asuna.Schema.TableContext },
+    opts: { callRefresh: () => void; actions: (text, record, extras) => any; ctx: Asuna.Schema.TableContext },
     extraName?: string,
   ): Promise<RelationColumnProps[]>;
 }
@@ -395,7 +396,9 @@ export class ModelAdapterImpl implements ModelAdapter {
     const { table: columnsRender } = this.getModelConfig(extraName || modelName);
     const readonly = !TenantHelper.enableModelPublishForCurrentUser(modelName);
     const columns = columnsRender
-      ? await Promise.all(columnsRender(opts.actions, { modelName, callRefresh: opts.callRefresh, readonly, ctx: opts.ctx }))
+      ? await Promise.all(
+          columnsRender(opts.actions, { modelName, callRefresh: opts.callRefresh, readonly, ctx: opts.ctx }),
+        )
       : [];
 
     return _.map(columns, (column: RelationColumnProps) => {

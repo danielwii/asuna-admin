@@ -1,6 +1,7 @@
-import { AppContext } from '@asuna-admin/core';
-import { Asuna } from '@asuna-admin/types';
 import * as _ from 'lodash';
+
+import { AppContext } from '../core';
+import { Asuna } from '../types';
 
 export class SchemaHelper {
   static async getFormSchema(modelName: string): Promise<Asuna.Schema.FormSchemas | null> {

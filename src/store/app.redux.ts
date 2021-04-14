@@ -1,9 +1,9 @@
-import { apiProxy } from '@asuna-admin/adapters';
-import { createLogger } from '@asuna-admin/logger';
 import * as R from 'ramda';
 import { REHYDRATE } from 'redux-persist';
 import { call, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 
+import { apiProxy } from '../adapters';
+import { createLogger } from '../logger';
 import { actions, RootState } from './';
 import { appActions, appActionTypes, isAppModule } from './app.actions';
 import { authActions } from './auth.actions';

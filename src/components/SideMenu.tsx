@@ -1,9 +1,9 @@
-import { createLogger } from '@asuna-admin/logger';
-import { Asuna } from '@asuna-admin/types';
-
 import { Layout, Menu } from 'antd';
 import * as _ from 'lodash';
 import * as React from 'react';
+
+import { createLogger } from '../logger';
+import { Asuna } from '../types';
 
 const logger = createLogger('components:side-menu');
 

@@ -1,7 +1,8 @@
-import { ILoginProps, NormalLoginForm } from '@asuna-admin/components';
-import { authActions } from '@asuna-admin/store';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
+
+import { ILoginProps, NormalLoginForm } from '../components';
+import { authActions } from '../store';
 
 export const LoginContainer: React.FC = (props) => {
   const dispatch = useDispatch();

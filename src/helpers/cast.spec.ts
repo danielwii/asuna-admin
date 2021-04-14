@@ -1,5 +1,4 @@
-import { Config } from '@asuna-admin/config';
-
+import { Config } from '../config';
 import { castModelKey, castModelName } from './cast';
 
 describe('cast', () => {

@@ -1,18 +1,18 @@
 import { InfoCircleOutlined } from '@ant-design/icons';
-import { EasyGroupForm, ErrorInfo, GroupFormFields } from '@asuna-admin/components';
-import { AppContext } from '@asuna-admin/core';
-import { KVHelper } from '@asuna-admin/helpers';
-import { createLogger } from '@asuna-admin/logger';
+
 import { Button, Divider, Typography } from 'antd';
-
 import 'highlight.js/styles/default.css';
-
 import * as _ from 'lodash';
 import React, { useEffect, useState } from 'react';
 import Highlight from 'react-highlight';
 import { useLogger } from 'react-use';
 import { FoldingCube } from 'styled-spinkit';
 import * as util from 'util';
+
+import { EasyGroupForm, ErrorInfo, GroupFormFields } from '../../components';
+import { AppContext } from '../../core';
+import { KVHelper } from '../../helpers';
+import { createLogger } from '../../logger';
 
 const logger = createLogger('components:kv-form:group');
 

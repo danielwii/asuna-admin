@@ -1,7 +1,7 @@
-import { Pane } from '@asuna-admin/components';
 import * as _ from 'lodash';
 import * as R from 'ramda';
 
+import { Pane } from '../components';
 import { isPanesModule, panesActionTypes } from './panes.actions';
 
 // --------------------------------------------------------------

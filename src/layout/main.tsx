@@ -1,13 +1,12 @@
-import { ProgressBar } from '@asuna-admin/components';
-import { PanesContainer, SideMenuRender } from '@asuna-admin/containers';
-import { HeaderRender } from '@asuna-admin/containers/Header';
-import { StoreContextProvider } from '@asuna-admin/context/store';
-import { createLogger } from '@asuna-admin/logger';
-
 import { Layout } from 'antd';
 import * as React from 'react';
 import styled from 'styled-components';
 
+import { ProgressBar } from '../components';
+import { PanesContainer, SideMenuRender } from '../containers';
+import { HeaderRender } from '../containers/Header';
+import { StoreContextProvider } from '../context/store';
+import { createLogger } from '../logger';
 import WithStyles from './with-styles';
 
 const logger = createLogger('layout:main');

@@ -1,15 +1,15 @@
-import { valueToArrays, valueToUrl } from '@asuna-admin/core/url-rewriter';
-import { parseJSONIfCould } from '@asuna-admin/helpers';
-import { upload } from '@asuna-admin/helpers/upload';
-import { createLogger } from '@asuna-admin/logger';
-import { Asuna } from '@asuna-admin/types';
-
 import { UploadOutlined } from '@ant-design/icons';
 
 import { Button, Input, message, Upload } from 'antd';
 import { UploadChangeParam, UploadFile, UploadFileStatus, UploadProps } from 'antd/es/upload/interface';
 import * as _ from 'lodash';
 import React from 'react';
+
+import { valueToArrays, valueToUrl } from '../../core/url-rewriter';
+import { parseJSONIfCould } from '../../helpers';
+import { upload } from '../../helpers/upload';
+import { createLogger } from '../../logger';
+import { Asuna } from '../../types';
 
 const logger = createLogger('components:dynamic-form:files');
 

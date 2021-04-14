@@ -1,8 +1,3 @@
-import { AppContext, IIndexRegister, ILoginRegister, INextConfig } from '@asuna-admin/core';
-import { MainLayout } from '@asuna-admin/layout';
-import { createLogger } from '@asuna-admin/logger';
-import { appActions, AppState, AuthState, RootState } from '@asuna-admin/store';
-
 import ApolloClient, { gql } from 'apollo-boost';
 import { LivingLoading } from 'asuna-components';
 import { changeAntdTheme } from 'dynamic-antd-theme';
@@ -12,6 +7,11 @@ import fetch from 'node-fetch';
 import * as R from 'ramda';
 import * as React from 'react';
 import { connect } from 'react-redux';
+
+import { AppContext, IIndexRegister, ILoginRegister, INextConfig } from '../core';
+import { MainLayout } from '../layout';
+import { createLogger } from '../logger';
+import { appActions, AppState, AuthState, RootState } from '../store';
 
 const logger = createLogger('pages:index', 'debug');
 
