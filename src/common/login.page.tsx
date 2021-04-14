@@ -2,6 +2,8 @@
 
 /** @jsx jsx */
 // noinspection ES6UnusedImports
+import { jsx } from '@emotion/react';
+
 import ApolloClient, { gql } from 'apollo-boost';
 import { Snow } from 'asuna-components';
 import { changeAntdTheme } from 'dynamic-antd-theme';

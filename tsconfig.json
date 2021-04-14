@@ -4,7 +4,10 @@
     "module": "ESNext",
     "target": "ES2020",
     "esModuleInterop": true,
-    "lib": ["ESNext", "DOM"],
+    "lib": [
+      "ESNext",
+      "DOM"
+    ],
     "jsx": "preserve",
     "allowJs": false,
     "moduleResolution": "Node",
@@ -22,8 +25,22 @@
     "tsBuildInfoFile": "./.buildinfo.json",
     "declaration": true,
     "outDir": "dist",
-    "baseUrl": "./src"
+    "baseUrl": "./src",
+    "noEmit": true,
+    "paths": {
+      "@danielwii/asuna-admin": ["index.ts"],
+      "@danielwii/asuna-admin/*": ["*"]
+    }
   },
-  "include": ["next-env.d.ts", "src/**/*.ts*", "./services/**/*.ts*", "./components/**/*.ts*", "./pages/**/*.ts*"],
-  "exclude": ["**/*.spec.*", "node_modules"]
+  "include": [
+    "next-env.d.ts",
+    "src/**/*.ts*",
+    "./services/**/*.ts*",
+    "./components/**/*.ts*",
+    "./pages/**/*.ts*"
+  ],
+  "exclude": [
+    "**/*.spec.*",
+    "node_modules"
+  ]
 }
