@@ -27,7 +27,7 @@ export class WsAdapter {
     this.namespace = opts.namespace || 'admin';
 
     if (!AppContext.isServer && !WsAdapter.socket) {
-      WsAdapter.socket = (io as any).connect('/admin', {
+      WsAdapter.socket = (io as any).connect(`${process.env.NEXT_PUBLIC_WS_ENDPOINT ?? ''}/admin`, {
         secure: true,
         transports: ['websocket', 'xhr-polling'],
         rememberUpgrade: true,

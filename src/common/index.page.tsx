@@ -1,7 +1,7 @@
 import ApolloClient, { gql } from 'apollo-boost';
 import { LivingLoading } from 'asuna-components';
 import { changeAntdTheme } from 'dynamic-antd-theme';
-import * as _ from 'lodash';
+import _ from 'lodash';
 import 'moment/locale/zh-cn';
 import fetch from 'node-fetch';
 import * as R from 'ramda';
@@ -55,7 +55,7 @@ export class IndexPage extends React.Component<IIndexPageProps> {
     // const port = process.env.PORT || 3000;
     // logger.log(`call http://${host}:${port}/s-graphql`);
 
-    const uri = `${process.env.PROXY_API}/graphql`;
+    const uri = `${process.env.API_ENDPOINT ?? ''}/graphql`;
     logger.log(`call ${uri}`);
     const client = new ApolloClient({
       // uri: `http://${host}:${port}/s-graphql`,
@@ -77,7 +77,7 @@ export class IndexPage extends React.Component<IIndexPageProps> {
         `,
       })
       .catch((reason) => {
-        console.error('error occurred', reason);
+        logger.error('error occurred', reason);
         return { data: { error: reason } };
       });
 

@@ -74,7 +74,7 @@ export function FormKVComponent(props: {
               <EasyForm
                 initialValues={initialValues}
                 fields={fieldValues}
-                onSubmit={(values) => KVHelper.save({ key, collection }, values, refetch)}
+                onSubmit={(values) => KVHelper.save({ key, collection }, { ...body, values }, refetch)}
                 onClear={() => KVHelper.clear({ key, collection }, refetch)}
               />
             </Col>

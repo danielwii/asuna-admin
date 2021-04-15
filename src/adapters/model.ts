@@ -601,7 +601,7 @@ export class ModelAdapterImpl implements ModelAdapter {
   };
 
   async loadOriginSchemas(): Promise<{ [name: string]: Asuna.Schema.OriginSchema }> {
-    if (AppContext.ctx.graphql.serverClient) {
+    if (AppContext.ctx.graphql.client) {
       const allResponse = await AppContext.ctx.graphql.loadSchemas();
       return Object.assign({}, ..._.map(allResponse, ({ name, schema }) => ({ [name]: schema })));
     } else {
@@ -612,7 +612,7 @@ export class ModelAdapterImpl implements ModelAdapter {
   }
 
   async loadSchemas() {
-    if (AppContext.ctx.graphql.serverClient) {
+    if (AppContext.ctx.graphql.client) {
       const allResponse = await AppContext.ctx.graphql.loadSchemas();
       return Object.assign({}, ..._.map(allResponse, ({ name, schema }) => ({ [name]: schema })));
     } else {

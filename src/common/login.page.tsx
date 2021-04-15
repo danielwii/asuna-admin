@@ -134,7 +134,7 @@ export const wechatLoginGetInitial = async (ctx: NextPageContext): Promise<Login
     // const port = process.env.PORT || 3000;
     // logger.log(`call http://${host}:${port}/s-graphql`);
 
-    const uri = `${process.env.PROXY_API}/graphql`;
+    const uri = `${process.env.API_ENDPOINT ?? ''}/graphql`;
     logger.log(`call ${uri}`);
     const client = new ApolloClient({
       // uri: `http://${host}:${port}/s-graphql`,
@@ -163,12 +163,12 @@ export const wechatLoginGetInitial = async (ctx: NextPageContext): Promise<Login
 
     const weChatLoginEnable = _.get(data, 'wechat.value.values.wechat.login');
     const site = _.get(data, 'site.value');
-    // console.log({ userAgent, weChatLoginEnable, tempId, site });
+    logger.log({ userAgent, weChatLoginEnable, tempId, site });
     return { userAgent, weChatLoginEnable, tempId, site };
-  } catch (e) {
-    console.error(e);
+  } catch (reason) {
+    logger.error('error occurred', reason);
+    return {};
   }
-  return {};
 };
 
 export const LoginPageRender: React.FC<

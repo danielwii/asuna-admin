@@ -1,11 +1,12 @@
-import { AxiosResponse } from 'axios';
 import { plainToClass } from 'class-transformer';
-import * as _ from 'lodash';
+import _ from 'lodash';
 import * as fp from 'lodash/fp';
 
 import { AppContext } from '../core';
-import { Json } from '../types';
 import { Draft, StateMachines, Tenant, TenantInfo } from './admin.plain';
+
+import type { AxiosResponse } from 'axios';
+import type { Json } from '../types';
 
 export interface IAdminService {
   stateMachines(auth: { token: string | null }): Promise<AxiosResponse>;

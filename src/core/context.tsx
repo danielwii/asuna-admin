@@ -288,7 +288,7 @@ class AppContext {
       ws: new WsAdapter(),
       components: register.componentService,
       admin: new AdminAdapterImpl(register.createAdminService()),
-      graphql: new GraphqlAdapterImpl(Config.get('GRAPHQL_HOST')),
+      graphql: new GraphqlAdapterImpl(`${process.env.NEXT_PUBLIC_API_ENDPOINT ?? ''}/graphql`),
     };
 
     // only setup menu in index page

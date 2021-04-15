@@ -26,12 +26,12 @@ process.setMaxListeners(20);
  */
 function bootstrap({ root, opts, enableGraphQL }) {
   logger.log(`bootstrap ... ${util.inspect({ root, opts }, { colors: true, depth: 5 })}`);
-  const PROXY_API = opts.configurator.loadConfig('PROXY_API');
+  const API_ENDPOINT = opts.configurator.loadConfig('API_ENDPOINT');
   app
     .prepare()
     .then(() => {
       const server = new Koa();
-      const proxy = createProxy(PROXY_API);
+      const proxy = createProxy(API_ENDPOINT);
 
       // --------------------------------------------------------------
       // setup graphql
@@ -53,10 +53,10 @@ function bootstrap({ root, opts, enableGraphQL }) {
       router.all('/s-graphql', async (ctx) => {
         const { req, res } = ctx;
         await new Promise((resolve, reject) => {
-          let target = PROXY_API;
+          let target = API_ENDPOINT;
           if (opts.graphql) {
             req.url = opts.graphql.dest ? opts.graphql.dest() : 'graphql';
-            target = opts.graphql.target ? opts.graphql.target : PROXY_API;
+            target = opts.graphql.target ? opts.graphql.target : API_ENDPOINT;
           }
           proxy.web(req, res, { target }, (e) => (e ? reject(e) : resolve()));
         });

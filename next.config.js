@@ -1,8 +1,25 @@
-// eslint-disable-next-line eslint-comments/disable-enable-pair
-/* eslint-disable @typescript-eslint/no-var-requires */
 const R = require('ramda');
 // https://github.com/vercel/next.js/blob/master/errors/css-npm.md
 const withCss = require('@zeit/next-css');
 const { withDefaultNextConfigs } = require('./asuna-with-default-next');
+const consola = require('consola');
 
-module.exports = R.compose(withCss, withDefaultNextConfigs)();
+if (process.env.PROXY_API)
+  consola.warn(
+    'deprecated configs',
+    { PROXY_API: process.env.PROXY_API },
+    'using API_ENDPOINT/NEXT_PUBLIC_API_ENDPOINT instead.',
+  );
+
+consola.log('init next with', {
+  NODE_TLS_REJECT_UNAUTHORIZED: process.env.NODE_TLS_REJECT_UNAUTHORIZED,
+  API_ENDPOINT: process.env.API_ENDPOINT,
+  WS_ENDPOINT: process.env.WS_ENDPOINT,
+  NEXT_PUBLIC_API_ENDPOINT: process.env.NEXT_PUBLIC_API_ENDPOINT,
+  NEXT_PUBLIC_WS_ENDPOINT: process.env.NEXT_PUBLIC_WS_ENDPOINT,
+});
+
+const config = R.compose(withCss, withDefaultNextConfigs)({ productionBrowserSourceMaps: true });
+consola.log(config);
+
+module.exports = config;

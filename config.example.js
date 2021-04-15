@@ -2,10 +2,10 @@
 const { createConfigLoader } = require('node-buffs');
 
 const configurator = createConfigLoader({
-  requiredVariables: ['PROXY_API'],
+  requiredVariables: ['API_ENDPOINT'],
 });
 
-const PROXY_API = configurator.loadConfig('PROXY_API');
+const API_ENDPOINT = configurator.loadConfig('API_ENDPOINT');
 
 /**
  * proxy[]: { pathname: 请求地址, dest?: (req) => string: 重定向地址, target: 代理域名 }
@@ -14,5 +14,5 @@ const PROXY_API = configurator.loadConfig('PROXY_API');
 module.exports = {
   configurator,
   proxy: [],
-  graphql: { dest: () => 'graphql', target: PROXY_API },
+  graphql: { dest: () => 'graphql', target: API_ENDPOINT },
 };

@@ -6,7 +6,7 @@ const _ = require('lodash');
 const util = require('util');
 
 const configLoader = createConfigLoader();
-const url = `${configLoader.loadConfig('PROXY_API')}/graphql`;
+const url = `${configLoader.loadConfig('ENDPOINT') ?? ''}/graphql`;
 axios
   .post(url, {
     // language=GraphQL

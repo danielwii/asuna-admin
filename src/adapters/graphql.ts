@@ -30,15 +30,16 @@ export type KeyValueModelVo = { name: string; description: string; formatType: s
 
 export class GraphqlAdapterImpl {
   public client: ApolloClient<InMemoryCache>;
-  public serverClient: ApolloClient<InMemoryCache>;
+  // public serverClient: ApolloClient<InMemoryCache>;
   constructor(uri?: string) {
+    console.log('init graphql api with', uri);
     if (uri) {
-      this.client = new ApolloClient({ uri });
+      this.client = new ApolloClient({ uri, headers: authHeader().headers });
     } else {
       logger.log('graphql uri not defined, using /graphql for default');
-      this.client = new ApolloClient({ uri: '/graphql' });
+      this.client = new ApolloClient({ uri: '/graphql', headers: authHeader().headers });
     }
-    this.serverClient = new ApolloClient({ uri: '/graphql', headers: authHeader().headers });
+    // this.client = new ApolloClient({ uri, headers: authHeader().headers });
   }
 
   async query(queryString: string, client = this.client) {
@@ -58,7 +59,7 @@ export class GraphqlAdapterImpl {
   }
 
   async loadSchemas() {
-    return this.serverClient
+    return this.client
       .query({
         fetchPolicy: 'no-cache',
         query: gql`
@@ -74,7 +75,7 @@ export class GraphqlAdapterImpl {
   }
 
   async loadSystemSettings() {
-    return this.serverClient
+    return this.client
       .query({
         query: gql`
           {
@@ -91,7 +92,7 @@ export class GraphqlAdapterImpl {
   }
 
   async loadKv(collection: string, key: string): Promise<KeyValuePairVo> {
-    return this.serverClient
+    return this.client
       .query({
         // fetchPolicy: 'cache-first',
         variables: { nCollection: collection, nKey: key },
@@ -111,7 +112,7 @@ export class GraphqlAdapterImpl {
   }
 
   async loadKvModels(): Promise<KeyValueModelVo[]> {
-    return this.serverClient
+    return this.client
       .query({
         fetchPolicy: 'no-cache',
         query: gql`
@@ -134,7 +135,7 @@ export class GraphqlAdapterImpl {
   }
 
   async loadGraphs() {
-    return this.serverClient
+    return this.client
       .query({
         query: gql`
           {

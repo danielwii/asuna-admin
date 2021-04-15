@@ -18,7 +18,7 @@ export class ComponentService implements IComponentService {
 
   regGraphql(componentName: string, renderComponent: React.FC): void {
     this.#components[componentName] = (props) => (
-      <ApolloProvider client={AppContext.ctx.graphql.serverClient as any /* TODO error occurred */}>
+      <ApolloProvider client={AppContext.ctx.graphql.client as any /* TODO error occurred */}>
         {renderComponent({
           ...props,
           kvGql: (KVOpts: { collection: string; key: string }) => gql`
