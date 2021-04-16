@@ -114,35 +114,17 @@ async function generateSearchColumnProps(
     onSearch({ searchText: selectedKeys[0], searchedColumn: dataIndex });
   };
 
-  /*
   if (conditionType === 'list' && conditionExtras) {
-    const modelName = conditionExtras?.model;
-    const primaryKey = AppContext.adapters.models.getPrimaryKey(modelName);
-    const relation = AppContext.adapters.models.getFormSchema(modelName)[dataIndex];
-    const relationName = relation?.options?.selectable ?? relation?.ref ?? relation?.name;
-    console.log({ modelName, primaryKey, relation, relationName });
-    if (relationName) {
-      const field = conditionExtras.relationSearchField || 'name';
-      const {
-        data: { items },
-        // TODO 取 unique 数据
-      } = await AppContext.adapters.models.loadModels(relationName, {
-        fields: [field],
-        pagination: { pageSize: 500 },
-      });
+    const items = await modelProxyCaller()
+      .uniq(conditionExtras.model, dataIndex)
+      .catch((reason) => logger.error('generateSearchColumnProps', reason));
+    if (items) {
       return {
         filterMultiple: false,
-        // 关联筛选时的搜索 key 为了区别同一个关联的不同字段，所以会包含非主键信息，这里传递整个包括主键的搜索信息
-        filters: _.map(items, item => ({
-          text: `${item[primaryKey]} / ${item[field]}`,
-          value: JSON.stringify({ key: [`${dataIndex}.${primaryKey}`], value: [item[primaryKey]] }),
-        })),
+        filters: _.map(items, (item) => ({ text: item, value: item })),
       };
     }
-
-    return {};
   }
-*/
 
   return {
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }: FilterDropdownProps) => (
