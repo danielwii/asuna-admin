@@ -1,22 +1,22 @@
 import * as _ from 'lodash';
 import * as React from 'react';
 import { useContext } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { CubeGrid } from 'styled-spinkit';
 
 import { ISideMenuProps, SideMenu } from '../components';
 import { StoreContext } from '../context/store';
 import { DebugInfo, TenantHelper } from '../helpers';
-import { panesActions, RootState } from '../store';
-import { Asuna } from '../types';
+import { useSharedPanesFunc, useSharedPanesGlobalValue } from '../store/panes.global';
+
+import type { RootState } from '../store';
 
 export const SideMenuRender: React.FC = (props) => {
   // const [tenantInfo, setTenantInfo] = useState<TenantInfo>();
+  const [, panesStateSetter] = useSharedPanesGlobalValue();
+  const sharedPanesFunc = useSharedPanesFunc(panesStateSetter);
+
   const states = useSelector<RootState, Pick<ISideMenuProps, 'menus'>>((state) => state.menu);
-  const dispatch = useDispatch();
-  const actions: {
-    [action in keyof Pick<ISideMenuProps, 'onOpen'>]: any;
-  } = { onOpen: (pane: Asuna.Schema.Pane) => dispatch(panesActions.open(pane)) };
   const { store, updateStore } = useContext(StoreContext);
   /*
   useEffectOnce(() => {
@@ -41,5 +41,5 @@ export const SideMenuRender: React.FC = (props) => {
       </>
     );
 
-  return <SideMenu {...props} {...states} {...actions} />;
+  return <SideMenu {...props} {...states} onOpen={sharedPanesFunc.open} />;
 };

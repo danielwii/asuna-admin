@@ -44,6 +44,116 @@ interface IState {
   titles: object;
 }
 
+export const PanesView: React.FC<IPanesProps> = ({
+  onClose,
+  activeKey,
+  onActive,
+  onCloseCurrent,
+  onCloseWithout,
+  panes,
+}) => {
+  const [state, setState] = React.useState<IState>({ titles: {} });
+  const func = {
+    onEdit: (targetKey, action) => {
+      logger.log('[onEdit]', { targetKey, action });
+      if (action === 'remove') {
+        onClose(targetKey);
+      }
+    },
+    onTitleChange: (key, newTitle) => {
+      logger.log('[onTitleChange]', { key, newTitle });
+      if (key && newTitle) {
+        setState(R.mergeDeepRight(state, { titles: { [key]: newTitle } }));
+      }
+    },
+  };
+
+  if (!activeKey) {
+    return (
+      <Async promise={TenantHelper.reloadInfo()}>
+        {({ data, error, isPending }) => {
+          if (isPending) return <FoldingCube />;
+          if (error) return <ErrorInfo>Something went wrong: {error.message}</ErrorInfo>;
+          if (data?.config?.enabled && !_.isEmpty(data?.roles)) return <TenantWelcome />;
+          return (
+            <div>
+              Welcome
+              <DebugInfo data={data} divider />
+            </div>
+          );
+        }}
+      </Async>
+    );
+  }
+
+  const title = state.titles[activeKey];
+
+  const operations = (
+    <React.Fragment>
+      {panes && (
+        <Tooltip title="关闭全部">
+          <Button icon={<CloseSquareOutlined />} onClick={() => onCloseWithout()} />
+        </Tooltip>
+      )}
+      {panes && R.keys(panes).length > 0 && (
+        <React.Fragment>
+          <Divider type="vertical" />
+          <Tooltip title="关闭其他">
+            <Button icon={<MinusSquareOutlined />} onClick={() => onCloseWithout(activeKey)} />
+          </Tooltip>
+          {/*
+            <Dropdown
+              overlay={
+                <Menu onClick={(param: ClickParam) => onCloseWithout()}>
+                  <Menu.Item key="1">关闭其他</Menu.Item>
+                  <Menu.Item key="2">关闭左侧全部</Menu.Item>
+                  <Menu.Item key="3">关闭右侧全部</Menu.Item>
+                </Menu>
+              }
+            >
+              <Button>
+                <MinusSquareOutlined />
+              </Button>
+            </Dropdown>
+*/}
+
+          <Divider type="vertical" />
+          <Tooltip title="关闭当前标签页">
+            <CloseCircleOutlined onClick={() => onCloseCurrent(activeKey)} />
+          </Tooltip>
+        </React.Fragment>
+      )}
+    </React.Fragment>
+  );
+
+  return (
+    <Tabs
+      hideAdd
+      tabBarExtraContent={operations}
+      onChange={onActive}
+      activeKey={activeKey}
+      type="editable-card"
+      onEdit={func.onEdit}
+    >
+      {_.map(panes, (pane: Pane) => (
+        <TabPane tab={pane.title} key={pane.key}>
+          {/*{activeKey} - {pane.key} - {title}*/}
+          {/*<pre>{util.inspect(pane)}</pre>*/}
+          <ModulesLoader
+            module={pane.linkTo || pane.key}
+            activeKey={activeKey}
+            onClose={() => func.onEdit(activeKey, 'remove')}
+            basis={{ pane }}
+            onTitleChange={(newTitle) => func.onTitleChange(activeKey, newTitle)}
+            component={pane.component}
+          />
+        </TabPane>
+      ))}
+    </Tabs>
+  );
+};
+
+/*
 export class Panes extends React.Component<IPanesProps, IState> {
   state: IState = {
     titles: {},
@@ -110,7 +220,7 @@ export class Panes extends React.Component<IPanesProps, IState> {
             <Tooltip title="关闭其他">
               <Button icon={<MinusSquareOutlined />} onClick={() => onCloseWithout(activeKey)} />
             </Tooltip>
-            {/*
+            {/!*
             <Dropdown
               overlay={
                 <Menu onClick={(param: ClickParam) => onCloseWithout()}>
@@ -124,7 +234,7 @@ export class Panes extends React.Component<IPanesProps, IState> {
                 <MinusSquareOutlined />
               </Button>
             </Dropdown>
-*/}
+*!/}
 
             <Divider type="vertical" />
             <Tooltip title="关闭当前标签页">
@@ -146,8 +256,8 @@ export class Panes extends React.Component<IPanesProps, IState> {
       >
         {_.map(panes, (pane: Pane) => (
           <TabPane tab={pane.title} key={pane.key}>
-            {/*{activeKey} - {pane.key} - {title}*/}
-            {/*<pre>{util.inspect(pane)}</pre>*/}
+            {/!*{activeKey} - {pane.key} - {title}*!/}
+            {/!*<pre>{util.inspect(pane)}</pre>*!/}
             <ModulesLoader
               module={pane.linkTo || pane.key}
               activeKey={activeKey}
@@ -162,3 +272,4 @@ export class Panes extends React.Component<IPanesProps, IState> {
     );
   }
 }
+*/

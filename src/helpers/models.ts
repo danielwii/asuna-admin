@@ -3,7 +3,6 @@ import * as _ from 'lodash';
 import { AppContext } from '../core';
 import { createLogger } from '../logger';
 import { SchemaHelper } from '../schema';
-import { panesActions } from '../store';
 import { Asuna } from '../types';
 
 import type { Pane } from '../components';
@@ -61,26 +60,22 @@ export class ModelsHelper {
     const schema = await SchemaHelper.getSchema(modelName);
     const name = schema?.info?.displayName ?? modelName;
     logger.log('[create]', modelName, name, schema);
-    AppContext.dispatch(
-      panesActions.open({
-        key: `content::upsert::${modelName}::${Date.now()}`,
-        title: `新建 - ${schema?.info?.displayName ?? modelName}`,
-        linkTo: 'content::upsert',
-      }),
-    );
+    AppContext.globalFunc.panes?.open({
+      key: `content::upsert::${modelName}::${Date.now()}`,
+      title: `新建 - ${schema?.info?.displayName ?? modelName}`,
+      linkTo: 'content::upsert',
+    });
   }
 
   static async openEditPane(modelName: string, record: any, opts?: { id?: string; name?: string }): Promise<void> {
     const schema = await SchemaHelper.getSchema(modelName);
     const name = schema?.info?.displayName ?? modelName;
     logger.log('[edit]', name, record, schema);
-    AppContext.dispatch(
-      panesActions.open({
-        key: `content::upsert::${modelName}::${record[opts?.id ?? 'id']}`,
-        title: `编辑 - ${name} - ${record[opts?.name ?? 'name'] || record[opts?.name ?? 'title'] || ''}`,
-        linkTo: 'content::upsert',
-        data: { modelName, record },
-      }),
-    );
+    AppContext.globalFunc.panes?.open({
+      key: `content::upsert::${modelName}::${record[opts?.id ?? 'id']}`,
+      title: `编辑 - ${name} - ${record[opts?.name ?? 'name'] || record[opts?.name ?? 'title'] || ''}`,
+      linkTo: 'content::upsert',
+      data: { modelName, record },
+    });
   }
 }

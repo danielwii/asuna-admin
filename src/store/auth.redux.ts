@@ -9,7 +9,6 @@ import { toErrorMessage } from '../helpers';
 import { createLogger } from '../logger';
 import { appActionTypes, RootState } from './';
 import { authActions, authActionTypes, isAuthModule } from './auth.actions';
-import { panesActions } from './panes.actions';
 import { routerActions } from './router.redux';
 
 const logger = createLogger('store:auth');
@@ -26,7 +25,8 @@ function* loginSaga({ payload: { username, password }, callback }) {
 
     // 切换用户时更新操作区域，如果未来需要保存当前页面配置的话，应该将切换操作提出为单独的 Saga
     if (auth.username !== username) {
-      yield put(panesActions.closeAll());
+      logger.warn(`should close all panes...`);
+      // yield put(panesActions.closeAll());
     }
     if (callback) callback({ response });
 

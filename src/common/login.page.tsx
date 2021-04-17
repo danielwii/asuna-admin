@@ -11,14 +11,12 @@ import * as _ from 'lodash';
 import fetch from 'node-fetch';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Subscription } from 'rxjs';
+import { useMount } from 'react-use';
 import * as shortid from 'shortid';
 import styled from 'styled-components';
 
-import { Config } from '../config';
 import { LoginContainer } from '../containers';
 import { AppContext, IIndexRegister, ILoginRegister, INextConfig } from '../core';
-import { diff } from '../helpers';
 import { WithStyles } from '../layout';
 import { createLogger } from '../logger';
 
@@ -62,6 +60,43 @@ export type ILoginPageProps = ReduxProps & {
   customLogin?: (site, enableWeChat) => React.ReactElement;
 } & LoginInitialProps;
 
+export const LoginPageView: React.FC<ILoginPageProps> = (props) => {
+  const { dispatch, register, site } = props;
+  AppContext.setup(register);
+  AppContext.regDispatch(dispatch);
+
+  useMount(() => {
+    if (site?.primaryColor) {
+      changeAntdTheme(site?.primaryColor);
+    }
+  });
+
+  const { hideCharacteristics, weChatLoginEnable, customLogin } = props;
+
+  logger.log(`render ...`, props);
+
+  return (
+    <WithStyles hideCharacteristics>
+      <StyledFullFlexContainer>
+        {!hideCharacteristics && (
+          <React.Fragment>
+            <Snow color={site?.primaryColor?.hex} />
+            {/*
+              <Sun />
+              <StyledLogoWrapper>
+                <LogoCanvas />
+              </StyledLogoWrapper>
+*/}
+          </React.Fragment>
+        )}
+
+        {customLogin ? customLogin(site, weChatLoginEnable) : <LoginContainer {...props} />}
+      </StyledFullFlexContainer>
+    </WithStyles>
+  );
+};
+
+/*
 export class LoginPage extends React.Component<ILoginPageProps> {
   constructor(props) {
     super(props);
@@ -104,12 +139,12 @@ export class LoginPage extends React.Component<ILoginPageProps> {
           {!hideCharacteristics && (
             <React.Fragment>
               <Snow color={site?.primaryColor?.hex} />
-              {/*
+              {/!*
               <Sun />
               <StyledLogoWrapper>
                 <LogoCanvas />
               </StyledLogoWrapper>
-*/}
+*!/}
             </React.Fragment>
           )}
 
@@ -119,6 +154,7 @@ export class LoginPage extends React.Component<ILoginPageProps> {
     );
   }
 }
+*/
 
 export const wechatLoginGetInitial = async (ctx: NextPageContext): Promise<LoginInitialProps> => {
   if ((process as any).browser) {
@@ -180,5 +216,5 @@ export const LoginPageRender: React.FC<
   const appState = useSelector<RootState, AppState>((state) => state.app);
   const dispatch = useDispatch();
 
-  return <LoginPage {...props} app={appState} dispatch={dispatch} />;
+  return <LoginPageView {...props} app={appState} dispatch={dispatch} />;
 };

@@ -3,10 +3,14 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { Header, IHeaderProps } from '../components';
 import { AppContext } from '../core';
-import { appActions, authActions, panesActions, RootState } from '../store';
+import { appActions, authActions, RootState } from '../store';
+import { useSharedPanesFunc, useSharedPanesGlobalValue } from '../store/panes.global';
 import { withDebugSettingsProps } from './DebugSettings';
 
 export const HeaderRender: React.FC<Pick<IHeaderProps, 'hideLogo'>> = (props) => {
+  const [, panesStateSetter] = useSharedPanesGlobalValue();
+  const sharedPanesFunc = useSharedPanesFunc(panesStateSetter);
+
   const states = useSelector<RootState, Pick<IHeaderProps, 'auth' | 'app' | 'env' | 'version'>>((state) => ({
     auth: state.auth,
     app: state.app,
@@ -21,15 +25,7 @@ export const HeaderRender: React.FC<Pick<IHeaderProps, 'hideLogo'>> = (props) =>
     logout: () => dispatch(authActions.logout()),
     withDebugSettingsProps,
     handleAction: (action, componentName) => {
-      // console.log('container-header [handleAction]', { action, componentName });
-      AppContext.dispatch(
-        panesActions.open({
-          key: `${action}`,
-          title: action,
-          linkTo: 'content::blank',
-          component: componentName,
-        }),
-      );
+      sharedPanesFunc.open({ key: `${action}`, title: action, linkTo: 'content::blank', component: componentName });
     },
   };
 

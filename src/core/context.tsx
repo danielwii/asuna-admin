@@ -22,10 +22,9 @@ import {
 import { GraphqlAdapterImpl, KeyValueModelVo } from '../adapters/graphql';
 import { GroupFormKVComponent } from '../components';
 import { ListKVComponent } from '../components/KV/list';
-import { Config } from '../config';
 import { AsunaDefinitions } from '../core/definitions';
 
-import type { AuthState, IStoreConnector, RootState } from '../store';
+import type { AuthState, IStoreConnector, RootState, SharedPanesFunc } from '../store';
 import type { AnyAction, Dispatch } from 'redux';
 
 // --------------------------------------------------------------
@@ -146,6 +145,8 @@ class AppContext {
       }
     }
   }
+
+  public static globalFunc: Partial<{ panes: SharedPanesFunc }> = {};
 
   public static regDispatch(dispatch: Dispatch): void {
     if (!AppContext._dispatch) AppContext._dispatch = dispatch;

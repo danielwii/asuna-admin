@@ -16,7 +16,6 @@ import { authReducer, authSagas, AuthState } from './auth.redux';
 import { menuReducer, menuSagas, MenuState } from './menu.redux';
 import { createStoreConnectorMiddleware, storeConnector } from './middlewares';
 import { modelsCleaner, modelsReducer, modelsSagas, ModelsState } from './models.redux';
-import { panesCleaner, panesReducer, panesSagas, PanesState } from './panes.redux';
 import { routerReducer, routerSagas, RouterState } from './router.redux';
 import { securityReducer, securitySagas, SecurityState } from './security.redux';
 
@@ -24,8 +23,7 @@ import type { MakeStore, MakeStoreOptions } from 'next-redux-wrapper';
 
 export { storeConnector };
 
-export * from './panes.redux';
-export * from './panes.actions';
+export * from './panes.global';
 export * from './app.redux';
 export * from './app.actions';
 export * from './auth.redux';
@@ -44,7 +42,6 @@ interface GlobalState {
 export interface RootState {
   auth: AuthState;
   router: RouterState;
-  panes: PanesState;
   menu: MenuState;
   models: ModelsState;
   // content: ContentState;
@@ -98,7 +95,6 @@ export class AsunaStore {
     yield all([
       ...authSagas,
       ...routerSagas,
-      ...panesSagas,
       ...menuSagas,
       ...modelsSagas,
       // ...contentSagas,
@@ -112,7 +108,6 @@ export class AsunaStore {
     const reducers: { [key in keyof RootState]: any } = {
       auth: authReducer,
       router: routerReducer,
-      panes: panesReducer,
       menu: menuReducer,
       models: modelsReducer,
       // content: contentReducer,
@@ -127,7 +122,7 @@ export class AsunaStore {
 
     const crossSliceReducer = (preloadedState, action) => {
       if (action.type === actionTypes.CLEAN) {
-        const cleanedState = R.compose(modelsCleaner, panesCleaner)(preloadedState);
+        const cleanedState = R.compose(modelsCleaner/*, panesCleaner*/)(preloadedState);
         logger.log('[crossSliceReducer]', { preloadedState, action, cleanedState });
         return cleanedState;
       }

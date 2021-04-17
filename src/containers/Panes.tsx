@@ -1,15 +1,23 @@
+import { AppContext } from '@danielwii/asuna-admin';
+
 import * as React from 'react';
-import { connect } from 'react-redux';
 
-import { Panes } from '../components';
-import { panesActions, RootState } from '../store';
+import { PanesView } from '../components';
+import { useSharedPanesFunc, useSharedPanesGlobalValue } from '../store/panes.global';
 
-const mapStateToProps = (state: RootState) => ({ ...state.panes });
-const mapDispatchToProps = (dispatch) => ({
-  onActive: (key) => dispatch(panesActions.active(key)),
-  onClose: (key) => dispatch(panesActions.close(key)),
-  onCloseWithout: (key) => dispatch(panesActions.onCloseWithout(key)),
-  onCloseCurrent: (key) => dispatch(panesActions.onCloseCurrent(key)),
-});
+const PanesViewContainer: React.FC = (props) => {
+  const [panesState, panesStateSetter] = useSharedPanesGlobalValue();
+  const sharedPanesFunc = useSharedPanesFunc(panesStateSetter);
+  AppContext.globalFunc.panes = sharedPanesFunc;
 
-export default connect(mapStateToProps, mapDispatchToProps)(Panes);
+  return (
+    <PanesView
+      {...panesState}
+      onActive={sharedPanesFunc.active}
+      onClose={sharedPanesFunc.close}
+      onCloseWithout={sharedPanesFunc.closeWithout}
+      onCloseCurrent={sharedPanesFunc.closeCurrent}
+    />
+  );
+};
+export default PanesViewContainer;
