@@ -1,7 +1,6 @@
 import { UploadOutlined } from '@ant-design/icons';
 
 import { Button, Input, message, Upload } from 'antd';
-import { UploadChangeParam, UploadFile, UploadFileStatus, UploadProps } from 'antd/es/upload/interface';
 import * as _ from 'lodash';
 import React from 'react';
 
@@ -10,6 +9,8 @@ import { parseJSONIfCould } from '../../helpers';
 import { upload } from '../../helpers/upload';
 import { createLogger } from '../../logger';
 import { Asuna } from '../../types';
+
+import type { UploadChangeParam, UploadFile, UploadFileStatus, UploadProps } from 'antd/es/upload/interface';
 
 const logger = createLogger('components:dynamic-form:files');
 
@@ -29,7 +30,10 @@ interface IState {
   uploadFiles: UploadFile[];
 }
 
-const urlToUploadFile = (url, index) => ({
+const urlToUploadFile = (url, index): UploadFile => ({
+  originFileObj: {
+    /*FIXME*/
+  } as any,
   uid: `${index}`,
   name: valueToUrl(url, { type: 'file' }),
   status: 'done' as UploadFileStatus,
