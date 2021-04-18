@@ -1,6 +1,6 @@
 import { Form } from '@ant-design/compatible';
-import { FormComponentProps } from '@ant-design/compatible/es/form';
-import { WrappedFormUtils } from '@ant-design/compatible/es/form/Form';
+import type { FormComponentProps } from '@ant-design/compatible/es/form';
+import type { WrappedFormUtils } from '@ant-design/compatible/es/form/Form';
 import { Paper } from '@material-ui/core';
 
 import { Affix, Anchor, Button, Col, Divider, List, Popconfirm, Row, Tag } from 'antd';
@@ -23,7 +23,7 @@ import { WithDebugInfo } from '../../helpers/debug';
 import { createLogger } from '../../logger';
 import { SchemaHelper } from '../../schema';
 import { Asuna } from '../../types';
-import { EnumFilterMetaInfoOptions, MetaInfoOptions } from '../../types/meta';
+import type { EnumFilterMetaInfoOptions, MetaInfoOptions } from '../../types/meta';
 import {
   generateAuthorities,
   generateCheckbox,
@@ -49,6 +49,9 @@ import { generateSelect, Item } from './elements/Select';
 import { generateStringArray, StringArrayOptions } from './elements/StringArray';
 
 const logger = createLogger('components:dynamic-form');
+
+export * from './Videos';
+export * from './elements/Image';
 
 const FixedLoading = styled(({ className }) => (
   <div className={className}>
