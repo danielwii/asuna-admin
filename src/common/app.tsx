@@ -1,5 +1,6 @@
 import withRedux from 'next-redux-wrapper';
 import App from 'next/app';
+import Head from 'next/head';
 import React, { Component } from 'react';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
@@ -58,11 +59,20 @@ export const ReduxApp = withRedux(asunaStore.configureStore, { debug: false })(
         const { Component, pageProps, store } = this.props;
 
         return (
-          <Provider store={store}>
-            <PersistGate loading={null} persistor={store.__persistor}>
-              <Component {...pageProps} />
-            </PersistGate>
-          </Provider>
+          <>
+            <Head>
+              <link
+                href="data:image/x-icon;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQEAYAAABPYyMiAAAABmJLR0T///////8JWPfcAAAACXBIWXMAAABIAAAASABGyWs+AAAAF0lEQVRIx2NgGAWjYBSMglEwCkbBSAcACBAAAeaR9cIAAAAASUVORK5CYII="
+                rel="icon"
+                type="image/x-icon"
+              />
+            </Head>
+            <Provider store={store}>
+              <PersistGate loading={null} persistor={store.__persistor}>
+                <Component {...pageProps} />
+              </PersistGate>
+            </Provider>
+          </>
         );
       }
     },

@@ -6,7 +6,7 @@ import { jsx } from '@emotion/react';
 import { TextField } from '@material-ui/core';
 
 import { Button, Col, Divider, Row, Typography } from 'antd';
-import { DynamicJsonArrayTable, FormFieldDef, FormFields, ObjectArrayJsonTableHelper } from 'asuna-components';
+import { DynamicJsonArrayTable, FormFieldDef, FormFields, ObjectArrayJsonTableHelper } from '@danielwii/asuna-components';
 import { Field, FieldProps, Form, Formik, FormikValues } from 'formik';
 import 'highlight.js/styles/default.css';
 import * as _ from 'lodash';

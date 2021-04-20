@@ -1,5 +1,5 @@
 import { List, Tooltip } from 'antd';
-import { WithLoading, WithVariable } from 'asuna-components';
+import { WithLoading, WithVariable } from '@danielwii/asuna-components';
 import { Promise } from 'bluebird';
 import * as _ from 'lodash';
 import * as fp from 'lodash/fp';

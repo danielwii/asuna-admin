@@ -1,7 +1,7 @@
 import { InfoCircleOutlined } from '@ant-design/icons';
 
 import { Button, Col, Divider, Row, Typography } from 'antd';
-import { EasyForm, FormFields, WithLoading } from 'asuna-components';
+import { EasyForm, FormFields, WithLoading } from '@danielwii/asuna-components';
 import 'highlight.js/styles/default.css';
 import * as _ from 'lodash';
 import React from 'react';

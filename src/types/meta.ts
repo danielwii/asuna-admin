@@ -102,7 +102,7 @@ export interface EnumFilterMetaInfoOptions extends MetaInfoBaseOptions {
 
 export interface JSONMetaInfoOptions extends MetaInfoBaseOptions {
   type: 'SimpleJSON';
-  jsonType: 'string-array';
+  jsonType: 'string-array' | 'kv-array';
 }
 
 export interface AddressMetaInfoOptions extends MetaInfoBaseOptions {

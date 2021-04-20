@@ -3,7 +3,7 @@ import { GetFieldDecoratorOptions, WrappedFormUtils } from '@ant-design/compatib
 import { FIELD_DATA_PROP } from '@ant-design/compatible/lib/form/constants';
 
 import { Checkbox, DatePicker, Input, InputNumber, Switch, TimePicker } from 'antd';
-import { StringTmpl, WithVariable } from 'asuna-components';
+import { StringTmpl, WithVariable } from '@danielwii/asuna-components';
 import * as _ from 'lodash';
 import * as React from 'react';
 import JSONInput from 'react-json-editor-ajrm';

@@ -6,7 +6,7 @@ import { LinkOutlined, SearchOutlined } from '@ant-design/icons';
 import { jsx } from '@emotion/react';
 
 import { Badge, Button, Checkbox, Divider, Input, Modal, Popconfirm, Space, Statistic, Tag, Tooltip } from 'antd';
-import { PdfButton, WithFuture } from 'asuna-components';
+import { PdfButton, WithFuture } from '@danielwii/asuna-components';
 import { Promise } from 'bluebird';
 import * as deepDiff from 'deep-diff';
 import * as _ from 'lodash';
@@ -158,7 +158,7 @@ async function generateSearchColumnProps(
 
 type ModelOpts = { model: string; title?: string; ctx: Asuna.Schema.TableContext };
 type TextColumnOpts = {
-  mode?: 'html' | 'text' | 'button';
+  mode?: 'html' | 'json' | 'text' | 'button';
   /**
    * 用提供的转换器来转译
    */
@@ -212,6 +212,20 @@ export const columnHelper2 = {
               type="dashed"
               onClick={() =>
                 Modal.info({ maskClosable: true, content: <div dangerouslySetInnerHTML={{ __html: extracted }} /> })
+              }
+            >
+              预览
+            </Button>
+          ) : (
+            'n/a'
+          );
+        } else if (opts.mode === 'json') {
+          view = extracted ? (
+            <Button
+              size="small"
+              type="dashed"
+              onClick={() =>
+                Modal.info({ maskClosable: true, content: <div>{util.inspect(extracted)}</div> })
               }
             >
               预览

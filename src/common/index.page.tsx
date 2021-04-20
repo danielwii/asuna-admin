@@ -1,5 +1,5 @@
 import ApolloClient, { gql } from 'apollo-boost';
-import { LivingLoading } from 'asuna-components';
+import { LivingLoading } from '@danielwii/asuna-components';
 import { changeAntdTheme } from 'dynamic-antd-theme';
 import _ from 'lodash';
 import 'moment/locale/zh-cn';

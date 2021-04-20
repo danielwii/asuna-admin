@@ -1,5 +1,5 @@
 import { Button, Collapse, Descriptions, Empty, PageHeader, Tag, Tooltip } from 'antd';
-import { AssetPreview } from 'asuna-components';
+import { AssetPreview } from '@danielwii/asuna-components';
 import { Promise } from 'bluebird';
 import * as _ from 'lodash';
 import moment from 'moment';

@@ -1,6 +1,6 @@
 import { WrappedFormUtils } from '@ant-design/compatible/es/form/Form';
 
-import { IStringArrayProps, StringArray, WithVariable } from 'asuna-components';
+import { IStringArrayProps, StringArray, WithVariable } from '@danielwii/asuna-components';
 import * as React from 'react';
 
 import { generateComponent, horizontalFormItemLayout, IFormItemLayout } from '.';

@@ -1,6 +1,6 @@
 import { WrappedFormUtils } from '@ant-design/compatible/es/form/Form';
 
-import { IUploadedFile, IUploaderProps, Uploader, UploaderAdapter, WithVariable } from 'asuna-components';
+import { IUploadedFile, IUploaderProps, Uploader, UploaderAdapter, WithVariable } from '@danielwii/asuna-components';
 import { AxiosRequestConfig } from 'axios';
 import * as _ from 'lodash';
 import * as React from 'react';

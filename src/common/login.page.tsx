@@ -5,7 +5,7 @@
 import { jsx } from '@emotion/react';
 
 import ApolloClient, { gql } from 'apollo-boost';
-import { Snow } from 'asuna-components';
+import { Snow } from '@danielwii/asuna-components';
 import { changeAntdTheme } from 'dynamic-antd-theme';
 import * as _ from 'lodash';
 import fetch from 'node-fetch';

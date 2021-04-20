@@ -6,7 +6,7 @@ import { FormControl, FormHelperText } from '@material-ui/core';
 
 import * as antd from 'antd';
 import { Divider, Popconfirm } from 'antd';
-import { FormFieldDef, FormFieldsGroup, RenderInputComponent } from 'asuna-components';
+import { FormFieldDef, FormFieldsGroup, RenderInputComponent } from '@danielwii/asuna-components';
 import * as formik from 'formik';
 import * as _ from 'lodash';
 import * as React from 'react';

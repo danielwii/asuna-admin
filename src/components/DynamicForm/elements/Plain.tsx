@@ -1,6 +1,6 @@
 import { Form } from '@ant-design/compatible';
 
-import { AssetPreview } from 'asuna-components';
+import { AssetPreview } from '@danielwii/asuna-components';
 import * as _ from 'lodash';
 import * as React from 'react';
 

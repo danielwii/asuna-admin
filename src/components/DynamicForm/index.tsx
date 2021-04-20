@@ -9,7 +9,7 @@ import * as R from 'ramda';
 import * as React from 'react';
 import { useMemo } from 'react';
 import { CircleLoader, ScaleLoader } from 'react-spinners';
-import { useAsync } from 'react-use';
+import { useAsync, useLogger } from 'react-use';
 import VisualDiff from 'react-visual-diff';
 import styled from 'styled-components';
 import * as util from 'util';
@@ -41,6 +41,7 @@ import {
 import { generateAddress } from './elements/Address';
 import { generateFile, generateFiles } from './elements/Files';
 import { generateImage, generateImages, generateRichImage } from './elements/Image';
+import { generateKVArray } from './elements/KVArray';
 import { PlainImages } from './elements/Plain';
 import { generateSelect, Item } from './elements/Select';
 import { generateStringArray, StringArrayOptions } from './elements/StringArray';
@@ -196,7 +197,7 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
     };
     const defaultAssociation = { name: 'name', value: 'id', fields: ['id', 'name'] };
 
-    // console.log('[DynamicForm]', '[buildField]', { field, options, schema });
+    logger.log('[DynamicForm]', '[buildField]', field, { accessible: field?.options?.accessible });
 
     // all readonly or hidden field will rendered as plain component
     if (_.includes(['readonly'], field?.options?.accessible)) {
@@ -221,6 +222,8 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
       // return generatePlain({ text: <i>hidden</i>, ...(options as PlainOptions) });
       return null;
     }
+
+    logger.log('[DynamicForm]', '[buildField]', field, { options, schema });
 
     switch (field.type) {
       case DynamicFormTypes.Plain:
@@ -375,6 +378,9 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
       }
       case DynamicFormTypes.SimpleJSON: // TODO json-type is string-array
         logger.debug('[DynamicForm]', '[buildField][SimpleJSON]', field, options);
+        if ((options as any).jsonType === 'kv-array') {
+          return generateKVArray(form, { ...(options as any), items: field.value });
+        }
         return generateStringArray(form, {
           ...(options as any),
           items: field.value,
@@ -423,7 +429,7 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
     });
   };
 
-  logger.log('[DynamicForm]', '[render]');
+  logger.log('[DynamicForm]', '[render]', model, fields);
 
   // validateFields((errors, values) => console.log({ errors, values }));
   // remove fields which type is not included
@@ -632,7 +638,7 @@ class FormAnchor extends React.Component<IFormAnchorProps> {
       R.values,
       R.omit(['id']) as any,
       R.map<FormField & any, any>((field) => {
-        logger.log('[anchor]', field);
+        logger.trace('[anchor]', field);
         const noValue = R.isNil(field.value) || R.isEmpty(field.value) || false;
         // 目前使用的 RichText 在点击时会自动设置 value 为 '<p></p>'
         // (field.type === DynamicFormTypes.RichText) && field.value === '<p></p>'
@@ -670,31 +676,11 @@ interface IPureElementProps {
 
 const pureLogger = createLogger('components:dynamic-form:pure-element');
 
-class EnhancedPureElement extends React.Component<IPureElementProps> {
-  shouldComponentUpdate(nextProps: Readonly<IPureElementProps>, nextState: Readonly<{}>, nextContext: any): boolean {
-    pureLogger.log('[EnhancedPureElement][shouldComponentUpdate]', nextProps.field, nextState);
-    const isRequired = R.path(['options', 'required'])(nextProps.field) as boolean;
-    const propsDiff = diff(this.props, nextProps, { exclude: ['builder'] });
-    const stateDiff = diff(this.state, nextState);
-    const shouldUpdate = isRequired || propsDiff.isDifferent || stateDiff.isDifferent;
-    pureLogger.log('[EnhancedPureElement][shouldComponentUpdate]', { isRequired }, propsDiff, stateDiff);
-    if (shouldUpdate) {
-      pureLogger.debug(
-        '[EnhancedPureElement][shouldComponentUpdate]',
-        { nextProps, nextState, propsDiff, stateDiff, isRequired, props: this.props, state: this.state },
-        shouldUpdate,
-      );
-    }
-    pureLogger.log('[EnhancedPureElement][shouldComponentUpdate]', { stateDiff, propsDiff, isRequired }, shouldUpdate);
-    return shouldUpdate;
-  }
-
-  render() {
-    const { field, builder } = this.props;
-    pureLogger.log('[EnhancedPureElement][render]', { props: this.props, state: this.state });
-
-    // options.accessible = 'hidden' 时需要隐藏该元素
+const EnhancedPureElement: React.FC<IPureElementProps> = React.memo(
+  ({ field, builder }) => {
     const hidden = (field as DynamicFormField)?.options?.accessible === 'hidden';
+
+    pureLogger.log('[render]', field, { hidden });
 
     if (hidden) return null;
 
@@ -716,5 +702,14 @@ class EnhancedPureElement extends React.Component<IPureElementProps> {
         `}</style>
       </>
     );
-  }
-}
+  },
+  (prevProps, nextProps) => {
+    const isRequired = R.path(['options', 'required'])(nextProps.field) as boolean;
+    const propsDiff = diff(prevProps, nextProps, { exclude: ['builder'] });
+    const shouldUpdate = isRequired || propsDiff.isDifferent;
+    if (shouldUpdate && !isRequired) {
+      pureLogger.log('[propsAreEqual]', nextProps, propsDiff);
+    }
+    return !shouldUpdate;
+  },
+);

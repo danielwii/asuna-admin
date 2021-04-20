@@ -7,7 +7,7 @@ import { createStyles, Theme } from '@material-ui/core';
 
 import { Avatar, Tooltip } from 'antd';
 import { gql } from 'apollo-boost';
-import { WithFuture, WithVariable } from 'asuna-components';
+import { WithFuture, WithVariable } from '@danielwii/asuna-components';
 import * as _ from 'lodash';
 import * as React from 'react';
 
