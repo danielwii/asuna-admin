@@ -42,6 +42,7 @@ export type SelectOptions = {
   getValue: (record) => string;
   withSortTree: boolean;
   filterType?: 'Sort';
+  onInit?: () => Promise<Item[]>;
   onSearch?: (value: string, cb: (items: Item[]) => void) => any;
   enumSelector: { name?: string; value?: string };
   relation?: 'ManyToOne' | 'ManyToMany' | 'OneToMany' | 'OneToOne';
@@ -93,6 +94,7 @@ export function generateSelect<T>(
     getName = R.prop('name'),
     getValue = R.prop('value'),
     withSortTree = false,
+    onInit,
     onSearch,
     enumSelector = {},
     relation,
@@ -117,6 +119,12 @@ export function generateSelect<T>(
         loading: false,
         extraName: '',
       };
+
+      if (onInit) {
+        onInit()
+          .then((items) => this.setState({ existItems: _.uniq([...items, ...(existItems ?? [])]) }))
+          .catch(logger.error);
+      }
     }
 
     _getAllItems = () => {
@@ -261,15 +269,17 @@ export function generateSelect<T>(
       }
     };
 
-    _onExtraNameChange = (event) => !_.isEmpty(event.target.value) && this.setState({ extraName: event.target.value });
+    _onExtraNameChange = (event) => this.setState({ extraName: event.target.value });
 
     _addItem = () => {
-      this.setState({
-        filterItems: _.compact([
-          ...this.state.filterItems,
-          { key: this.state.extraName, value: this.state.extraName },
-        ]) as any,
-      });
+      !_.isEmpty(this.state.extraName) &&
+        this.setState({
+          filterItems: _.compact([
+            ...this.state.filterItems,
+            { key: this.state.extraName, value: this.state.extraName },
+          ]) as any,
+        });
+      this.setState({ extraName: '' });
     };
 
     componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {

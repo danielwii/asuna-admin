@@ -1,6 +1,4 @@
 import { Form } from '@ant-design/compatible';
-import type { FormComponentProps } from '@ant-design/compatible/es/form';
-import type { WrappedFormUtils } from '@ant-design/compatible/es/form/Form';
 import { Paper } from '@material-ui/core';
 
 import { Affix, Anchor, Button, Col, Divider, List, Popconfirm, Row, Tag } from 'antd';
@@ -16,14 +14,13 @@ import VisualDiff from 'react-visual-diff';
 import styled from 'styled-components';
 import * as util from 'util';
 
-import { adminProxyCaller } from '../../adapters';
+import { adminProxyCaller, modelProxyCaller } from '../../adapters';
 import { DrawerButton, parseAddressStr } from '../../components';
 import { DebugInfo, diff, parseString, useAsunaDrafts } from '../../helpers';
 import { WithDebugInfo } from '../../helpers/debug';
 import { createLogger } from '../../logger';
 import { SchemaHelper } from '../../schema';
 import { Asuna } from '../../types';
-import type { EnumFilterMetaInfoOptions, MetaInfoOptions } from '../../types/meta';
 import {
   generateAuthorities,
   generateCheckbox,
@@ -47,6 +44,10 @@ import { generateImage, generateImages, generateRichImage } from './elements/Ima
 import { PlainImages } from './elements/Plain';
 import { generateSelect, Item } from './elements/Select';
 import { generateStringArray, StringArrayOptions } from './elements/StringArray';
+
+import type { FormComponentProps } from '@ant-design/compatible/es/form';
+import type { WrappedFormUtils } from '@ant-design/compatible/es/form/Form';
+import type { EnumFilterMetaInfoOptions, MetaInfoOptions } from '../../types/meta';
 
 const logger = createLogger('components:dynamic-form');
 
@@ -304,10 +305,10 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
       }
       case DynamicFormTypes.Enum:
       case DynamicFormTypes.EditableEnum:
-      //   // --------------------------------------------------------------
-      //   // Enum / RelationShip
-      //   // --------------------------------------------------------------
-      //   logger.debug('[DynamicForm]', '[buildField][Enum]', field);
+        // --------------------------------------------------------------
+        // Enum / RelationShip
+        // --------------------------------------------------------------
+        logger.debug('[DynamicForm]', '[buildField][EditableEnum]', { model }, field);
       //   const items = R.path(['options', 'enumData'])(field);
       //   return generateSelect(form, {
       //     ...options,
@@ -316,6 +317,19 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
       //   } as SelectOptions);
       // }
       case DynamicFormTypes.EnumFilter: {
+        let onInit;
+        if (field.type === DynamicFormTypes.EditableEnum) {
+          onInit = async (): Promise<Item[]> => {
+            try {
+              const existItems = await modelProxyCaller().uniq(model, field.name);
+              logger.debug('[DynamicForm]', '[buildField][EditableEnum]', field, { existItems });
+              return _.map(existItems, (key) => ({ value: key, key }));
+            } catch (reason) {
+              logger.error('[DynamicForm]', '[buildField][EditableEnum]', reason);
+              return [];
+            }
+          };
+        }
         // --------------------------------------------------------------
         // EnumFilter|Enum / RelationShip
         // --------------------------------------------------------------
@@ -326,6 +340,7 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
         logger.log('[DynamicForm]', '[buildField][EnumFilter|Enum]', { type, items });
         return generateSelect(form, {
           ...(options as any),
+          onInit,
           items,
           getName: R.prop('key'),
           editable: field.type === DynamicFormTypes.EditableEnum,
