@@ -1,4 +1,6 @@
-import { KvArray, KvArrayItem, KvArrayProps, WithVariable } from '@danielwii/asuna-components';
+import { KvArray, KvArrayItem, KvArrayProps } from '@danielwii/asuna-components';
+import { WithVariable } from '@danielwii/asuna-components/dist/helper/helper';
+
 import * as React from 'react';
 
 import { generateComponent, horizontalFormItemLayout, IFormItemLayout } from '.';

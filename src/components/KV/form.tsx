@@ -1,6 +1,7 @@
 import { InfoCircleOutlined } from '@ant-design/icons';
 
-import { EasyForm, WithLoading } from '@danielwii/asuna-components';
+import { EasyForm } from '@danielwii/asuna-components';
+import { WithLoading } from '@danielwii/asuna-components/dist/helper/helper';
 
 import { Button, Col, Divider, Row, Typography } from 'antd';
 import 'highlight.js/styles/default.css';
@@ -74,7 +75,7 @@ export function FormKVComponent(props: {
           <Divider />
           <Row gutter={16}>
             <Col span={18}>
-              <EasyForm
+              <EasyForm.Form
                 initialValues={initialValues}
                 fields={fieldValues}
                 onSubmit={(values) => KVHelper.save({ key, collection }, { ...body, values }, refetch)}

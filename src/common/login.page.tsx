@@ -5,7 +5,7 @@
 import { jsx } from '@emotion/react';
 
 import ApolloClient, { gql } from 'apollo-boost';
-import { Snow } from '@danielwii/asuna-components';
+import { Weather } from '@danielwii/asuna-components';
 import { changeAntdTheme } from 'dynamic-antd-theme';
 import * as _ from 'lodash';
 import fetch from 'node-fetch';
@@ -80,7 +80,7 @@ export const LoginPageView: React.FC<ILoginPageProps> = (props) => {
       <StyledFullFlexContainer>
         {!hideCharacteristics && (
           <React.Fragment>
-            <Snow color={site?.primaryColor?.hex} />
+            <Weather.Snow color={site?.primaryColor?.hex} />
             {/*
               <Sun />
               <StyledLogoWrapper>

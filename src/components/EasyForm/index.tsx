@@ -1,11 +1,11 @@
 import { FormControl, FormHelperText } from '@material-ui/core';
 
-import { RenderInputComponent } from '@danielwii/asuna-components';
+import { EasyForm } from '@danielwii/asuna-components';
 
 import * as antd from 'antd';
 import { Divider, Popconfirm } from 'antd';
 import * as formik from 'formik';
-import * as _ from 'lodash';
+import _ from 'lodash';
 import * as React from 'react';
 import Highlight from 'react-highlight';
 
@@ -73,7 +73,7 @@ const GroupInnerForm = (props: GroupEasyFormProps & formik.FormikProps<formik.Fo
                         <FormControl error={hasError} fullWidth={true}>
                           {/*<InputLabel htmlFor={field.name}>{field.name} / {fieldDef.name}</InputLabel>*/}
                           {/*<Input id={field.name} type={formField.type} {...field} value={value} />*/}
-                          <RenderInputComponent form={form} fieldDef={fieldDef} field={field as any} value={value} />
+                          <EasyForm.RenderInputComponent form={form} fieldDef={fieldDef} field={field as any} value={value} />
                           {formField.help && <FormHelperText>{formField.help}</FormHelperText>}
                           {hasError && <FormHelperText>{form.errors[formField.name]}</FormHelperText>}
                           <Divider type="horizontal" style={{ margin: '0.5rem 0' }} />

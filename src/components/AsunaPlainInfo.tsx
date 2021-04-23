@@ -1,5 +1,6 @@
+import { WithLoading, WithVariable } from '@danielwii/asuna-components/dist/helper/helper';
+
 import { List, Tooltip } from 'antd';
-import { WithLoading, WithVariable } from '@danielwii/asuna-components';
 import { Promise } from 'bluebird';
 import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
@@ -11,9 +12,10 @@ import VisualDiff from 'react-visual-diff';
 import { AppContext, AsunaDefinitions } from '../core';
 import { parseString, TooltipContent, WithDebugInfo } from '../helpers';
 import { SchemaHelper } from '../schema';
-import { EnumFilterMetaInfoOptions } from '../types';
 import { DynamicFormTypes } from './DynamicForm';
 import { AssetsPreview } from './Snippet';
+
+import type { EnumFilterMetaInfoOptions } from '../types';
 
 export interface AsunaPlainObjectProps {
   modelName: string;

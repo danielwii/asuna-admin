@@ -5,15 +5,7 @@ module.exports = (api) => {
 
   return {
     presets: [
-      [
-        'next/babel',
-        {
-          'preset-env': {},
-          'plugin-transform-runtime': {},
-          'styled-jsx': {},
-          'class-properties': {},
-        },
-      ],
+      ['next/babel', { 'preset-env': {}, 'plugin-transform-runtime': {}, 'styled-jsx': {}, 'class-properties': {} }],
       '@emotion/babel-preset-css-prop',
     ],
     plugins: [
@@ -25,49 +17,8 @@ module.exports = (api) => {
       // fix Error: StyleSheet: `insertRule` accepts only strings
       // ['styled-components', { ssr: true, displayName: true, preprocess: false }],
       ['import', { libraryName: 'antd', style: false }, 'import-antd'],
-      ['import', { libraryName: '@danielwii/asuna-components' }, 'import-components'],
-      ['import', { libraryName: '@danielwii/asuna-components-pro' }, 'import-components-pro'],
-      // [
-      //   'import',
-      //   // { libraryName: '@material-ui/core', customName: name => { return `test/lib/${name}`; } },
-      //   // { libraryName: '@material-ui/core', libraryDirectory: '', camel2DashComponentName: false },
-      // ],
-      // [
-      //   'import',
-      //   { libraryName: 'lodash', libraryDirectory: '', camel2DashComponentName: false },
-      //   'import-lodash',
-      // ],
-      /*
-      [
-        'module-resolver',
-        {
-          root: ['src', 'lib/esm'],
-          alias: { '@asuna-admin': '.' },
-          resolvePath(sourcePath, currentFile, opts) {
-            for (const prefix of Object.keys(opts.alias)) {
-              if (sourcePath.startsWith(prefix)) {
-                for (const root of opts.root) {
-                  if (currentFile.includes(root)) {
-                    // console.log({ prefix, root, sourcePath, currentFile });
-
-                    const current = currentFile.slice(currentFile.indexOf(root) + root.length + 1);
-                    const distance = current.match(/\//g).length;
-
-                    const relatedPrefix = new Array(distance).fill('../').join('');
-
-                    const resolved = relatedPrefix + sourcePath.slice(prefix.length + 1);
-
-                    // console.log({ current, resolved, relatedPrefix });
-                    return resolved;
-                  }
-                }
-              }
-            }
-
-            return sourcePath;
-          },
-        },
-      ],*/
+      ['import', { libraryName: '@danielwii/asuna-components', libraryDirectory: 'dist' }, 'import-components'],
+      // ['import', { libraryName: '@danielwii/asuna-components-pro', libraryDirectory: 'dist' }, 'import-components-pro'],
     ],
     comments: false,
     compact: 'auto',

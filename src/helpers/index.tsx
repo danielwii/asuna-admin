@@ -5,8 +5,10 @@ import { LinkOutlined, SearchOutlined } from '@ant-design/icons';
 // noinspection ES6UnusedImports
 import { jsx } from '@emotion/react';
 
+import { PreviewButton } from '@danielwii/asuna-components';
+import { WithFuture } from '@danielwii/asuna-components/dist/helper/helper';
+
 import { Badge, Button, Checkbox, Divider, Input, Modal, Popconfirm, Space, Statistic, Tag, Tooltip } from 'antd';
-import { PreviewButton, WithFuture } from '@danielwii/asuna-components';
 import { Promise } from 'bluebird';
 import * as deepDiff from 'deep-diff';
 import * as _ from 'lodash';
@@ -224,9 +226,7 @@ export const columnHelper2 = {
             <Button
               size="small"
               type="dashed"
-              onClick={() =>
-                Modal.info({ maskClosable: true, content: <div>{util.inspect(extracted)}</div> })
-              }
+              onClick={() => Modal.info({ maskClosable: true, content: <div>{util.inspect(extracted)}</div> })}
             >
               预览
             </Button>
@@ -253,7 +253,10 @@ export const columnHelper2 = {
     };
   },
   generatePdf: async (key, modelOpts: ModelOpts, opts: TextColumnOpts = {}): Promise<ColumnProps<any>> =>
-    columnHelper2.generate(key, modelOpts, { ...opts, render: (content, record) => <PreviewButton.PdfButton pdf={content} /> }),
+    columnHelper2.generate(key, modelOpts, {
+      ...opts,
+      render: (content, record) => <PreviewButton.PdfButton pdf={content} />,
+    }),
   /**
    * 生成预览小图
    */

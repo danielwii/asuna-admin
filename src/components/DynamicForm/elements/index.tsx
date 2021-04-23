@@ -1,9 +1,10 @@
 import { Form } from '@ant-design/compatible';
-import { GetFieldDecoratorOptions, WrappedFormUtils } from '@ant-design/compatible/es/form/Form';
 import { FIELD_DATA_PROP } from '@ant-design/compatible/lib/form/constants';
 
+import { StringTmpl } from '@danielwii/asuna-components';
+import { WithVariable } from '@danielwii/asuna-components/dist/helper/helper';
+
 import { Checkbox, DatePicker, Input, InputNumber, Switch, TimePicker } from 'antd';
-import { StringTmpl, WithVariable } from '@danielwii/asuna-components';
 import * as _ from 'lodash';
 import * as React from 'react';
 import JSONInput from 'react-json-editor-ajrm';
@@ -15,7 +16,9 @@ import { Config } from '../../../config';
 import { createLogger } from '../../../logger';
 import { Authorities } from '../Authorities';
 import { VideoUploader } from '../Videos';
-import { FormComponentProps } from './interfaces';
+
+import type { FormComponentProps } from './interfaces';
+import type { GetFieldDecoratorOptions, WrappedFormUtils } from '@ant-design/compatible/es/form/Form';
 
 const logger = createLogger('components:dynamic-form:elements');
 

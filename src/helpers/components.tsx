@@ -5,9 +5,10 @@ import { useQuery } from '@apollo/react-hooks';
 import { css, jsx } from '@emotion/react';
 import { createStyles, Theme } from '@material-ui/core';
 
+import { WithFuture, WithVariable } from '@danielwii/asuna-components/dist/helper/helper';
+
 import { Avatar, Tooltip } from 'antd';
 import { gql } from 'apollo-boost';
-import { WithFuture, WithVariable } from '@danielwii/asuna-components';
 import * as _ from 'lodash';
 import * as React from 'react';
 

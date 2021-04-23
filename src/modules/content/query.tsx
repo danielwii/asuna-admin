@@ -69,7 +69,7 @@ const ContentSearch: React.FC<ModulesLoaderProps> = (props) => {
       {/*<pre>{util.inspect(fields)}</pre>*/}
 
       <PageHeader title={pane.title}>
-        <EasyForm
+        <EasyForm.Form
           initialValues={{}}
           fields={fields}
           onSubmit={async (values) => {

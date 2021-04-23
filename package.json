@@ -164,7 +164,6 @@
     "babel-jest": "^26.6.3",
     "babel-loader": "^8.2.2",
     "babel-plugin-import": "^1.13.3",
-    "babel-plugin-module-resolver": "^4.1.0",
     "babel-plugin-styled-components": "^1.12.0",
     "glob": "^7.1.6",
     "husky": "^6.0.0",

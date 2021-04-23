@@ -1,8 +1,7 @@
-import { WrappedFormUtils } from '@ant-design/compatible/es/form/Form';
+import { Uploader } from '@danielwii/asuna-components';
+import { WithVariable } from '@danielwii/asuna-components/dist/helper/helper';
 
-import { IUploadedFile, IUploaderProps, Uploader, UploaderAdapter, WithVariable } from '@danielwii/asuna-components';
-import { AxiosRequestConfig } from 'axios';
-import * as _ from 'lodash';
+import _ from 'lodash';
 import * as React from 'react';
 import { useLogger } from 'react-use';
 
@@ -11,7 +10,15 @@ import { Config } from '../../../config';
 import { upload, validateFile } from '../../../helpers/upload';
 import { createLogger } from '../../../logger';
 import { ImageTrivia } from '../ImageTrivia';
-import { FormComponentProps } from './interfaces';
+
+import type {
+  IUploadedFile,
+  IUploaderProps,
+  UploaderAdapter,
+} from '@danielwii/asuna-components/dist/uploader/uploader';
+import type { WrappedFormUtils } from '@ant-design/compatible/es/form/Form';
+import type { AxiosRequestConfig } from 'axios';
+import type { FormComponentProps } from './interfaces';
 
 const logger = createLogger('components:dynamic-form:image');
 
@@ -22,7 +29,7 @@ const UploaderHOC: React.FC<Partial<FormComponentProps> & Partial<IUploaderProps
       {(props) => {
         useLogger('generateImages', props);
         const uploadOpts = _.get(props, 'data-__field.options.uploadOpts');
-        return <Uploader adapter={new FileUploaderAdapterImpl(uploadOpts)} {...props} />;
+        return <Uploader.Component adapter={new FileUploaderAdapterImpl(uploadOpts)} {...props} />;
       }}
     </WithVariable>
   );
