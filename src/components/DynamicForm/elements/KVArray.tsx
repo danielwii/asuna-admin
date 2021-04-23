@@ -1,4 +1,4 @@
-import { KVArray, KVArrayItem, KVArrayProps, WithVariable } from '@danielwii/asuna-components';
+import { KvArray, KvArrayItem, KvArrayProps, WithVariable } from '@danielwii/asuna-components';
 import * as React from 'react';
 
 import { generateComponent, horizontalFormItemLayout, IFormItemLayout } from '.';
@@ -12,16 +12,16 @@ export type KVArrayOptions = {
   key: string;
   name: string;
   label: string;
-  items: KVArrayItem[];
-  onChange: (items: KVArrayItem[]) => void;
+  items: KvArrayItem[];
+  onChange: (items: KvArrayItem[]) => void;
   mode?: 'input' | 'tag';
 };
 
-const KVArrayHOC: React.FC<Partial<FormComponentProps> & Partial<KVArrayProps>> = (props) => {
-  // useLogger(`KVArray(key=${KVArrayHOC.name})`, props);
+const KVArrayHOC: React.FC<Partial<FormComponentProps> & Partial<KvArrayProps>> = (props) => {
+  // useLogger(`KvArray(key=${KVArrayHOC.name})`, props);
   return (
-    <WithVariable variable={props as FormComponentProps & KVArrayProps}>
-      {(props) => <KVArray {...props} onChange={(items) => props.onChange(items)} />}
+    <WithVariable variable={props as FormComponentProps & KvArrayProps}>
+      {(props) => <KvArray {...props} onChange={(items) => props.onChange(items)} />}
     </WithVariable>
   );
 };

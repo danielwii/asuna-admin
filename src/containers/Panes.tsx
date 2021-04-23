@@ -1,8 +1,7 @@
-import { AppContext } from '@danielwii/asuna-admin';
-
 import * as React from 'react';
 
 import { PanesView } from '../components';
+import { AppContext } from '../core';
 import { useSharedPanesFunc, useSharedPanesGlobalValue } from '../store/panes.global';
 
 const PanesViewContainer: React.FC = (props) => {

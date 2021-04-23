@@ -1,15 +1,12 @@
-/** @jsxRuntime classic */
-
-/** @jsx jsx */
 import { InfoCircleOutlined } from '@ant-design/icons';
-import { jsx } from '@emotion/react';
 import { TextField } from '@material-ui/core';
 
+import { TableHelper } from '@danielwii/asuna-components';
+
 import { Button, Col, Divider, Row, Typography } from 'antd';
-import { DynamicJsonArrayTable, FormFieldDef, FormFields, ObjectArrayJsonTableHelper } from '@danielwii/asuna-components';
 import { Field, FieldProps, Form, Formik, FormikValues } from 'formik';
 import 'highlight.js/styles/default.css';
-import * as _ from 'lodash';
+import _ from 'lodash';
 import React, { useEffect, useState } from 'react';
 import Highlight from 'react-highlight';
 import { FoldingCube } from 'styled-spinkit';
@@ -19,7 +16,11 @@ import { AppContext } from '../../core';
 import { KVHelper, WithDebugInfo } from '../../helpers';
 import { createLogger } from '../../logger';
 
+import type { FormFieldDef, FormFields } from '@danielwii/asuna-components/dist/easy-form/interfaces';
+
 const logger = createLogger('components:kv-form:form');
+
+const { ObjectArrayJsonTableHelper, DynamicJsonArrayTable } = TableHelper;
 
 export function ListKVComponent(props: {
   kvCollection?: string;

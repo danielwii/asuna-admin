@@ -1,5 +1,7 @@
+import { EasyForm } from '@danielwii/asuna-components';
+import { FormFieldType } from '@danielwii/asuna-components/dist/easy-form/interfaces';
+
 import { Divider, PageHeader } from 'antd';
-import { EasyForm, FormFieldType } from '@danielwii/asuna-components';
 import 'highlight.js/styles/default.css';
 import * as _ from 'lodash';
 import * as fp from 'lodash/fp';

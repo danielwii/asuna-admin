@@ -1,10 +1,10 @@
-import { Asuna, Pane } from '@danielwii/asuna-admin';
-
-import * as _ from 'lodash';
+import _ from 'lodash';
 import * as R from 'ramda';
 import { createGlobalState } from 'react-use';
 
+import type { Asuna } from '../types';
 import type { IHookStateSetAction } from 'react-use/lib/misc/hookState';
+import type { Pane } from '../components';
 
 export interface PanesState {
   activeKey?: string;

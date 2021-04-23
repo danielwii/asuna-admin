@@ -1,7 +1,8 @@
 import { InfoCircleOutlined } from '@ant-design/icons';
 
+import { EasyForm, WithLoading } from '@danielwii/asuna-components';
+
 import { Button, Col, Divider, Row, Typography } from 'antd';
-import { EasyForm, FormFields, WithLoading } from '@danielwii/asuna-components';
 import 'highlight.js/styles/default.css';
 import * as _ from 'lodash';
 import React from 'react';
@@ -12,6 +13,8 @@ import * as util from 'util';
 import { AppContext } from '../../core';
 import { KVHelper } from '../../helpers';
 import { createLogger } from '../../logger';
+
+import type { FormFields } from '@danielwii/asuna-components/dist/easy-form/interfaces';
 
 const logger = createLogger('components:kv-form:form');
 

@@ -25,6 +25,8 @@ module.exports = (api) => {
       // fix Error: StyleSheet: `insertRule` accepts only strings
       // ['styled-components', { ssr: true, displayName: true, preprocess: false }],
       ['import', { libraryName: 'antd', style: false }, 'import-antd'],
+      ['import', { libraryName: '@danielwii/asuna-components' }, 'import-components'],
+      ['import', { libraryName: '@danielwii/asuna-components-pro' }, 'import-components-pro'],
       // [
       //   'import',
       //   // { libraryName: '@material-ui/core', customName: name => { return `test/lib/${name}`; } },
@@ -35,6 +37,7 @@ module.exports = (api) => {
       //   { libraryName: 'lodash', libraryDirectory: '', camel2DashComponentName: false },
       //   'import-lodash',
       // ],
+      /*
       [
         'module-resolver',
         {
@@ -64,7 +67,7 @@ module.exports = (api) => {
             return sourcePath;
           },
         },
-      ],
+      ],*/
     ],
     comments: false,
     compact: 'auto',

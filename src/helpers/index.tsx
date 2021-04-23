@@ -6,7 +6,7 @@ import { LinkOutlined, SearchOutlined } from '@ant-design/icons';
 import { jsx } from '@emotion/react';
 
 import { Badge, Button, Checkbox, Divider, Input, Modal, Popconfirm, Space, Statistic, Tag, Tooltip } from 'antd';
-import { PdfButton, WithFuture } from '@danielwii/asuna-components';
+import { PreviewButton, WithFuture } from '@danielwii/asuna-components';
 import { Promise } from 'bluebird';
 import * as deepDiff from 'deep-diff';
 import * as _ from 'lodash';
@@ -253,7 +253,7 @@ export const columnHelper2 = {
     };
   },
   generatePdf: async (key, modelOpts: ModelOpts, opts: TextColumnOpts = {}): Promise<ColumnProps<any>> =>
-    columnHelper2.generate(key, modelOpts, { ...opts, render: (content, record) => <PdfButton pdf={content} /> }),
+    columnHelper2.generate(key, modelOpts, { ...opts, render: (content, record) => <PreviewButton.PdfButton pdf={content} /> }),
   /**
    * 生成预览小图
    */
