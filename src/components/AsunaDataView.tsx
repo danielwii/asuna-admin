@@ -1,5 +1,6 @@
+import { PreviewButton } from '@danielwii/asuna-components';
+
 import { Button, Collapse, Descriptions, Empty, PageHeader, Tag, Tooltip } from 'antd';
-import { AssetPreview } from '@danielwii/asuna-components';
 import { Promise } from 'bluebird';
 import * as _ from 'lodash';
 import moment from 'moment';
@@ -271,7 +272,7 @@ function renderValue({
     );
 */
   } else if (type === DynamicFormTypes.Image) {
-    return <AssetPreview url={value} />;
+    return <PreviewButton.AssetPreview url={value} />;
   } else if (type === DynamicFormTypes.Images) {
     return <AssetsPreview urls={value} clearStyle />;
   } else if (_.isDate(value) || type === DynamicFormTypes.Date || type === DynamicFormTypes.DateTime) {

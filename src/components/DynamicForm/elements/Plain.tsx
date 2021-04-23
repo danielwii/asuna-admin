@@ -1,6 +1,7 @@
 import { Form } from '@ant-design/compatible';
 
-import { AssetPreview } from '@danielwii/asuna-components';
+import { PreviewButton } from '@danielwii/asuna-components';
+
 import * as _ from 'lodash';
 import * as React from 'react';
 
@@ -24,7 +25,7 @@ export function PlainImages({ options, formItemLayout }: IPlainImagesProps) {
   return (
     <Form.Item key={fieldName} {...(formItemLayout || horizontalFormItemLayout)} label={labelName} help={help}>
       {_.map(assets, (asset) => (
-        <AssetPreview key={asset} url={asset} showPdf fullWidth />
+        <PreviewButton.AssetPreview key={asset} url={asset} showPdf fullWidth />
       ))}
     </Form.Item>
   );

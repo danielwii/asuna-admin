@@ -3,7 +3,8 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/react';
 
-import { AssetPreview } from '@danielwii/asuna-components';
+import { PreviewButton } from '@danielwii/asuna-components';
+
 import * as _ from 'lodash';
 import dynamic from 'next/dynamic';
 import React from 'react';
@@ -51,7 +52,7 @@ export function AssetsPreview({ host, urls, showPdf, clearStyle }: IAssetsPrevie
       {_.map(parsed, (url, index) => (
         <div key={`viewer-${index}`} style={{ display: 'inline-block' }}>
           <ReactViewer index={index} images={parsed.map((url) => ({ src: url, downloadUrl: url }))}>
-            <AssetPreview key={url} host={host} url={url} showPdf={showPdf} />
+            <PreviewButton.AssetPreview key={url} host={host} url={url} showPdf={showPdf} />
           </ReactViewer>
           <TooltipContent value={url} link />
         </div>
