@@ -1,7 +1,10 @@
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { TextField } from '@material-ui/core';
 
-import { TableHelper } from '@danielwii/asuna-components';
+import {
+  DynamicJsonArrayTable,
+  ObjectArrayJsonTableHelper,
+} from '@danielwii/asuna-components/dist/table-helper/dynamic-json-array-table';
 
 import { Button, Col, Divider, Row, Typography } from 'antd';
 import { Field, FieldProps, Form, Formik, FormikValues } from 'formik';
@@ -19,8 +22,6 @@ import { createLogger } from '../../logger';
 import type { FormFieldDef, FormFields } from '@danielwii/asuna-components/dist/easy-form/interfaces';
 
 const logger = createLogger('components:kv-form:form');
-
-const { ObjectArrayJsonTableHelper, DynamicJsonArrayTable } = TableHelper;
 
 export function ListKVComponent(props: {
   kvCollection?: string;
