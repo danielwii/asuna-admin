@@ -257,6 +257,19 @@ export const columnHelper2 = {
       ...opts,
       render: (content, record) => <PreviewButton.PdfButton pdf={content} />,
     }),
+  generateLang: async (key, modelOpts: ModelOpts, opts: TextColumnOpts = {}): Promise<ColumnProps<any>> =>
+    columnHelper2.generate(key, modelOpts, {
+      ...opts,
+      render: (content, record) => {
+        if (content === 'cn') {
+          return <div>🇨🇳{content}</div>;
+        } else if (content === 'en') {
+          return <div>🇺🇸{content}</div>;
+        } else {
+          return <div>{content}</div>;
+        }
+      },
+    }),
   /**
    * 生成预览小图
    */
@@ -656,33 +669,36 @@ export const columnHelper = {
    */
   generateSwitch: async (
     key,
-    { title, ctx }: ModelOpts,
+    { model, title, ctx }: ModelOpts,
     extras: Asuna.Schema.RecordRenderExtras,
-  ): Promise<ColumnProps<any>> => ({
-    title,
-    dataIndex: castModelKey(key),
-    key: castModelKey(key),
-    ...(await generateSearchColumnProps(castModelKey(key), ctx.onSearch, 'boolean')),
-    render: (isActive, record) => {
-      const primaryKey = AppContext.adapters.models.getPrimaryKey(extras.modelName);
-      const id = _.get(record, primaryKey);
-      const component = extras.readonly ? (
-        <Checkbox checked={isActive} disabled={true} />
-      ) : (
-        <Popconfirm
-          title={isActive ? `是否注销: ${id}` : `是否激活: ${id}`}
-          onConfirm={async () => {
-            // const { modelProxy } = require('../adapters');
-            await AppContext.adapters.models.upsert(extras.modelName, { body: { id, [key]: !isActive } });
-            extras.callRefresh();
-          }}
-        >
-          <Checkbox checked={isActive} />
-        </Popconfirm>
-      );
-      return extras.tips ? <Tooltip title={extras.tips}>{component}</Tooltip> : component;
-    },
-  }),
+  ): Promise<ColumnProps<any>> => {
+    const columnInfo = model ? await SchemaHelper.getColumnInfo(model, key) : undefined;
+    return {
+      title: title ?? columnInfo?.config?.info?.name ?? key,
+      dataIndex: castModelKey(key),
+      key: castModelKey(key),
+      ...(await generateSearchColumnProps(castModelKey(key), ctx.onSearch, 'boolean')),
+      render: (isActive, record) => {
+        const primaryKey = AppContext.adapters.models.getPrimaryKey(extras.modelName);
+        const id = _.get(record, primaryKey);
+        const component = extras.readonly ? (
+          <Checkbox checked={isActive} disabled={true} />
+        ) : (
+          <Popconfirm
+            title={isActive ? `是否注销: ${id}` : `是否激活: ${id}`}
+            onConfirm={async () => {
+              // const { modelProxy } = require('../adapters');
+              await AppContext.adapters.models.upsert(extras.modelName, { body: { id, [key]: !isActive } });
+              extras.callRefresh();
+            }}
+          >
+            <Checkbox checked={isActive} />
+          </Popconfirm>
+        );
+        return extras.tips ? <Tooltip title={extras.tips}>{component}</Tooltip> : component;
+      },
+    };
+  },
 };
 
 export const asunaColumnHelper = {
@@ -721,7 +737,7 @@ export const commonColumns = {
   fpNameEn: fpColumnCreator('英文名称', { searchType: 'like' }),
   fpEmail: fpColumnCreator('Email', { searchType: 'like' }),
   fpType: fpColumnCreator('类型'),
-  fpLang: fpColumnCreator('语言', { searchType: 'list' }),
+  // fpLang: fpColumnCreator('语言', { searchType: 'list' }),
   fpCategory: (model) =>
     columnHelper.fpGenerateRelation('category', '分类', { transformer: 'name', filterType: 'list' }),
   fpEduType: fpColumnCreator('类型'),
