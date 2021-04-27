@@ -261,7 +261,7 @@ export const columnHelper2 = {
     columnHelper2.generate(key, modelOpts, {
       ...opts,
       render: (content, record) => {
-        if (content === 'cn') {
+        if (content === 'zh') {
           return <div>🇨🇳{content}</div>;
         } else if (content === 'en') {
           return <div>🇺🇸{content}</div>;
