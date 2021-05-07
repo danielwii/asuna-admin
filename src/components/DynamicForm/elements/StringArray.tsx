@@ -1,5 +1,5 @@
-import { IStringArrayProps, StringArray } from '@danielwii/asuna-components';
 import { WithVariable } from '@danielwii/asuna-components/dist/helper/helper';
+import { IStringArrayProps, StringArray } from '@danielwii/asuna-components/dist/string-array';
 
 import * as React from 'react';
 

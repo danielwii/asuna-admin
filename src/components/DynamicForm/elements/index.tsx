@@ -1,8 +1,8 @@
 import { Form } from '@ant-design/compatible';
 import { FIELD_DATA_PROP } from '@ant-design/compatible/lib/form/constants';
 
-import { StringTmpl } from '@danielwii/asuna-components';
 import { WithVariable } from '@danielwii/asuna-components/dist/helper/helper';
+import { StringTmpl } from '@danielwii/asuna-components/dist/string-tmpl';
 
 import { Checkbox, DatePicker, Input, InputNumber, Switch, TimePicker } from 'antd';
 import * as _ from 'lodash';

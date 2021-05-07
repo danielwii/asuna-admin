@@ -4,8 +4,9 @@
 // noinspection ES6UnusedImports
 import { jsx } from '@emotion/react';
 
+import { Snow } from '@danielwii/asuna-components/dist/weather/weather';
+
 import ApolloClient, { gql } from 'apollo-boost';
-import { Weather } from '@danielwii/asuna-components';
 import { changeAntdTheme } from 'dynamic-antd-theme';
 import * as _ from 'lodash';
 import fetch from 'node-fetch';
@@ -80,7 +81,7 @@ export const LoginPageView: React.FC<ILoginPageProps> = (props) => {
       <StyledFullFlexContainer>
         {!hideCharacteristics && (
           <React.Fragment>
-            <Weather.Snow color={site?.primaryColor?.hex} />
+            <Snow color={site?.primaryColor?.hex} />
             {/*
               <Sun />
               <StyledLogoWrapper>

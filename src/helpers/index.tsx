@@ -5,8 +5,8 @@ import { LinkOutlined, SearchOutlined } from '@ant-design/icons';
 // noinspection ES6UnusedImports
 import { jsx } from '@emotion/react';
 
-import { PreviewButton } from '@danielwii/asuna-components';
 import { WithFuture } from '@danielwii/asuna-components/dist/helper/helper';
+import { PreviewButton } from '@danielwii/asuna-components/dist/preview-button';
 
 import { Badge, Button, Checkbox, Divider, Input, Modal, Popconfirm, Space, Statistic, Tag, Tooltip } from 'antd';
 import { Promise } from 'bluebird';

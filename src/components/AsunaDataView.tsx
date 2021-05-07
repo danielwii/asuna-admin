@@ -1,4 +1,4 @@
-import { PreviewButton } from '@danielwii/asuna-components';
+import { PreviewButton } from '@danielwii/asuna-components/dist/preview-button';
 
 import { Button, Collapse, Descriptions, Empty, PageHeader, Tag, Tooltip } from 'antd';
 import { Promise } from 'bluebird';

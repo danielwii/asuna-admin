@@ -1,4 +1,4 @@
-import { EasyForm } from '@danielwii/asuna-components';
+import { EasyForm } from '@danielwii/asuna-components/dist/easy-form/form';
 import { FormFieldType } from '@danielwii/asuna-components/dist/easy-form/interfaces';
 
 import { Divider, PageHeader } from 'antd';
@@ -69,7 +69,7 @@ const ContentSearch: React.FC<ModulesLoaderProps> = (props) => {
       {/*<pre>{util.inspect(fields)}</pre>*/}
 
       <PageHeader title={pane.title}>
-        <EasyForm.Form
+        <EasyForm
           initialValues={{}}
           fields={fields}
           onSubmit={async (values) => {

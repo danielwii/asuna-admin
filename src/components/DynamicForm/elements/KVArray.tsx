@@ -1,5 +1,5 @@
-import { KvArray, KvArrayItem, KvArrayProps } from '@danielwii/asuna-components';
 import { WithVariable } from '@danielwii/asuna-components/dist/helper/helper';
+import { KvArray, KvArrayItem, KvArrayProps } from '@danielwii/asuna-components/dist/kv-array';
 
 import * as React from 'react';
 

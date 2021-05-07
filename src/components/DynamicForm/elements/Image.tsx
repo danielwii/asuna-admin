@@ -1,5 +1,5 @@
-import { Uploader } from '@danielwii/asuna-components';
 import { WithVariable } from '@danielwii/asuna-components/dist/helper/helper';
+import { Uploader } from '@danielwii/asuna-components/dist/uploader/uploader';
 
 import _ from 'lodash';
 import * as React from 'react';
@@ -29,7 +29,7 @@ const UploaderHOC: React.FC<Partial<FormComponentProps> & Partial<IUploaderProps
       {(props) => {
         useLogger('generateImages', props);
         const uploadOpts = _.get(props, 'data-__field.options.uploadOpts');
-        return <Uploader.Component adapter={new FileUploaderAdapterImpl(uploadOpts)} {...props} />;
+        return <Uploader adapter={new FileUploaderAdapterImpl(uploadOpts)} {...props} />;
       }}
     </WithVariable>
   );

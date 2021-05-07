@@ -3,7 +3,7 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/react';
 
-import { PreviewButton } from '@danielwii/asuna-components';
+import { PreviewButton } from '@danielwii/asuna-components/dist/preview-button';
 
 import * as _ from 'lodash';
 import dynamic from 'next/dynamic';

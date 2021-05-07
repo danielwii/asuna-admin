@@ -1,6 +1,6 @@
 import { InfoCircleOutlined } from '@ant-design/icons';
 
-import { EasyForm } from '@danielwii/asuna-components';
+import { EasyForm } from '@danielwii/asuna-components/dist/easy-form/form';
 import { WithLoading } from '@danielwii/asuna-components/dist/helper/helper';
 
 import { Button, Col, Divider, Row, Typography } from 'antd';
@@ -75,7 +75,7 @@ export function FormKVComponent(props: {
           <Divider />
           <Row gutter={16}>
             <Col span={18}>
-              <EasyForm.Form
+              <EasyForm
                 initialValues={initialValues}
                 fields={fieldValues}
                 onSubmit={(values) => KVHelper.save({ key, collection }, { ...body, values }, refetch)}

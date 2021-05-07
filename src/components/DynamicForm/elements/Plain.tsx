@@ -1,6 +1,6 @@
 import { Form } from '@ant-design/compatible';
 
-import { PreviewButton } from '@danielwii/asuna-components';
+import { PreviewButton } from '@danielwii/asuna-components/dist/preview-button';
 
 import * as _ from 'lodash';
 import * as React from 'react';
