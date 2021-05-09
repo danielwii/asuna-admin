@@ -1,3 +1,5 @@
+import { Endpoints } from '@danielwii/asuna-helper/dist/env';
+
 import withRedux from 'next-redux-wrapper';
 import App from 'next/app';
 import Head from 'next/head';
@@ -57,6 +59,9 @@ export const ReduxApp = withRedux(asunaStore.configureStore, { debug: false })(
 
       render() {
         const { Component, pageProps, store } = this.props;
+
+        const endpoints = { api: Endpoints.api, graphql: Endpoints.graphql, ws: Endpoints.ws };
+        console.info('Endpoints is', endpoints);
 
         return (
           <>

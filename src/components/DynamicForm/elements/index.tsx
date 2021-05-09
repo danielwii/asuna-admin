@@ -1,7 +1,14 @@
+/** @jsxRuntime classic */
+
+/** @jsx jsx */
 import { Form } from '@ant-design/compatible';
 import { FIELD_DATA_PROP } from '@ant-design/compatible/lib/form/constants';
+// noinspection ES6UnusedImports
+import { css, jsx } from '@emotion/react';
 
-import { WithVariable } from '@danielwii/asuna-components/dist/helper/helper';
+import { apiProxy } from '@danielwii/asuna-admin';
+import { validateFile } from '@danielwii/asuna-admin/helpers/upload';
+import { WithSuspense, WithVariable } from '@danielwii/asuna-components/dist/helper/helper';
 import { StringTmpl } from '@danielwii/asuna-components/dist/string-tmpl';
 
 import { Checkbox, DatePicker, Input, InputNumber, Switch, TimePicker } from 'antd';
@@ -11,7 +18,6 @@ import JSONInput from 'react-json-editor-ajrm';
 import locale from 'react-json-editor-ajrm/locale/zh-cn';
 import { useLogger } from 'react-use';
 
-import { BraftRichEditor } from '../../../components/RichEditor';
 import { Config } from '../../../config';
 import { createLogger } from '../../../logger';
 import { Authorities } from '../Authorities';
@@ -348,10 +354,16 @@ export const generateRichTextEditor = (
   const labelName = label || name || key;
   // const host = Config.get('ATTACHE_HOST');
   const handler = Config.get('ATTACHE_RES_HANDLER');
-  return generateComponent(
-    form,
-    { fieldName, labelName, ...options },
-    <BraftRichEditor urlHandler={handler} />,
-    formItemLayout,
+  const ComponentWrapper = (props) => (
+    <div
+      css={css`
+        line-height: 20px;
+      `}
+    >
+      <WithSuspense future={() => require('@danielwii/asuna-components/dist/rich-editor').RichEditor}>
+        {(RichEditor: any) => <RichEditor {...props} upload={apiProxy.upload} validateFn={validateFile} />}
+      </WithSuspense>
+    </div>
   );
+  return generateComponent(form, { fieldName, labelName, ...options }, <ComponentWrapper />, formItemLayout);
 };

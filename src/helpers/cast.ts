@@ -21,7 +21,3 @@ export function castModelName(key) {
   }
   return key;
 }
-
-export function htmlEntities(unsafeHtml: string): string {
-  return String(unsafeHtml).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-}

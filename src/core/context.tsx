@@ -1,3 +1,5 @@
+import { Endpoints } from '@danielwii/asuna-helper/dist/env';
+
 import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
 import * as React from 'react';
@@ -289,7 +291,7 @@ class AppContext {
       ws: new WsAdapter(),
       components: register.componentService,
       admin: new AdminAdapterImpl(register.createAdminService()),
-      graphql: new GraphqlAdapterImpl(`${process.env.NEXT_PUBLIC_API_ENDPOINT ?? ''}/graphql`),
+      graphql: new GraphqlAdapterImpl(Endpoints.graphql),
     };
 
     // only setup menu in index page

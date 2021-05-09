@@ -1,3 +1,5 @@
+import { Endpoints } from '@danielwii/asuna-helper/dist/env';
+
 import * as Rx from 'rxjs';
 import io from 'socket.io-client';
 
@@ -27,13 +29,18 @@ export class WsAdapter {
     this.namespace = opts.namespace || 'admin';
 
     if (!AppContext.isServer && !WsAdapter.socket) {
-      WsAdapter.socket = (io as any).connect(`${process.env.NEXT_PUBLIC_WS_ENDPOINT ?? ''}/admin`, {
-        secure: true,
-        transports: ['websocket', 'xhr-polling'],
+      const url = `${Endpoints.ws}/${this.namespace}`;
+      const options = {
+        path: `/socket.io/admin`,
+        namespace: this.namespace,
+        // secure: true,
+        // transports: ['websocket', 'xhr-polling'],
         rememberUpgrade: true,
         reconnectionDelay: 10e3,
         reconnectionDelayMax: 60e3,
-      });
+      };
+      console.log('init socket.io with', url, options);
+      WsAdapter.socket = (io as any).connect(url, options);
 
       WsAdapter.socket.on('connect', () => {
         logger.log('[connect]', WsAdapter.socket.id);

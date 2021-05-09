@@ -77,11 +77,7 @@ function withDefaultNextConfigs(nextConfig = {}) {
     },
 
     serverRuntimeConfig: { isServer: true },
-
-    publicRuntimeConfig: {
-      env: process.env.ENV || 'dev',
-      version: pkg.version,
-    },
+    publicRuntimeConfig: { env: process.env.ENV || 'dev', version: pkg.version },
   });
 }
 

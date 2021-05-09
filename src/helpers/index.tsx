@@ -50,6 +50,7 @@ export * from './message-box';
 export * from './models';
 export * from './register';
 export * from './tenant';
+export * from './upload';
 
 /**
  * used by services
