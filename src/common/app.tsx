@@ -61,7 +61,7 @@ export const ReduxApp = withRedux(asunaStore.configureStore, { debug: false })(
         const { Component, pageProps, store } = this.props;
 
         const endpoints = { api: Endpoints.api, graphql: Endpoints.graphql, ws: Endpoints.ws };
-        console.info('Endpoints is', endpoints);
+        // console.info('Endpoints is', endpoints);
 
         return (
           <>
