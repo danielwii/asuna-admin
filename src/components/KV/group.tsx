@@ -1,7 +1,6 @@
 import { InfoCircleOutlined } from '@ant-design/icons';
 
 import { Button, Divider, Typography } from 'antd';
-import 'highlight.js/styles/default.css';
 import * as _ from 'lodash';
 import React, { useEffect, useState } from 'react';
 import Highlight from 'react-highlight';

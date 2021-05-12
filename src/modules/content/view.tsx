@@ -1,4 +1,3 @@
-import 'highlight.js/styles/default.css';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { useAsync, useLogger } from 'react-use';

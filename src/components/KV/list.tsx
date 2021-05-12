@@ -8,7 +8,6 @@ import {
 
 import { Button, Col, Divider, Row, Typography } from 'antd';
 import { Field, FieldProps, Form, Formik, FormikValues } from 'formik';
-import 'highlight.js/styles/default.css';
 import _ from 'lodash';
 import React, { useEffect, useState } from 'react';
 import Highlight from 'react-highlight';

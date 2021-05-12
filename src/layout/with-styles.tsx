@@ -4,6 +4,7 @@ import NextHead from 'next/head';
 import getConfig from 'next/config';
 import zhCN from 'antd/lib/locale/zh_CN';
 
+/*
 import 'antd/dist/antd.css';
 import '@ant-design/compatible/assets/index.css';
 
@@ -17,6 +18,7 @@ import 'react-image-crop/dist/ReactCrop.css';
 
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/monokai.css';
+*/
 
 const WithStyles = ({ children, hideCharacteristics }) => (
   <ConfigProvider locale={zhCN}>

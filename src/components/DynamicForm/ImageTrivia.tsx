@@ -6,7 +6,6 @@ import { join } from 'path';
 import * as R from 'ramda';
 import * as React from 'react';
 import ReactCrop, { Crop, PixelCrop } from 'react-image-crop';
-import 'react-image-crop/dist/ReactCrop.css';
 import * as util from 'util';
 
 import { Title } from '../../components';

@@ -6,8 +6,6 @@ import { FIELD_DATA_PROP } from '@ant-design/compatible/lib/form/constants';
 // noinspection ES6UnusedImports
 import { css, jsx } from '@emotion/react';
 
-import { apiProxy } from '@danielwii/asuna-admin';
-import { validateFile } from '@danielwii/asuna-admin/helpers/upload';
 import { WithSuspense, WithVariable } from '@danielwii/asuna-components/dist/helper/helper';
 import { StringTmpl } from '@danielwii/asuna-components/dist/string-tmpl';
 
@@ -18,7 +16,9 @@ import JSONInput from 'react-json-editor-ajrm';
 import locale from 'react-json-editor-ajrm/locale/zh-cn';
 import { useLogger } from 'react-use';
 
+import { apiProxy } from '../../../adapters/api';
 import { Config } from '../../../config';
+import { validateFile } from '../../../helpers/upload';
 import { createLogger } from '../../../logger';
 import { Authorities } from '../Authorities';
 import { VideoUploader } from '../Videos';

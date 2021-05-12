@@ -18,8 +18,6 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "incremental": false,
-    "tsBuildInfoFile": "./.buildinfo.json",
     "declaration": true,
     "outDir": "dist",
     "baseUrl": ".",

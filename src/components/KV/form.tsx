@@ -4,7 +4,6 @@ import { EasyForm } from '@danielwii/asuna-components/dist/easy-form/form';
 import { WithLoading } from '@danielwii/asuna-components/dist/helper/helper';
 
 import { Button, Col, Divider, Row, Typography } from 'antd';
-import 'highlight.js/styles/default.css';
 import * as _ from 'lodash';
 import React from 'react';
 import Highlight from 'react-highlight';
