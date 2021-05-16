@@ -100,11 +100,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = (props) => {
       // updateFlag(-flag);
     },
     create: () => ModelsHelper.openCreatePane(modelName),
-    transformQueryCondition: function <RecordType>({
-      pagination,
-      filters,
-      sorter,
-    }: QueryConditionType): {
+    transformQueryCondition: function <RecordType>({ pagination, filters, sorter }: QueryConditionType): {
       transformedFilters: Record<string, [Condition]>;
       availableSorter?: SorterResult<any> | SorterResult<any>[];
       transformedSorter?: Sorter | null;
@@ -221,11 +217,14 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = (props) => {
       setQueryCondition({ ...queryCondition, filters: { ...queryCondition.filters, [searchedColumn]: [searchText] } });
     },
   };
-  const { loading: loadingAsunaModels, columnProps, relations } = useAsunaModels(
+  const {
+    loading: loadingAsunaModels,
+    columnProps,
+    relations,
+  } = useAsunaModels(modelName, { callRefresh: func.createRefresher(queryCondition), extraName, actions, ctx }, [
     modelName,
-    { callRefresh: func.createRefresher(queryCondition), extraName, actions, ctx },
-    [modelName, queryCondition],
-  );
+    queryCondition,
+  ]);
 
   const { primaryKey } = resolveModelInPane(modelName, extraName);
 
@@ -243,7 +242,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = (props) => {
 
   // 直接从 remote 拉取，未来需要将 models 中缓存的数据清除
   const { loading } = useAsync(async () => {
-    console.log(`remote[effect]`, { loadingAsunaModels, flag }, queryCondition);
+    // console.log(`remote[effect]`, { loadingAsunaModels, flag }, queryCondition);
     const { transformedFilters, transformedSorter } = func.transformQueryCondition(queryCondition);
     const value = await AppContext.adapters.models
       .loadModels(modelName, {
@@ -272,18 +271,24 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = (props) => {
     <WithDebugInfo info={props}>
       {creatable && (
         <>
-          <Button type={'primary'} onClick={() => (_.isFunction(creatable) ? creatable(modelName) : func.create())}>
+          <Button
+            type={'primary'}
+            size="small"
+            onClick={() => (_.isFunction(creatable) ? creatable(modelName) : func.create())}
+          >
             创建
           </Button>
           <Divider type="vertical" />
         </>
       )}
-      <Button onClick={() => func.refresh()}>刷新</Button>
+      <Button size="small" onClick={() => func.refresh()}>
+        刷新
+      </Button>
 
       <Divider type="vertical" />
 
       {/* TODO 导入导出按钮，目前接口已经实现，但是暂未集成 */}
-      <Button.Group>
+      <Button.Group size="small">
         <Button onClick={_import} disabled={true}>
           导入
         </Button>
@@ -306,7 +311,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = (props) => {
         }
         placement="bottomCenter"
       >
-        <Button>布局</Button>
+        <Button size="small">布局</Button>
       </Dropdown>
 
       <Divider type="vertical" />

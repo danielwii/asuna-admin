@@ -6,8 +6,7 @@ import * as React from 'react';
 import { generateComponent, horizontalFormItemLayout, IFormItemLayout } from '.';
 import { createLogger } from '../../../logger';
 
-import type { WrappedFormUtils } from '@ant-design/compatible/es/form/Form';
-import type { FormComponentProps } from './interfaces';
+import type { FormInstance } from 'antd';
 
 const logger = createLogger('components:dynamic-form:string-array');
 
@@ -20,17 +19,17 @@ export type StringArrayOptions = {
   mode?: 'input' | 'tag';
 };
 
-const StringArrayHOC: React.FC<Partial<FormComponentProps> & Partial<IStringArrayProps>> = (props) => {
+const StringArrayHOC: React.FC<Partial<IStringArrayProps>> = (props) => {
   // useLogger(`StringArray(key=${StringArrayHOC.name})`, props);
   return (
-    <WithVariable key={props.id} variable={props as FormComponentProps & IStringArrayProps}>
+    <WithVariable /*key={props.id}*/ variable={props as IStringArrayProps}>
       {(props) => <StringArray {...props} onChange={(items) => props.onChange(items)} />}
     </WithVariable>
   );
 };
 
 export function generateStringArray(
-  form: WrappedFormUtils,
+  form: FormInstance,
   { key, name, label, items, onChange, mode }: StringArrayOptions,
   formItemLayout: IFormItemLayout = horizontalFormItemLayout,
 ) {
@@ -41,7 +40,7 @@ export function generateStringArray(
   return generateComponent(
     form,
     { fieldName, labelName },
-    <StringArrayHOC mode={mode} items={[...(items ?? [])]} />, // todo
+    (props) => <StringArrayHOC mode={mode} items={[...(items ?? [])]} {...props} />, // todo
     formItemLayout,
   );
 }

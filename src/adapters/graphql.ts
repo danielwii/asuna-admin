@@ -32,7 +32,7 @@ export class GraphqlAdapterImpl {
   public client: ApolloClient<InMemoryCache>;
   // public serverClient: ApolloClient<InMemoryCache>;
   constructor(uri?: string) {
-    console.log('init graphql api with', uri);
+    // console.log('init graphql api with', uri);
     if (uri) {
       this.client = new ApolloClient({ uri, headers: authHeader().headers });
     } else {

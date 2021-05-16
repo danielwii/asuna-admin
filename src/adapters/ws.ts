@@ -39,7 +39,7 @@ export class WsAdapter {
         reconnectionDelay: 10e3,
         reconnectionDelayMax: 60e3,
       };
-      console.log('init socket.io with', url, options);
+      // console.log('init socket.io with', url, options);
       WsAdapter.socket = (io as any).connect(url, options);
 
       WsAdapter.socket.on('connect', () => {

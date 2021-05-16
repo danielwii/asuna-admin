@@ -1,10 +1,6 @@
-import { Form } from '@ant-design/compatible';
-import { WrappedFormUtils } from '@ant-design/compatible/es/form/Form';
-
-import { message, Modal } from 'antd';
-import * as _ from 'lodash';
+import { FormInstance, message, Modal } from 'antd';
 import * as R from 'ramda';
-import * as React from 'react';
+import React from 'react';
 
 import { toErrorMessage, toFormErrors } from '../helpers';
 import { createLogger } from '../logger';
@@ -19,6 +15,7 @@ interface ILightForm {
   onSubmit: (fn: (e: Error) => void) => void;
 }
 
+/*
 const LightForm = Form.create<ILightForm>({
   mapPropsToFields({ fields }) {
     return _.mapValues(fields, (field) => Form.createFormField({ ...field }));
@@ -27,6 +24,12 @@ const LightForm = Form.create<ILightForm>({
     onChange(changedFields);
   },
 })(DynamicForm) as any;
+*/
+
+const LightForm = ({ fields, ...props }) => {
+  // const convertedFields = _.mapValues(fields, (field) => Form.createFormField({ ...field }));
+  return <DynamicForm fields={fields} {...(props as any)} />;
+};
 
 export interface IFormModalProps {
   title: React.ReactNode;
@@ -48,7 +51,7 @@ interface IState {
 }
 
 export class FormModalButton extends React.Component<IFormModalProps, IState> {
-  form: WrappedFormUtils;
+  form: FormInstance;
 
   constructor(props: Readonly<IFormModalProps>) {
     super(props);
@@ -65,10 +68,9 @@ export class FormModalButton extends React.Component<IFormModalProps, IState> {
   handleOk = () => {
     const { onSubmit, onRefresh } = this.props;
     const { fields } = this.state;
-    this.form.validateFields(async (err, values) => {
-      if (err) {
-        logger.error('[FormModal][handleOk]', 'error occurred in form', { values, err });
-      } else {
+    this.form
+      .validateFields()
+      .then(async (values) => {
         this.setState({ loading: true });
         try {
           const response = await onSubmit!(values).finally(() => onRefresh && onRefresh());
@@ -85,8 +87,10 @@ export class FormModalButton extends React.Component<IFormModalProps, IState> {
           this.handleFormChange(errors);
           this.setState({ loading: false });
         }
-      }
-    });
+      })
+      .catch((reason) => {
+        logger.error('[FormModal][handleOk]', 'error occurred in form', reason);
+      });
   };
 
   handleFormChange = (changedFields) => {

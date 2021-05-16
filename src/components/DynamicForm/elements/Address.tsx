@@ -1,12 +1,11 @@
-import { WrappedFormUtils } from '@ant-design/compatible/es/form/Form';
-
-import { Cascader, Input } from 'antd';
-import { CascaderValueType } from 'antd/es/cascader';
+import { Cascader, FormInstance, Input } from 'antd';
 import * as React from 'react';
 
 import { generateComponent, horizontalFormItemLayout, IFormItemLayout, InputOptions } from '.';
 import { ChinaDivisionOptions, parseAddress } from '../../../components';
-import { FormComponentProps } from './interfaces';
+
+import type { CascaderValueType } from 'antd/es/cascader';
+import type { FormComponentProps } from './interfaces';
 
 class AddressInline extends React.Component<Partial<FormComponentProps> & { placeholder: string }> {
   _onChange(codes: CascaderValueType | undefined, labels: string[] | undefined, detail: string | null): void {
@@ -48,7 +47,7 @@ class AddressInline extends React.Component<Partial<FormComponentProps> & { plac
 }
 
 export const generateAddress = (
-  form: WrappedFormUtils,
+  form: FormInstance,
   { key, name, label, required = false, requiredMessage, placeholder = '', iconType, help, length }: InputOptions,
   formItemLayout: IFormItemLayout = horizontalFormItemLayout,
 ) => {
@@ -66,7 +65,7 @@ export const generateAddress = (
       opts: { rules: [{ required, message: requiredMessage }, { max: length }] },
       help,
     },
-    <AddressInline placeholder={placeholder || '详细地址'} />,
+    (props) => <AddressInline placeholder={placeholder || '详细地址'} {...props} />,
     formItemLayout,
   );
 };

@@ -1,7 +1,7 @@
-import { Form } from '@ant-design/compatible';
 import { Paper } from '@material-ui/core';
 
-import { Affix, Anchor, Button, Col, Divider, List, Popconfirm, Row, Tag } from 'antd';
+import { Affix, Anchor, Button, Col, Divider, Form, List, Popconfirm, Row, Tag } from 'antd';
+import consola from 'consola';
 import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
 import moment from 'moment';
@@ -9,49 +9,21 @@ import * as R from 'ramda';
 import * as React from 'react';
 import { useMemo } from 'react';
 import { CircleLoader, ScaleLoader } from 'react-spinners';
-import { useAsync, useLogger } from 'react-use';
+import { useAsync, useSetState } from 'react-use';
 import VisualDiff from 'react-visual-diff';
 import styled from 'styled-components';
-import * as util from 'util';
 
-import { adminProxyCaller, modelProxyCaller } from '../../adapters';
+import { adminProxyCaller } from '../../adapters';
 import { DrawerButton, parseAddressStr } from '../../components';
 import { DebugInfo, diff, parseString, useAsunaDrafts } from '../../helpers';
 import { WithDebugInfo } from '../../helpers/debug';
 import { createLogger } from '../../logger';
 import { SchemaHelper } from '../../schema';
-import { Asuna } from '../../types';
-import {
-  generateAuthorities,
-  generateCheckbox,
-  generateDateTime,
-  generateHidden,
-  generateInput,
-  generateInputNumber,
-  generatePlain,
-  generateRichTextEditor,
-  generateStringTmpl,
-  generateSwitch,
-  generateTextArea,
-  generateVideo,
-  HiddenOptions,
-  InputOptions,
-  PlainOptions,
-} from './elements';
-import { generateAddress } from './elements/Address';
-import { generateFile, generateFiles } from './elements/Files';
-import { generateImage, generateImages, generateRichImage } from './elements/Image';
-import { generateKVArray } from './elements/KVArray';
-import { PlainImages } from './elements/Plain';
-import { generateSelect, Item } from './elements/Select';
-import { generateStringArray, StringArrayOptions } from './elements/StringArray';
-
-import type { FormComponentProps } from '@ant-design/compatible/es/form';
-import type { WrappedFormUtils } from '@ant-design/compatible/es/form/Form';
-import type { EnumFilterMetaInfoOptions, MetaInfoOptions } from '../../types/meta';
+import { DynamicFormField, DynamicFormTypes, RenderedField } from './render';
 
 const logger = createLogger('components:dynamic-form');
 
+export * from './render';
 export * from './Videos';
 export * from './elements/Image';
 
@@ -66,47 +38,6 @@ const FixedLoading = styled(({ className }) => (
   z-index: 20;
 `;
 
-export enum DynamicFormTypes {
-  // --------------------------------------------------------------
-  // Basic Types
-  // --------------------------------------------------------------
-
-  Checkbox = 'Checkbox',
-  Button = 'Button',
-  Hidden = 'Hidden',
-  Plain = 'Plain',
-  Input = 'Input',
-  InputNumber = 'InputNumber',
-  TextArea = 'TextArea',
-  JSON = 'JSON',
-  DateTime = 'DateTime',
-  Date = 'Date',
-
-  // --------------------------------------------------------------
-  // Advanced Types
-  // --------------------------------------------------------------
-
-  Address = 'Address',
-  Image = 'Image',
-  Images = 'Images',
-  File = 'File',
-  Files = 'Files',
-  Video = 'Video',
-  Deletable = 'Deletable',
-  Switch = 'Switch',
-  Authorities = 'Authorities',
-  Enum = 'Enum',
-  EditableEnum = 'EditableEnum',
-  EnumFilter = 'EnumFilter',
-  StringTmpl = 'StringTmpl',
-  SimpleJSON = 'SimpleJSON',
-  SortPosition = 'SortPosition',
-  RichImage = 'RichImage',
-  RichText = 'RichText',
-  Association = 'Association',
-  ManyToMany = 'ManyToMany',
-}
-
 export type DynamicFormProps = {
   model: string;
   fields: any[] | FormField[];
@@ -119,7 +50,7 @@ export type DynamicFormProps = {
    */
   delegate?: boolean;
   auditMode?: boolean;
-  formRef?: (form: WrappedFormUtils) => void;
+  // formRef?: (form: WrappedFormUtils) => void;
 };
 
 /*
@@ -137,20 +68,14 @@ export type DynamicFormProps = {
       jsonType?: string;
     };}
  */
-export type DynamicFormFieldOptions = Partial<MetaInfoOptions> & {
-  required?: boolean;
-  tooltip?: string;
-};
-export type DynamicFormField = {
-  name: string;
-  type: DynamicFormTypes;
-  foreignOpts?: Asuna.Schema.ForeignOpt[];
-  options?: DynamicFormFieldOptions;
-  ref?: string;
-  key?: string;
-  raw?: any[];
-  value?: any | any[];
-};
+
+interface FieldDef {
+  field;
+  // 附加参数
+  extra?;
+  // 组件内部状态
+  innerState?;
+}
 
 /**
  * delegate: hide submit button, using ref: form.
@@ -162,8 +87,7 @@ export type DynamicFormField = {
  *   },
  * }
  */
-export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener & FormComponentProps> = ({
-  form,
+export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener> = ({
   model,
   fields,
   onSubmit,
@@ -172,239 +96,26 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
   delegate,
   anchor,
   auditMode,
-  formRef,
+  // formRef,
 }) => {
-  formRef?.(form);
+  const [form] = Form.useForm();
+  // formRef?.(form);
   const memoizedFields = useMemo(() => fields, [1]);
   const { loading: loadingDrafts, drafts, retry } = useAsunaDrafts({ type: model, refId: _.get(fields, 'id.value') });
   const { value: schema } = useAsync(() => SchemaHelper.getSchema(model), [model]);
-
-  const _buildField = (fields: FormField[], field: DynamicFormField): React.ReactNode => {
-    field.options = field.options || {};
-    const options: DeepPartial<
-      DynamicFormField['options'] &
-        HiddenOptions &
-        PlainOptions &
-        InputOptions &
-        // SelectOptions & // will cause never type issue
-        StringArrayOptions
-    > = {
-      ...field.options,
-      // key: field.key ?? field.name,
-      name: field.name,
-      label: field.options.name ?? field.name,
-      help: field.options.tooltip ?? field.options.help,
-    };
-    const defaultAssociation = { name: 'name', value: 'id', fields: ['id', 'name'] };
-
-    logger.log('[DynamicForm]', '[buildField]', field, { accessible: field?.options?.accessible });
-
-    // all readonly or hidden field will rendered as plain component
-    if (_.includes(['readonly'], field?.options?.accessible)) {
-      if (field.type === DynamicFormTypes.Images) {
-        return (
-          <PlainImages
-            options={{
-              text: _.defaultTo(field.value, options.defaultValue),
-              ...(options as PlainOptions),
-            }}
-          />
-        );
-      } else if (field.type === DynamicFormTypes.Switch) {
-        return generateSwitch(form, { ...options, readonly: true });
-      }
-      return generatePlain({
-        text: _.defaultTo(field.value, options.defaultValue),
-        ...options,
-      } as PlainOptions);
-    }
-    if (_.includes(['hidden'], field?.options?.accessible)) {
-      // return generatePlain({ text: <i>hidden</i>, ...(options as PlainOptions) });
-      return null;
-    }
-
-    logger.log('[DynamicForm]', '[buildField]', field, { options, schema });
-
-    switch (field.type) {
-      case DynamicFormTypes.Plain:
-        return generatePlain({ text: field.value, ...options } as PlainOptions);
-      case DynamicFormTypes.Input:
-        if (options.length && options.length > 200) {
-          return generateTextArea(form, options);
-        }
-        return generateInput(form, options as InputOptions);
-      case DynamicFormTypes.Address:
-        return generateAddress(form, options as InputOptions);
-      case DynamicFormTypes.Checkbox:
-        return generateCheckbox(form, options);
-      case DynamicFormTypes.Hidden:
-        return generateHidden(form, options as HiddenOptions);
-      case DynamicFormTypes.InputNumber:
-        return generateInputNumber(form, options);
-      case DynamicFormTypes.StringTmpl:
-        return generateStringTmpl(form, options);
-      case DynamicFormTypes.JSON:
-      // return generateTextArea(form, options);
-      case DynamicFormTypes.TextArea:
-        return generateTextArea(form, options);
-      case DynamicFormTypes.DateTime:
-        return generateDateTime(form, options);
-      case DynamicFormTypes.Date:
-        return generateDateTime(form, { ...options, mode: 'date' });
-      case DynamicFormTypes.Video:
-        return generateVideo(form, options);
-      case DynamicFormTypes.Authorities:
-        return generateAuthorities(form, options);
-      case DynamicFormTypes.RichImage:
-        return generateRichImage(form, fields, options);
-      case DynamicFormTypes.Image:
-        return generateImage(form, options);
-      case DynamicFormTypes.Images:
-        return generateImages(form, options);
-      case DynamicFormTypes.File:
-        return generateFile(form, options);
-      case DynamicFormTypes.Files:
-        return generateFiles(form, options);
-      case DynamicFormTypes.Deletable:
-      case DynamicFormTypes.Switch:
-        return generateSwitch(form, options);
-      case DynamicFormTypes.RichText:
-        return generateRichTextEditor(form, options);
-      case DynamicFormTypes.ManyToMany: {
-        // --------------------------------------------------------------
-        // ManyToMany RelationShip
-        // --------------------------------------------------------------
-        logger.debug('[DynamicForm]', '[buildField][ManyToMany]', { field });
-        if (field.foreignOpts) {
-          const { modelName, association = defaultAssociation, onSearch } = field.foreignOpts[0];
-
-          const items = R.path(['associations', modelName, 'items'])(field);
-          const existItems = R.path(['associations', modelName, 'existItems'])(field);
-          const type = (field.options as EnumFilterMetaInfoOptions)?.filterType;
-          const getName = R.ifElse(
-            _.isString,
-            (v) => R.prop(v),
-            (v) => v,
-          )(association.name ?? defaultAssociation.name);
-          const getValue = R.ifElse(
-            _.isString,
-            (v) => R.prop(v),
-            (v) => v,
-          )(association.value ?? defaultAssociation.value);
-          return generateSelect(form, {
-            ...(options as any),
-            items,
-            existItems,
-            mode: 'multiple',
-            withSortTree: type === 'Sort',
-            onSearch,
-            getName,
-            getValue,
-            field,
-          });
-        }
-        logger.warn('[buildField]', 'foreignOpts is required in association.', { field });
-        return <div>association({util.inspect(field)}) need foreignOpts.</div>;
-      }
-      case DynamicFormTypes.Enum:
-      case DynamicFormTypes.EditableEnum:
-        // --------------------------------------------------------------
-        // Enum / RelationShip
-        // --------------------------------------------------------------
-        logger.debug('[DynamicForm]', '[buildField][EditableEnum]', { model }, field);
-      //   const items = R.path(['options', 'enumData'])(field);
-      //   return generateSelect(form, {
-      //     ...options,
-      //     items,
-      //     getName: R.prop('key'),
-      //   } as SelectOptions);
-      // }
-      case DynamicFormTypes.EnumFilter: {
-        let onInit;
-        if (field.type === DynamicFormTypes.EditableEnum) {
-          onInit = async (): Promise<Item[]> => {
-            try {
-              const existItems = await modelProxyCaller().uniq(model, field.name);
-              logger.debug('[DynamicForm]', '[buildField][EditableEnum]', field, { existItems });
-              return _.map(existItems, (key) => ({ value: key, key }));
-            } catch (reason) {
-              logger.error('[DynamicForm]', '[buildField][EditableEnum]', reason);
-              return [];
-            }
-          };
-        }
-        // --------------------------------------------------------------
-        // EnumFilter|Enum / RelationShip
-        // --------------------------------------------------------------
-        logger.log('[DynamicForm]', '[buildField][EnumFilter|Enum]', { field });
-        const enumData = (field.options as EnumFilterMetaInfoOptions)?.enumData || {};
-        const items: Item[] = _.map(enumData, (value, key) => ({ key, value: [key, value] }));
-        const type = (field.options as EnumFilterMetaInfoOptions)?.filterType;
-        logger.log('[DynamicForm]', '[buildField][EnumFilter|Enum]', { type, items });
-        return generateSelect(form, {
-          ...(options as any),
-          onInit,
-          items,
-          getName: R.prop('key'),
-          editable: field.type === DynamicFormTypes.EditableEnum,
-        });
-      }
-      case DynamicFormTypes.Association: {
-        // --------------------------------------------------------------
-        // OneToMany / OneToOne RelationShip
-        // --------------------------------------------------------------
-        logger.debug('[DynamicForm]', '[buildField][Association]', field);
-        if (R.has('foreignOpts')(field)) {
-          const { modelName, association = defaultAssociation, onSearch } = R.path(['foreignOpts', 0])(
-            field,
-          ) as Asuna.Schema.ForeignOpt;
-
-          const items = R.path(['associations', modelName, 'items'])(field);
-          const existItems = R.path(['associations', modelName, 'existItems'])(field);
-          const getName = R.ifElse(
-            _.isString,
-            (v) => R.prop(v),
-            (v) => v,
-          )(association.name ?? defaultAssociation.name);
-          const getValue = R.ifElse(
-            _.isString,
-            (v) => R.prop(v),
-            (v) => v,
-          )(association.value ?? defaultAssociation.value);
-          return generateSelect(form, { ...(options as any), items, existItems, onSearch, getName, getValue, field });
-        }
-        logger.warn('[DynamicForm]', '[buildField]', 'foreignOpts is required in association.', { field });
-        return <div>association({util.inspect(field)}) need foreignOpts.</div>;
-      }
-      case DynamicFormTypes.SimpleJSON: // TODO json-type is string-array
-        logger.debug('[DynamicForm]', '[buildField][SimpleJSON]', field, options);
-        if ((options as any).jsonType === 'kv-array') {
-          return generateKVArray(form, { ...(options as any), items: field.value });
-        }
-        return generateStringArray(form, {
-          ...(options as any),
-          items: field.value,
-          mode: (options as any).jsonType === 'tag-array' ? 'tag' : 'input',
-        });
-      default: {
-        return (
-          <WithDebugInfo key={field.name} info={field}>
-            DynamicForm not implemented. :P
-            <pre>{util.inspect({ field, options })}</pre>
-          </WithDebugInfo>
-        );
-      }
-    }
-  };
+  const [state, setState] = useSetState<Record<string, FieldDef>>(
+    _.assign({}, ..._.map(fields, (field) => ({ [field.name]: { field } }))),
+  );
+  const fieldsValue = _.mapValues(state, ({ field }) => field.value);
+  React.useEffect(() => form.setFieldsValue(fieldsValue), []);
 
   const _handleOnAuditDraft = (e) => {
     e.preventDefault();
 
-    form.validateFields(async (err, values) => {
-      logger.log('[DynamicForm][handleOnAuditDraft]', values);
-      if (err) {
-        logger.error('[DynamicForm][handleOnAuditDraft]', 'error occurred in form', values, err);
-      } else {
+    form
+      .validateFields()
+      .then(async (values) => {
+        logger.log('[DynamicForm][handleOnAuditDraft]', values);
         const refId = _.get(fields, 'id.value');
         await adminProxyCaller().createDraft({ content: values, type: model, refId });
         if (!refId) {
@@ -412,24 +123,27 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
         } else {
           retry();
         }
-      }
-    });
+      })
+      .catch((reason) => {
+        logger.error('[DynamicForm][handleOnAuditDraft]', 'error occurred in form', reason);
+      });
   };
 
   const _handleOnSubmit = (e) => {
     e.preventDefault();
 
-    form.validateFields((err, values) => {
-      logger.log('[DynamicForm][handleOnSubmit]', values);
-      if (err) {
-        logger.error('[DynamicForm][handleOnSubmit]', 'error occurred in form', values, err);
-      } else {
+    form
+      .validateFields()
+      .then((values) => {
+        logger.log('[DynamicForm][handleOnSubmit]', values);
         onSubmit(e);
-      }
-    });
+      })
+      .catch((reason) => {
+        logger.error('[DynamicForm][handleOnSubmit]', 'error occurred in form', reason);
+      });
   };
 
-  logger.log('[DynamicForm]', '[render]', model, fields);
+  logger.log('[DynamicForm]', '[render]', fieldsValue);
 
   // validateFields((errors, values) => console.log({ errors, values }));
   // remove fields which type is not included
@@ -444,7 +158,11 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
       if (field.name.startsWith('is')) return 10;
       return field.options.accessible === 'readonly' ? 20 : 30;
     }),
-    (field) => <EnhancedPureElement key={field.name} field={field} builder={_.curry(_buildField)(fields)} />,
+    (field) => (
+      <EnhancedPureElement key={field.name} field={field}>
+        <RenderedField model={model} schema={schema} form={form} fields={fields} field={field} />
+      </EnhancedPureElement>
+    ),
   );
 
   const renderedDrafts = loadingDrafts ? (
@@ -504,7 +222,11 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
         {loading && <FixedLoading />}
         <Row gutter={anchor ? 16 : 0}>
           <Col span={anchor ? 18 : 24}>
-            <Form>
+            <Form
+              form={form}
+              // onFinish={(values) => console.log('onFinish', values)}
+              onFieldsChange={(values) => console.log('onFieldsChange', ...values)}
+            >
               {/* {_.map(fieldGroups, this.buildFieldGroup)} */}
               {/* {_.map(fields, this.buildField)} */}
               {renderFields}
@@ -519,6 +241,7 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener &
                               type="primary"
                               htmlType="submit"
                               onClick={_handleOnSubmit}
+                              size="small"
                               // disabled={hasErrors(getFieldsError())}
                               // disabled={auditMode}
                             >
@@ -625,91 +348,69 @@ interface IFormAnchorProps {
   fields: FormField[];
 }
 
-class FormAnchor extends React.Component<IFormAnchorProps> {
-  shouldComponentUpdate(nextProps, nextState) {
-    const propsDiff = diff(this.props, nextProps);
-    const stateDiff = diff(this.state, nextState);
-    return propsDiff.isDifferent || stateDiff.isDifferent;
+const FormAnchor: React.VFC<IFormAnchorProps> = ({ fields }) => {
+  if (R.anyPass([R.isNil, R.isEmpty])(fields)) {
+    return null;
   }
 
-  render() {
-    const { fields } = this.props;
-    const renderFields = R.compose(
-      R.values,
-      R.omit(['id']) as any,
-      R.map<FormField & any, any>((field) => {
-        logger.trace('[anchor]', field);
-        const noValue = R.isNil(field.value) || R.isEmpty(field.value) || false;
-        // 目前使用的 RichText 在点击时会自动设置 value 为 '<p></p>'
-        // (field.type === DynamicFormTypes.RichText) && field.value === '<p></p>'
-        const fieldName = field.options.label || field.options.name || field.name;
-        const requiredColor = field.options.required ? 'red' : '';
-        const color = noValue ? requiredColor : 'green';
-        const title = (
-          <div>
-            {field.options.required && <span style={{ color: 'red' }}>* </span>}
-            <Tag color={color}>{fieldName}</Tag>
-          </div>
-        );
-        return <Anchor.Link key={field.name} title={title} href={`#dynamic-form-${field.name}`} />;
-      }),
-      R.filter<any>((field) => field.type),
-      R.filter((field) => (field as DynamicFormField)?.options?.accessible !== 'hidden'),
-    )(fields);
-
-    if (R.anyPass([R.isNil, R.isEmpty])(fields)) {
-      return '';
-    }
-
-    return (
-      <Anchor>
-        <Paper style={{ margin: '.5rem' }}>{renderFields}</Paper>
-      </Anchor>
-    );
-  }
-}
+  return (
+    <Anchor>
+      <Paper style={{ margin: '.5rem' }}>
+        {R.compose(
+          R.values,
+          R.omit(['id']) as any,
+          R.map<FormField & any, any>((field) => {
+            logger.trace('[anchor]', field);
+            const noValue = R.isNil(field.value) || R.isEmpty(field.value) || false;
+            // 目前使用的 RichText 在点击时会自动设置 value 为 '<p></p>'
+            // (field.type === DynamicFormTypes.RichText) && field.value === '<p></p>'
+            const fieldName = field.options.label || field.options.name || field.name;
+            const requiredColor = field.options.required ? 'red' : '';
+            const color = noValue ? requiredColor : 'green';
+            const title = (
+              <div>
+                {field.options.required && <span style={{ color: 'red' }}>* </span>}
+                <Tag color={color}>{fieldName}</Tag>
+              </div>
+            );
+            return <Anchor.Link key={field.name} title={title} href={`#dynamic-form-${field.name}`} />;
+          }),
+          R.filter<any>((field) => field.type),
+          R.filter((field) => (field as DynamicFormField)?.options?.accessible !== 'hidden'),
+        )(fields)}
+      </Paper>
+    </Anchor>
+  );
+};
 
 interface IPureElementProps {
   field: DynamicFormField | FormField;
-  builder: (field: DynamicFormField) => React.ReactNode;
 }
 
-const pureLogger = createLogger('components:dynamic-form:pure-element');
+const pureLogger = consola.withScope('components:dynamic-form:pure-element');
 
-const EnhancedPureElement: React.FC<IPureElementProps> = React.memo(
-  ({ field, builder }) => {
-    const hidden = (field as DynamicFormField)?.options?.accessible === 'hidden';
+const EnhancedPureElement: React.FC<IPureElementProps> = ({ field, children }) => {
+  const hidden = (field as DynamicFormField)?.options?.accessible === 'hidden';
 
-    pureLogger.log('[render]', field, { hidden });
+  pureLogger.log('[render]', field, { hidden });
 
-    if (hidden) return null;
+  if (hidden) return null;
 
-    const rendered = builder(field as DynamicFormField);
-    return (
-      <>
-        <div key={field.name} id={`dynamic-form-${field.name}`}>
-          <WithDebugInfo info={field}>{rendered}</WithDebugInfo>
-          <hr />
-        </div>
-        {/* language=CSS */}
-        <style jsx>{`
-          div hr {
-            border-style: none;
-            border-top: 1px dashed #8c8b8b;
-            border-bottom: 1px dashed #fff;
-            /*box-shadow: #bfbfbf 0 0 1px;*/
-          }
-        `}</style>
-      </>
-    );
-  },
-  (prevProps, nextProps) => {
-    const isRequired = R.path(['options', 'required'])(nextProps.field) as boolean;
-    const propsDiff = diff(prevProps, nextProps, { exclude: ['builder'] });
-    const shouldUpdate = isRequired || propsDiff.isDifferent;
-    if (shouldUpdate && !isRequired) {
-      pureLogger.log('[propsAreEqual]', nextProps, propsDiff);
-    }
-    return !shouldUpdate;
-  },
-);
+  return (
+    <>
+      <div key={field.name} id={`dynamic-form-${field.name}`}>
+        <WithDebugInfo info={field}>{children}</WithDebugInfo>
+        <hr />
+      </div>
+      {/* language=CSS */}
+      <style jsx>{`
+        div hr {
+          border-style: none;
+          border-top: 1px dashed #8c8b8b;
+          border-bottom: 1px dashed #fff;
+          /*box-shadow: #bfbfbf 0 0 1px;*/
+        }
+      `}</style>
+    </>
+  );
+};

@@ -16,9 +16,9 @@ import type {
   IUploaderProps,
   UploaderAdapter,
 } from '@danielwii/asuna-components/dist/uploader/uploader';
-import type { WrappedFormUtils } from '@ant-design/compatible/es/form/Form';
 import type { AxiosRequestConfig } from 'axios';
 import type { FormComponentProps } from './interfaces';
+import type { FormInstance } from 'antd';
 
 const logger = createLogger('components:dynamic-form:image');
 
@@ -36,7 +36,7 @@ const UploaderHOC: React.FC<Partial<FormComponentProps> & Partial<IUploaderProps
 };
 
 export const generateImages = (
-  form: WrappedFormUtils,
+  form: FormInstance,
   options,
   formItemLayout: IFormItemLayout = horizontalFormItemLayout,
 ) => {
@@ -47,7 +47,7 @@ export const generateImages = (
   return generateComponent(
     form,
     { fieldName, labelName, ...options },
-    <UploaderHOC multiple jsonMode />,
+    (props) => <UploaderHOC multiple jsonMode {...props} />,
     formItemLayout,
   );
 };
@@ -64,7 +64,7 @@ export class FileUploaderAdapterImpl implements UploaderAdapter {
 }
 
 export const generateImage = (
-  form: WrappedFormUtils,
+  form: FormInstance,
   options,
   formItemLayout: IFormItemLayout = horizontalFormItemLayout,
 ) => {
@@ -72,11 +72,11 @@ export const generateImage = (
 
   const fieldName = key || name;
   const labelName = label || name || key;
-  return generateComponent(form, { fieldName, labelName, ...options }, <UploaderHOC />, formItemLayout);
+  return generateComponent(form, { fieldName, labelName, ...options }, UploaderHOC, formItemLayout);
 };
 
 export function generateRichImage(
-  form: WrappedFormUtils,
+  form: FormInstance,
   fields: FormField[],
   options,
   formItemLayout: IFormItemLayout = horizontalFormItemLayout,
@@ -93,7 +93,7 @@ export function generateRichImage(
   return generateComponent(
     form,
     { fieldName, labelName, ...options },
-    <ImageTrivia urlHandler={handler} />,
+    (props) => <ImageTrivia urlHandler={handler} {...props} />,
     formItemLayout,
   );
 }

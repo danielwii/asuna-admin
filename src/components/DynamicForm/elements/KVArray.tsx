@@ -1,12 +1,12 @@
 import { WithVariable } from '@danielwii/asuna-components/dist/helper/helper';
 import { KvArray, KvArrayItem, KvArrayProps } from '@danielwii/asuna-components/dist/kv-array';
 
-import * as React from 'react';
+import React from 'react';
 
 import { generateComponent, horizontalFormItemLayout, IFormItemLayout } from '.';
 import { createLogger } from '../../../logger';
 
-import type { FormComponentProps, WrappedFormUtils } from '@ant-design/compatible/es/form/Form';
+import type { FormInstance } from 'antd';
 
 const logger = createLogger('components:dynamic-form:kv-array');
 
@@ -19,17 +19,17 @@ export type KVArrayOptions = {
   mode?: 'input' | 'tag';
 };
 
-const KVArrayHOC: React.FC<Partial<FormComponentProps> & Partial<KvArrayProps>> = (props) => {
+const KVArrayHOC: React.FC<Partial<KvArrayProps>> = (props) => {
   // useLogger(`KvArray(key=${KVArrayHOC.name})`, props);
   return (
-    <WithVariable variable={props as FormComponentProps & KvArrayProps}>
+    <WithVariable variable={props as KvArrayProps}>
       {(props) => <KvArray {...props} onChange={(items) => props.onChange(items)} />}
     </WithVariable>
   );
 };
 
 export function generateKVArray(
-  form: WrappedFormUtils,
+  form: FormInstance,
   { key, name, label, items, onChange, mode }: KVArrayOptions,
   formItemLayout: IFormItemLayout = horizontalFormItemLayout,
 ) {
@@ -37,5 +37,10 @@ export function generateKVArray(
   const labelName = label || name || key;
   logger.debug('[generateKVArray]', { items });
 
-  return generateComponent(form, { fieldName, labelName }, <KVArrayHOC items={[...(items ?? [])]} />, formItemLayout);
+  return generateComponent(
+    form,
+    { fieldName, labelName },
+    (props) => <KVArrayHOC items={[...(items ?? [])]} {...props} />,
+    formItemLayout,
+  );
 }

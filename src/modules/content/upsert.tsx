@@ -1,5 +1,5 @@
-import { Form } from '@ant-design/compatible';
-
+// import { Form } from '@ant-design/compatible';
+import { Form } from 'antd';
 import * as _ from 'lodash';
 import moment from 'moment';
 import * as R from 'ramda';
@@ -31,13 +31,25 @@ const logger = createLogger('modules:content:upsert');
 // --------------------------------------------------------------
 
 interface IContentForm {
-  form;
+  // form;
   fields;
   onChange: (value) => void;
   onSubmit: (fn: (e: Error) => void) => void;
 }
 
-const ContentForm = Form.create<IContentForm & DynamicFormProps>({
+const ContentForm = ({ fields, ...props }: IContentForm & DynamicFormProps) => {
+  const mappedFields = R.map((field) => {
+    // DatePicker for antd using moment instance
+    const isDate = R.contains(field.type)([DynamicFormTypes.Date, DynamicFormTypes.DateTime]);
+    return field.value && isDate ? { name: field.name, value: moment(field.value) } : field;
+  }, fields);
+  // console.log('[ContentForm][mapPropsToFields]', props, { fields, mappedFields });
+
+  return <DynamicForm fields={mappedFields} {...props} />;
+};
+
+/*
+const ContentForm2 = Form.create<IContentForm & DynamicFormProps>({
   mapPropsToFields({ fields }) {
     const mappedFields = R.map<any, any>((field) => {
       // DatePicker for antd using moment instance
@@ -74,6 +86,7 @@ const ContentForm = Form.create<IContentForm & DynamicFormProps>({
     if (!R.isEmpty(filteredChangedFields)) props.onChange(filteredChangedFields);
   },
 })(DynamicForm);
+*/
 
 // --------------------------------------------------------------
 // Main
@@ -294,12 +307,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
       const updateModeAtTheFirstTime = !isInsertMode && init;
 
       const hasEnumFilter = !R.isEmpty(R.filter(R.propEq('type', DynamicFormTypes.EnumFilter), changedFields));
-      const hasSelectable = !R.isEmpty(
-        R.filter(
-          R.path<any>(['options', 'selectable']),
-          changedFields,
-        ),
-      );
+      const hasSelectable = !R.isEmpty(R.filter(R.path<any>(['options', 'selectable']), changedFields));
 
       logger.debug('[handleFormChange]', {
         changedFields,

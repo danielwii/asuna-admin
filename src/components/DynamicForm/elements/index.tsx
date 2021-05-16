@@ -1,30 +1,29 @@
 /** @jsxRuntime classic */
 
 /** @jsx jsx */
-import { Form } from '@ant-design/compatible';
-import { FIELD_DATA_PROP } from '@ant-design/compatible/lib/form/constants';
 // noinspection ES6UnusedImports
 import { css, jsx } from '@emotion/react';
 
-import { WithSuspense, WithVariable } from '@danielwii/asuna-components/dist/helper/helper';
+import { Loading } from '@danielwii/asuna-components';
+import { WithVariable } from '@danielwii/asuna-components/dist/helper/helper';
 import { StringTmpl } from '@danielwii/asuna-components/dist/string-tmpl';
 
-import { Checkbox, DatePicker, Input, InputNumber, Switch, TimePicker } from 'antd';
+import { Checkbox, DatePicker, Input, InputNumber, Switch, TimePicker, Form, FormInstance } from 'antd';
 import * as _ from 'lodash';
-import * as React from 'react';
+import React, { FunctionComponent, VoidFunctionComponent } from 'react';
 import JSONInput from 'react-json-editor-ajrm';
 import locale from 'react-json-editor-ajrm/locale/zh-cn';
 import { useLogger } from 'react-use';
 
 import { apiProxy } from '../../../adapters/api';
 import { Config } from '../../../config';
+import { NoSSR } from '../../../helpers/ssr';
 import { validateFile } from '../../../helpers/upload';
 import { createLogger } from '../../../logger';
 import { Authorities } from '../Authorities';
 import { VideoUploader } from '../Videos';
 
 import type { FormComponentProps } from './interfaces';
-import type { GetFieldDecoratorOptions, WrappedFormUtils } from '@ant-design/compatible/es/form/Form';
 
 const logger = createLogger('components:dynamic-form:elements');
 
@@ -89,30 +88,36 @@ type ComponentOptions = {
   label?: string;
   fieldName: string;
   labelName: string;
-  opts?: GetFieldDecoratorOptions;
+  opts?: any; // GetFieldDecoratorOptions;
   help?: string;
   extra?: React.ReactNode;
 };
 
 export const generateComponent = (
-  form: WrappedFormUtils,
+  f,
   options: ComponentOptions,
-  Component: React.ReactNode,
+  Component: VoidFunctionComponent<any>,
   formItemLayout: IFormItemLayout = horizontalFormItemLayout,
 ) => {
+  const form: FormInstance = f.form ? f.form : f;
+  const field = f.field ? f.field : f;
   const { fieldName, labelName, opts, help } = options;
   if (fieldName) {
     logger.debug('[generateComponent]', options);
-    const decorator = form.getFieldDecorator(fieldName, opts || {});
+    const name = options.fieldName ?? options.name;
+    // const value = form.getFieldValue(name);
+    // console.log('<[generateComponent]>', { name, value }, options);
     return (
       <Form.Item
         key={fieldName}
         {...formItemLayout}
+        name={name}
         label={labelName || fieldName}
         {...(help ? { help: <div dangerouslySetInnerHTML={{ __html: help }} /> } : null)}
+        {...(opts || {})}
         extra={options.extra}
       >
-        {decorator(Component)}
+        <Component field={field} />
       </Form.Item>
     );
   }
@@ -121,7 +126,7 @@ export const generateComponent = (
 
 export type HiddenOptions = { key: string; name: string };
 
-export const generateHidden = (form: WrappedFormUtils, options: HiddenOptions) => {
+export const generateHidden = (form: FormInstance, options: HiddenOptions) => {
   logger.debug('[generateHidden]', options);
   const { key, name } = options;
   const fieldName = key || name;
@@ -136,16 +141,16 @@ export const generateHidden = (form: WrappedFormUtils, options: HiddenOptions) =
   return null;
 };
 
-export const generateCheckbox = (form: WrappedFormUtils, options, formItemLayout?: IFormItemLayout) => {
+export const generateCheckbox = (form: FormInstance, options, formItemLayout?: IFormItemLayout) => {
   const { key, name, label } = options;
 
   const fieldName = key || name;
   const labelName = label || name || key;
-  return generateComponent(form, { fieldName, labelName, ...options }, <Checkbox />, formItemLayout);
+  return generateComponent(form, { fieldName, labelName, ...options }, Checkbox, formItemLayout);
 };
 
 export const generateInputNumber = (
-  form: WrappedFormUtils,
+  form: FormInstance,
   options,
   formItemLayout: IFormItemLayout = horizontalFormItemLayout,
 ) => {
@@ -154,7 +159,7 @@ export const generateInputNumber = (
   const fieldName = key || name;
   const labelName = label || name || key;
   const opts = { rules: [{ required }] };
-  return generateComponent(form, { fieldName, labelName, opts, ...options }, <InputNumber />, formItemLayout);
+  return generateComponent(form, { fieldName, labelName, opts, ...options }, InputNumber, formItemLayout);
 };
 
 export type InputOptions = {
@@ -173,36 +178,44 @@ export type InputOptions = {
 };
 
 export const generateInput = (
-  form: WrappedFormUtils,
-  { key, name, label, required = false, requiredMessage, placeholder = '', iconType, help, length }: InputOptions,
+  { form, field, fields }: { form: FormInstance; fields; field },
+  options: InputOptions,
   formItemLayout?: IFormItemLayout,
 ) => {
+  const { key, name, label, required = false, requiredMessage, placeholder = '', iconType, help, length } = options;
   const fieldName = key || name;
   const labelName = label || name || key;
 
   let component;
   if (iconType) {
-    component = (
+    component = (props) => (
       <Input
         // prefix={<Icon type={iconType} style={{ color: 'rgba(0,0,0,.25)' }} />}
         placeholder={placeholder}
         allowClear
+        {...props}
       />
     );
   } else {
-    component = <Input placeholder={placeholder} allowClear />;
+    component = (props) => <Input placeholder={placeholder} allowClear {...props} />;
   }
 
   const opts = { rules: [{ required, message: requiredMessage }, { max: length || 255 }] };
-  return generateComponent(form, { key, name, label, fieldName, labelName, opts, help }, component, formItemLayout);
+  return generateComponent(
+    { form, field, fields },
+    { key, name, label, fieldName, labelName, opts, help },
+    component,
+    formItemLayout,
+  );
 };
 
 const TextAreaHOC: React.FC<Partial<FormComponentProps>> = (props) => (
-  <WithVariable key={props.id} variable={props as FormComponentProps}>
+  <WithVariable key={props.id} variable={props as FormComponentProps & { field: any }}>
     {(props) => {
       const value = _.isObject(props.value) ? JSON.stringify(props.value) : props.value;
       const textArea = <Input.TextArea autoSize={{ minRows: 3 }} allowClear {...props} value={value} />;
-      if (props[FIELD_DATA_PROP].type === 'JSON') {
+      // console.log('<[TextAreaHOC]>', props);
+      if (props.field.type === 'JSON') {
         return (
           <JSONInput
             id={`${props.id}_json_input`}
@@ -219,12 +232,16 @@ const TextAreaHOC: React.FC<Partial<FormComponentProps>> = (props) => (
   </WithVariable>
 );
 
-export const generateTextArea = (form: WrappedFormUtils, options, formItemLayout?: IFormItemLayout) => {
+export const generateTextArea = (
+  { form, field, fields }: { form: FormInstance; fields; field },
+  options,
+  formItemLayout?: IFormItemLayout,
+) => {
   const { key, name, label } = options;
 
   const fieldName = key || name;
   const labelName = label || name || key;
-  return generateComponent(form, { fieldName, labelName, ...options }, <TextAreaHOC />, formItemLayout);
+  return generateComponent({ form, field, fields }, { fieldName, labelName, ...options }, TextAreaHOC, formItemLayout);
 };
 
 const StringTmplHOC: React.FC<Partial<FormComponentProps> & Partial<{ fields: any }>> = (props) => {
@@ -243,13 +260,14 @@ const StringTmplHOC: React.FC<Partial<FormComponentProps> & Partial<{ fields: an
       }
     >
       {(props) => {
-        useLogger('generateStringTmpl', props);
+        useLogger('StringTmpl.generateStringTmpl', props);
+        // fixme FIELD_DATA_PROP not implemented
         return (
           <StringTmpl
             tmpl={props.value}
-            fields={props[FIELD_DATA_PROP]?.options?.fields}
+            fields={props['FIELD_DATA_PROP']?.options?.fields}
             {...props}
-            {...props[FIELD_DATA_PROP]?.options?.extra}
+            {...props['FIELD_DATA_PROP']?.options?.extra}
           />
         );
       }}
@@ -257,12 +275,12 @@ const StringTmplHOC: React.FC<Partial<FormComponentProps> & Partial<{ fields: an
   );
 };
 
-export const generateStringTmpl = (form: WrappedFormUtils, options, formItemLayout?: IFormItemLayout) => {
+export const generateStringTmpl = (form: FormInstance, options, formItemLayout?: IFormItemLayout) => {
   const { key, name, label } = options;
 
   const fieldName = key || name;
   const labelName = label || name || key;
-  return generateComponent(form, { fieldName, labelName, ...options }, <StringTmplHOC />, formItemLayout);
+  return generateComponent(form, { fieldName, labelName, ...options }, StringTmplHOC, formItemLayout);
 };
 
 /**
@@ -272,7 +290,7 @@ export const generateStringTmpl = (form: WrappedFormUtils, options, formItemLayo
  * @returns {null}
  */
 export const generateDateTime = (
-  form: WrappedFormUtils,
+  form: FormInstance,
   options,
   formItemLayout: IFormItemLayout = horizontalFormItemLayout,
 ) => {
@@ -282,21 +300,31 @@ export const generateDateTime = (
   const labelName = label || name || key;
 
   if (mode === 'time') {
-    return generateComponent(form, { fieldName, labelName, ...options }, <TimePicker />, formItemLayout);
+    return generateComponent(
+      form,
+      { fieldName, labelName, ...options },
+      (props) => <TimePicker {...props} />,
+      formItemLayout,
+    );
   }
   if (mode === 'date') {
-    return generateComponent(form, { fieldName, labelName, ...options }, <DatePicker />, formItemLayout);
+    return generateComponent(
+      form,
+      { fieldName, labelName, ...options },
+      (props) => <DatePicker {...props} />,
+      formItemLayout,
+    );
   }
   return generateComponent(
     form,
     { fieldName, labelName, ...options },
-    <DatePicker showTime format="YYYY-MM-DD HH:mm:ss" />,
+    (props) => <DatePicker showTime format="YYYY-MM-DD HH:mm:ss" {...props} />,
     formItemLayout,
   );
 };
 
 export const generateSwitch = (
-  form: WrappedFormUtils,
+  form: FormInstance,
   options,
   formItemLayout: IFormItemLayout = horizontalFormItemLayout,
 ) => {
@@ -307,13 +335,13 @@ export const generateSwitch = (
   return generateComponent(
     form,
     { fieldName, labelName, opts: { valuePropName: 'checked' }, ...options },
-    <Switch disabled={readonly} />,
+    (props) => <Switch disabled={readonly} {...props} />,
     formItemLayout,
   );
 };
 
 export const generateVideo = (
-  form: WrappedFormUtils,
+  form: FormInstance,
   options,
   formItemLayout: IFormItemLayout = horizontalFormItemLayout,
 ) => {
@@ -326,13 +354,13 @@ export const generateVideo = (
   return generateComponent(
     form,
     { fieldName, labelName, ...options },
-    <VideoUploader urlHandler={handler} />,
+    (props) => <VideoUploader urlHandler={handler} {...props} />,
     formItemLayout,
   );
 };
 
 export const generateAuthorities = (
-  form: WrappedFormUtils,
+  form: FormInstance,
   options,
   formItemLayout: IFormItemLayout = horizontalFormItemLayout,
 ) => {
@@ -340,11 +368,16 @@ export const generateAuthorities = (
 
   const fieldName = key || name;
   const labelName = label || name || key;
-  return generateComponent(form, { fieldName, labelName, ...options }, <Authorities />, formItemLayout);
+  return generateComponent(
+    form,
+    { fieldName, labelName, ...options },
+    (props) => <Authorities {...props} />,
+    formItemLayout,
+  );
 };
 
 export const generateRichTextEditor = (
-  form: WrappedFormUtils,
+  form: FormInstance,
   options,
   formItemLayout: IFormItemLayout = horizontalFormItemLayout,
 ) => {
@@ -353,17 +386,25 @@ export const generateRichTextEditor = (
   const fieldName = key || name;
   const labelName = label || name || key;
   // const host = Config.get('ATTACHE_HOST');
-  const handler = Config.get('ATTACHE_RES_HANDLER');
-  const ComponentWrapper = (props) => (
-    <div
-      css={css`
-        line-height: 20px;
-      `}
-    >
-      <WithSuspense future={() => require('@danielwii/asuna-components/dist/rich-editor').RichEditor}>
-        {(RichEditor: any) => <RichEditor {...props} upload={apiProxy.upload} validateFn={validateFile} />}
-      </WithSuspense>
-    </div>
+  // const handler = Config.get('ATTACHE_RES_HANDLER');
+  const RichEditor = require('@danielwii/asuna-components/dist/rich-editor').RichEditor;
+  // const RichEditor = require('@danielwii/asuna-components/dist/rich-editor').RichEditor;
+  return generateComponent(
+    form,
+    { fieldName, labelName, ...options },
+    (props) => (
+      // <NoSSR fallback={<Loading type="chase" />}>
+        <div
+          key={fieldName}
+          css={css`
+            line-height: 20px;
+          `}
+        >
+          {typeof window !== 'undefined' && <RichEditor {...props} upload={apiProxy.upload} validateFn={validateFile} /> }
+          {/*<RichEditor {...props} upload={apiProxy.upload} validateFn={validateFile} />*/}
+        </div>
+      // </NoSSR>
+    ),
+    formItemLayout,
   );
-  return generateComponent(form, { fieldName, labelName, ...options }, <ComponentWrapper />, formItemLayout);
 };

@@ -1,10 +1,9 @@
-import { WrappedFormUtils } from '@ant-design/compatible/es/form/Form';
 import { PlusOutlined } from '@ant-design/icons';
 
-import { Divider, Input, Select } from 'antd';
-import * as _ from 'lodash';
+import { Divider, FormInstance, Input, Select } from 'antd';
+import _ from 'lodash';
 import * as R from 'ramda';
-import * as React from 'react';
+import React from 'react';
 import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc';
 
 import { generateComponent, horizontalFormItemLayout, IFormItemLayout } from '.';
@@ -82,7 +81,7 @@ export const uniqueItems = (...items: Item[][]): Item[] => {
 };
 
 export function generateSelect<T>(
-  form: WrappedFormUtils,
+  form: FormInstance,
   {
     key,
     name,
@@ -144,7 +143,7 @@ export function generateSelect<T>(
     _extractName = item => {
       if (enumSelector.name) {
         if (_.isString(enumSelector.name)) {
-          console.warn("enumSelector.name is string, not function", enumSelector);
+          logger.warn("enumSelector.name is string, not function", enumSelector);
         }
         return R.compose(enumSelector.name as any, getValue)(item);
       }
@@ -158,7 +157,7 @@ export function generateSelect<T>(
     _extractValue = item => {
       if (enumSelector.value) {
         if (_.isString(enumSelector.name)) {
-          console.warn("enumSelector.name is string, not function", enumSelector);
+          logger.warn("enumSelector.name is string, not function", enumSelector);
         }
         return R.compose(enumSelector.value as any, getValue)(item);
       }
@@ -378,5 +377,10 @@ export function generateSelect<T>(
   ])(relation);
 
   const opts = { rules: [{ required }] };
-  return generateComponent(form, { fieldName, labelName, opts, extra }, <MixedSelect />, formItemLayout);
+  return generateComponent(
+    form,
+    { fieldName, labelName, opts, extra },
+    (props) => <MixedSelect {...props} />,
+    formItemLayout,
+  );
 }
