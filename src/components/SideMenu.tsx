@@ -1,7 +1,9 @@
 import { Layout, Menu } from 'antd';
-import * as _ from 'lodash';
+import _ from 'lodash';
+import * as fp from 'lodash/fp';
 import * as React from 'react';
 
+import { AppContext } from '../core';
 import { createLogger } from '../logger';
 import { Asuna } from '../types';
 
@@ -25,8 +27,14 @@ export class SideMenu extends React.Component<ISideMenuProps, IState> {
    */
   open = ({ key, keyPath, domEvent, item }) => {
     const {
-      props: { model, title, link, component },
+      props: { model, title, link },
     } = item;
+    const { component } =
+      _.flow(
+        fp.map(fp.get('subMenus')),
+        _.flatten,
+        fp.find((subMenu: Asuna.Schema.SubMenu) => `pages::${subMenu.key}` === key),
+      )(AppContext.ctx.menu.getSideMenus()) ?? ({} as any);
     logger.log('open', { key, model, title, link, component });
     const { onOpen } = this.props;
     onOpen({ key, model, title, linkTo: link, component });
@@ -37,19 +45,20 @@ export class SideMenu extends React.Component<ISideMenuProps, IState> {
       {_.map(
         _.groupBy(menu.subMenus, (subMenu: Asuna.Schema.ComponentSubMenu) => subMenu.group || 'default'),
         (groupMenus: Asuna.Schema.ComponentSubMenu, groupName: string) => {
-          const subMenusComponent = _.map(groupMenus, (
-            groupMenu: Asuna.Schema.ComponentSubMenu /* 统一按照通用组件处理 */,
-          ) => (
-            <MenuItem
-              key={`${menu.key}::${groupMenu.key}`}
-              model={groupMenu.model}
-              title={groupMenu.title}
-              link={groupMenu.linkTo}
-              component={groupMenu.component}
-            >
-              {groupMenu.title}
-            </MenuItem>
-          ));
+          const subMenusComponent = _.map(
+            groupMenus,
+            (groupMenu: Asuna.Schema.ComponentSubMenu /* 统一按照通用组件处理 */) => (
+              <MenuItem
+                key={`${menu.key}::${groupMenu.key}`}
+                model={groupMenu.model}
+                title={groupMenu.title}
+                link={groupMenu.linkTo}
+                component={groupMenu.component}
+              >
+                {groupMenu.title}
+              </MenuItem>
+            ),
+          );
 
           if (groupName === 'default') {
             if (_.keys(_.groupBy(menu.subMenus, 'group')).length > 1) {
