@@ -41,7 +41,7 @@ const FixedLoading = styled(({ className }) => (
 export type DynamicFormProps = {
   model: string;
   fields: any[] | FormField[];
-  onSubmit: (fn: (e: Error) => void) => void;
+  onSubmit: (values: Record<string, any>) => Promise<any>;
   onClose: () => void;
   loading?: boolean;
   anchor?: boolean;
@@ -100,7 +100,7 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener> 
 }) => {
   const [form] = Form.useForm();
   // formRef?.(form);
-  const memoizedFields = useMemo(() => fields, [1]);
+  const memoizedFields = useMemo(() => fields, [1]); // used to diff
   const { loading: loadingDrafts, drafts, retry } = useAsunaDrafts({ type: model, refId: _.get(fields, 'id.value') });
   const { value: schema } = useAsync(() => SchemaHelper.getSchema(model), [model]);
   const [state, setState] = useSetState<Record<string, FieldDef>>(
@@ -136,7 +136,7 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener> 
       .validateFields()
       .then((values) => {
         logger.log('[DynamicForm][handleOnSubmit]', values);
-        onSubmit(e);
+        return onSubmit(values);
       })
       .catch((reason) => {
         logger.error('[DynamicForm][handleOnSubmit]', 'error occurred in form', reason);

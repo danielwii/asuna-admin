@@ -30,11 +30,10 @@ const logger = createLogger('modules:content:upsert');
 // Build Form
 // --------------------------------------------------------------
 
-interface IContentForm {
+interface IContentForm extends Pick<DynamicFormProps, 'onSubmit'> {
   // form;
   fields;
   onChange: (value) => void;
-  onSubmit: (fn: (e: Error) => void) => void;
 }
 
 const ContentForm = ({ fields, ...props }: IContentForm & DynamicFormProps) => {
@@ -351,10 +350,10 @@ class ContentUpsert extends React.Component<IProps, IState> {
     }
   };
 
-  _handleFormSubmit = (event) => {
-    event.preventDefault();
+  _handleFormSubmit = async (values) => {
     const { originalFieldValues, primaryKey } = this.state;
 
+    /*
     const fieldPairs: any = R.compose(
       R.pickBy((value, key) =>
         originalFieldValues
@@ -365,11 +364,8 @@ class ContentUpsert extends React.Component<IProps, IState> {
       ),
       R.map<any, any>(R.prop('value')),
     )(this.state.fields);
-    logger.debug('[handleFormSubmit]', {
-      fieldPairs,
-      originalFieldValues,
-      fields: this.state.fields,
-    });
+*/
+    logger.debug('[handleFormSubmit]', { values, originalFieldValues, fields: this.state.fields });
 
     const { dispatch, onClose } = this.props;
     const { modelName, isInsertMode } = this.state;
@@ -377,7 +373,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
     const id: any = R.prop(primaryKey)(originalFieldValues as any);
 
     dispatch(
-      modelsActions.upsert(modelName, { body: { ...fieldPairs, [primaryKey]: id } }, ({ response, error }) => {
+      modelsActions.upsert(modelName, { body: { ...values, [primaryKey]: id } }, ({ response, error }) => {
         if (isErrorResponse(error)) {
           const errors = toFormErrors(error.response);
           logger.warn('[upsert callback]', { response, error, errors });
@@ -390,7 +386,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
         } else {
           this.setState({
             hasErrors: false,
-            originalFieldValues: { ...originalFieldValues, ...fieldPairs },
+            originalFieldValues: { ...originalFieldValues, ...values },
           });
           // FIXME 当前页面暂未切换为 update 模式，临时关闭当前页面
           if (isInsertMode) {
