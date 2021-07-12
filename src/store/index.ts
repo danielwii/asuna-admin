@@ -137,9 +137,9 @@ export class AsunaStore {
 
   public configureStore: MakeStore = (preloadedState = this.initialState, opts: MakeStoreOptions): Store => {
     logger.log('configureStore', opts);
-    AppContext.isServer = opts.isServer;
+    AppContext.isServer = (opts as any).isServer ?? typeof window === "undefined";
     let store;
-    if (opts.isServer) {
+    if (AppContext.isServer) {
       store = createStore<RootState, AnyAction, any, any>(
         this.rootReducers,
         preloadedState,

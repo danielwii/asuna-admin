@@ -1,6 +1,6 @@
 import { Paper } from '@material-ui/core';
 
-import { Affix, Anchor, Button, Col, Divider, Form, List, Popconfirm, Row, Tag } from 'antd';
+import { Affix, Anchor, Button, Col, Divider, Form, FormInstance, List, Popconfirm, Row, Tag } from 'antd';
 import consola from 'consola';
 import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
@@ -50,7 +50,7 @@ export type DynamicFormProps = {
    */
   delegate?: boolean;
   auditMode?: boolean;
-  // formRef?: (form: WrappedFormUtils) => void;
+  formRef?: (form: FormInstance) => void;
 };
 
 /*
@@ -96,10 +96,10 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener> 
   delegate,
   anchor,
   auditMode,
-  // formRef,
+  formRef,
 }) => {
   const [form] = Form.useForm();
-  // formRef?.(form);
+  formRef?.(form);
   const memoizedFields = useMemo(() => fields, [1]); // used to diff
   const { loading: loadingDrafts, drafts, retry } = useAsunaDrafts({ type: model, refId: _.get(fields, 'id.value') });
   const { value: schema } = useAsync(() => SchemaHelper.getSchema(model), [model]);
