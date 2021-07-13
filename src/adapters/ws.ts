@@ -1,7 +1,7 @@
 import { Endpoints } from '@danielwii/asuna-helper/dist/env';
 
 import * as Rx from 'rxjs';
-import io from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
 
 import { AppContext } from '../core';
 import { createLogger } from '../logger';
@@ -13,7 +13,7 @@ import { appActions } from '../store';
 
 const logger = createLogger('adapters:ws');
 
-export type NextSocketType = { id: string; socket: typeof io.Socket };
+export type NextSocketType = { id: string; socket: Socket };
 
 export class WsAdapter {
   private static socket: any; // typeof io.Socket;
@@ -40,7 +40,7 @@ export class WsAdapter {
         reconnectionDelayMax: 60e3,
       };
       // console.log('init socket.io with', url, options);
-      WsAdapter.socket = (io as any).connect(url, options);
+      WsAdapter.socket = io(url, options);
 
       WsAdapter.socket.on('connect', () => {
         logger.log('[connect]', WsAdapter.socket.id);

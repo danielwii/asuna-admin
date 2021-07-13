@@ -4,7 +4,6 @@
 // noinspection ES6UnusedImports
 import { css, jsx } from '@emotion/react';
 
-import { Loading } from '@danielwii/asuna-components';
 import { WithVariable } from '@danielwii/asuna-components/dist/helper/helper';
 import { StringTmpl } from '@danielwii/asuna-components/dist/string-tmpl';
 
@@ -394,15 +393,17 @@ export const generateRichTextEditor = (
     { fieldName, labelName, ...options },
     (props) => (
       // <NoSSR fallback={<Loading type="chase" />}>
-        <div
-          key={fieldName}
-          css={css`
-            line-height: 20px;
-          `}
-        >
-          {typeof window !== 'undefined' && <RichEditor {...props} upload={apiProxy.upload} /*validateFn={validateFile}*/ /> }
-          {/*<RichEditor {...props} upload={apiProxy.upload} validateFn={validateFile} />*/}
-        </div>
+      <div
+        key={fieldName}
+        css={css`
+          line-height: 20px;
+        `}
+      >
+        {typeof window !== 'undefined' && (
+          <RichEditor {...props} upload={apiProxy.upload} /*validateFn={validateFile}*/ />
+        )}
+        {/*<RichEditor {...props} upload={apiProxy.upload} validateFn={validateFile} />*/}
+      </div>
       // </NoSSR>
     ),
     formItemLayout,
