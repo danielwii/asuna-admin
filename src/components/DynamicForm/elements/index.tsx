@@ -400,7 +400,7 @@ export const generateRichTextEditor = (
             line-height: 20px;
           `}
         >
-          {typeof window !== 'undefined' && <RichEditor {...props} upload={apiProxy.upload} validateFn={validateFile} /> }
+          {typeof window !== 'undefined' && <RichEditor {...props} upload={apiProxy.upload} /*validateFn={validateFile}*/ /> }
           {/*<RichEditor {...props} upload={apiProxy.upload} validateFn={validateFile} />*/}
         </div>
       // </NoSSR>
