@@ -1,6 +1,4 @@
 import { message } from 'antd';
-import { TablePaginationConfig } from 'antd/es/table/interface';
-import { AxiosResponse } from 'axios';
 import { Promise } from 'bluebird';
 import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
@@ -20,9 +18,12 @@ import {
   TenantHelper,
 } from '../helpers';
 import { createLogger } from '../logger';
-import { AuthState } from '../store';
 import { Asuna } from '../types';
-import { Condition, WhereConditions } from '../types/meta';
+
+import type { TablePaginationConfig } from 'antd/es/table/interface';
+import type { AxiosResponse } from 'axios';
+import type { AuthState } from '../store';
+import type { Condition, WhereConditions } from '../types/meta';
 
 // --------------------------------------------------------------
 // Types
@@ -470,31 +471,29 @@ export class ModelAdapterImpl implements ModelAdapter {
     return R.compose(
       R.mergeAll as any,
       R.map((formatted: Asuna.Schema.FormSchema) => ({ [formatted.name]: formatted })),
-      R.map(
-        (field: Asuna.Schema.ModelSchema): Asuna.Schema.FormSchema => {
-          const ref = R.pathOr(field.name, ['config', 'info', 'ref'])(field);
-          const length = _.toNumber(field?.config?.length) || null; // 0 || null is null
-          const isNullable = field?.config?.nullable ?? true;
-          const isRequired = field?.config?.info?.required ?? false;
-          return {
-            name: ref || field.name,
-            ref,
-            type: this.identifyType(name, field),
-            options: {
-              length,
-              label: field?.config?.info?.name ?? null,
-              selectable: field?.config?.selectable ?? null,
-              relation: field?.config?.relation,
-              required: !isNullable || isRequired,
-              ...field?.config?.info,
-              ...this.getModelConfig(name)?.model?.settings?.[field.name],
-            },
-            // 不存在时返回 undefined，而不能返回 null
-            // null 会被当作值在更新时被传递
-            value: values ? R.prop(field.name)(values) : undefined,
-          };
-        },
-      ),
+      R.map((field: Asuna.Schema.ModelSchema): Asuna.Schema.FormSchema => {
+        const ref = R.pathOr(field.name, ['config', 'info', 'ref'])(field);
+        const length = _.toNumber(field?.config?.length) || null; // 0 || null is null
+        const isNullable = field?.config?.nullable ?? true;
+        const isRequired = field?.config?.info?.required ?? false;
+        return {
+          name: ref || field.name,
+          ref,
+          type: this.identifyType(name, field),
+          options: {
+            length,
+            label: field?.config?.info?.name ?? null,
+            selectable: field?.config?.selectable ?? null,
+            relation: field?.config?.relation,
+            required: !isNullable || isRequired,
+            ...field?.config?.info,
+            ...this.getModelConfig(name)?.model?.settings?.[field.name],
+          },
+          // 不存在时返回 undefined，而不能返回 null
+          // null 会被当作值在更新时被传递
+          value: values ? R.prop(field.name)(values) : undefined,
+        };
+      }),
     )(schema) as { [member: string]: Asuna.Schema.FormSchema };
   };
 
