@@ -1,4 +1,4 @@
-import { plainToClass } from 'class-transformer';
+import { plainToInstance } from 'class-transformer';
 import _ from 'lodash';
 import * as fp from 'lodash/fp';
 
@@ -43,23 +43,23 @@ export class AdminAdapterImpl implements AdminAdapter {
 
   stateMachines = (): Promise<StateMachines> =>
     AppContext.withAuth((auth) =>
-      this.service.stateMachines(auth).then((res) => plainToClass(StateMachines, res.data)),
+      this.service.stateMachines(auth).then((res) => plainToInstance(StateMachines, res.data)),
     );
 
   tenantInfo = (): Promise<TenantInfo> =>
-    AppContext.withAuth((auth) => this.service.tenantInfo(auth).then((res) => plainToClass(TenantInfo, res.data)));
+    AppContext.withAuth((auth) => this.service.tenantInfo(auth).then((res) => plainToInstance(TenantInfo, res.data)));
 
   registerTenant = <T>(data: { name: string; description?: string; payload: T }): Promise<Tenant> =>
     AppContext.withAuth((auth) =>
-      this.service.registerTenant(auth, data).then((res) => plainToClass(Tenant, res.data)),
+      this.service.registerTenant(auth, data).then((res) => plainToInstance(Tenant, res.data)),
     );
 
   createDraft = (data: { content: Json; type: string; refId?: string }): Promise<Draft> =>
-    AppContext.withAuth((auth) => this.service.createDraft(auth, data).then((res) => plainToClass(Draft, res.data)));
+    AppContext.withAuth((auth) => this.service.createDraft(auth, data).then((res) => plainToInstance(Draft, res.data)));
 
   getDrafts = (params: { type: string; refId: string }): Promise<Draft[]> =>
     AppContext.withAuth((auth) =>
-      this.service.getDrafts(auth, params).then((res) => _.map(res.data, (item) => plainToClass(Draft, item))),
+      this.service.getDrafts(auth, params).then((res) => _.map(res.data, (item) => plainToInstance(Draft, item))),
     );
 
   publishDraft = (params: { id: string }): Promise<void> =>

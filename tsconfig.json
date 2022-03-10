@@ -19,13 +19,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "declaration": true,
-    "outDir": "dist",
-    "baseUrl": ".",
-    "noEmit": true,
-    "paths": {
-      "@danielwii/asuna-admin": ["src/index.ts"],
-      "@danielwii/asuna-admin/*": ["src/*"]
-    }
+    "outDir": "dist"
   },
   "include": ["next-env.d.ts", "src/**/*.ts*", "./services/**/*.ts*", "./components/**/*.ts*", "./pages/**/*.ts*"],
   "exclude": ["**/*.spec.*", "node_modules"]
