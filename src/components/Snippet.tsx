@@ -8,12 +8,13 @@ import { PreviewButton } from '@danielwii/asuna-components/dist/preview-button';
 import * as _ from 'lodash';
 import dynamic from 'next/dynamic';
 import React from 'react';
-import { ImageDecorator } from 'react-viewer/lib/ViewerProps';
 
 import { valueToArrays } from '../core/url-rewriter';
 import { TooltipContent } from '../helpers';
 
-const Viewer = dynamic(import('react-viewer'), { ssr: false });
+import type { ImageDecorator } from 'react-viewer/lib/ViewerProps';
+
+const Viewer = dynamic(() => import('react-viewer'), { ssr: false });
 
 export function ReactViewer({
   images,

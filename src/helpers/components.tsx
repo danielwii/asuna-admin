@@ -1,7 +1,7 @@
 /** @jsxRuntime classic */
 
 /** @jsx jsx */
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/client';
 import { css, jsx } from '@emotion/react';
 import { createStyles, Theme } from '@material-ui/core';
 
