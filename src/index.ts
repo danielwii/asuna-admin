@@ -1,6 +1,4 @@
-/// <reference path="../typings/index.d.ts" />
 /// <reference path="../typings/global.d.ts" />
-
 import * as _ from 'lodash';
 
 console.log('[asuna-admin] replace lodash cache to WeakMap');
