@@ -97,7 +97,7 @@ export class GraphqlAdapterImpl {
         // fetchPolicy: 'cache-first',
         variables: { nCollection: collection, nKey: key },
         query: gql`
-          query loadKv($nCollection: String, $nKey: String) {
+          query loadKv($nCollection: String!, $nKey: String!) {
             kv(collection: $nCollection, key: $nKey) {
               collection
               key

@@ -1,5 +1,5 @@
 import localForage from 'localforage';
-import { reduxAction } from 'node-buffs';
+import { reduxAction } from 'node-buffs/dist/redux';
 import * as R from 'ramda';
 import { AnyAction, applyMiddleware, combineReducers, createStore, DeepPartial, Store } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
@@ -122,7 +122,7 @@ export class AsunaStore {
 
     const crossSliceReducer = (preloadedState, action) => {
       if (action.type === actionTypes.CLEAN) {
-        const cleanedState = R.compose(modelsCleaner/*, panesCleaner*/)(preloadedState);
+        const cleanedState = R.compose(modelsCleaner /*, panesCleaner*/)(preloadedState);
         logger.log('[crossSliceReducer]', { preloadedState, action, cleanedState });
         return cleanedState;
       }
@@ -137,7 +137,7 @@ export class AsunaStore {
 
   public configureStore: MakeStore = (preloadedState = this.initialState, opts: MakeStoreOptions): Store => {
     logger.log('configureStore', opts);
-    AppContext.isServer = (opts as any).isServer ?? typeof window === "undefined";
+    AppContext.isServer = (opts as any).isServer ?? typeof window === 'undefined';
     let store;
     if (AppContext.isServer) {
       store = createStore<RootState, AnyAction, any, any>(

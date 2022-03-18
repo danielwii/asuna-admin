@@ -9,6 +9,7 @@ import { StringTmpl } from '@danielwii/asuna-components/dist/string-tmpl';
 
 import { Checkbox, DatePicker, Input, InputNumber, Switch, TimePicker, Form, FormInstance } from 'antd';
 import * as _ from 'lodash';
+import dynamic from 'next/dynamic';
 import React, { FunctionComponent, VoidFunctionComponent } from 'react';
 import JSONInput from 'react-json-editor-ajrm';
 import locale from 'react-json-editor-ajrm/locale/zh-cn';
@@ -375,6 +376,8 @@ export const generateAuthorities = (
   );
 };
 
+const RichEditor = dynamic(() => import('@danielwii/asuna-components/dist/rich-editor'), { ssr: false });
+
 export const generateRichTextEditor = (
   form: FormInstance,
   options,
@@ -386,7 +389,7 @@ export const generateRichTextEditor = (
   const labelName = label || name || key;
   // const host = Config.get('ATTACHE_HOST');
   // const handler = Config.get('ATTACHE_RES_HANDLER');
-  const RichEditor = require('@danielwii/asuna-components/dist/rich-editor').RichEditor;
+  // const RichEditor = require('@danielwii/asuna-components/dist/rich-editor').RichEditor;
   // const RichEditor = require('@danielwii/asuna-components/dist/rich-editor').RichEditor;
   return generateComponent(
     form,

@@ -1,5 +1,5 @@
 import { message } from 'antd';
-import { reduxAction } from 'node-buffs';
+import { reduxAction } from 'node-buffs/dist/redux';
 import * as R from 'ramda';
 import { call, put, select, takeLatest } from 'redux-saga/effects';
 

@@ -33,7 +33,7 @@ export class SideMenu extends React.Component<ISideMenuProps, IState> {
       _.flow(
         fp.map(fp.get('subMenus')),
         _.flatten,
-        fp.find((subMenu: Asuna.Schema.SubMenu) => `pages::${subMenu.key}` === key),
+        fp.find((subMenu: Asuna.Schema.SubMenu) => subMenu.key === _.get(key.split('::'), 1)),
       )(AppContext.ctx.menu.getSideMenus()) ?? ({} as any);
     logger.log('open', { key, model, title, link, component });
     const { onOpen } = this.props;

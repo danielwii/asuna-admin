@@ -10,13 +10,13 @@ export interface IRegGraphqlProps {
 }
 
 export class ComponentService implements IComponentService {
-  #components: { [key: string]: React.FC<any> } = {};
+  #components: { [key: string]: React.VFC } = {};
 
-  reg(componentName: string, component: React.FC): void {
+  reg(componentName: string, component: React.VFC): void {
     this.#components[componentName] = component;
   }
 
-  regGraphql(componentName: string, renderComponent: React.FC): void {
+  regGraphql(componentName: string, renderComponent: React.VFC): void {
     this.#components[componentName] = (props) => (
       <ApolloProvider client={AppContext.ctx.graphql.client as any /* TODO error occurred */}>
         {renderComponent({
@@ -36,7 +36,7 @@ export class ComponentService implements IComponentService {
     );
   }
 
-  load(componentName: string): React.FC<any> {
+  load(componentName: string): React.VFC {
     return this.#components[componentName];
   }
 }

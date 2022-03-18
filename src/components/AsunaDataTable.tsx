@@ -309,7 +309,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = (props) => {
             </Menu.Item>
           </Menu>
         }
-        placement="bottomCenter"
+        placement="bottom"
       >
         <Button size="small">布局</Button>
       </Dropdown>

@@ -4,11 +4,10 @@ import * as React from 'react';
 import { generateComponent, horizontalFormItemLayout, IFormItemLayout, InputOptions } from '.';
 import { ChinaDivisionOptions, parseAddress } from '../../../components';
 
-import type { CascaderValueType } from 'antd/es/cascader';
 import type { FormComponentProps } from './interfaces';
 
 class AddressInline extends React.Component<Partial<FormComponentProps> & { placeholder: string }> {
-  _onChange(codes: CascaderValueType | undefined, labels: string[] | undefined, detail: string | null): void {
+  _onChange(codes: any[] | undefined, labels: string[] | undefined, detail: string | null): void {
     const { onChange } = this.props;
     onChange!(JSON.stringify([codes?.join(','), labels?.join(','), detail || '']));
   }

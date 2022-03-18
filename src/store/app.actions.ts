@@ -1,4 +1,4 @@
-import { reduxAction } from 'node-buffs';
+import { reduxAction } from 'node-buffs/dist/redux';
 
 // --------------------------------------------------------------
 // Module actionTypes

@@ -1,4 +1,4 @@
-import { toCamelCase, toSnakeCase } from 'node-buffs';
+import { toCamelCase, toSnakeCase } from 'node-buffs/dist/strings';
 
 import { Config } from '../config';
 

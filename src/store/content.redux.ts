@@ -1,4 +1,4 @@
-import { reduxAction } from 'node-buffs';
+import { reduxAction } from 'node-buffs/dist/redux';
 import { call, put, select, takeLatest } from 'redux-saga/effects';
 
 import { AppContext } from '../core';

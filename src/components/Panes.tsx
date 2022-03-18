@@ -44,7 +44,7 @@ interface IState {
   titles: object;
 }
 
-export const PanesView: React.FC<IPanesProps> = ({
+export const PanesView: React.VFC<IPanesProps> = ({
   onClose,
   activeKey,
   onActive,

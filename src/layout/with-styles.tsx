@@ -1,8 +1,13 @@
+/** @jsxRuntime classic */
+
+/** @jsx jsx */
+import { jsx, css, Global } from '@emotion/react';
+
 import { ConfigProvider } from 'antd';
-import * as React from 'react';
-import NextHead from 'next/head';
-import getConfig from 'next/config';
 import zhCN from 'antd/lib/locale/zh_CN';
+import getConfig from 'next/config';
+import NextHead from 'next/head';
+import * as React from 'react';
 
 /*
 import 'antd/dist/antd.css';
@@ -31,25 +36,26 @@ const WithStyles = ({ children, hideCharacteristics }) => (
       {/*<link rel="icon" type="image/png" sizes="16x16" href="/static/icons/favicon-16x16.png" />*/}
     </NextHead>
     {children}
-    {/* language=CSS */}
-    <style jsx global>{`
-      .ant-legacy-form-item-control pre {
-        line-height: 1rem;
-      }
-      .ant-legacy-form-item-control [name='outer-box'] {
-        line-height: 1rem;
-      }
-      pre {
-        /*line-height: 1rem;*/
-        /*font-size: 0.65rem;*/
-      }
-      .row-published {
-        /*background-color: lavender;*/
-      }
-      .row-unpublished {
-        color: darkred;
-      }
-    `}</style>
+    <Global
+      styles={css`
+        .ant-legacy-form-item-control pre {
+          line-height: 1rem;
+        }
+        .ant-legacy-form-item-control [name='outer-box'] {
+          line-height: 1rem;
+        }
+        pre {
+          /*line-height: 1rem;*/
+          /*font-size: 0.65rem;*/
+        }
+        .row-published {
+          /*background-color: lavender;*/
+        }
+        .row-unpublished {
+          color: darkred;
+        }
+      `}
+    />
   </ConfigProvider>
 );
 
