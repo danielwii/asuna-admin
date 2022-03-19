@@ -394,7 +394,7 @@ export class ModelAdapterImpl implements ModelAdapter {
   ): Promise<RelationColumnProps[]> => {
     logger.log('[getColumns]', { modelName, extraName, opts });
     const formSchema = this.getFormSchema(modelName);
-    const { table: columnsRender } = this.getModelConfig(extraName || modelName);
+    const { table: columnsRender } = this.getModelConfig(extraName ?? modelName);
     const readonly = !TenantHelper.enableModelPublishForCurrentUser(modelName);
     const columns = columnsRender
       ? await Promise.all(

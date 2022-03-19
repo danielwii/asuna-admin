@@ -1,4 +1,4 @@
-import { Endpoints } from '@danielwii/asuna-helper/dist/env';
+import { getPublicRuntimeConfig } from '@danielwii/asuna-helper/dist/next/config';
 
 import * as Rx from 'rxjs';
 import { io, Socket } from 'socket.io-client';
@@ -29,7 +29,7 @@ export class WsAdapter {
     this.namespace = opts.namespace || 'admin';
 
     if (!AppContext.isServer && !WsAdapter.socket) {
-      const url = `${Endpoints.ws}/${this.namespace}`;
+      const url = `${getPublicRuntimeConfig().WS_ENDPOINT}/${this.namespace}`;
       const options = {
         path: `/socket.io/admin`,
         namespace: this.namespace,
