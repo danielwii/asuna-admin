@@ -3,7 +3,7 @@ import { InfoCircleOutlined } from '@ant-design/icons';
 import { Button, Divider, Popover } from 'antd';
 import * as React from 'react';
 import { useState } from 'react';
-import JSONTree from 'react-json-tree';
+import { JSONTree } from 'react-json-tree';
 import * as util from 'util';
 
 import { AppContext } from '../core';
