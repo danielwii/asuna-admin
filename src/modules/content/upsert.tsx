@@ -143,7 +143,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
     const { basis } = this.props;
 
     // content::create::name::timestamp => name
-    const modelName = R.compose(R.nth(2), R.split(/::/), R.path(['pane', 'key']))(basis) as string;
+    const modelName = R.compose(R.nth(2) as any, R.split(/::/), R.path(['pane', 'key']))(basis) as string;
     logger.log('[constructor]', 'model name is ', modelName);
 
     const isInsertMode = !R.path(['pane', 'data', 'record'])(basis);
@@ -172,7 +172,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
     const { isInsertMode, init, primaryKey } = this.state;
 
     // content::create::name::timestamp => name
-    const modelName = R.compose(R.nth(2), R.split(/::/), R.path(['pane', 'key']))(basis) as string;
+    const modelName = R.compose(R.nth(2) as any, R.split(/::/), R.path(['pane', 'key']))(basis) as string;
     logger.debug('[componentWillMount]', 'model name is ', modelName);
 
     // --------------------------------------------------------------
