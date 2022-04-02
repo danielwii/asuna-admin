@@ -57,7 +57,7 @@ export * from './upload';
  * @param token
  */
 export const authHeader = (token?) => {
-  const authToken = token || AppContext.fromStore('auth').token;
+  const authToken = token || AppContext.fromStore('auth')?.token;
   const schema = Config.get('AUTH_HEADER');
   if (schema === 'AuthHeaderAsBearerToken') {
     return { headers: { Authorization: `Bearer ${authToken}` } };
@@ -604,7 +604,7 @@ export const columnHelper = {
           <Tooltip title={value}>
             <React.Fragment>
               {content}
-              <div>{moment(record).fromNow()}</div>
+              <div>({moment(record).fromNow()})</div>
             </React.Fragment>
           </Tooltip>
         );

@@ -7,6 +7,7 @@ import 'moment/locale/zh-cn';
 import fetch from 'node-fetch';
 import * as R from 'ramda';
 import * as React from 'react';
+import { QueryClient, QueryClientProvider } from 'react-query';
 import { connect } from 'react-redux';
 
 import { AppContext, IIndexRegister, ILoginRegister, INextConfig } from '../core';
@@ -29,6 +30,42 @@ export interface IIndexPageProps extends ReduxProps {
   site: { logo?: string; title?: string; primaryColor?: { hex: string } };
   error?: object;
 }
+
+/*
+const IndexPage2: NextComponentType<NextPageContext, Promise<IIndexPageProps>, IIndexPageProps> = (props) => {
+  const { dispatch, register, site } = props;
+  AppContext.setup({ register, module: 'index' }).then(() => dispatch(appActions.init()));
+  AppContext.regDispatch(dispatch);
+
+  if (site?.primaryColor) {
+    const themeColor = generateThemeColor(site?.primaryColor.hex);
+    changeAntdTheme(themeColor);
+  }
+
+  const {
+    auth,
+    app: { loading, heartbeat },
+    appInfo,
+    hideCharacteristics,
+    error,
+  } = props;
+  logger.debug('[render]', props);
+
+  if (error) {
+    return <LivingLoading heartbeat />;
+  }
+
+  return (
+    <MainLayout
+      loading={loading}
+      heartbeat={heartbeat}
+      auth={auth}
+      appInfo={appInfo}
+      hideCharacteristics={hideCharacteristics}
+    />
+  );
+};
+*/
 
 export class IndexPage extends React.Component<IIndexPageProps> {
   constructor(props) {
@@ -101,13 +138,15 @@ export class IndexPage extends React.Component<IIndexPageProps> {
     }
 
     return (
-      <MainLayout
-        loading={loading}
-        heartbeat={heartbeat}
-        auth={auth}
-        appInfo={appInfo}
-        hideCharacteristics={hideCharacteristics}
-      />
+      <QueryClientProvider client={new QueryClient()}>
+        <MainLayout
+          loading={loading}
+          heartbeat={heartbeat}
+          auth={auth}
+          appInfo={appInfo}
+          hideCharacteristics={hideCharacteristics}
+        />
+      </QueryClientProvider>
     );
   }
 }
