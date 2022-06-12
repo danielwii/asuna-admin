@@ -4,7 +4,7 @@ import { createGlobalState } from 'react-use';
 
 import type { Asuna } from '../types';
 import type { IHookStateSetAction } from 'react-use/lib/misc/hookState';
-import type { Pane } from '../components';
+import type { Pane } from '../components/Panes';
 
 export interface PanesState {
   activeKey?: string;
@@ -18,14 +18,14 @@ const initialState: PanesState = {
 
 export const useSharedPanesGlobalValue = createGlobalState<PanesState>(initialState);
 
-export type SharedPanesFunc = {
+export interface SharedPanesFunc {
   active: (key: string) => void;
   closeWithout: (key: string) => void;
   closeAll: () => void;
   close: (key: string) => void;
   open: (pane: Asuna.Schema.Pane) => void;
   closeCurrent: (key: string) => void;
-};
+}
 /**
  * const [panesState, panesStateSetter] = useSharedPanesGlobalValue();
  * const sharedPanesFunc = useSharedPanesFunc(panesStateSetter);

@@ -4,14 +4,16 @@ import * as R from 'ramda';
 import { REHYDRATE } from 'redux-persist';
 import { call, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 
-import { authProxy } from '../adapters';
-import { toErrorMessage } from '../helpers';
+import { authProxy } from '../adapters/auth';
+import { AppNavigator } from '../context/navigator';
+import { toErrorMessage } from '../helpers/error';
 import { createLogger } from '../logger';
-import { appActionTypes, RootState } from './';
+import { appActionTypes } from './app.actions';
 import { authActions, authActionTypes, isAuthModule } from './auth.actions';
-import { routerActions } from './router.redux';
 
-const logger = createLogger('store:auth');
+import type { RootState } from './types';
+
+const logger = createLogger('store:auth', 'debug');
 
 // --------------------------------------------------------------
 // Login sagas
@@ -34,7 +36,7 @@ function* loginSaga({ payload: { username, password }, callback }) {
     yield put(authActions.loginSuccess(username, token));
     message.info(`'${username}' login success`);
 
-    yield put(routerActions.toIndex());
+    return AppNavigator.toIndex();
   } catch (error) {
     logger.error('[loginSaga]', { error });
     try {
@@ -66,8 +68,7 @@ function* logoutSaga() {
 function* tokenWatcher(action) {
   const {
     auth: { token },
-    router: { path },
-  } = yield select((state: RootState) => ({ auth: state.auth, router: state.router }));
+  } = yield select((state: RootState) => ({ auth: state.auth }));
   // restored will be handled later at yield take(appActionTypes.RESTORED), simply ignore here
   if ([appActionTypes.RESTORED].includes(action.type)) {
     return;
@@ -78,20 +79,21 @@ function* tokenWatcher(action) {
     const restoredAction = yield take(appActionTypes.RESTORED);
     logger.log('[tokenWatcher]', 'waiting for app restored', restoredAction);
     const auth: AuthState = yield select((state: RootState) => state.auth);
-    if (!auth?.token) {
+    if (!auth?.token && !AppNavigator.isLogin()) {
       logger.log('[tokenWatcher]', 'invalid auth token, back to login');
-      yield put(routerActions.toLogin());
+      return AppNavigator.toLogin();
     }
   } else if (action.type === authActionTypes.LOGOUT) {
     logger.log('[tokenWatcher]', 'logout...');
-    yield put(routerActions.toLogin());
-  } else if (!token && path !== '/login') {
+    return AppNavigator.toLogin();
+  } else if (!token && !AppNavigator.isLogin()) {
     logger.log('[tokenWatcher]', 'no token found and path is not login, goto login');
-    yield put(routerActions.toLogin());
-  } else if (!path) {
+    return AppNavigator.toLogin();
+  } /*else if (!path) {
     logger.warn('[tokenWatcher]', 'no path found, redirect to login...');
-    yield put(routerActions.toLogin());
-  }
+    // yield put(routerActions.toLogin());
+    // return AppNavigator.toLogin();
+  }*/
 }
 
 const authSagas = [

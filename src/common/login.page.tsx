@@ -1,28 +1,22 @@
-/** @jsxRuntime classic */
+import { ApolloClient, gql, InMemoryCache } from '@apollo/client';
 
-/** @jsx jsx */
-// noinspection ES6UnusedImports
-import { jsx } from '@emotion/react';
-
-import { Snow } from '@danielwii/asuna-components/dist/weather/weather';
-
-import ApolloClient, { gql } from 'apollo-boost';
 import { changeAntdTheme } from 'dynamic-antd-theme';
 import * as _ from 'lodash';
-import fetch from 'node-fetch';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMount } from 'react-use';
 import * as shortid from 'shortid';
 import styled from 'styled-components';
 
-import { LoginContainer } from '../containers';
-import { AppContext, IIndexRegister, ILoginRegister, INextConfig } from '../core';
+import { Snow } from '../components/base/weather/weather';
+import { LoginContainer } from '../containers/Login';
+import { AppContext, IIndexRegister, ILoginRegister, INextConfig } from '../core/context';
 import { WithStyles } from '../layout';
 import { createLogger } from '../logger';
 
 import type { NextPageContext } from 'next';
-import type { AppState, RootState } from '../store';
+import type { AppState } from '../store/app.redux';
+import type { RootState } from '../store/types';
 
 const logger = createLogger('common:login');
 
@@ -174,10 +168,10 @@ export const wechatLoginGetInitial = async (ctx: NextPageContext): Promise<Login
     const uri = `${process.env.API_ENDPOINT ?? ''}/graphql`;
     logger.log(`call ${uri}`);
     const client = new ApolloClient({
+      cache: new InMemoryCache(),
       // uri: `http://${host}:${port}/s-graphql`,
       uri,
       headers: { 'X-ApiKey': 'todo:app-key-001' }, // todo temp auth
-      fetch: fetch as any,
     });
     const { data } = await client.query({
       query: gql`

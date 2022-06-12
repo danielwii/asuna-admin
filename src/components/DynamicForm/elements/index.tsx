@@ -4,22 +4,19 @@
 // noinspection ES6UnusedImports
 import { css, jsx } from '@emotion/react';
 
-import { WithVariable } from '@danielwii/asuna-components/dist/helper/helper';
-import { StringTmpl } from '@danielwii/asuna-components/dist/string-tmpl';
-
-import { Checkbox, DatePicker, Input, InputNumber, Switch, TimePicker, Form, FormInstance } from 'antd';
+import { Checkbox, DatePicker, Form, FormInstance, Input, InputNumber, Switch, TimePicker } from 'antd';
 import * as _ from 'lodash';
 import dynamic from 'next/dynamic';
-import React, { FunctionComponent, VoidFunctionComponent } from 'react';
+import React, { VoidFunctionComponent } from 'react';
 import JSONInput from 'react-json-editor-ajrm';
 import locale from 'react-json-editor-ajrm/locale/zh-cn';
 import { useLogger } from 'react-use';
 
 import { apiProxy } from '../../../adapters/api';
 import { Config } from '../../../config';
-import { NoSSR } from '../../../helpers/ssr';
-import { validateFile } from '../../../helpers/upload';
 import { createLogger } from '../../../logger';
+import { WithVariable } from '../../base/helper/helper';
+import { StringTmpl } from '../../base/string-tmpl';
 import { Authorities } from '../Authorities';
 import { VideoUploader } from '../Videos';
 
@@ -376,7 +373,7 @@ export const generateAuthorities = (
   );
 };
 
-const RichEditor = dynamic(() => import('@danielwii/asuna-components/dist/rich-editor'), { ssr: false });
+const RichEditor = dynamic(() => import('../../base/rich-editor'), { ssr: false });
 
 export const generateRichTextEditor = (
   form: FormInstance,

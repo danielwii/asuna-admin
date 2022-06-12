@@ -2,15 +2,17 @@ import * as R from 'ramda';
 import { REHYDRATE } from 'redux-persist';
 import { call, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 
-import { apiProxy } from '../adapters';
+import { actions } from '.';
+import { apiProxy } from '../adapters/api';
+import { AppNavigator } from '../context/navigator';
 import { createLogger } from '../logger';
-import { actions, RootState } from './';
 import { appActions, appActionTypes, isAppModule } from './app.actions';
 import { authActions } from './auth.actions';
 import { menuSagaFunctions } from './menu.redux';
 import { modelsSagaFunctions } from './models.redux';
-import { routerActions } from './router.redux';
 import { securitySagaFunctions } from './security.redux';
+
+import type { RootState } from './types';
 
 // import { Observable } from 'rxjs/Observable';
 
@@ -83,7 +85,7 @@ function* rehydrateWatcher(action) {
   const path = action?.payload?.router?.path;
   logger.log('[rehydrateWatcher]', !!token, { action, path });
   if (token) {
-    yield put(routerActions.toIndex());
+    return AppNavigator.toIndex();
   }
 }
 

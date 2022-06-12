@@ -1,6 +1,6 @@
 import { AxiosResponse } from 'axios';
 
-import { AppContext } from '../core';
+import { AppContext } from '../core/context';
 import { createLogger } from '../logger';
 
 // --------------------------------------------------------------

@@ -1,5 +1,6 @@
-import { Asuna } from '../types';
 import { responseToUrl } from './upload';
+
+import type { Asuna } from '../types';
 
 type StringCase = 'None' | 'Snake' | 'Camel';
 

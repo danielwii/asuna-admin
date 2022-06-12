@@ -1,5 +1,3 @@
-// import { Form } from '@ant-design/compatible';
-import { Form } from 'antd';
 import * as _ from 'lodash';
 import moment from 'moment';
 import * as R from 'ramda';
@@ -7,22 +5,21 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { PropagateLoader } from 'react-spinners';
 
-import { DynamicForm, DynamicFormTypes } from '../../components/DynamicForm';
-import { AppContext, EventBus, EventType } from '../../core';
-import {
-  DebugInfo,
-  diff,
-  isErrorResponse,
-  reduxActionCallbackPromise,
-  TenantHelper,
-  toFormErrors,
-} from '../../helpers';
+import { DynamicForm, DynamicFormProps } from '../../components/DynamicForm';
+import { DynamicFormTypes } from '../../components/DynamicForm/types';
+import { AppContext } from '../../core/context';
+import { EventBus, EventType } from '../../core/events';
+import { DebugInfo } from '../../helpers/debug';
+import { isErrorResponse, reduxActionCallbackPromise, toFormErrors } from '../../helpers/error';
+import { TenantHelper } from '../../helpers/tenant';
+import { diff } from '../../helpers/utils';
 import { createLogger } from '../../logger';
 import * as schemaHelper from '../../schema';
-import { modelsActions, RootState } from '../../store';
+import { modelsActions } from '../../store/models.redux';
 
-import type { DynamicFormProps, Pane } from '../../components';
 import type { AxiosResponse } from 'axios';
+import type { RootState } from '../../store/types';
+import type { Pane } from '../../components/Panes';
 
 const logger = createLogger('modules:content:upsert');
 

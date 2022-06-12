@@ -1,11 +1,14 @@
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { Header, IHeaderProps } from '../components';
-import { AppContext } from '../core';
-import { appActions, authActions, RootState } from '../store';
+import { Header, IHeaderProps } from '../components/Header';
+import { AppContext } from '../core/context';
+import { appActions } from '../store/app.actions';
+import { authActions } from '../store/auth.actions';
 import { useSharedPanesFunc, useSharedPanesGlobalValue } from '../store/panes.global';
 import { withDebugSettingsProps } from './DebugSettings';
+
+import type { RootState } from '../store/types';
 
 export const HeaderRender: React.FC<Pick<IHeaderProps, 'hideLogo'>> = (props) => {
   const [, panesStateSetter] = useSharedPanesGlobalValue();

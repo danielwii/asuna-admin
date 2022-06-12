@@ -3,7 +3,7 @@ import _ from 'lodash';
 import * as fp from 'lodash/fp';
 import * as React from 'react';
 
-import { AppContext } from '../core';
+import { AppContext } from '../core/context';
 import { createLogger } from '../logger';
 import { Asuna } from '../types';
 

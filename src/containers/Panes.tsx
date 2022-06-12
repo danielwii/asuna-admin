@@ -1,13 +1,16 @@
 import * as React from 'react';
+import { useLogger } from 'react-use';
 
-import { PanesView } from '../components';
-import { AppContext } from '../core';
+import { PanesView } from '../components/Panes';
+import { AppContext } from '../core/context';
 import { useSharedPanesFunc, useSharedPanesGlobalValue } from '../store/panes.global';
 
-const PanesViewContainer: React.FC = (props) => {
+const PanesViewContainer: React.VFC = () => {
   const [panesState, panesStateSetter] = useSharedPanesGlobalValue();
   const sharedPanesFunc = useSharedPanesFunc(panesStateSetter);
   AppContext.globalFunc.panes = sharedPanesFunc;
+
+  useLogger('PanesViewContainer', panesState);
 
   return (
     <PanesView

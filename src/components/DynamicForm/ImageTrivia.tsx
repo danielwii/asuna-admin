@@ -8,11 +8,11 @@ import * as React from 'react';
 import ReactCrop, { Crop, PixelCrop } from 'react-image-crop';
 import * as util from 'util';
 
-import { Title } from '../../components';
 import { valueToUrl } from '../../core/url-rewriter';
 import { upload } from '../../helpers/upload';
 import { createLogger } from '../../logger';
 import { Asuna } from '../../types';
+import { Title } from '../Styled';
 
 const logger = createLogger('components:dynamic-form:image-trivia');
 

@@ -1,6 +1,6 @@
 import { Observable, Subject } from 'rxjs';
 
-import { AppContext } from '../core';
+import { AppContext } from '../core/context';
 
 /**
  * the accept type for event-bus

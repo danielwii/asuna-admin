@@ -2,7 +2,7 @@ import { Cascader, FormInstance, Input } from 'antd';
 import * as React from 'react';
 
 import { generateComponent, horizontalFormItemLayout, IFormItemLayout, InputOptions } from '.';
-import { ChinaDivisionOptions, parseAddress } from '../../../components';
+import { ChinaDivisionOptions, parseAddress } from '../../Address';
 
 import type { FormComponentProps } from './interfaces';
 

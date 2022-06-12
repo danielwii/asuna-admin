@@ -6,8 +6,8 @@ import * as _ from 'lodash';
 import * as React from 'react';
 
 import { valueToArrays, valueToUrl } from '../../core/url-rewriter';
-import { diff } from '../../helpers';
 import { upload, validateFile } from '../../helpers/upload';
+import { diff } from '../../helpers/utils';
 import { createLogger } from '../../logger';
 import { Asuna } from '../../types';
 

@@ -1,12 +1,9 @@
-*.ts
-*.tsx
-
 .awcache
 .next
 .scannerwork
 .storybook
 bin
 coverage
-lib
+dist
 node_modules
 .stories

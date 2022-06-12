@@ -2,8 +2,8 @@ import * as React from 'react';
 import { useState } from 'react';
 import { useEffectOnce } from 'react-use';
 
-import { TenantInfo } from '../adapters';
-import { TenantHelper } from '../helpers';
+import { TenantInfo } from '../adapters/admin.plain';
+import { TenantHelper } from '../helpers/tenant';
 
 export type StoreContextKey = 'tenantInfo';
 

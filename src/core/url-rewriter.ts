@@ -1,8 +1,8 @@
 import * as _ from 'lodash';
 
-import { AppContext } from '.';
-import { isJson } from '../helpers';
+import { isJson } from '../components/base/helper/helper';
 import { createLogger } from '../logger';
+import { AppContext } from './context';
 
 const logger = createLogger('core:url-rewriter');
 

@@ -1,6 +1,3 @@
-import { WithVariable } from '@danielwii/asuna-components/dist/helper/helper';
-import { Uploader } from '@danielwii/asuna-components/dist/uploader/uploader';
-
 import _ from 'lodash';
 import * as React from 'react';
 import { useLogger } from 'react-use';
@@ -9,13 +6,10 @@ import { generateComponent, horizontalFormItemLayout, IFormItemLayout } from '.'
 import { Config } from '../../../config';
 import { upload, validateFile } from '../../../helpers/upload';
 import { createLogger } from '../../../logger';
+import { WithVariable } from '../../base/helper/helper';
+import { IUploadedFile, IUploaderProps, Uploader, UploaderAdapter } from '../../base/uploader/uploader';
 import { ImageTrivia } from '../ImageTrivia';
 
-import type {
-  IUploadedFile,
-  IUploaderProps,
-  UploaderAdapter,
-} from '@danielwii/asuna-components/dist/uploader/uploader';
 import type { AxiosRequestConfig } from 'axios';
 import type { FormComponentProps } from './interfaces';
 import type { FormInstance } from 'antd';

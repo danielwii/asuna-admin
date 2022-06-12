@@ -1,7 +1,5 @@
 import { FormControl, FormHelperText } from '@material-ui/core';
 
-import { RenderInputComponent } from '@danielwii/asuna-components/dist/easy-form/form';
-
 import * as antd from 'antd';
 import { Divider, Popconfirm } from 'antd';
 import * as formik from 'formik';
@@ -9,10 +7,11 @@ import _ from 'lodash';
 import * as React from 'react';
 import Highlight from 'react-highlight';
 
-import { AppContext } from '../../core';
+import { AppContext } from '../../core/context';
 import { createLogger } from '../../logger';
+import { RenderInputComponent } from '../base/easy-form/form';
 
-import type { FormFieldDef, FormFieldsGroup } from '@danielwii/asuna-components/dist/easy-form/interfaces';
+import type { FormFieldDef, FormFieldsGroup } from '../base/easy-form/interfaces';
 
 const logger = createLogger('components:easy-form');
 

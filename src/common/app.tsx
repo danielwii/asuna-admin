@@ -1,5 +1,6 @@
 import withRedux from 'next-redux-wrapper';
 import App from 'next/app';
+import getConfig from 'next/config';
 import Head from 'next/head';
 import React, { Component } from 'react';
 import { Provider } from 'react-redux';
@@ -57,6 +58,7 @@ export const ReduxApp = withRedux(asunaStore.configureStore, { debug: false })(
 
       render() {
         const { Component, pageProps, store } = this.props;
+        console.log('config is', getConfig());
 
         return (
           <>

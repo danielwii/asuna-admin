@@ -1,16 +1,17 @@
 import { UploadOutlined } from '@ant-design/icons';
 
+import { parseJSONIfCould } from '@danielwii/asuna-helper/dist/utils';
+
 import { Button, Input, message, Upload } from 'antd';
 import * as _ from 'lodash';
 import React from 'react';
 
 import { valueToArrays, valueToUrl } from '../../core/url-rewriter';
-import { parseJSONIfCould } from '../../helpers';
 import { upload } from '../../helpers/upload';
 import { createLogger } from '../../logger';
-import { Asuna } from '../../types';
 
-import type { UploadChangeParam, UploadFile, UploadFileStatus, UploadProps } from 'antd/es/upload/interface';
+import type { Asuna } from '../../types';
+import type { UploadFile, UploadFileStatus, UploadProps } from 'antd/es/upload/interface';
 
 const logger = createLogger('components:dynamic-form:files');
 

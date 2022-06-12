@@ -1,32 +1,17 @@
 import * as _ from 'lodash';
 import dynamic from 'next/dynamic';
 import * as React from 'react';
+import { useMemo } from 'react';
 
-import { DebugSettings, Pane } from '../components';
+import { DebugSettings } from '../components/DebugSettings';
 import { withDebugSettingsProps } from '../containers/DebugSettings';
-import { AppContext } from '../core';
-import { DebugInfo } from '../helpers';
+import { AppContext } from '../core/context';
+import { DebugInfo } from '../helpers/debug';
 import { createLogger } from '../logger';
 
+import type { Pane } from '../components/Panes';
+
 const logger = createLogger('modules:index');
-
-function getModule(components, module) {
-  logger.debug('looking for module', module);
-
-  if (_.has(components, module)) {
-    logger.debug('module includes in components', components);
-    return components[module];
-  }
-
-  const found = _.find(components, (component, key) => module.startsWith(key));
-  if (found) {
-    logger.log('found', found);
-    return found;
-  }
-  logger.log('return no module defined component');
-
-  return components.default;
-}
 
 export class ModuleRegister {
   static renders = {
@@ -43,8 +28,26 @@ const components = {
   default: dynamic(() => import('./undefined')),
 };
 
+const getModule = (module: keyof typeof components) => {
+  logger.debug('looking for module', module);
+
+  if (_.has(components, module)) {
+    logger.debug('module includes in components', components);
+    return components[module];
+  }
+
+  const found = _.find(components, (component, key) => module.startsWith(key));
+  if (found) {
+    logger.log('found', found);
+    return found;
+  }
+  logger.log('return no module defined component');
+
+  return components.default;
+};
+
 export interface ModulesLoaderProps {
-  module: string;
+  module: keyof typeof components;
   activeKey: string;
   onClose: () => void;
   basis: { pane: Pane };
@@ -52,9 +55,10 @@ export interface ModulesLoaderProps {
   component?: any;
 }
 
-const ModulesIndex = (props: ModulesLoaderProps & { children?: React.ReactNode }) => {
+const ModulesIndex: React.FC<ModulesLoaderProps> = (props) => {
   logger.log({ props });
-  const { module, component } = props as any;
+  const { module, component } = props;
+  const Component = useMemo(() => getModule(module), [module]);
 
   if (component) {
     const moduleRender = ModuleRegister.renders[component];
@@ -72,7 +76,7 @@ const ModulesIndex = (props: ModulesLoaderProps & { children?: React.ReactNode }
     );
   }
 
-  const Component = getModule(components, module);
+  // const Component = getModule(module);
   return <Component {...props} />;
 };
 

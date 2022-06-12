@@ -1,10 +1,9 @@
-import { WithVariable } from '@danielwii/asuna-components/dist/helper/helper';
-import { KvArray, KvArrayItem, KvArrayProps } from '@danielwii/asuna-components/dist/kv-array';
-
 import React from 'react';
 
 import { generateComponent, horizontalFormItemLayout, IFormItemLayout } from '.';
 import { createLogger } from '../../../logger';
+import { WithVariable } from '../../base/helper/helper';
+import { KvArray, KvArrayItem, KvArrayProps } from '../../base/kv-array';
 
 import type { FormInstance } from 'antd';
 

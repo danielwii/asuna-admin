@@ -1,7 +1,7 @@
 import preloadAll from 'jest-next-dynamic';
 import { IModelService, ModelAdapterImpl } from './model';
 import { DynamicFormTypes } from '../components/DynamicForm';
-import { AppContext, AsunaDefinitions } from '../core';
+import { AppContext, AsunaDefinitions } from '../core/context';
 import { storeConnector } from '../store';
 
 beforeAll(async () => {

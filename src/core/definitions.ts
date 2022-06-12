@@ -1,9 +1,11 @@
 import * as _ from 'lodash';
 import * as React from 'react';
 
-import { commonColumns, extend } from '../helpers';
+import { commonColumns } from '../helpers';
+import { extend } from '../helpers/func';
 import { createLogger } from '../logger';
-import { Asuna } from '../types';
+
+import type { Asuna } from '../types';
 
 const logger = createLogger('core:definition');
 

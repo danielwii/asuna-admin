@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { JSONTree } from 'react-json-tree';
 import * as util from 'util';
 
-import { AppContext } from '../core';
+import { AppContext } from '../core/context';
 
 export const WithDebugInfo: React.FC<{ info: any }> = ({ info, children }) => {
   if (AppContext.isDevMode) {

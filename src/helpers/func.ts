@@ -27,17 +27,6 @@ export function resolveDownloadUrl(href?: string): string {
   return '';
 }
 
-export function parseString(value?: any): string {
-  return value ? (_.isString(value) ? value : JSON.stringify(value)) : '';
-}
-
-export function parseJSONIfCould(value?: string): any {
-  try {
-    if (value) return JSON.parse(value);
-  } catch (e) {}
-  return value;
-}
-
 export function extractValue(o: any, extractor?: ((o: any) => any) | string): any {
   if (_.isArray(o)) {
     return _.map(o, (i) => extractValue(i, extractor));

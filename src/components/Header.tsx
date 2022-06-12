@@ -5,13 +5,14 @@ import getConfig from 'next/config';
 import * as React from 'react';
 import { useContext } from 'react';
 import { useSelector } from 'react-redux';
-import { useLogger } from 'react-use';
 import styled from 'styled-components';
 
 import { StoreContext } from '../context/store';
 import { DebugSettings, IDebugSettingsProps } from './DebugSettings';
 
-import type { AppState, AuthState, RootState } from '../store';
+import type { AppState } from '../store/app.redux';
+import type { AuthState } from '../store/auth.redux';
+import type { RootState } from '../store/types';
 
 const StyledLogoImg = styled.img`
   width: 120px;

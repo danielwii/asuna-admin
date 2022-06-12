@@ -1,13 +1,17 @@
 /** @jsxRuntime classic */
+
 /** @jsx jsx */
 import { SelectOutlined } from '@ant-design/icons';
+// noinspection ES6UnusedImports
 import { css, jsx } from '@emotion/react';
+
 import { Button, Divider, Drawer, Empty, Popover, Skeleton, Timeline } from 'antd';
-import { BaseButtonProps } from 'antd/es/button/button';
-import { PopoverProps } from 'antd/lib/popover';
 import * as _ from 'lodash';
-import * as React from 'react';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import styled from 'styled-components';
+
+import type { BaseButtonProps } from 'antd/es/button/button';
+import type { PopoverProps } from 'antd/es';
 
 type RenderComponentType = React.FC<{ refreshFlag: number; openChildrenDrawer?: any }>;
 export type RenderChildrenComponentType = React.FC<{ item: any }>;
@@ -36,7 +40,7 @@ export const DrawerButtonBuilder: React.FC<
       </Button>
       <Drawer title={title || text} width={width ?? 520} closable={false} onClose={_onClose} visible={visible}>
         {builder()}
-        {/*<Button type="primary" onClick={this.showChildrenDrawer}>
+        {/* <Button type="primary" onClick={this.showChildrenDrawer}>
           Two-level drawer
         </Button>
         <Drawer
@@ -47,27 +51,15 @@ export const DrawerButtonBuilder: React.FC<
           visible={this.state.childrenDrawer}
         >
           This is two-level drawer
-        </Drawer>*/}
-        <div
-          style={{
-            position: 'absolute',
-            bottom: 0,
-            width: '100%',
-            borderTop: '1px solid #e8e8e8',
-            padding: '10px 16px',
-            textAlign: 'right',
-            left: 0,
-            background: '#fff',
-            borderRadius: '0 0 4px 4px',
-          }}
-        >
+        </Drawer> */}
+        <StyledButton>
           <Button style={{ marginRight: 8 }} onClick={_onClose}>
             Cancel
           </Button>
-          {/*<Button onClick={this.onClose} type="primary">
+          {/* <Button onClick={this.onClose} type="primary">
             Submit
-          </Button>*/}
-        </div>
+          </Button> */}
+        </StyledButton>
       </Drawer>
     </React.Fragment>
   );
@@ -124,7 +116,7 @@ export const DrawerButton: React.FC<
             }}
           />
         )}
-        {/*<Button type="primary" onClick={this.showChildrenDrawer}>
+        {/* <Button type="primary" onClick={this.showChildrenDrawer}>
             Two-level drawer
           </Button>
           <Drawer
@@ -135,20 +127,8 @@ export const DrawerButton: React.FC<
             visible={this.state.childrenDrawer}
           >
             This is two-level drawer
-          </Drawer>*/}
-        <div
-          style={{
-            position: 'absolute',
-            bottom: 0,
-            width: '100%',
-            borderTop: '1px solid #e8e8e8',
-            padding: '10px 16px',
-            textAlign: 'right',
-            left: 0,
-            background: '#fff',
-            borderRadius: '0 0 4px 4px',
-          }}
-        >
+          </Drawer> */}
+        <StyledButton>
           {extraButtons && (
             <React.Fragment>
               {extraButtons}
@@ -164,7 +144,7 @@ export const DrawerButton: React.FC<
             </React.Fragment>
           )}
           <Button onClick={_onClose}>关闭</Button>
-        </div>
+        </StyledButton>
         {renderChildrenDrawer && (
           <Drawer width={520} closable={false} onClose={_onChildrenClose} visible={childrenDrawer}>
             <RenderChildrenComponent item={childrenItem} />
@@ -191,10 +171,22 @@ export const HistoryTimeline: React.FC<HistoryTimelineProps> = ({ dataLoader, re
       const data = await dataLoader();
       if (data) setState({ loading: false, fields: data.items });
     })();
-  }, []);
+  });
 
   if (state.loading) return <Skeleton active />;
   if (_.isEmpty(state.fields)) return <Empty />;
 
   return <Timeline>{state.fields.map(render)}</Timeline>;
 };
+
+const StyledButton = styled.div`
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  border-top: 1px solid #e8e8e8;
+  padding: 10px 16px;
+  text-align: right;
+  left: 0;
+  background: #fff;
+  border-radius: 0 0 4px 4px;
+`;

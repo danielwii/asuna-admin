@@ -2,7 +2,7 @@ import { Checkbox, Table } from 'antd';
 import * as R from 'ramda';
 import * as React from 'react';
 
-import { menuProxy } from '../../adapters';
+import { menuProxy } from '../../adapters/menu';
 import { createLogger } from '../../logger';
 
 const logger = createLogger('components:authorities');

@@ -3,12 +3,14 @@ import { reduxAction } from 'node-buffs/dist/redux';
 import * as R from 'ramda';
 import { call, put, select, takeLatest } from 'redux-saga/effects';
 
-import { AppContext, EventBus, EventType } from '../core';
-import { parseResponseError, ReduxCallback, safeCallback, TimelineMessageBox } from '../helpers';
+import { AppContext } from '../core/context';
+import { EventBus, EventType } from '../core/events';
+import { parseResponseError, ReduxCallback, safeCallback } from '../helpers/error';
+import { TimelineMessageBox } from '../helpers/message-box';
 import { createLogger } from '../logger';
 import { Asuna } from '../types';
 
-import type { RootState } from '../store';
+import type { RootState } from './types';
 import type { AxiosResponse } from 'axios';
 
 const logger = createLogger('store:models');
@@ -111,14 +113,14 @@ const modelsSagaFunctions = {
         message.success('更新/创建 成功！');
         TimelineMessageBox.push({ key: boxId, type: 'done', message: `upsert model '${modelName}' success` });
         logger.log('[upsert]', 'response of upsert model is', response);
-        if (callback != null) callback({ response });
+        if (callback !== null) callback({ response });
 
         // save model data when upsert is success
         yield put(modelsActions.fetchSuccess(modelName, response.data));
       } catch (error) {
         logger.warn('[upsert]', error, { error });
         try {
-          if (callback != null) callback({ error });
+          if (callback !== null) callback({ error });
         } catch (e) {
           logger.warn('[upsert] callback error', e, { e });
         }
@@ -136,7 +138,7 @@ const modelsSagaFunctions = {
         message.success('删除 成功！');
         TimelineMessageBox.push({ key: boxId, type: 'done', message: `remove model '${modelName}' success` });
         logger.log('[remove]', 'response of remove model is', response);
-        if (callback != null) callback(response);
+        if (callback !== null) callback(response);
 
         // save model data when remove is success
         yield put(modelsActions.fetchSuccess(modelName, response.data));
@@ -147,7 +149,7 @@ const modelsSagaFunctions = {
       } catch (error) {
         logger.warn('[remove]', error, { error });
         try {
-          if (callback != null) callback({ error });
+          if (callback !== null) callback({ error });
         } catch (e) {
           logger.warn('[upsert] callback error', e, { e });
         }

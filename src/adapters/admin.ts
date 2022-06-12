@@ -2,7 +2,7 @@ import { plainToInstance } from 'class-transformer';
 import _ from 'lodash';
 import * as fp from 'lodash/fp';
 
-import { AppContext } from '../core';
+import { AppContext } from '../core/context';
 import { Draft, StateMachines, Tenant, TenantInfo } from './admin.plain';
 
 import type { AxiosResponse } from 'axios';

@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 
-import { ILoginProps, NormalLoginForm } from '../components';
-import { authActions } from '../store';
+import { ILoginProps, NormalLoginForm } from '../components/Login';
+import { authActions } from '../store/auth.actions';
 
 export const LoginContainer: React.FC = (props) => {
   const dispatch = useDispatch();

@@ -1,11 +1,10 @@
-import { PreviewButton } from '@danielwii/asuna-components/dist/preview-button';
-
 import { Form } from 'antd';
 import * as _ from 'lodash';
 import * as React from 'react';
 
 import { horizontalFormItemLayout, IFormItemLayout, PlainOptions } from '.';
 import { createLogger } from '../../../logger';
+import { AssetPreview } from '../../base/preview-button/asset-preview';
 
 const logger = createLogger('components:dynamic-form:elements:plain');
 
@@ -24,7 +23,7 @@ export function PlainImages({ options, formItemLayout }: IPlainImagesProps) {
   return (
     <Form.Item key={fieldName} {...(formItemLayout || horizontalFormItemLayout)} label={labelName} help={help}>
       {_.map(assets, (asset) => (
-        <PreviewButton.AssetPreview key={asset} url={asset} showPdf fullWidth />
+        <AssetPreview key={asset} url={asset} showPdf fullWidth />
       ))}
     </Form.Item>
   );

@@ -1,10 +1,12 @@
 import { FormInstance, message, Modal } from 'antd';
 import * as R from 'ramda';
-import React from 'react';
+import React, { useState } from 'react';
 
-import { toErrorMessage, toFormErrors } from '../helpers';
+import { toErrorMessage, toFormErrors } from '../helpers/error';
 import { createLogger } from '../logger';
-import { DynamicForm, DynamicFormField } from './DynamicForm';
+import { DynamicForm } from './DynamicForm';
+
+import type { DynamicFormField } from './DynamicForm/render';
 
 const logger = createLogger('components:form-modal-button');
 
@@ -50,116 +52,106 @@ interface IState {
   loading: boolean;
 }
 
-export class FormModalButton extends React.Component<IFormModalProps, IState> {
-  form: FormInstance;
+export const FormModalButton: React.VFC<IFormModalProps> = ({
+  fields,
+  openButton,
+  title,
+  footer,
+  body,
+  onOperations,
+  onRefresh,
+  onSubmit,
+  onChange,
+}) => {
+  let formRef;
+  const [state, setState] = useState<IState>(() => ({ visible: false, loading: false, fields: fields }));
 
-  constructor(props: Readonly<IFormModalProps>) {
-    super(props);
-
-    this.state = {
-      visible: false,
-      loading: false,
-      fields: props.fields,
-    };
-  }
-
-  showModal = () => this.setState({ visible: true });
-
-  handleOk = () => {
-    const { onSubmit, onRefresh } = this.props;
-    const { fields } = this.state;
-    this.form
-      .validateFields()
-      .then(async (values) => {
-        this.setState({ loading: true });
-        try {
-          const response = await onSubmit!(values).finally(() => onRefresh && onRefresh());
-          logger.log('response is', response);
-          this.setState({
-            visible: false,
-            loading: false,
-            fields: R.map<any, any>((field) => ({ ...field, value: undefined }))(fields as any) as any,
-          });
-        } catch (e) {
-          const errors = toFormErrors(e.response);
-          logger.error('[FormModal][handleOk]', { e, errors });
-          message.error(toErrorMessage(errors));
-          this.handleFormChange(errors);
-          this.setState({ loading: false });
-        }
-      })
-      .catch((reason) => {
-        logger.error('[FormModal][handleOk]', 'error occurred in form', reason);
-      });
-  };
-
-  handleFormChange = (changedFields) => {
-    const { fields } = this.state;
-    const merged = R.mergeDeepRight(fields as any, changedFields);
-    logger.log('[handleFormChange]', { fields, changedFields, merged });
-    this.setState({ fields: merged });
-  };
-
-  handleCancel = () => this.setState({ visible: false });
-
-  render() {
-    const { title, openButton, footer, body, onOperations } = this.props;
-    const { fields, visible, loading, params } = this.state;
-
-    const extraOperations =
-      onOperations != null
-        ? onOperations({
-            loading,
-            updateState: (state: Partial<IState>) => this.setState(state as IState),
-            handleCancel: this.handleCancel,
-          })
-        : {};
-
-    // show default footer when custom footer is undefined
-    const renderFooterOpts =
-      footer != null
-        ? {
-            footer: footer({
-              loading,
-              params,
-              operations: {
-                handleOk: this.handleOk,
-                handleCancel: this.handleCancel,
-                ...extraOperations,
-              },
-            }),
+  const func = {
+    handleOk: () => {
+      formRef
+        .validateFields()
+        .then(async (values) => {
+          setState({ ...state, loading: true });
+          try {
+            const response = await onSubmit!(values).finally(() => onRefresh && onRefresh());
+            logger.log('response is', response);
+            setState({
+              visible: false,
+              loading: false,
+              fields: R.map<any, any>((field) => ({ ...field, value: undefined }))(state.fields as any) as any,
+            });
+          } catch (e) {
+            const errors = toFormErrors(e.response);
+            logger.error('[FormModal][handleOk]', { e, errors });
+            message.error(toErrorMessage(errors));
+            func.handleFormChange(errors);
+            setState({ ...state, loading: false });
           }
-        : null;
+        })
+        .catch((reason) => {
+          logger.error('[FormModal][handleOk]', 'error occurred in form', reason);
+        });
+    },
+    handleFormChange: (changedFields) => {
+      const merged = R.mergeDeepRight(state.fields as any, changedFields);
+      logger.log('[handleFormChange]', { fields: state.fields, changedFields, merged });
+      setState({ ...state, fields: merged });
+    },
+  };
 
-    return (
-      <>
-        {openButton(this.showModal)}
-        <Modal
-          title={title}
-          visible={visible}
-          onOk={this.handleOk}
-          confirmLoading={loading}
-          onCancel={this.handleCancel}
-          {...renderFooterOpts}
-        >
-          {body}
-          {fields && (
-            <LightForm
-              formRef={(form) => (this.form = form)}
-              /*
-              wrappedComponentRef={inst => {
-                console.log('wrappedComponentRef', inst);
-                return (this.form = inst?.props?.form);
-              }}
+  const extraOperations =
+    onOperations != null
+      ? onOperations({
+          loading: state.loading,
+          updateState: (state: Partial<IState>) => setState(state as IState),
+          handleCancel: () => setState({ ...state, visible: false }),
+        })
+      : {};
+
+  // show default footer when custom footer is undefined
+  const renderFooterOpts =
+    footer != null
+      ? {
+          footer: footer({
+            loading: state.loading,
+            params: state.params,
+            operations: {
+              handleOk: func.handleOk,
+              handleCancel: () => setState({ ...state, visible: false }),
+              ...extraOperations,
+            },
+          }),
+        }
+      : null;
+
+  return (
+    <>
+      {openButton(() => setState({ ...state, visible: true }))}
+      <Modal
+        title={title}
+        visible={state.visible}
+        onOk={func.handleOk}
+        confirmLoading={state.loading}
+        onCancel={() => setState({ ...state, visible: false })}
+        {...renderFooterOpts}
+      >
+        {body}
+        {fields && (
+          <LightForm
+            formRef={(form) => (formRef = form)}
+            /*
+            wrappedComponentRef={inst => {
+              console.log('wrappedComponentRef', inst);
+              return (this.form = inst?.props?.form);
+            }}
 */
-              delegate
-              fields={fields}
-              onSubmit={this.handleOk}
-              onChange={this.handleFormChange}
-            />
-          )}
-        </Modal>
-      </>
-    );
-  }
-}
+            delegate
+            fields={fields}
+            onSubmit={func.handleOk}
+            onChange={func.handleFormChange}
+          />
+        )}
+      </Modal>
+    </>
+  );
+};

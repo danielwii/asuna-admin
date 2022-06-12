@@ -1,7 +1,21 @@
 {
   "env": {},
-  "extends": ["alloy", "alloy/react", "alloy/typescript", "plugin:react-hooks/recommended"],
+  "extends": [
+//    "alloy",
+//    "alloy/react",
+    "alloy/typescript",
+//    "plugin:react-hooks/recommended",
+    //    "eslint:recommended",
+    "plugin:import/recommended",
+    "plugin:import/typescript"
+  ],
   "settings": {},
   "plugins": [],
-  "rules": {}
+  "rules": {
+    "@typescript-eslint/explicit-member-accessibility": "off",
+    "@typescript-eslint/member-ordering": "off",
+    "@typescript-eslint/typedef": "off",
+    "no-empty-pattern": "off",
+    "max-params": "warn"
+  }
 }

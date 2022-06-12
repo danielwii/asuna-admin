@@ -1,11 +1,11 @@
 import * as _ from 'lodash';
 
-import { AppContext } from '../core';
+import { AppContext } from '../core/context';
 import { createLogger } from '../logger';
-import { SchemaHelper } from '../schema';
+import { SchemaHelper } from '../schema/helper';
 import { Asuna } from '../types';
 
-import type { Pane } from '../components';
+import type { Pane } from '../components/Panes';
 
 const logger = createLogger('helpers:models');
 

@@ -1,19 +1,22 @@
-import { LivingLoading } from '@danielwii/asuna-components/dist/living-loading';
+import { ApolloClient, ApolloProvider, gql, InMemoryCache } from '@apollo/client';
 
-import ApolloClient, { gql } from 'apollo-boost';
 import { changeAntdTheme } from 'dynamic-antd-theme';
 import _ from 'lodash';
 import 'moment/locale/zh-cn';
-import fetch from 'node-fetch';
 import * as R from 'ramda';
 import * as React from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { connect } from 'react-redux';
 
-import { AppContext, IIndexRegister, ILoginRegister, INextConfig } from '../core';
+import { LivingLoading } from '../components/base/living-loading';
+import { AppContext, IIndexRegister, ILoginRegister, INextConfig } from '../core/context';
 import { MainLayout } from '../layout';
 import { createLogger } from '../logger';
-import { appActions, AppState, AuthState, RootState } from '../store';
+import { appActions } from '../store/app.actions';
+
+import type { RootState } from '../store/types';
+import type { AppState } from '../store/app.redux';
+import type { AuthState } from '../store/auth.redux';
 
 const logger = createLogger('pages:index', 'debug');
 
@@ -67,6 +70,15 @@ const IndexPage2: NextComponentType<NextPageContext, Promise<IIndexPageProps>, I
 };
 */
 
+const uri = `${process.env.API_ENDPOINT ?? ''}/graphql`;
+const client = new ApolloClient({
+  cache: new InMemoryCache(),
+  uri,
+  headers: { 'X-ApiKey': 'todo:app-key-001' }, // todo temp auth
+  queryDeduplication: false,
+  defaultOptions: { watchQuery: { fetchPolicy: 'network-only' } },
+});
+
 export class IndexPage extends React.Component<IIndexPageProps> {
   constructor(props) {
     super(props);
@@ -78,6 +90,10 @@ export class IndexPage extends React.Component<IIndexPageProps> {
     if (site?.primaryColor) {
       changeAntdTheme(site?.primaryColor);
     }
+  }
+
+  componentDidMount() {
+    (this.state as any).renderClientSideComponent = true;
   }
 
   static async getInitialProps({ req }) {
@@ -93,14 +109,6 @@ export class IndexPage extends React.Component<IIndexPageProps> {
     // const port = process.env.PORT || 3000;
     // logger.log(`call http://${host}:${port}/s-graphql`);
 
-    const uri = `${process.env.API_ENDPOINT ?? ''}/graphql`;
-    logger.log(`call ${uri}`);
-    const client = new ApolloClient({
-      // uri: `http://${host}:${port}/s-graphql`,
-      uri,
-      headers: { 'X-ApiKey': 'todo:app-key-001' }, // todo temp auth
-      fetch: fetch as any,
-    });
     const { data } = await client
       .query({
         query: gql`
@@ -138,15 +146,17 @@ export class IndexPage extends React.Component<IIndexPageProps> {
     }
 
     return (
-      <QueryClientProvider client={new QueryClient()}>
-        <MainLayout
-          loading={loading}
-          heartbeat={heartbeat}
-          auth={auth}
-          appInfo={appInfo}
-          hideCharacteristics={hideCharacteristics}
-        />
-      </QueryClientProvider>
+      <ApolloProvider client={client}>
+        <QueryClientProvider client={new QueryClient()}>
+          <MainLayout
+            loading={loading}
+            heartbeat={heartbeat}
+            auth={auth}
+            appInfo={appInfo}
+            hideCharacteristics={hideCharacteristics}
+          />
+        </QueryClientProvider>
+      </ApolloProvider>
     );
   }
 }
@@ -156,7 +166,15 @@ const mapStateToProps = (state: RootState): { auth: AuthState; app: AppState } =
   app: state.app,
 });
 
+const BrowserComponent: React.FC = ({ children }) => {
+  if (typeof window === 'undefined') {
+    return <div />;
+  }
+  return children as any;
+};
+
 export const renderIndexPage = (props: Partial<IIndexPageProps>, nextConfig: INextConfig) => {
   AppContext.init(nextConfig);
-  return connect(R.compose(R.merge(props), mapStateToProps))(IndexPage) as any;
+  return <BrowserComponent>{connect(R.compose(R.merge(props), mapStateToProps))(IndexPage)}</BrowserComponent>;
+  // return connect(R.compose(R.merge(props), mapStateToProps))(IndexPage) as any;
 };

@@ -1,7 +1,7 @@
+import { parseJSONIfCould } from '@danielwii/asuna-helper/dist/utils';
+
 import { DefaultOptionType } from 'antd/es/cascader';
 import * as _ from 'lodash';
-
-import { parseJSONIfCould } from '../helpers';
 
 const areas = require('china-division/dist/areas.json');
 const cities = require('china-division/dist/cities.json');

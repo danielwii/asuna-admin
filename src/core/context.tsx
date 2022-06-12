@@ -1,32 +1,26 @@
-import { getPublicRuntimeConfig } from '@danielwii/asuna-helper/dist/next/config';
-
 import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
+import getConfig from 'next/config';
 import * as React from 'react';
 import { Subject } from 'rxjs';
 
-import {
-  AdminAdapter,
-  AdminAdapterImpl,
-  ApiAdapterImpl,
-  AuthAdapter,
-  IAdminService,
-  IApiService,
-  IAuthService,
-  IModelService,
-  ISecurityService,
-  MenuAdapter,
-  ModelAdapterImpl,
-  ResponseAdapter,
-  SecurityAdapterImpl,
-  WsAdapter,
-} from '../adapters';
+import { AdminAdapter, AdminAdapterImpl, IAdminService } from '../adapters/admin';
+import { ApiAdapterImpl, IApiService } from '../adapters/api';
+import { AuthAdapter, IAuthService } from '../adapters/auth';
 import { GraphqlAdapterImpl, KeyValueModelVo } from '../adapters/graphql';
-import { GroupFormKVComponent } from '../components';
+import { MenuAdapter } from '../adapters/menu';
+import { IModelService, ModelAdapterImpl } from '../adapters/model';
+import { ResponseAdapter } from '../adapters/response';
+import { ISecurityService, SecurityAdapterImpl } from '../adapters/security';
+import { WsAdapter } from '../adapters/ws';
+import { GroupFormKVComponent } from '../components/KV/group';
 import { ListKVComponent } from '../components/KV/list';
-import { AsunaDefinitions } from '../core/definitions';
+import { IStoreConnector, storeConnector } from '../store/middlewares/store-connector';
 
-import type { AuthState, IStoreConnector, RootState, SharedPanesFunc } from '../store';
+import type { AsunaDefinitions } from './definitions';
+import type { AuthState } from '../store/auth.redux';
+import type { SharedPanesFunc } from '../store/panes.global';
+import type { RootState } from '../store/types';
 import type { AnyAction, Dispatch } from 'redux';
 
 // --------------------------------------------------------------
@@ -39,36 +33,36 @@ export interface IComponentService {
 }
 
 export interface ILoginRegister {
-  createAuthService(): IAuthService;
+  createAuthService: () => IAuthService;
 }
 
 export interface IIndexRegister extends ILoginRegister {
-  createAuthService(): IAuthService;
+  createAuthService: () => IAuthService;
 
   modelService: IModelService;
 
   // createMenuService(): IMenuService;
 
-  createApiService(): IApiService;
+  createApiService: () => IApiService;
 
-  createAdminService(): IAdminService;
+  createAdminService: () => IAdminService;
 
-  createSecurityService(): ISecurityService;
+  createSecurityService: () => ISecurityService;
 
   definitions: AsunaDefinitions;
 
   componentService: IComponentService;
 }
 
-export type LoginModuleRegister = {
+export interface LoginModuleRegister {
   module: 'login';
   register: ILoginRegister;
-};
+}
 
-export type IndexModuleRegister = {
+export interface IndexModuleRegister {
   module: 'index';
   register: IIndexRegister;
-};
+}
 
 export interface INextConfig {
   serverRuntimeConfig: {};
@@ -124,7 +118,6 @@ class AppContext {
     //   next: (action) => console.log('observer: ', action)
     // });
     if (!AppContext._storeConnector) {
-      const { storeConnector } = require('../store');
       AppContext._storeConnector = storeConnector;
     }
 
@@ -133,7 +126,7 @@ class AppContext {
     }
   }
 
-  constructor() {}
+  // constructor() {}
 
   static get instance() {
     return AppContext.INSTANCE;
@@ -291,7 +284,7 @@ class AppContext {
       ws: new WsAdapter(),
       components: register.componentService,
       admin: new AdminAdapterImpl(register.createAdminService()),
-      graphql: new GraphqlAdapterImpl(getPublicRuntimeConfig().GRAPHQL_ENDPOINT),
+      graphql: new GraphqlAdapterImpl(getConfig().publicRuntimeConfig.GRAPHQL_ENDPOINT ?? 'proxy'),
     };
 
     // only setup menu in index page

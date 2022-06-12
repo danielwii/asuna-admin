@@ -1,6 +1,7 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "experimentalDecorators": true,
     "module": "ESNext",
     "target": "ES2020",
     "lib": ["ESNext", "DOM"],

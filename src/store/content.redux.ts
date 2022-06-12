@@ -1,12 +1,13 @@
 import { reduxAction } from 'node-buffs/dist/redux';
 import { call, put, select, takeLatest } from 'redux-saga/effects';
 
-import { AppContext } from '../core';
-import { parseResponseError, TimelineMessageBox } from '../helpers';
+import { AppContext } from '../core/context';
+import { parseResponseError } from '../helpers/error';
+import { TimelineMessageBox } from '../helpers/message-box';
 import { createLogger } from '../logger';
 
-import type { ModelListConfig } from '../adapters';
-import type { RootState } from '../store';
+import type { ModelListConfig } from '../adapters/model';
+import type { RootState } from './types';
 
 const logger = createLogger('store:content');
 

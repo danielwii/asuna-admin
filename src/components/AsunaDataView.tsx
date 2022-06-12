@@ -1,5 +1,3 @@
-import { PreviewButton } from '@danielwii/asuna-components/dist/preview-button';
-
 import { Button, Collapse, Descriptions, Empty, PageHeader, Tag, Tooltip } from 'antd';
 import { Promise } from 'bluebird';
 import * as _ from 'lodash';
@@ -9,11 +7,13 @@ import { useAsync } from 'react-use';
 import { FoldingCube } from 'styled-spinkit';
 import * as util from 'util';
 
-import { AssetsPreview, DynamicFormTypes } from '../components';
-import { ModelsHelper, resolveModelInPane, useAsunaModels } from '../helpers';
 import { WithDebugInfo } from '../helpers/debug';
+import { useAsunaModels } from '../helpers/hooks';
+import { ModelsHelper, resolveModelInPane } from '../helpers/models';
 import { createLogger } from '../logger';
 import { Asuna } from '../types';
+import { DynamicFormTypes } from './DynamicForm/types';
+import { AssetPreview, AssetsPreview } from './base/preview-button/asset-preview';
 
 const logger = createLogger('components:data-view');
 
@@ -272,9 +272,9 @@ function renderValue({
     );
 */
   } else if (type === DynamicFormTypes.Image) {
-    return <PreviewButton.AssetPreview url={value} />;
+    return <AssetPreview url={value} />;
   } else if (type === DynamicFormTypes.Images) {
-    return <AssetsPreview urls={value} clearStyle />;
+    return <AssetsPreview urls={value} />;
   } else if (_.isDate(value) || type === DynamicFormTypes.Date || type === DynamicFormTypes.DateTime) {
     return (
       <Tooltip title={value}>

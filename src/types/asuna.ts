@@ -1,10 +1,10 @@
 import * as React from 'react';
 
-import { DataViewColumnProps, DynamicFormTypes } from '../components';
-
+import type { DataViewColumnProps } from '../components/AsunaDataView';
 import type { ColumnProps } from 'antd/es/table';
 import type { QueryFieldsColumnProps } from '../modules/content/query';
 import type { MetaInfoOptions } from './meta';
+import type { DynamicFormTypes } from '../components/DynamicForm/types';
 
 export declare module Asuna {
   interface Pageable {

@@ -1,9 +1,9 @@
 import { message } from 'antd';
 
-import { apiProxy } from '../adapters';
+import { apiProxy } from '../adapters/api';
 import { createLogger } from '../logger';
-import { Asuna } from '../types';
 
+import type { Asuna } from '../types';
 import type { RcFile } from 'antd/es/upload/interface';
 import type { AxiosRequestConfig } from 'axios';
 

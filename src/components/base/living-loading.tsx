@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import _ from 'lodash';
 import * as React from 'react';
 import styled from 'styled-components';
 
@@ -10,6 +10,15 @@ const StyledLoading = styled.div`
   background: whitesmoke;
   bottom: 0;
   z-index: 100;
+  canvas {
+    /*background: white;*/
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    margin: auto;
+  }
 `;
 
 interface IStyledHeartbeat {
@@ -64,6 +73,7 @@ export class LivingLoading extends React.Component<IProps> {
     window.requestAnimationFrame(step);
   }
 
+  // eslint-disable-next-line max-params
   drawLogo(context, sequenceNo, center, speed = 10) {
     _.range(10).forEach((index) => {
       context.save();
@@ -102,17 +112,6 @@ export class LivingLoading extends React.Component<IProps> {
           Canvas Not Support?!
         </canvas>
         {/* language=CSS */}
-        <style jsx>{`
-          canvas {
-            /*background: white;*/
-            position: absolute;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            left: 0;
-            margin: auto;
-          }
-        `}</style>
       </StyledLoading>
     );
   }

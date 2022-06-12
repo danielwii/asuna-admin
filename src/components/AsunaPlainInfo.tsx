@@ -1,5 +1,3 @@
-import { WithLoading, WithVariable } from '@danielwii/asuna-components/dist/helper/helper';
-
 import { List, Tooltip } from 'antd';
 import { Promise } from 'bluebird';
 import * as _ from 'lodash';
@@ -9,11 +7,14 @@ import React from 'react';
 import { useAsync } from 'react-use';
 import VisualDiff from 'react-visual-diff';
 
-import { AppContext, AsunaDefinitions } from '../core';
-import { parseString, TooltipContent, WithDebugInfo } from '../helpers';
-import { SchemaHelper } from '../schema';
-import { DynamicFormTypes } from './DynamicForm';
-import { AssetsPreview } from './Snippet';
+import { AppContext } from '../core/context';
+import { AsunaDefinitions } from '../core/definitions';
+import { TooltipContent } from '../helpers';
+import { WithDebugInfo } from '../helpers/debug';
+import { SchemaHelper } from '../schema/helper';
+import { DynamicFormTypes } from './DynamicForm/types';
+import { parseString, WithLoading, WithVariable } from './base/helper/helper';
+import { AssetsPreview } from './base/preview-button/asset-preview';
 
 import type { EnumFilterMetaInfoOptions } from '../types';
 
@@ -23,7 +24,7 @@ export interface AsunaPlainObjectProps {
   compare?: any | (() => Promise<any>);
 }
 
-export const AsunaPlainInfo: React.FC<AsunaPlainObjectProps> = ({ modelName, record, compare }) => {
+export const AsunaPlainInfo: React.VFC<AsunaPlainObjectProps> = ({ modelName, record, compare }) => {
   const fields = AppContext.adapters.models.getFormSchema(modelName);
   const { value, loading, error } = useAsync(
     () =>
@@ -121,8 +122,8 @@ export const AsunaPlainInfo: React.FC<AsunaPlainObjectProps> = ({ modelName, rec
                   }
                   case DynamicFormTypes.Images:
                   case DynamicFormTypes.Image: {
-                    value = <AssetsPreview urls={value} clearStyle />;
-                    before = before && <AssetsPreview urls={before} clearStyle />;
+                    value = <AssetsPreview urls={value} />;
+                    before = before && <AssetsPreview urls={before} />;
                     break;
                   }
                   case DynamicFormTypes.File: {

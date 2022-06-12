@@ -7,7 +7,7 @@ import { nanoid } from 'nanoid';
 import * as React from 'react';
 import * as util from 'util';
 
-import { AppContext } from '../core';
+import { AppContext } from '../core/context';
 
 export type MessageBoxType = 'open' | 'success' | 'error' | 'info' | 'warning' | 'warn';
 

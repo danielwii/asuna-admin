@@ -2,11 +2,11 @@ import * as _ from 'lodash';
 import * as R from 'ramda';
 import { put, select, takeLatest } from 'redux-saga/effects';
 
-import { menuProxy } from '../adapters';
+import { menuProxy } from '../adapters/menu';
 import { createLogger } from '../logger';
-import { Asuna } from '../types';
 
-import type { RootState } from '../store';
+import type { Asuna } from '../types';
+import type { RootState } from './types';
 
 const logger = createLogger('store:menu');
 

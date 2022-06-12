@@ -1,7 +1,7 @@
 import { createLogger } from '../../logger';
 
+import type { RootState } from '../types';
 import type { DeepPartial } from 'redux';
-import type { RootState } from '../../store';
 
 const logger = createLogger('store:connector');
 
@@ -21,9 +21,13 @@ export const storeConnector: IStoreConnector<RootState> = {
   select: (cb) => cb(stateRef),
 };
 
-export const createStoreConnectorMiddleware = (cb) => ({ getState }) => (next) => (action) => {
-  storeConnector.connect(getState());
-  if (cb) cb(action);
-  logger.log(action.type, { action, state: getState() });
-  return next(action);
-};
+export const createStoreConnectorMiddleware =
+  (cb) =>
+  ({ getState }) =>
+  (next) =>
+  (action) => {
+    storeConnector.connect(getState());
+    if (cb) cb(action);
+    logger.log(action.type, { action, state: getState() });
+    return next(action);
+  };

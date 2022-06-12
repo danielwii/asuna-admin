@@ -2,12 +2,13 @@ import { reduxAction } from 'node-buffs/dist/redux';
 import * as R from 'ramda';
 import { call, put, select, takeLatest } from 'redux-saga/effects';
 
-import { securityProxy } from '../adapters';
-import { parseResponseError, TimelineMessageBox } from '../helpers';
+import { securityProxy } from '../adapters/security';
+import { parseResponseError } from '../helpers/error';
+import { TimelineMessageBox } from '../helpers/message-box';
 import { createLogger } from '../logger';
 import { authActions } from './auth.actions';
 
-import type { RootState } from './';
+import type { RootState } from './types';
 
 const logger = createLogger('store:security');
 

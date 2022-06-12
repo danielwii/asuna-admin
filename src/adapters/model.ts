@@ -1,3 +1,5 @@
+import { parseJSONIfCould } from '@danielwii/asuna-helper/dist/utils';
+
 import { message } from 'antd';
 import { Promise } from 'bluebird';
 import * as _ from 'lodash';
@@ -5,25 +7,23 @@ import * as fp from 'lodash/fp';
 import NodeCache, { NodeCacheLegacyCallbacks } from 'node-cache';
 import * as R from 'ramda';
 
-import { DynamicFormTypes } from '../components';
+import { DynamicFormTypes } from '../components/DynamicForm/types';
 import { Config } from '../config';
-import { AppContext, AsunaDefinitions, CacheHelper } from '../core';
-import {
-  BatchLoader,
-  castModelKey,
-  defaultColumns,
-  defaultColumnsByPrimaryKey,
-  parseJSONIfCould,
-  RelationColumnProps,
-  TenantHelper,
-} from '../helpers';
+import { CacheHelper } from '../core/cache.helper';
+import { AppContext } from '../core/context';
+import { defaultColumns, defaultColumnsByPrimaryKey } from '../helpers';
+import { castModelKey } from '../helpers/cast';
+import { TenantHelper } from '../helpers/tenant';
+import { BatchLoader } from '../helpers/utils';
 import { createLogger } from '../logger';
-import { Asuna } from '../types';
 
+import type { AsunaDefinitions } from '../core/definitions';
+import type { Asuna } from '../types';
 import type { TablePaginationConfig } from 'antd/es/table/interface';
 import type { AxiosResponse } from 'axios';
-import type { AuthState } from '../store';
 import type { Condition, WhereConditions } from '../types/meta';
+import type { AuthState } from '../store/auth.redux';
+import type { RelationColumnProps } from '../helpers/interfaces';
 
 // --------------------------------------------------------------
 // Types
@@ -42,7 +42,7 @@ export interface RestListQuery {
 }
 
 export interface IModelService {
-  loadModels(
+  loadModels: (
     auth: { token: string | null },
     modelName: string,
     configs: {
@@ -52,7 +52,7 @@ export interface IModelService {
       filters?: WhereConditions;
       sorter?: any;
     } & Asuna.Schema.ModelConfig,
-  ): Promise<AxiosResponse>;
+  ) => Promise<AxiosResponse>;
 
   /**
    * @deprecated {@see loadOriginSchema}
@@ -60,11 +60,11 @@ export interface IModelService {
    * @param modelName
    * @param data
    */
-  loadSchema(auth: { token: string | null }, modelName: string, data): Promise<AxiosResponse>;
+  loadSchema: (auth: { token: string | null }, modelName: string, data) => Promise<AxiosResponse>;
 
-  loadOriginSchema(auth: { token: string | null }, modelName: string, data): Promise<AxiosResponse>;
+  loadOriginSchema: (auth: { token: string | null }, modelName: string, data) => Promise<AxiosResponse>;
 
-  fetch(
+  fetch: (
     auth: { token: string | null },
     modelName: string,
     data: {
@@ -76,21 +76,21 @@ export interface IModelService {
        */
       relations?: string[];
     } & Asuna.Schema.ModelConfig,
-  ): Promise<AxiosResponse>;
+  ) => Promise<AxiosResponse>;
 
-  remove(
+  remove: (
     auth: { token: string | null },
     modelName: string,
     data: { endpoint?: string; id: number },
-  ): Promise<AxiosResponse>;
+  ) => Promise<AxiosResponse>;
 
-  insert(
+  insert: (
     auth: { token: string | null; schemas?: {} },
     modelName: string,
     data: { endpoint?: string; body: IModelBody } & Asuna.Schema.ModelConfig,
-  ): Promise<AxiosResponse>;
+  ) => Promise<AxiosResponse>;
 
-  update(
+  update: (
     auth: { token: string | null },
     modelName: any,
     data: {
@@ -100,31 +100,31 @@ export interface IModelService {
       primaryKey?: string;
       body: IModelBody;
     } & Asuna.Schema.ModelConfig,
-  ): Promise<AxiosResponse>;
+  ) => Promise<AxiosResponse>;
 
-  loadAssociation(
+  loadAssociation: (
     auth: { token: string | null },
     associationName: string,
     data: Asuna.Schema.ModelConfig & RestListQuery,
-  ): Promise<AxiosResponse | AxiosResponse[]>;
+  ) => Promise<AxiosResponse | AxiosResponse[]>;
 
-  loadAssociationByIds(
+  loadAssociationByIds: (
     auth: AuthState,
     associationName: string,
     data: Asuna.Schema.ModelConfig & { fields: string[]; ids: string[] | number[] },
-  ): Promise<AxiosResponse>;
+  ) => Promise<AxiosResponse>;
 
-  uniq(
+  uniq: (
     { auth, modelConfig }: { auth: AuthState; modelConfig: Asuna.Schema.ModelConfig },
     modelName: string,
     data: { column: string },
-  ): Promise<AxiosResponse>;
+  ) => Promise<AxiosResponse>;
 
-  groupCounts(
+  groupCounts: (
     { auth, modelConfig }: { auth: AuthState; modelConfig: Asuna.Schema.ModelConfig },
     modelName: string,
     data: { column: string; where: string },
-  ): Promise<AxiosResponse<{ [id: string]: { [name: string]: number } }>>;
+  ) => Promise<AxiosResponse<{ [id: string]: { [name: string]: number } }>>;
 }
 
 // --------------------------------------------------------------
@@ -144,8 +144,8 @@ export interface ModelListConfig {
 }
 
 export interface ModelAdapter {
-  batchFetch<T>(modelName: string, data: { id: string | number; relations?: string[] }): Promise<T>;
-  fetch2<T>(
+  batchFetch: <T>(modelName: string, data: { id: string | number; relations?: string[] }) => Promise<T>;
+  fetch2: <T>(
     modelName: string,
     data: {
       endpoint?: string;
@@ -156,17 +156,17 @@ export interface ModelAdapter {
        */
       relations?: string[];
     } & Asuna.Schema.ModelConfig,
-  ): Promise<T>;
-  getPrimaryKey(modelName: string): string;
-  loadModels2<T>(modelName: string, configs?: ModelListConfig): Promise<Asuna.PageableResponse<T>>;
-  uniq(modelName: string, column: string, where?: object): Promise<string[]>;
-  groupCounts(modelName: string, column: string, relation: string, id: string): Promise<{ [name: string]: number }>;
-  loadOriginSchema(modelName: string): Promise<Asuna.Schema.OriginSchema>;
-  getColumns(
+  ) => Promise<T>;
+  getPrimaryKey: (modelName: string) => string;
+  loadModels2: <T>(modelName: string, configs?: ModelListConfig) => Promise<Asuna.PageableResponse<T>>;
+  uniq: (modelName: string, column: string, where?: object) => Promise<string[]>;
+  groupCounts: (modelName: string, column: string, relation: string, id: string) => Promise<{ [name: string]: number }>;
+  loadOriginSchema: (modelName: string) => Promise<Asuna.Schema.OriginSchema>;
+  getColumns: (
     modelName: string,
     opts: { callRefresh: () => void; actions: (text, record, extras) => any; ctx: Asuna.Schema.TableContext },
     extraName?: string,
-  ): Promise<RelationColumnProps[]>;
+  ) => Promise<RelationColumnProps[]>;
 }
 
 export class ModelAdapterImpl implements ModelAdapter {
@@ -228,7 +228,7 @@ export class ModelAdapterImpl implements ModelAdapter {
       [
         () => !!advanceType,
         () =>
-          _.cond([
+          _.cond<typeof advanceType, any>([
             [() => !!DynamicFormTypes[advanceType], () => DynamicFormTypes[advanceType]],
             [_.stubTrue, notFound],
           ])(advanceType),
@@ -239,7 +239,7 @@ export class ModelAdapterImpl implements ModelAdapter {
       [
         () => !!basicType,
         () =>
-          _.cond([
+          _.cond<typeof basicType, any>([
             [() => /^(VARCHAR.*|String)$/i.test(basicType), () => DynamicFormTypes.Input],
             [
               () => /^(INTEGER|FLOAT|Number|Numeric|Decimal|Double.*)$/i.test(basicType),

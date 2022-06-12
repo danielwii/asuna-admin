@@ -3,11 +3,13 @@ import * as fp from 'lodash/fp';
 import { DependencyList, useState } from 'react';
 import { useAsync, useAsyncRetry } from 'react-use';
 
-import { adminProxyCaller, Draft, modelProxyCaller } from '../adapters';
+import { adminProxyCaller } from '../adapters/admin';
+import { Draft } from '../adapters/admin.plain';
+import { modelProxyCaller } from '../adapters/model';
 import { createLogger } from '../logger';
 import { Asuna } from '../types';
 
-import type { RelationColumnProps } from '../helpers';
+import type { RelationColumnProps } from './interfaces';
 
 const logger = createLogger('helpers:hooks');
 

@@ -7,7 +7,7 @@ import React from 'react';
 import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc';
 
 import { generateComponent, horizontalFormItemLayout, IFormItemLayout } from '.';
-import { AppContext } from '../../../core';
+import { AppContext } from '../../../core/context';
 import { createLogger } from '../../../logger';
 
 const logger = createLogger('components:dynamic-form:select');

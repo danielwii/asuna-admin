@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 
-import { AppContext } from '../core';
+import { AppContext } from '../core/context';
 import { Asuna } from '../types';
 
 export class SchemaHelper {

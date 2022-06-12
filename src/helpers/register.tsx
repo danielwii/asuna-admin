@@ -1,6 +1,7 @@
-import { ApolloProvider } from '@apollo/client';
+import { gql } from '@apollo/client';
 
-import { gql } from 'apollo-boost';
+import consola from 'consola';
+import _ from 'lodash';
 import * as React from 'react';
 
 import { AppContext, IComponentService } from '../core/context';
@@ -17,11 +18,13 @@ export class ComponentService implements IComponentService {
   }
 
   regGraphql(componentName: string, renderComponent: React.VFC): void {
-    this.#components[componentName] = (props) => (
-      <ApolloProvider client={AppContext.ctx.graphql.client as any /* TODO error occurred */}>
-        {renderComponent({
-          ...props,
-          kvGql: (KVOpts: { collection: string; key: string }) => gql`
+    consola.info('reg graphql component', { componentName, client: _.get(AppContext.ctx, 'graphql.client') });
+    this.#components[componentName] = (props) =>
+      // <ApolloProvider client={AppContext.ctx.graphql.client as any /* TODO error occurred */}>
+      //   {
+      renderComponent({
+        ...props,
+        kvGql: (KVOpts: { collection: string; key: string }) => gql`
             {
               kv(collection: "${KVOpts.collection}", key: "${KVOpts.key}") {
                 updatedAt
@@ -31,9 +34,9 @@ export class ComponentService implements IComponentService {
               }
             }
           `,
-        })}
-      </ApolloProvider>
-    );
+      });
+    // }
+    // </ApolloProvider>
   }
 
   load(componentName: string): React.VFC {

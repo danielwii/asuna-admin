@@ -4,12 +4,13 @@ import { useContext } from 'react';
 import { useSelector } from 'react-redux';
 import { CubeGrid } from 'styled-spinkit';
 
-import { ISideMenuProps, SideMenu } from '../components';
+import { ISideMenuProps, SideMenu } from '../components/SideMenu';
 import { StoreContext } from '../context/store';
-import { DebugInfo, TenantHelper } from '../helpers';
+import { DebugInfo } from '../helpers/debug';
+import { TenantHelper } from '../helpers/tenant';
 import { useSharedPanesFunc, useSharedPanesGlobalValue } from '../store/panes.global';
 
-import type { RootState } from '../store';
+import type { RootState } from '../store/types';
 
 export const SideMenuRender: React.FC = (props) => {
   // const [tenantInfo, setTenantInfo] = useState<TenantInfo>();

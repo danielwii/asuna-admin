@@ -4,14 +4,14 @@ import { Button, Divider, Typography } from 'antd';
 import * as _ from 'lodash';
 import React, { useEffect, useState } from 'react';
 import Highlight from 'react-highlight';
-import { useLogger } from 'react-use';
 import { FoldingCube } from 'styled-spinkit';
 import * as util from 'util';
 
-import { EasyGroupForm, ErrorInfo, GroupFormFields } from '../../components';
-import { AppContext } from '../../core';
-import { KVHelper } from '../../helpers';
+import { AppContext } from '../../core/context';
+import { KVHelper } from '../../helpers/components';
 import { createLogger } from '../../logger';
+import { EasyGroupForm, GroupFormFields } from '../EasyForm';
+import { ErrorInfo } from '../ErrorInfo';
 
 const logger = createLogger('components:kv-form:group');
 

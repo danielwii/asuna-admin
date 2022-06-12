@@ -1,8 +1,9 @@
 import React from 'react';
-import { AsunaPlainInfo } from './AsunaPlainInfo';
-import { DrawerButton } from './DrawerButton';
 
-export const AsunaDrawerButton: React.FC<{
+import { AsunaPlainInfo } from './AsunaPlainInfo';
+import { DrawerButton } from './base/drawer-button/drawer-button';
+
+export const AsunaDrawerButton: React.VFC<{
   text: React.ReactNode;
   record: object;
   modelName: string;

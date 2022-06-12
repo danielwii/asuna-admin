@@ -9,46 +9,17 @@ import { persistReducer, persistStore } from 'redux-persist';
 import createSagaMiddleware from 'redux-saga';
 import { all } from 'redux-saga/effects';
 
-import { AppContext } from '../core';
+import { AppContext } from '../core/context';
 import { createLogger } from '../logger';
-import { appEpics, appReducer, appSagas, AppState } from './app.redux';
-import { authReducer, authSagas, AuthState } from './auth.redux';
-import { menuReducer, menuSagas, MenuState } from './menu.redux';
-import { createStoreConnectorMiddleware, storeConnector } from './middlewares';
-import { modelsCleaner, modelsReducer, modelsSagas, ModelsState } from './models.redux';
-import { routerReducer, routerSagas, RouterState } from './router.redux';
-import { securityReducer, securitySagas, SecurityState } from './security.redux';
+import { appEpics, appReducer, appSagas } from './app.redux';
+import { authReducer, authSagas } from './auth.redux';
+import { menuReducer, menuSagas } from './menu.redux';
+import { createStoreConnectorMiddleware } from './middlewares/store-connector';
+import { modelsCleaner, modelsReducer, modelsSagas } from './models.redux';
+import { securityReducer, securitySagas } from './security.redux';
 
 import type { MakeStore, MakeStoreOptions } from 'next-redux-wrapper';
-
-export { storeConnector };
-
-export * from './panes.global';
-export * from './app.redux';
-export * from './app.actions';
-export * from './auth.redux';
-export * from './auth.actions';
-export * from './models.redux';
-export * from './router.redux';
-// export * from './content.redux';
-export * from './middlewares';
-
-interface GlobalState {
-  type: string;
-  payload: object;
-  key: string;
-}
-
-export interface RootState {
-  auth: AuthState;
-  router: RouterState;
-  menu: MenuState;
-  models: ModelsState;
-  // content: ContentState;
-  security: SecurityState;
-  app: AppState;
-  global: GlobalState;
-}
+import type { RootState } from './types';
 
 const logger = createLogger('store');
 
@@ -65,12 +36,14 @@ export class AsunaStore {
   private readonly loggerMiddleware;
 
   private readonly initialState: DeepPartial<RootState>;
+
+  private rootEpics = combineEpics(...appEpics);
   private persistConfig = {
     key: 'root',
     storage: localForage,
     debug: true,
     timeout: 1000,
-    blacklist: ['app', 'router' /*, 'auth'*/],
+    blacklist: ['app', 'router' /* , 'auth' */],
   };
 
   private constructor() {
@@ -92,29 +65,16 @@ export class AsunaStore {
   }
 
   private *rootSagas() {
-    yield all([
-      ...authSagas,
-      ...routerSagas,
-      ...menuSagas,
-      ...modelsSagas,
-      // ...contentSagas,
-      // ...modModelsSagas,
-      ...securitySagas,
-      ...appSagas,
-    ]);
+    yield all([...authSagas, ...menuSagas, ...modelsSagas, ...securitySagas, ...appSagas]);
   }
 
   private rootReducers = (preloadedState, action) => {
     const reducers: { [key in keyof RootState]: any } = {
       auth: authReducer,
-      router: routerReducer,
       menu: menuReducer,
       models: modelsReducer,
-      // content: contentReducer,
-      // mod_models   : modModelsReducer,
       security: securityReducer,
       app: appReducer,
-      // form         : formReducer,
       global: (previousState = this.initialState, action) => ({ ...previousState, ...action }),
     };
 
@@ -122,7 +82,7 @@ export class AsunaStore {
 
     const crossSliceReducer = (preloadedState, action) => {
       if (action.type === actionTypes.CLEAN) {
-        const cleanedState = R.compose(modelsCleaner /*, panesCleaner*/)(preloadedState);
+        const cleanedState = R.compose(modelsCleaner /* , panesCleaner */)(preloadedState);
         logger.log('[crossSliceReducer]', { preloadedState, action, cleanedState });
         return cleanedState;
       }
@@ -133,8 +93,6 @@ export class AsunaStore {
     return crossSliceReducer(intermediateState, action);
   };
 
-  private rootEpics = combineEpics(...appEpics);
-
   public configureStore: MakeStore = (preloadedState = this.initialState, opts: MakeStoreOptions): Store => {
     logger.log('configureStore', opts);
     AppContext.isServer = (opts as any).isServer ?? typeof window === 'undefined';
@@ -143,7 +101,7 @@ export class AsunaStore {
       store = createStore<RootState, AnyAction, any, any>(
         this.rootReducers,
         preloadedState,
-        applyMiddleware(this.sagaMiddleware, /*this.epicMiddleware, */ this.storeConnectorMiddleware),
+        applyMiddleware(this.sagaMiddleware, /* this.epicMiddleware, */ this.storeConnectorMiddleware),
       );
     } else {
       // enable persistence in client side

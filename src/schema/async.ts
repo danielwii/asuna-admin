@@ -2,8 +2,8 @@ import { Promise } from 'bluebird';
 import * as _ from 'lodash';
 import * as R from 'ramda';
 
-import { DynamicFormTypes } from '../components';
-import { AppContext } from '../core';
+import { DynamicFormTypes } from '../components/DynamicForm/types';
+import { AppContext } from '../core/context';
 import { createLogger } from '../logger';
 import { Asuna } from '../types';
 

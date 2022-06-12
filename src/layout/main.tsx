@@ -2,9 +2,10 @@ import { Layout } from 'antd';
 import * as React from 'react';
 import styled from 'styled-components';
 
-import { ProgressBar } from '../components';
-import { PanesContainer, SideMenuRender } from '../containers';
+import { ProgressBar } from '../components/ProgressBar';
 import { HeaderRender } from '../containers/Header';
+import PanesViewContainer from '../containers/Panes';
+import { SideMenuRender } from '../containers/SideMenu';
 import { StoreContextProvider } from '../context/store';
 import { createLogger } from '../logger';
 import WithStyles from './with-styles';
@@ -34,7 +35,7 @@ const Main = ({ loading, heartbeat, auth, appInfo, hideCharacteristics }) => {
             </Sider>
             <Layout style={{ /*marginLeft: 200,*/ padding: '.5rem' }}>
               <StyledContentDiv>
-                <PanesContainer />
+                <PanesViewContainer />
               </StyledContentDiv>
             </Layout>
           </Layout>

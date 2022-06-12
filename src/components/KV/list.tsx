@@ -1,11 +1,6 @@
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { TextField } from '@material-ui/core';
 
-import {
-  DynamicJsonArrayTable,
-  ObjectArrayJsonTableHelper,
-} from '@danielwii/asuna-components/dist/table-helper/dynamic-json-array-table';
-
 import { Button, Col, Divider, Row, Typography } from 'antd';
 import { Field, FieldProps, Form, Formik, FormikValues } from 'formik';
 import _ from 'lodash';
@@ -14,11 +9,13 @@ import Highlight from 'react-highlight';
 import { FoldingCube } from 'styled-spinkit';
 import * as util from 'util';
 
-import { AppContext } from '../../core';
-import { KVHelper, WithDebugInfo } from '../../helpers';
+import { AppContext } from '../../core/context';
+import { KVHelper } from '../../helpers/components';
+import { WithDebugInfo } from '../../helpers/debug';
 import { createLogger } from '../../logger';
+import { DynamicJsonArrayTable, ObjectArrayJsonTableHelper } from '../base/table-helper/dynamic-json-array-table';
 
-import type { FormFieldDef, FormFields } from '@danielwii/asuna-components/dist/easy-form/interfaces';
+import type { FormFieldDef, FormFields } from '../base/easy-form/interfaces';
 
 const logger = createLogger('components:kv-form:form');
 

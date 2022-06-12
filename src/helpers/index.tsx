@@ -3,54 +3,40 @@
 /** @jsx jsx */
 import { LinkOutlined, SearchOutlined } from '@ant-design/icons';
 // noinspection ES6UnusedImports
-import { jsx } from '@emotion/react';
-
-import { WithFuture } from '@danielwii/asuna-components/dist/helper/helper';
-import { PreviewButton } from '@danielwii/asuna-components/dist/preview-button';
+import { css, jsx } from '@emotion/react';
 
 import { Badge, Button, Checkbox, Divider, Input, Modal, Popconfirm, Space, Statistic, Tag, Tooltip } from 'antd';
 import { Promise } from 'bluebird';
-import * as deepDiff from 'deep-diff';
 import * as _ from 'lodash';
 import moment from 'moment';
-import * as R from 'ramda';
 import * as React from 'react';
 import NumberFormat from 'react-number-format';
 import * as util from 'util';
 
-import { modelProxyCaller } from '../adapters';
-import { AssetsPreview, Content, DynamicFormTypes, parseAddressStr } from '../components';
+import { modelProxyCaller } from '../adapters/model';
+import { parseAddressStr } from '../components/Address';
 import { VideoPlayer } from '../components/DynamicForm/Videos';
+import { DynamicFormTypes } from '../components/DynamicForm/types';
+import { WithFuture } from '../components/base/helper/helper';
+import { AssetsPreview, PdfButton } from '../components/base/preview-button/asset-preview';
+import { Content } from '../components/base/styled/styled';
 import { Config } from '../config';
-import { AppContext } from '../core';
+import { AppContext } from '../core/context';
 import { valueToArrays } from '../core/url-rewriter';
-import { ComponentsHelper, RelationColumnProps } from '../helpers';
 import { createLogger } from '../logger';
-import { SchemaHelper } from '../schema';
-import { Asuna } from '../types';
+import { SchemaHelper } from '../schema/helper';
 import { castModelKey } from './cast';
+import { ComponentsHelper } from './components';
 import { WithDebugInfo } from './debug';
 import { extractValue, removePreAndSuf } from './func';
 
+import type { Asuna } from '../types';
+import type { RelationColumnProps } from './interfaces';
 import type { ColumnProps, ColumnType } from 'antd/es/table';
 import type { FilterDropdownProps } from 'antd/es/table/interface';
-import type { Diff } from 'deep-diff';
 import type { VideoJsPlayerOptions } from 'video.js';
 
 const logger = createLogger('helpers');
-
-export * from './cast';
-export * from './components';
-export * from './debug';
-export * from './error';
-export * from './func';
-export * from './hooks';
-export * from './interfaces';
-export * from './message-box';
-export * from './models';
-export * from './register';
-export * from './tenant';
-export * from './upload';
 
 /**
  * used by services
@@ -59,18 +45,21 @@ export * from './upload';
 export const authHeader = (token?) => {
   const authToken = token || AppContext.fromStore('auth')?.token;
   const schema = Config.get('AUTH_HEADER');
-  if (schema === 'AuthHeaderAsBearerToken') {
-    return { headers: { Authorization: `Bearer ${authToken}` } };
-  }
-  return { headers: { Authorization: `${schema} ${authToken}` } };
+  return schema === 'AuthHeaderAsBearerToken'
+    ? { headers: { Authorization: `Bearer ${authToken}` } }
+    : { headers: { Authorization: `${schema} ${authToken}` } };
 };
 
-export const nullProtectRender = (fn: (value, record) => React.ReactChild) => (value, record): React.ReactChild => {
-  return record ? fn(value, record) : 'n/a';
-};
+export const nullProtectRender =
+  (fn: (value, record) => React.ReactChild) =>
+  (value, record): React.ReactChild =>
+    record ? fn(value, record) : 'n/a';
 
 type ConditionType = 'like' | 'boolean' | 'list';
-type SwitchConditionExtras = { model: string; relationSearchField?: string };
+interface SwitchConditionExtras {
+  model: string;
+  relationSearchField?: string;
+}
 
 async function generateSearchColumnProps(
   dataIndex: string,
@@ -159,8 +148,12 @@ async function generateSearchColumnProps(
   };
 }
 
-type ModelOpts = { model: string; title?: string; ctx: Asuna.Schema.TableContext };
-type TextColumnOpts = {
+interface ModelOpts {
+  model: string;
+  title?: string;
+  ctx: Asuna.Schema.TableContext;
+}
+interface TextColumnOpts {
   mode?: 'html' | 'json' | 'text' | 'button';
   /**
    * 用提供的转换器来转译
@@ -177,14 +170,18 @@ type TextColumnOpts = {
    * @param record
    */
   render?: (content, record?) => React.ReactChild;
-};
-type CommonColumnOpts = { transformer? };
+}
+interface CommonColumnOpts {
+  transformer?: ((o: any) => any) | string;
+}
 
 export const columnCreator: (
   modelOpts: { model: string; title?: string },
   columnOpts?: TextColumnOpts,
-) => Asuna.Schema.ColumnPropsCreator = (modelOpts, columnOpts) => (key, actions, { ctx }) =>
-  columnHelper2.generate(key, { ...modelOpts, ctx }, columnOpts);
+) => Asuna.Schema.ColumnPropsCreator =
+  (modelOpts, columnOpts) =>
+  (key, actions, { ctx }) =>
+    columnHelper2.generate(key, { ...modelOpts, ctx }, columnOpts);
 
 export const fpColumnCreator = (title?: string, columnOpts?: TextColumnOpts) => (model: string) =>
   columnCreator({ model, title }, columnOpts);
@@ -256,7 +253,7 @@ export const columnHelper2 = {
   generatePdf: async (key, modelOpts: ModelOpts, opts: TextColumnOpts = {}): Promise<ColumnProps<any>> =>
     columnHelper2.generate(key, modelOpts, {
       ...opts,
-      render: (content, record) => <PreviewButton.PdfButton pdf={content} />,
+      render: (content, record) => <PdfButton pdf={content} />,
     }),
   generateLang: async (key, modelOpts: ModelOpts, opts: TextColumnOpts = {}): Promise<ColumnProps<any>> =>
     columnHelper2.generate(key, modelOpts, {
@@ -295,7 +292,11 @@ export const columnHelper2 = {
   generateNumber: async (
     key,
     { model, title, ctx }: ModelOpts,
-    opts: { transformer?; searchType?: ConditionType; type: 'badge' | 'statistics' | 'number' } = { type: 'number' },
+    opts: {
+      transformer?: ((o: any) => any) | string;
+      searchType?: ConditionType;
+      type: 'badge' | 'statistics' | 'number';
+    } = { type: 'number' },
   ): Promise<ColumnProps<any>> => {
     const columnInfo = model ? await SchemaHelper.getColumnInfo(model, key) : undefined;
     const titleStr = title ?? columnInfo?.config?.info?.name ?? key;
@@ -313,7 +314,7 @@ export const columnHelper2 = {
           ) : (
             <Badge
               showZero
-              count={+value}
+              count={Number(value)}
               overflowCount={Number.MAX_SAFE_INTEGER}
               style={{ backgroundColor: '#52c41a' }}
             />
@@ -322,7 +323,7 @@ export const columnHelper2 = {
           const value = extractValue(record, opts.transformer);
           return <NumberFormat value={value} displayType="text" thousandSeparator />;
         } else {
-          return <Statistic value={+value} />;
+          return <Statistic value={Number(value)} />;
         }
       }),
     };
@@ -401,148 +402,161 @@ export const columnHelper2 = {
 };
 
 export const columnHelper = {
-  generateID: ({ ctx }: Asuna.Schema.RecordRenderExtras) => async (
-    key = 'id',
-    title = 'ID',
-    transformer?,
-  ): Promise<ColumnProps<any>> => ({
-    key,
-    title,
-    dataIndex: key,
-    sorter: true,
-    ...(await generateSearchColumnProps(key, ctx.onSearch, 'like')),
-    render: nullProtectRender((record) => (
-      <WithDebugInfo info={{ key, title, record }}>{transformer ? transformer(record) : record}</WithDebugInfo>
-    )),
-  }),
-  fpGenerateSubRelation: <RelationSchema extends any = object>(
-    key: string,
-    title: string,
-    opts: {
-      ref?: string;
-      subRef: string;
-      transformer: keyof RelationSchema;
-      render?: (content, record?, extras?: Asuna.Schema.RecordRenderExtras) => React.ReactNode;
-    },
-  ) => async (
-    laterKey: string,
-    actions: Asuna.Schema.RecordRenderActions,
-    extras: Asuna.Schema.RecordRenderExtras,
-  ): Promise<RelationColumnProps> => {
-    let ref, transformer;
-    if (!opts.ref && !opts.transformer) {
-      [ref, transformer] = key.split('.');
-    }
-
-    ref = ref || opts.ref || key;
-    transformer = transformer || opts.transformer;
-
-    return {
+  generateID:
+    ({ ctx }: Asuna.Schema.RecordRenderExtras) =>
+    async (key = 'id', title = 'ID', transformer?): Promise<ColumnProps<any>> => ({
       key,
       title,
-      relation: ref,
-      dataIndex: ref,
-      // ...filterProps,
-      render: nullProtectRender((record) => {
-        return (
-          <div style={record?.isPublished == false || record?.isActive == false ? { color: 'darkred' } : {}}>
-            {record?.id ? (
-              <WithFuture
-                future={() =>
-                  modelProxyCaller().batchFetch(opts.subRef, { id: record.id, relations: [opts.transformer as string] })
-                }
-              >
-                {(data) => (
-                  <WithDebugInfo info={{ key, title, opts, record, transformer }}>
-                    {opts.render
-                      ? opts.render(extractValue(data, transformer), data, extras)
-                      : extractValue(data, transformer)}
-                  </WithDebugInfo>
-                )}
-              </WithFuture>
-            ) : (
-              'n/a'
-            )}
-          </div>
-        );
-      }),
-    };
-  },
-  fpGenerateRelation: <RelationSchema extends any = object>(
-    key: string,
-    title: string,
-    opts: {
-      ref?: string;
-      transformer?: keyof RelationSchema | ((record) => React.ReactChild);
-      filterType?: 'list' | 'search';
-      relationSearchField?: string;
-      render?: (content, record?, extras?: Asuna.Schema.RecordRenderExtras) => React.ReactNode;
-    },
-  ) => async (
-    laterKey: string,
-    actions: Asuna.Schema.RecordRenderActions,
-    extras: Asuna.Schema.RecordRenderExtras,
-  ): Promise<RelationColumnProps> => {
-    let ref, transformer;
-    if (!opts.ref && !opts.transformer) {
-      [ref, transformer] = key.split('.');
-    }
+      dataIndex: key,
+      sorter: true,
+      ...(await generateSearchColumnProps(key, ctx.onSearch, 'like')),
+      render: nullProtectRender((record) => (
+        <WithDebugInfo info={{ key, title, record }}>{transformer ? transformer(record) : record}</WithDebugInfo>
+      )),
+    }),
+  fpGenerateSubRelation:
+    <RelationSchema extends object>(
+      key: string,
+      title: string,
+      opts: {
+        ref?: string;
+        subRef: string;
+        transformer: keyof RelationSchema;
+        render?: (content, record?, extras?: Asuna.Schema.RecordRenderExtras) => React.ReactNode;
+      },
+    ) =>
+    async (
+      laterKey: string,
+      actions: Asuna.Schema.RecordRenderActions,
+      extras: Asuna.Schema.RecordRenderExtras,
+    ): Promise<RelationColumnProps> => {
+      let ref;
+      let transformer;
+      if (!opts.ref && !opts.transformer) {
+        [ref, transformer] = key.split('.');
+      }
 
-    ref = ref || opts.ref || key;
-    transformer = transformer || opts.transformer;
-    let filterProps: ColumnType<string> = {};
-    switch (opts.filterType) {
-      case 'list':
-        const modelName = extras.modelName;
-        const primaryKey = AppContext.adapters.models.getPrimaryKey(modelName);
-        const relation = AppContext.adapters.models.getFormSchema(modelName)[ref];
-        const relationName = relation?.options?.selectable;
-        if (relationName) {
-          const field = opts.relationSearchField || 'name';
-          const {
-            data: { items },
-          } = await AppContext.adapters.models.loadModels(relationName, {
-            fields: [field],
-            pagination: { pageSize: 500 },
-          });
-          filterProps = {
-            filterMultiple: false,
-            // 关联筛选时的搜索 key 为了区别同一个关联的不同字段，所以会包含非主键信息，这里传递整个包括主键的搜索信息
-            filters: _.map(items, (item) => ({
-              text: `${item[primaryKey]} / ${item[field]}`,
-              value: JSON.stringify({ key: [`${ref}.${primaryKey}`], value: [item[primaryKey]] }),
-            })),
-          };
-        }
-        break;
-      case 'search':
-        filterProps = await generateSearchColumnProps(
-          `${ref}.${opts.relationSearchField || 'name'}`,
-          extras.ctx.onSearch,
-          'like',
-        );
-        break;
-    }
+      ref = ref || opts.ref || key;
+      transformer = transformer || opts.transformer;
 
-    return {
-      key: key as string,
-      title,
-      relation: ref,
-      dataIndex: ref,
-      ...filterProps,
-      render: nullProtectRender((record) => {
-        const content = extractValue(record, transformer);
-        return (
-          <WithDebugInfo info={{ key, title, opts, record, content, transformer }}>
-            <div style={record?.isPublished == false || record?.isActive == false ? { color: 'darkred' } : {}}>
-              {opts.render ? opts.render(content, record, extras) : content}
+      return {
+        key,
+        title,
+        relation: ref,
+        dataIndex: ref,
+        // ...filterProps,
+        render: nullProtectRender((record) => {
+          return (
+            <div style={record?.isPublished === false || record?.isActive === false ? { color: 'darkred' } : {}}>
+              {record?.id ? (
+                <WithFuture
+                  future={() =>
+                    modelProxyCaller().batchFetch(opts.subRef, {
+                      id: record.id,
+                      relations: [opts.transformer as string],
+                    })
+                  }
+                >
+                  {(data) => (
+                    <WithDebugInfo info={{ key, title, opts, record, transformer }}>
+                      {opts.render
+                        ? opts.render(extractValue(data, transformer), data, extras)
+                        : extractValue(data, transformer)}
+                    </WithDebugInfo>
+                  )}
+                </WithFuture>
+              ) : (
+                'n/a'
+              )}
             </div>
-          </WithDebugInfo>
-        );
-      }),
-    };
-  },
-  generateLink: (key, title, opts: { transformer?; host?: string } = {}): ColumnProps<any> => ({
+          );
+        }),
+      };
+    },
+  fpGenerateRelation:
+    <RelationSchema extends object>(
+      key: string,
+      title: string,
+      opts: {
+        ref?: string;
+        transformer?: keyof RelationSchema | ((record) => React.ReactChild);
+        filterType?: 'list' | 'search';
+        relationSearchField?: string;
+        render?: (content, record?, extras?: Asuna.Schema.RecordRenderExtras) => React.ReactNode;
+      },
+    ) =>
+    async (
+      laterKey: string,
+      actions: Asuna.Schema.RecordRenderActions,
+      extras: Asuna.Schema.RecordRenderExtras,
+    ): Promise<RelationColumnProps> => {
+      let ref;
+      let transformer;
+      if (!opts.ref && !opts.transformer) {
+        [ref, transformer] = key.split('.');
+      }
+
+      ref = ref || opts.ref || key;
+      transformer = transformer || opts.transformer;
+      let filterProps: ColumnType<string> = {};
+      switch (opts.filterType) {
+        case 'list': {
+          const modelName = extras.modelName;
+          const primaryKey = AppContext.adapters.models.getPrimaryKey(modelName);
+          const relation = AppContext.adapters.models.getFormSchema(modelName)[ref];
+          const relationName = relation?.options?.selectable;
+          if (relationName) {
+            const field = opts.relationSearchField || 'name';
+            const {
+              data: { items },
+            } = await AppContext.adapters.models.loadModels(relationName, {
+              fields: [field],
+              pagination: { pageSize: 500 },
+            });
+            filterProps = {
+              filterMultiple: false,
+              // 关联筛选时的搜索 key 为了区别同一个关联的不同字段，所以会包含非主键信息，这里传递整个包括主键的搜索信息
+              filters: _.map(items, (item) => ({
+                text: `${item[primaryKey]} / ${item[field]}`,
+                value: JSON.stringify({ key: [`${ref}.${primaryKey}`], value: [item[primaryKey]] }),
+              })),
+            };
+          }
+          break;
+        }
+        case 'search': {
+          filterProps = await generateSearchColumnProps(
+            `${ref}.${opts.relationSearchField || 'name'}`,
+            extras.ctx.onSearch,
+            'like',
+          );
+          break;
+        }
+      }
+
+      return {
+        key: key as string,
+        title,
+        relation: ref,
+        dataIndex: ref,
+        ...filterProps,
+        render: nullProtectRender((record) => {
+          const content = extractValue(record, transformer);
+          return (
+            <WithDebugInfo info={{ key, title, opts, record, content, transformer }}>
+              <div style={record?.isPublished === false || record?.isActive === false ? { color: 'darkred' } : {}}>
+                {opts.render ? opts.render(content, record, extras) : content}
+              </div>
+            </WithDebugInfo>
+          );
+        }),
+      };
+    },
+  generateLink: (
+    key,
+    title,
+    opts: { transformer?: ((o: any) => any) | string; host?: string } = {},
+  ): ColumnProps<any> => ({
     key,
     title,
     dataIndex: key,
@@ -626,7 +640,11 @@ export const columnHelper = {
    * 生成预览小图
    * @deprecated {@see columnHelper2.generate}
    */
-  generateImage: (key, title, opts: { transformer?; host?: string } = {}): ColumnProps<any> => ({
+  generateImage: (
+    key,
+    title,
+    opts: { transformer?: ((o: any) => any) | string; host?: string } = {},
+  ): ColumnProps<any> => ({
     key,
     title,
     dataIndex: key,
@@ -640,7 +658,11 @@ export const columnHelper = {
       );
     }),
   }),
-  generateVideo: (key, title, opts: { transformer?; host?: string } = {}): ColumnProps<any> => ({
+  generateVideo: (
+    key,
+    title,
+    opts: { transformer?: ((o: any) => any) | string; host?: string } = {},
+  ): ColumnProps<any> => ({
     key,
     title,
     dataIndex: key,
@@ -653,7 +675,7 @@ export const columnHelper = {
           height: 160,
           autoplay: false,
           controls: true,
-          sources: [{ src: value /*type: 'video/mp4',*/ }],
+          sources: [{ src: value /* type: 'video/mp4', */ }],
         };
         return (
           <React.Fragment>
@@ -752,36 +774,14 @@ export const commonColumns = {
 
 export const defaultColumns = (actions) => [commonColumns.id, commonColumns.updatedAt, commonColumns.actions(actions)];
 
-export const defaultColumnsByPrimaryKey = (primaryKey = 'id') => (actions, extras) => [
-  commonColumns.primaryKey(primaryKey, primaryKey.toUpperCase(), extras),
-  commonColumns.updatedAt,
-  commonColumns.actions(actions),
-];
-
-export const diff = (
-  first,
-  second,
-  opts: { include?; exclude? } = {},
-): { verbose: Array<Diff<any>>; isDifferent: boolean } => {
-  let verbose;
-  if (R.not(R.anyPass([R.isEmpty, R.isNil])(opts.include))) {
-    verbose = deepDiff.diff(R.pickAll(opts.include)(first), R.pickAll(opts.include)(second));
-  } else if (R.not(R.anyPass([R.isEmpty, R.isNil])(opts.exclude))) {
-    verbose = deepDiff.diff(R.omit(opts.exclude)(first), R.omit(opts.exclude)(second));
-  } else {
-    verbose = deepDiff.diff(first, second);
-  }
-  return { verbose, isDifferent: !!verbose };
-};
-
-export const isJson = (value): boolean => {
-  try {
-    JSON.parse(value);
-    return true;
-  } catch (e) {
-    return false;
-  }
-};
+export const defaultColumnsByPrimaryKey =
+  (primaryKey = 'id') =>
+  (actions, extras) =>
+    [
+      commonColumns.primaryKey(primaryKey, primaryKey.toUpperCase(), extras),
+      commonColumns.updatedAt,
+      commonColumns.actions(actions),
+    ];
 
 export function TooltipContent({ value, link }: { value: any; link?: boolean }) {
   let component = _.isObject(value) ? util.inspect(value) : value;
@@ -803,7 +803,7 @@ export function TooltipContent({ value, link }: { value: any; link?: boolean }) 
 
 function TextLink({ url, text }: { url: string; text?: string }) {
   return (
-    <a href={url} target={'_blank'}>
+    <a href={url} target="_blank">
       {text || url}
     </a>
   );
@@ -829,51 +829,4 @@ export function parseType(key: ParseType, name: string | null): string {
     console.warn('not found for constants', { key, name, map: AppContext.constants?.[key] });
   }
   return value ?? name;
-}
-
-type Defer<R> = {
-  resolve: (thenableOrResult?: Promise<R>) => void;
-  reject: (error?: any) => void;
-  onCancel?: (callback: () => void) => void;
-  promise: Promise<R>;
-};
-
-function defer<R>(): Defer<R> {
-  let resolve, reject, onCancel;
-  const promise = new Promise(function () {
-    resolve = arguments[0];
-    reject = arguments[1];
-    onCancel = arguments[2];
-  });
-  return { resolve, reject, onCancel, promise };
-}
-
-export class BatchLoader<T, R> {
-  private queue: T[] = [];
-  private runner: Promise<R> | null;
-
-  constructor(
-    private readonly batchLoaderFn: (keys: T[]) => Promise<R>,
-    private readonly options?: {
-      extractor?: (data: R, key: T) => any;
-    },
-  ) {}
-
-  load(key: T): Promise<any> {
-    this.queue.push(key);
-    const runner =
-      this.runner ||
-      (this.runner = new Promise((resolve, reject) => {
-        setTimeout(() => {
-          this.runner = null;
-          const { queue } = this;
-          this.queue = [];
-          this.batchLoaderFn(queue).then(resolve, reject);
-        }, 0);
-      }));
-
-    return new Promise((resolve, reject) =>
-      runner.then((data) => resolve(this.options?.extractor ? this.options.extractor(data, key) : data), reject),
-    );
-  }
 }

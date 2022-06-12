@@ -2,29 +2,35 @@ import { Button, Col, Descriptions, Divider, Popconfirm, Row, Statistic } from '
 import { Promise } from 'bluebird';
 import * as _ from 'lodash';
 import React, { useContext, useState } from 'react';
-import { useAsync, useLogger } from 'react-use';
+import { useAsync } from 'react-use';
 import { FoldingCube } from 'styled-spinkit';
 import * as util from 'util';
 
-import { adminProxyCaller, TenantInfo } from '../adapters';
-import { DynamicFormTypes, ErrorInfo, FormModalButton } from '../components';
+import { adminProxyCaller } from '../adapters/admin';
+import { TenantInfo } from '../adapters/admin.plain';
+import { DynamicFormTypes } from '../components/DynamicForm/types';
+import { ErrorInfo } from '../components/ErrorInfo';
+import { FormModalButton } from '../components/FormModalButton';
 import { StoreContext } from '../context/store';
-import { AppContext } from '../core';
-import { ModelsHelper, parseResponseError, TenantHelper } from '../helpers';
+import { AppContext } from '../core/context';
 import { DebugInfo } from '../helpers/debug';
+import { parseResponseError } from '../helpers/error';
+import { ModelsHelper } from '../helpers/models';
+import { TenantHelper } from '../helpers/tenant';
 import { createLogger } from '../logger';
-import { Asuna } from '../types';
+
+import type { Asuna } from '../types';
 
 const logger = createLogger('tenant:welcome');
 
 async function createFirstModel(tenantInfo?: TenantInfo): Promise<void> {
   // TODO add validation info to error or console box (not implemented yet).
   if (tenantInfo?.config?.firstModelName) {
-    ModelsHelper.openCreatePane(tenantInfo?.config.firstModelName);
+    return ModelsHelper.openCreatePane(tenantInfo?.config.firstModelName);
   }
 }
 
-export const TenantWelcome: React.FC = (props) => {
+export const TenantWelcome: React.VFC = (props) => {
   const [count, reload] = useState(0);
   const { store } = useContext(StoreContext);
   const { value, error, loading } = useAsync(async () => {
@@ -37,7 +43,7 @@ export const TenantWelcome: React.FC = (props) => {
   });
   // const securityState = useSelector<RootState, SecurityState>(state => state.security);
 
-  if (AppContext.isDebugMode) useLogger('TenantWelcome', props, { count, store, value });
+  // if (AppContext.isDebugMode) useLogger('TenantWelcome', props, { count, store, value });
 
   const authorized = TenantHelper.authorized(store.tenantInfo);
 
@@ -107,7 +113,7 @@ export const TenantWelcome: React.FC = (props) => {
       {_.map(value?.schemas, (schema, key) => {
         const { limit, published, total } = TenantHelper.resolveCount(key);
         const displayName = schema.info?.displayName;
-        const title = displayName || key; //displayName ? `${displayName} / ${key}` : key;
+        const title = displayName || key; // displayName ? `${displayName} / ${key}` : key;
         const disable = total >= limit || !store.tenantInfo?.tenant || !authorized;
         return (
           <Descriptions.Item label={title} key={title}>

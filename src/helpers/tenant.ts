@@ -2,9 +2,13 @@ import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
 import * as Rx from 'rxjs';
 
-import { adminProxyCaller, modelProxyCaller, TenantInfo } from '../adapters';
-import { diff, RelationColumnProps } from '../helpers';
+import { adminProxyCaller } from '../adapters/admin';
+import { TenantInfo } from '../adapters/admin.plain';
+import { modelProxyCaller } from '../adapters/model';
 import { createLogger } from '../logger';
+import { diff } from './utils';
+
+import type { RelationColumnProps } from './interfaces';
 
 const logger = createLogger('helpers:tenant');
 

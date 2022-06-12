@@ -2,7 +2,7 @@ import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import * as _ from 'lodash';
 
 import { Config } from '../config';
-import { AppContext } from '../core';
+import { AppContext } from '../core/context';
 import { createLogger } from '../logger';
 import { Asuna } from '../types';
 

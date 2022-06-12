@@ -1,20 +1,21 @@
 import { InfoCircleOutlined } from '@ant-design/icons';
-
-import { EasyForm } from '@danielwii/asuna-components/dist/easy-form/form';
-import { WithLoading } from '@danielwii/asuna-components/dist/helper/helper';
+import { gql, useQuery } from '@apollo/client';
 
 import { Button, Col, Divider, Row, Typography } from 'antd';
+import consola from 'consola';
 import * as _ from 'lodash';
 import React from 'react';
 import Highlight from 'react-highlight';
 import { useLogger } from 'react-use';
 import * as util from 'util';
 
-import { AppContext } from '../../core';
-import { KVHelper } from '../../helpers';
+import { AppContext } from '../../core/context';
+import { KVHelper } from '../../helpers/components';
 import { createLogger } from '../../logger';
+import { EasyForm } from '../base/easy-form/form';
+import { WithLoading } from '../base/helper/helper';
 
-import type { FormFields } from '@danielwii/asuna-components/dist/easy-form/interfaces';
+import type { FormFields } from '../base/easy-form/interfaces';
 
 const logger = createLogger('components:kv-form:form');
 
@@ -43,8 +44,24 @@ export function FormKVComponent(props: {
   info?: React.ReactChild;
   fields?: (state) => FormFields;
 }) {
-  const { kvCollection: collection, kvKey: key, info, /*initialState, */ fields } = props;
-  const { loading, error, data, refetch } = KVHelper.loadByKey(key, collection);
+  consola.info('get props', props);
+  const { kvCollection: collection, kvKey: key, info, /*initialState, */ fields, ...rest } = props;
+  consola.info('useQuery', useQuery);
+  // const { loading, error, data, refetch } = KVHelper.loadByKey(key, collection);
+  const { loading, error, data, refetch } = useQuery(
+    gql`
+      {
+        kv(collection: "${collection}", key: "${key}") {
+          collection
+          key
+          updatedAt
+          name
+          value
+        }
+      }
+    `,
+    { fetchPolicy: 'network-only' },
+  );
   const body = _.get(data, 'kv.value', {}) as { type: string; fields: FormFields; values: Record<string, unknown> };
 
   const initialValues = body.values;

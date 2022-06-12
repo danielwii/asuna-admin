@@ -1,15 +1,15 @@
-import { EasyForm } from '@danielwii/asuna-components/dist/easy-form/form';
-import { FormFieldType } from '@danielwii/asuna-components/dist/easy-form/interfaces';
-
 import { Divider, PageHeader } from 'antd';
 import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
 import * as React from 'react';
 import { useState } from 'react';
 
-import { AsunaDataView } from '../../components';
-import { AppContext } from '../../core';
-import { extractModelNameFromPane, resolveModelInPane, useAsunaModels } from '../../helpers';
+import { AsunaDataView } from '../../components/AsunaDataView';
+import { EasyForm } from '../../components/base/easy-form/form';
+import { FormFieldType } from '../../components/base/easy-form/interfaces';
+import { AppContext } from '../../core/context';
+import { useAsunaModels } from '../../helpers/hooks';
+import { extractModelNameFromPane, resolveModelInPane } from '../../helpers/models';
 import { createLogger } from '../../logger';
 import { Asuna } from '../../types';
 

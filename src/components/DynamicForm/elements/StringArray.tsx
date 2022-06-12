@@ -1,10 +1,9 @@
-import { WithVariable } from '@danielwii/asuna-components/dist/helper/helper';
-import { IStringArrayProps, StringArray } from '@danielwii/asuna-components/dist/string-array';
-
 import * as React from 'react';
 
 import { generateComponent, horizontalFormItemLayout, IFormItemLayout } from '.';
 import { createLogger } from '../../../logger';
+import { WithVariable } from '../../base/helper/helper';
+import { IStringArrayProps, StringArray } from '../../base/string-array';
 
 import type { FormInstance } from 'antd';
 

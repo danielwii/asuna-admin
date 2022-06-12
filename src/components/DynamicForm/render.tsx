@@ -3,7 +3,7 @@ import * as R from 'ramda';
 import * as React from 'react';
 import * as util from 'util';
 
-import { modelProxyCaller } from '../../adapters';
+import { modelProxyCaller } from '../../adapters/model';
 import { WithDebugInfo } from '../../helpers/debug';
 import { createLogger } from '../../logger';
 import { Asuna, MetaInfoOptions } from '../../types';
@@ -31,52 +31,12 @@ import { generateKVArray } from './elements/KVArray';
 import { PlainImages } from './elements/Plain';
 import { generateSelect, Item } from './elements/Select';
 import { generateStringArray, StringArrayOptions } from './elements/StringArray';
+import { DynamicFormTypes } from './types';
 
 import type { FormInstance } from 'antd';
 import type { EnumFilterMetaInfoOptions } from '../../types/meta';
 
 const logger = createLogger('components:dynamic-form:render');
-
-export enum DynamicFormTypes {
-  // --------------------------------------------------------------
-  // Basic Types
-  // --------------------------------------------------------------
-
-  Checkbox = 'Checkbox',
-  Button = 'Button',
-  Hidden = 'Hidden',
-  Plain = 'Plain',
-  Input = 'Input',
-  InputNumber = 'InputNumber',
-  TextArea = 'TextArea',
-  JSON = 'JSON',
-  DateTime = 'DateTime',
-  Date = 'Date',
-
-  // --------------------------------------------------------------
-  // Advanced Types
-  // --------------------------------------------------------------
-
-  Address = 'Address',
-  Image = 'Image',
-  Images = 'Images',
-  File = 'File',
-  Files = 'Files',
-  Video = 'Video',
-  Deletable = 'Deletable',
-  Switch = 'Switch',
-  Authorities = 'Authorities',
-  Enum = 'Enum',
-  EditableEnum = 'EditableEnum',
-  EnumFilter = 'EnumFilter',
-  StringTmpl = 'StringTmpl',
-  SimpleJSON = 'SimpleJSON',
-  SortPosition = 'SortPosition',
-  RichImage = 'RichImage',
-  RichText = 'RichText',
-  Association = 'Association',
-  ManyToMany = 'ManyToMany',
-}
 
 export type DynamicFormFieldOptions = Partial<MetaInfoOptions> & {
   required?: boolean;

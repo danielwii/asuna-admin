@@ -1,6 +1,6 @@
 import * as R from 'ramda';
 
-import { AppContext } from '../core';
+import { AppContext } from '../core/context';
 import { createLogger } from '../logger';
 import { Asuna } from '../types';
 

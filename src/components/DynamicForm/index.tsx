@@ -13,19 +13,19 @@ import { useAsync, useSetState } from 'react-use';
 import VisualDiff from 'react-visual-diff';
 import styled from 'styled-components';
 
-import { adminProxyCaller } from '../../adapters';
-import { DrawerButton, parseAddressStr } from '../../components';
-import { DebugInfo, diff, parseString, useAsunaDrafts } from '../../helpers';
-import { WithDebugInfo } from '../../helpers/debug';
+import { adminProxyCaller } from '../../adapters/admin';
+import { DebugInfo, WithDebugInfo } from '../../helpers/debug';
+import { useAsunaDrafts } from '../../helpers/hooks';
+import { diff } from '../../helpers/utils';
 import { createLogger } from '../../logger';
-import { SchemaHelper } from '../../schema';
-import { DynamicFormField, DynamicFormTypes, RenderedField } from './render';
+import { SchemaHelper } from '../../schema/helper';
+import { parseAddressStr } from '../Address';
+import { DrawerButton } from '../base/drawer-button/drawer-button';
+import { parseString } from '../base/helper/helper';
+import { DynamicFormField, RenderedField } from './render';
+import { DynamicFormTypes } from './types';
 
 const logger = createLogger('components:dynamic-form');
-
-export * from './render';
-export * from './Videos';
-export * from './elements/Image';
 
 const FixedLoading = styled(({ className }) => (
   <div className={className}>
