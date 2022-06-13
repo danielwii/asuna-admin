@@ -9,7 +9,7 @@ import Highlight from 'react-highlight';
 import { FoldingCube } from 'styled-spinkit';
 import * as util from 'util';
 
-import { AppContext } from '../../core/context';
+import { isDebugMode } from '../../core/env';
 import { KVHelper } from '../../helpers/components';
 import { WithDebugInfo } from '../../helpers/debug';
 import { createLogger } from '../../logger';
@@ -136,7 +136,7 @@ export function ListKVComponent(props: {
             </Formik>
           )}
         </Col>
-        {AppContext.isDebugMode && (
+        {isDebugMode && (
           <Col span={6}>
             <div>
               <h3>Preview:</h3>
@@ -145,7 +145,7 @@ export function ListKVComponent(props: {
           </Col>
         )}
       </Row>
-      {AppContext.isDebugMode && (
+      {isDebugMode && (
         <React.Fragment>
           <Divider />
           <Highlight className="json">{util.inspect(data, false, 10)}</Highlight>

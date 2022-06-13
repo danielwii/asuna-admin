@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 import * as R from 'ramda';
 import { put, select, takeLatest } from 'redux-saga/effects';
 
-import { menuProxy } from '../adapters/menu';
+import { menuProxy } from '../adapters/proxy';
 import { createLogger } from '../logger';
 
 import type { Asuna } from '../types';

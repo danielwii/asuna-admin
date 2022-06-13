@@ -12,14 +12,15 @@ import { EventBus, EventType } from '../../core/events';
 import { DebugInfo } from '../../helpers/debug';
 import { isErrorResponse, reduxActionCallbackPromise, toFormErrors } from '../../helpers/error';
 import { TenantHelper } from '../../helpers/tenant';
+import { TenantContext } from '../../helpers/tenant-context';
 import { diff } from '../../helpers/utils';
 import { createLogger } from '../../logger';
 import * as schemaHelper from '../../schema';
 import { modelsActions } from '../../store/models.redux';
 
 import type { AxiosResponse } from 'axios';
-import type { RootState } from '../../store/types';
 import type { Pane } from '../../components/Panes';
+import type { RootState } from '../../store/types';
 
 const logger = createLogger('modules:content:upsert');
 
@@ -210,7 +211,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
     }
 
     // 当前角色是租户的资源不显示租户字段
-    if (TenantHelper.hasTenantRoles) {
+    if (TenantContext.hasTenantRoles) {
       _.set(decoratedFields['tenant'], 'options.accessible', 'hidden');
     }
 
@@ -401,7 +402,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
     const { fields, loadings, status, modelName } = this.state;
     TenantHelper.wrapFields(modelName, fields);
     const isPublishedField = _.find(fields, (field) => field.name === 'isPublished') as any;
-    const auditMode = !TenantHelper.enableModelPublishForCurrentUser(modelName) && !isPublishedField?.value;
+    const auditMode = !TenantContext.enableModelPublishForCurrentUser(modelName) && !isPublishedField?.value;
 
     logger.log('[render]', { props: this.props, state: this.state });
 

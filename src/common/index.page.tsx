@@ -10,6 +10,7 @@ import { connect } from 'react-redux';
 
 import { LivingLoading } from '../components/base/living-loading';
 import { AppContext, IIndexRegister, ILoginRegister, INextConfig } from '../core/context';
+import { Dispatcher } from '../core/dispatcher';
 import { MainLayout } from '../layout';
 import { createLogger } from '../logger';
 import { appActions } from '../store/app.actions';
@@ -85,7 +86,7 @@ export class IndexPage extends React.Component<IIndexPageProps> {
 
     const { dispatch, register, site } = this.props;
     AppContext.setup({ register, module: 'index' }).then(() => dispatch(appActions.init()));
-    AppContext.regDispatch(dispatch);
+    Dispatcher.regDispatch(dispatch);
 
     if (site?.primaryColor) {
       changeAntdTheme(site?.primaryColor);

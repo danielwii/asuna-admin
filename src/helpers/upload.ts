@@ -1,6 +1,6 @@
 import { message } from 'antd';
 
-import { apiProxy } from '../adapters/api';
+import { apiProxy } from '../adapters/proxy';
 import { createLogger } from '../logger';
 
 import type { Asuna } from '../types';

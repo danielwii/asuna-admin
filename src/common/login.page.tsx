@@ -11,6 +11,7 @@ import styled from 'styled-components';
 import { Snow } from '../components/base/weather/weather';
 import { LoginContainer } from '../containers/Login';
 import { AppContext, IIndexRegister, ILoginRegister, INextConfig } from '../core/context';
+import { Dispatcher } from '../core/dispatcher';
 import { WithStyles } from '../layout';
 import { createLogger } from '../logger';
 
@@ -58,7 +59,7 @@ export type ILoginPageProps = ReduxProps & {
 export const LoginPageView: React.FC<ILoginPageProps> = (props) => {
   const { dispatch, register, site } = props;
   AppContext.setup(register);
-  AppContext.regDispatch(dispatch);
+  Dispatcher.regDispatch(dispatch);
 
   useMount(() => {
     if (site?.primaryColor) {

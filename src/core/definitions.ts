@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import * as React from 'react';
 
-import { commonColumns } from '../helpers';
+import { commonColumns } from '../helpers/columns/common';
 import { extend } from '../helpers/func';
 import { createLogger } from '../logger';
 

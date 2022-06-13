@@ -8,9 +8,11 @@ import * as fp from 'lodash/fp';
 import React, { useContext, useEffect, useState } from 'react';
 import { useAsync, useLogger } from 'react-use';
 
-import { responseProxy } from '../adapters/response';
+import { responseProxy } from '../adapters/proxy';
 import { StoreContext } from '../context/store';
 import { AppContext } from '../core/context';
+import { Dispatcher } from '../core/dispatcher';
+import { isDebugMode } from '../core/env';
 import { ActionEvent, EventBus, EventType } from '../core/events';
 import { castModelKey } from '../helpers/cast';
 import { DebugInfo, WithDebugInfo } from '../helpers/debug';
@@ -183,7 +185,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = (props) => {
         okText: '确认',
         cancelText: '取消',
         onOk: () =>
-          AppContext.dispatch(
+          Dispatcher.dispatch(
             modelsActions.remove(modelName, record, (response) => {
               if (/^20\d$/.test(response.status)) modal.destroy();
             }),
@@ -257,7 +259,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = (props) => {
     }
   }, [queryCondition, loadingAsunaModels, flag]);
 
-  if (AppContext.isDebugMode) useLogger('AsunaDataTable', { flag, loadingAsunaModels, loading }, queryCondition);
+  if (isDebugMode) useLogger('AsunaDataTable', { flag, loadingAsunaModels, loading }, queryCondition);
   useLogger('AsunaDataTable2', columnProps);
 
   if (loadingAsunaModels) {

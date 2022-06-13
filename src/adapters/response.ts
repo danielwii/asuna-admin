@@ -1,18 +1,12 @@
-import { PaginationConfig } from 'antd/es/pagination';
 import * as _ from 'lodash';
 
 import { Config } from '../config';
-import { AppContext } from '../core/context';
 import { createLogger } from '../logger';
-import { Asuna } from '../types';
+
+import type { PaginationConfig } from 'antd/es/pagination';
+import type { Asuna } from '../types';
 
 const logger = createLogger('adapters::response');
-
-export const responseProxy = {
-  extract(apiResponse?: object): { items: object[]; pagination: PaginationConfig } {
-    return AppContext.ctx.response.extract(apiResponse || {});
-  },
-};
 
 export class ResponseAdapter {
   extractPageable = (apiResponse): Asuna.Pageable & { total: number } => {

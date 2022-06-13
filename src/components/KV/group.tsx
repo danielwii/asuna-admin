@@ -7,7 +7,7 @@ import Highlight from 'react-highlight';
 import { FoldingCube } from 'styled-spinkit';
 import * as util from 'util';
 
-import { AppContext } from '../../core/context';
+import { isDebugMode } from '../../core/env';
 import { KVHelper } from '../../helpers/components';
 import { createLogger } from '../../logger';
 import { EasyGroupForm, GroupFormFields } from '../EasyForm';
@@ -107,7 +107,7 @@ export function GroupFormKVComponent(props: {
         onClear={enableClear ? () => KVHelper.clear({ key, collection }, refetch) : undefined}
         onDestroy={enableDestroy ? () => KVHelper.destroy({ key, collection }, refetch) : undefined}
       />
-      {AppContext.isDebugMode && (
+      {isDebugMode && (
         <>
           <Divider />
           <Highlight className="json">{util.inspect(data, false, 10)}</Highlight>

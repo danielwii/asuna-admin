@@ -7,23 +7,24 @@ import * as fp from 'lodash/fp';
 import NodeCache, { NodeCacheLegacyCallbacks } from 'node-cache';
 import * as R from 'ramda';
 
+import { GraphqlAdapterImpl } from '../adapters/graphql';
 import { DynamicFormTypes } from '../components/DynamicForm/types';
 import { Config } from '../config';
 import { CacheHelper } from '../core/cache.helper';
-import { AppContext } from '../core/context';
-import { defaultColumns, defaultColumnsByPrimaryKey } from '../helpers';
+import { Store } from '../core/store';
 import { castModelKey } from '../helpers/cast';
-import { TenantHelper } from '../helpers/tenant';
+import { defaultColumns, defaultColumnsByPrimaryKey } from '../helpers/columns/common';
+import { TenantContext } from '../helpers/tenant-context';
 import { BatchLoader } from '../helpers/utils';
 import { createLogger } from '../logger';
 
-import type { AsunaDefinitions } from '../core/definitions';
-import type { Asuna } from '../types';
 import type { TablePaginationConfig } from 'antd/es/table/interface';
 import type { AxiosResponse } from 'axios';
-import type { Condition, WhereConditions } from '../types/meta';
+import type { AsunaDefinitions } from '../core/definitions';
+import type { RelationColumnProps } from '../helpers/columns/types';
 import type { AuthState } from '../store/auth.redux';
-import type { RelationColumnProps } from '../helpers/interfaces';
+import type { Asuna } from '../types';
+import type { Condition, WhereConditions } from '../types/meta';
 
 // --------------------------------------------------------------
 // Types
@@ -172,6 +173,7 @@ export interface ModelAdapter {
 export class ModelAdapterImpl implements ModelAdapter {
   private readonly cache: NodeCacheLegacyCallbacks = new NodeCache({ stdTTL: 100, checkperiod: 120 });
   private service: IModelService;
+  private graphql: GraphqlAdapterImpl;
   private allModels: string[];
   readonly modelConfigs: { [K: string]: Asuna.Schema.ModelConfig };
   readonly associations: { [key: string]: Asuna.Schema.Association };
@@ -181,13 +183,14 @@ export class ModelAdapterImpl implements ModelAdapter {
    * @param definitions - models: 模型定义; tableColumns: 模型列表定义; modelColumns: 模型表单定义
    *                      模型定义中出现的的元素才会作为最终元素
    */
-  constructor(service: IModelService, definitions: AsunaDefinitions) {
+  constructor(service: IModelService, definitions: AsunaDefinitions, graphql) {
     logger.log('[ModelAdapter][constructor]', { service, definitions });
     if (!service) {
       throw new Error('service must defined');
     }
 
     this.service = service;
+    this.graphql = graphql;
     this.allModels = Object.keys(definitions.modelOpts);
     this.modelConfigs = definitions.modelConfigs;
     this.associations = definitions.associations;
@@ -258,7 +261,7 @@ export class ModelAdapterImpl implements ModelAdapter {
   };
 
   uniq(modelName: string, column: string): Promise<string[]> {
-    const auth = AppContext.fromStore('auth');
+    const auth = Store.fromStore('auth');
     const modelConfig = this.getModelConfig(modelName);
     return this.service.uniq({ auth, modelConfig }, modelName, { column }).then(fp.get('data'));
   }
@@ -266,7 +269,7 @@ export class ModelAdapterImpl implements ModelAdapter {
   _groupCountsBatchLoader = new BatchLoader<{ modelName; column; relation; id: string }, any>(
     (keys) => {
       const { modelName, column, relation } = keys[0];
-      const auth = AppContext.fromStore('auth');
+      const auth = Store.fromStore('auth');
       const modelConfig = this.getModelConfig(modelName);
       const ids = _.map(keys, fp.get('id'));
       const where = JSON.stringify({ [relation]: { $in: ids } });
@@ -326,7 +329,7 @@ export class ModelAdapterImpl implements ModelAdapter {
       return Promise.reject(`id must be provided.`);
     }
 
-    const auth = AppContext.fromStore('auth');
+    const auth = Store.fromStore('auth');
     const modelConfig = this.getModelConfig(modelName);
     const schema = this.getFormSchema(modelName);
     const selectableRelations = _.chain(schema)
@@ -341,7 +344,7 @@ export class ModelAdapterImpl implements ModelAdapter {
   };
 
   remove = (modelName: string, data) => {
-    const auth = AppContext.fromStore('auth');
+    const auth = Store.fromStore('auth');
     return this.service.remove(auth, modelName, {
       ...data,
       ...this.getModelConfig(modelName),
@@ -349,14 +352,14 @@ export class ModelAdapterImpl implements ModelAdapter {
   };
 
   upsert = (modelName: string, data: { body: IModelBody }): Promise<AxiosResponse> => {
-    const auth = AppContext.fromStore('auth');
-    // const { schemas } = AppContext.fromStore('models');
+    const auth = Store.fromStore('auth');
+    // const { schemas } = Store.fromStore('models');
     logger.debug('[upsert]', 'upsert', { modelName, data });
 
     // const allSchemas = schemas || AppContext.store.select(R.path(['models', 'schemas']));
 
     const fields = this.getFormSchema(modelName);
-    const primaryKey = AppContext.adapters.models.getPrimaryKey(modelName);
+    const primaryKey = this.getPrimaryKey(modelName);
     logger.debug('[upsert]', 'fields is', fields);
 
     const id: any = _.get(data?.body, 'id') ?? _.get(data?.body, primaryKey); // data?.body?.[primaryKey] as any;
@@ -395,7 +398,7 @@ export class ModelAdapterImpl implements ModelAdapter {
     logger.log('[getColumns]', { modelName, extraName, opts });
     const formSchema = this.getFormSchema(modelName);
     const { table: columnsRender } = this.getModelConfig(extraName ?? modelName);
-    const readonly = !TenantHelper.enableModelPublishForCurrentUser(modelName);
+    const readonly = !TenantContext.enableModelPublishForCurrentUser(modelName);
     const columns = columnsRender
       ? await Promise.all(
           columnsRender(opts.actions, { modelName, callRefresh: opts.callRefresh, readonly, ctx: opts.ctx }),
@@ -441,9 +444,9 @@ export class ModelAdapterImpl implements ModelAdapter {
 
   getPrimaryKeys = (modelName: string): string[] => {
     const TAG = '[getPrimaryKey]';
-    const { schemas } = AppContext.fromStore('models');
+    const { schemas } = Store.fromStore('models');
     const schema: Asuna.Schema.ModelSchema[] = R.prop(modelName)(schemas as any);
-    if (schema != null) {
+    if (schema !== null) {
       const primaryKeys = _.filter(schema, (opts) => !!opts?.config?.primaryKey);
       // logger.debug(TAG, modelName, 'primaryKeys is', primaryKeys);
       if (primaryKeys.length) {
@@ -454,7 +457,7 @@ export class ModelAdapterImpl implements ModelAdapter {
   };
 
   getFormSchema = (name: string, values?: { [member: string]: any }): Asuna.Schema.FormSchemas => {
-    const { schemas } = AppContext.fromStore('models');
+    const { schemas } = Store.fromStore('models');
     if (!schemas || !name) {
       logger.error('[getFormSchema]', 'schemas or name is required.', { schemas, name });
       return {};
@@ -498,7 +501,7 @@ export class ModelAdapterImpl implements ModelAdapter {
   };
 
   getAssociationByName = (associationName: string, modelName?: string): Required<Asuna.Schema.Association> => {
-    const primaryKey = AppContext.adapters.models.getPrimaryKey(associationName);
+    const primaryKey = this.getPrimaryKey(associationName);
     const defaultValue = { name: 'name', value: primaryKey, fields: [primaryKey, 'name'] };
     const defaultAssociation = R.pathOr(defaultValue, [associationName])(this.associations);
     return modelName
@@ -513,7 +516,7 @@ export class ModelAdapterImpl implements ModelAdapter {
     logger.debug('[loadModels]', { modelName, configs, modelConfig: this.getModelConfig(modelName) });
     const page = configs?.pagination?.current ?? 1;
     const size = configs?.pagination?.pageSize ?? (Config.get('DEFAULT_PAGE_SIZE') as number);
-    const auth = AppContext.fromStore('auth');
+    const auth = Store.fromStore('auth');
     return this.service.loadModels(auth, modelName, {
       pagination: { page, size },
       fields: configs?.fields,
@@ -531,7 +534,7 @@ export class ModelAdapterImpl implements ModelAdapter {
     logger.debug('[loadModels2]', { modelName, configs, modelConfig: this.getModelConfig(modelName) });
     const page = configs?.pagination?.current ?? 1;
     const size = configs?.pagination?.pageSize ?? (Config.get('DEFAULT_PAGE_SIZE') as number);
-    const auth = AppContext.fromStore('auth');
+    const auth = Store.fromStore('auth');
     return this.service
       .loadModels(auth, modelName, {
         pagination: { page, size },
@@ -552,7 +555,7 @@ export class ModelAdapterImpl implements ModelAdapter {
       logger.debug('[loadAssociationByIds]', { associationName, ids });
 
       const fields = this.getAssociationByName(associationName).fields;
-      const auth = AppContext.fromStore('auth');
+      const auth = Store.fromStore('auth');
       return this.service.loadAssociationByIds(auth, associationName, {
         ids,
         fields,
@@ -573,7 +576,7 @@ export class ModelAdapterImpl implements ModelAdapter {
 
     const fields = this.getAssociationByName(associationName).fields;
     logger.debug('[loadAssociation]', { fields, associationName, associations: this.associations });
-    const auth = AppContext.fromStore('auth');
+    const auth = Store.fromStore('auth');
     return this.service.loadAssociation(auth, associationName, {
       ...configs,
       fields,
@@ -587,21 +590,21 @@ export class ModelAdapterImpl implements ModelAdapter {
    */
   loadSchema = async (modelName: string) => {
     return CacheHelper.cacheable(`loadSchema#${modelName}`, () => {
-      const auth = AppContext.fromStore('auth');
+      const auth = Store.fromStore('auth');
       return this.service.loadSchema(auth, modelName, this.getModelConfig(modelName));
     });
   };
 
   loadOriginSchema = async (modelName: string): Promise<Asuna.Schema.OriginSchema> => {
     return CacheHelper.cacheable(`loadOriginSchema#${modelName}`, () => {
-      const auth = AppContext.fromStore('auth');
+      const auth = Store.fromStore('auth');
       return this.service.loadOriginSchema(auth, modelName, this.getModelConfig(modelName)).then(fp.get('data'));
     });
   };
 
   async loadOriginSchemas(): Promise<{ [name: string]: Asuna.Schema.OriginSchema }> {
-    if (AppContext.ctx.graphql.client) {
-      const allResponse = await AppContext.ctx.graphql.loadSchemas();
+    if (this.graphql.client) {
+      const allResponse = await this.graphql.loadSchemas();
       return Object.assign({}, ..._.map(allResponse, ({ name, schema }) => ({ [name]: schema })));
     } else {
       const callable = { ...this.allModels.map((modelName) => ({ [modelName]: this.loadOriginSchema(modelName) })) };
@@ -611,8 +614,8 @@ export class ModelAdapterImpl implements ModelAdapter {
   }
 
   async loadSchemas() {
-    if (AppContext.ctx.graphql.client) {
-      const allResponse = await AppContext.ctx.graphql.loadSchemas();
+    if (this.graphql.client) {
+      const allResponse = await this.graphql.loadSchemas();
       return Object.assign({}, ..._.map(allResponse, ({ name, schema }) => ({ [name]: schema })));
     } else {
       const callable = { ...this.allModels.map((modelName) => ({ [modelName]: this.loadSchema(modelName) })) };
@@ -621,5 +624,3 @@ export class ModelAdapterImpl implements ModelAdapter {
     }
   }
 }
-
-export const modelProxyCaller: () => ModelAdapter = () => AppContext.ctx.models;

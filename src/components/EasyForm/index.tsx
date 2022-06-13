@@ -7,7 +7,7 @@ import _ from 'lodash';
 import * as React from 'react';
 import Highlight from 'react-highlight';
 
-import { AppContext } from '../../core/context';
+import { isDebugMode } from '../../core/env';
 import { createLogger } from '../../logger';
 import { RenderInputComponent } from '../base/easy-form/form';
 
@@ -111,7 +111,7 @@ const GroupInnerForm = (props: GroupEasyFormProps & formik.FormikProps<formik.Fo
           )}
         </formik.Form>
       </antd.Col>
-      {AppContext.isDebugMode && (
+      {isDebugMode && (
         <antd.Col span={6}>
           <div>
             <h3>Preview:</h3>

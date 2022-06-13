@@ -14,7 +14,7 @@ export type AsunaSelectProps = { items: SelectItem[]; allowCustom?: boolean } & 
 
 export const AsunaSelect: React.FC<AsunaSelectProps> = ({ value, items, onChange, allowCustom, ...selectProps }) => {
   const [filteredItems, setItems] = React.useState<SelectItemObject[]>(
-    R.ifElse<[SelectItem[]], SelectItemObject[], SelectItemObject[]>(
+    R.ifElse(
       R.pipe(R.head, _.isObject),
       () => items as SelectItemObject[],
       () => _.map(items, (v) => ({ text: v, value: v } as SelectItemObject)),

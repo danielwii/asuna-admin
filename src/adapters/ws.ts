@@ -1,9 +1,9 @@
-// import { getPublicRuntimeConfig } from '@danielwii/asuna-helper/dist/next/config';
 import getConfig from 'next/config';
 import * as Rx from 'rxjs';
 import { io, Socket } from 'socket.io-client';
 
-import { AppContext } from '../core/context';
+import { Dispatcher } from '../core/dispatcher';
+import { Store } from '../core/store';
 import { createLogger } from '../logger';
 import { appActions } from '../store/app.actions';
 
@@ -28,7 +28,7 @@ export class WsAdapter {
     this.port = opts.port;
     this.namespace = opts.namespace || 'admin';
 
-    if (!AppContext.isServer && !WsAdapter.socket && getConfig().publicRuntimeConfig.WS_ENDPOINT) {
+    if (!(typeof window === 'undefined') && !WsAdapter.socket && getConfig().publicRuntimeConfig.WS_ENDPOINT) {
       const url = `${getConfig().publicRuntimeConfig.WS_ENDPOINT}/${this.namespace}`;
       const options = {
         path: `/socket.io/admin`,
@@ -46,24 +46,24 @@ export class WsAdapter {
         logger.log('[connect]', WsAdapter.socket.id);
         WsAdapter.id = WsAdapter.socket.id;
         WsAdapter.subject.next({ id: WsAdapter.id, socket: WsAdapter.socket } as NextSocketType);
-        AppContext.dispatch(appActions.heartbeat());
+        Dispatcher.dispatch(appActions.heartbeat());
       });
       WsAdapter.socket.on('reconnect', () => {
         logger.log('[reconnect]', WsAdapter.socket.id);
-        AppContext.dispatch(appActions.heartbeat());
+        Dispatcher.dispatch(appActions.heartbeat());
       });
       WsAdapter.socket.on('disconnect', () => {
-        const { heartbeat } = AppContext.store.select((state) => state.app);
+        const { heartbeat } = Store.store.select((state) => state.app);
         logger.error('[disconnect]', WsAdapter.socket.id, { heartbeat });
         if (heartbeat) {
-          AppContext.dispatch(appActions.heartbeatStop());
+          Dispatcher.dispatch(appActions.heartbeatStop());
         }
       });
       WsAdapter.socket.on('error', (error) => {
-        const { heartbeat } = AppContext.store.select((state) => state.app);
+        const { heartbeat } = Store.store.select((state) => state.app);
         logger.error('[error]', WsAdapter.socket.id, { heartbeat, error });
         if (heartbeat) {
-          AppContext.dispatch(appActions.heartbeatStop());
+          Dispatcher.dispatch(appActions.heartbeatStop());
         }
       });
     }

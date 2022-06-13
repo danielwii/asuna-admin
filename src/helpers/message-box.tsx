@@ -7,7 +7,7 @@ import { nanoid } from 'nanoid';
 import * as React from 'react';
 import * as util from 'util';
 
-import { AppContext } from '../core/context';
+import { isDevMode } from '../core/env';
 
 export type MessageBoxType = 'open' | 'success' | 'error' | 'info' | 'warning' | 'warn';
 
@@ -74,7 +74,7 @@ export class TimelineMessageBox {
       this.messages.push({ key: _key, type: _type, content: message, createdAt });
     }
     _.remove(this.messages, ({ createdAt }) => !createdAt || differenceInSeconds(Date.now(), createdAt) > 3);
-    if (AppContext.isDevMode) MessageBox.show({ key: this.boxId, message: this.render() });
+    if (isDevMode) MessageBox.show({ key: this.boxId, message: this.render() });
     return _key;
   }
 }

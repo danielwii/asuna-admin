@@ -6,7 +6,6 @@ import { useAsync } from 'react-use';
 import { FoldingCube } from 'styled-spinkit';
 import * as util from 'util';
 
-import { adminProxyCaller } from '../adapters/admin';
 import { TenantInfo } from '../adapters/admin.plain';
 import { DynamicFormTypes } from '../components/DynamicForm/types';
 import { ErrorInfo } from '../components/ErrorInfo';
@@ -94,9 +93,7 @@ export const TenantWelcome: React.VFC = (props) => {
             store.tenantInfo?.config?.firstModelBind && store.tenantInfo?.config?.firstModelField
               ? { title: name }
               : null;
-          return adminProxyCaller()
-            .registerTenant({ name, description, payload })
-            .then(() => location.reload());
+          return AppContext.ctx.admin.registerTenant({ name, description, payload }).then(() => location.reload());
         }}
         fields={{
           name: { name: 'name', type: DynamicFormTypes.Input, options: { required: true, name: `${label}名称` } },

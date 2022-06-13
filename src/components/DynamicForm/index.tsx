@@ -13,7 +13,7 @@ import { useAsync, useSetState } from 'react-use';
 import VisualDiff from 'react-visual-diff';
 import styled from 'styled-components';
 
-import { adminProxyCaller } from '../../adapters/admin';
+import { AppContext } from '../../core/context';
 import { DebugInfo, WithDebugInfo } from '../../helpers/debug';
 import { useAsunaDrafts } from '../../helpers/hooks';
 import { diff } from '../../helpers/utils';
@@ -117,7 +117,7 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener> 
       .then(async (values) => {
         logger.log('[DynamicForm][handleOnAuditDraft]', values);
         const refId = _.get(fields, 'id.value');
-        await adminProxyCaller().createDraft({ content: values, type: model, refId });
+        await AppContext.ctx.admin.createDraft({ content: values, type: model, refId });
         if (!refId) {
           onClose();
         } else {

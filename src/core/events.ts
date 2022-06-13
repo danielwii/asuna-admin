@@ -1,7 +1,5 @@
 import { Observable, Subject } from 'rxjs';
 
-import { AppContext } from '../core/context';
-
 /**
  * the accept type for event-bus
  */
@@ -33,7 +31,7 @@ class EventBus {
   public static sendEvent(type: EventType.MODEL_UPDATE, payload: { modelName: string; id: number | string }): void;
   public static sendEvent(type: EventType.MODEL_DELETE, payload: { modelName: string; data: any }): void;
   public static sendEvent(type: EventType, payload: object, extras?: object): void {
-    if (!AppContext.isServer) {
+    if (!(typeof window === 'undefined')) {
       EventBus.subject.next({ type, payload, extras });
     }
   }

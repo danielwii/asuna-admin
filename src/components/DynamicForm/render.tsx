@@ -3,7 +3,7 @@ import * as R from 'ramda';
 import * as React from 'react';
 import * as util from 'util';
 
-import { modelProxyCaller } from '../../adapters/model';
+import { AppContext } from '../../core/context';
 import { WithDebugInfo } from '../../helpers/debug';
 import { createLogger } from '../../logger';
 import { Asuna, MetaInfoOptions } from '../../types';
@@ -207,7 +207,7 @@ export const RenderedField = ({ model, schema, form, fields, field }: RenderedFi
       if (field.type === DynamicFormTypes.EditableEnum) {
         onInit = async (): Promise<Item[]> => {
           try {
-            const existItems = await modelProxyCaller().uniq(model, field.name);
+            const existItems = await AppContext.ctx.models.uniq(model, field.name);
             logger.debug('[DynamicForm]', '[buildField][EditableEnum]', field, { existItems });
             return _.map(existItems, (key) => ({ value: key, key }));
           } catch (reason) {

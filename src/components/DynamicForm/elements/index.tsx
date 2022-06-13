@@ -12,7 +12,7 @@ import JSONInput from 'react-json-editor-ajrm';
 import locale from 'react-json-editor-ajrm/locale/zh-cn';
 import { useLogger } from 'react-use';
 
-import { apiProxy } from '../../../adapters/api';
+import { apiProxy } from '../../../adapters/proxy';
 import { Config } from '../../../config';
 import { createLogger } from '../../../logger';
 import { WithVariable } from '../../base/helper/helper';

@@ -6,10 +6,10 @@ import { useState } from 'react';
 import { JSONTree } from 'react-json-tree';
 import * as util from 'util';
 
-import { AppContext } from '../core/context';
+import { isDebugMode, isDevMode } from '../core/env';
 
 export const WithDebugInfo: React.FC<{ info: any }> = ({ info, children }) => {
-  if (AppContext.isDevMode) {
+  if (isDevMode) {
     return (
       <>
         {children}
@@ -29,7 +29,7 @@ export const DebugInfo: React.FC<{ data: any; divider?: boolean; type?: 'json' |
 }) => {
   const [lv, setLevel] = useState(3);
 
-  if (!AppContext.isDebugMode) {
+  if (!isDebugMode) {
     return null;
   }
 

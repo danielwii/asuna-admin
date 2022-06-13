@@ -3,13 +3,12 @@ import * as fp from 'lodash/fp';
 import { DependencyList, useState } from 'react';
 import { useAsync, useAsyncRetry } from 'react-use';
 
-import { adminProxyCaller } from '../adapters/admin';
 import { Draft } from '../adapters/admin.plain';
-import { modelProxyCaller } from '../adapters/model';
+import { AppContext } from '../core/context';
 import { createLogger } from '../logger';
 import { Asuna } from '../types';
 
-import type { RelationColumnProps } from './interfaces';
+import type { RelationColumnProps } from './columns/types';
 
 const logger = createLogger('helpers:hooks');
 
@@ -23,7 +22,7 @@ export function useAsunaDrafts(
     try {
       setLoading(true);
       if (params.type && params.refId) {
-        const drafts = await adminProxyCaller().getDrafts(params);
+        const drafts = await AppContext.ctx.admin.getDrafts(params);
         setDrafts(drafts);
       }
     } catch (e) {
@@ -60,7 +59,7 @@ export function useAsunaModels(
     logger.log('[useAsunaModels] getColumns ...', { modelName, extraName });
     // const hasGraphAPI = _.find(await AppContext.ctx.graphql.loadGraphs(), schema => schema === `sys_${modelName}`);
     // extraName 是作为 key 重复时的一个别名，这里假定 modelName 一定是 model 的原名，所以忽略 extraName
-    const columnProps = await modelProxyCaller()
+    const columnProps = await AppContext.ctx.models
       .getColumns(modelName, { callRefresh, actions, ctx }, extraName)
       .catch((reason) => {
         console.error('ERROR Occurred', reason);
@@ -68,7 +67,7 @@ export function useAsunaModels(
       });
 
     logger.log('useAsunaModels loadOriginSchema ...', columnProps);
-    const schemas = await modelProxyCaller().loadOriginSchema(modelName);
+    const schemas = await AppContext.ctx.models.loadOriginSchema(modelName);
 
     setState({ columnProps, schemas, loading: false });
   }, deps);

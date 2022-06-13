@@ -1,4 +1,3 @@
-import { AppContext } from '../core/context';
 import { createLogger } from '../logger';
 
 // --------------------------------------------------------------
@@ -26,12 +25,6 @@ export interface IAuthProxy {
 // --------------------------------------------------------------
 
 const logger = createLogger('adapters:auth');
-
-export const authProxy: IAuthProxy = {
-  login: (username, password) => AppContext.ctx.auth.login(username, password),
-  logout: () => AppContext.ctx.auth.logout(),
-  extractToken: (payload) => AppContext.ctx.auth.extractToken(payload),
-};
 
 export class AuthAdapter implements IAuthProxy {
   private service: IAuthService;

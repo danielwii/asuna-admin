@@ -9,7 +9,7 @@ import Highlight from 'react-highlight';
 import { useLogger } from 'react-use';
 import * as util from 'util';
 
-import { AppContext } from '../../core/context';
+import { isDebugMode } from '../../core/env';
 import { KVHelper } from '../../helpers/components';
 import { createLogger } from '../../logger';
 import { EasyForm } from '../base/easy-form/form';
@@ -98,7 +98,7 @@ export function FormKVComponent(props: {
                 onClear={() => KVHelper.clear({ key, collection }, refetch)}
               />
             </Col>
-            {AppContext.isDebugMode && (
+            {isDebugMode && (
               <Col span={6}>
                 <div>
                   <h3>Preview:</h3>
@@ -107,7 +107,7 @@ export function FormKVComponent(props: {
               </Col>
             )}
           </Row>
-          {AppContext.isDebugMode && (
+          {isDebugMode && (
             <>
               <Divider />
               <Highlight className="json">{util.inspect(data, false, 10)}</Highlight>

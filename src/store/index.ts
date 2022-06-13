@@ -1,5 +1,4 @@
 import localForage from 'localforage';
-import { reduxAction } from 'node-buffs/dist/redux';
 import * as R from 'ramda';
 import { AnyAction, applyMiddleware, combineReducers, createStore, DeepPartial, Store } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
@@ -11,6 +10,7 @@ import { all } from 'redux-saga/effects';
 
 import { AppContext } from '../core/context';
 import { createLogger } from '../logger';
+import { actionTypes } from './actions';
 import { appEpics, appReducer, appSagas } from './app.redux';
 import { authReducer, authSagas } from './auth.redux';
 import { menuReducer, menuSagas } from './menu.redux';
@@ -95,9 +95,9 @@ export class AsunaStore {
 
   public configureStore: MakeStore = (preloadedState = this.initialState, opts: MakeStoreOptions): Store => {
     logger.log('configureStore', opts);
-    AppContext.isServer = (opts as any).isServer ?? typeof window === 'undefined';
+    // AppContext.isServer = (opts as any).isServer ?? typeof window === 'undefined';
     let store;
-    if (AppContext.isServer) {
+    if (typeof window === 'undefined') {
       store = createStore<RootState, AnyAction, any, any>(
         this.rootReducers,
         preloadedState,
@@ -156,11 +156,3 @@ export class AsunaStore {
 // --------------------------------------------------------------
 // Types
 // --------------------------------------------------------------
-
-export const actionTypes = {
-  CLEAN: 'sys::clean',
-};
-
-export const actions = {
-  clean: () => reduxAction(actionTypes.CLEAN),
-};

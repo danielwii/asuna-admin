@@ -129,7 +129,7 @@ export const KVHelper = {
       },
       menu: { width: 200 },
     }),
-  loadByKey: (key: string, collection: string = 'system.server') =>
+  loadByKey: (key: string, collection = 'system.server') =>
     useQuery(
       gql`
       {

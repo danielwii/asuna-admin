@@ -2,7 +2,7 @@ import { ApolloClient, gql, InMemoryCache, NormalizedCacheObject } from '@apollo
 
 import * as fp from 'lodash/fp';
 
-import { authHeader } from '../helpers';
+import { authHeader } from '../core/store';
 import { createLogger } from '../logger';
 
 // --------------------------------------------------------------

@@ -1,10 +1,8 @@
-import { AxiosRequestConfig, AxiosResponse } from 'axios';
-import * as _ from 'lodash';
-
-import { Config } from '../config';
-import { AppContext } from '../core/context';
+import { Store } from '../core/store';
 import { createLogger } from '../logger';
-import { Asuna } from '../types';
+
+import type { AxiosRequestConfig, AxiosResponse } from 'axios';
+import type { Asuna } from '../types';
 
 const logger = createLogger('adapters:api');
 
@@ -63,29 +61,6 @@ export interface IApiService {
   getWxTicket(auth: { token: string | null }, data: { type: 'admin-login'; value: string }): Promise<AxiosResponse>;
 }
 
-export const apiProxy = {
-  upload: (
-    file,
-    options: { bucket?: string; prefix?: string } = {},
-    requestConfig?: AxiosRequestConfig,
-  ): Promise<AxiosResponse<Asuna.Schema.UploadResponse[]>> => {
-    if (Config.get('CLIENT_GEN_UPLOADER_PREFIX')) {
-      const now = new Date();
-      const yearMonth = `${now.getFullYear()}/${now.getMonth() + 1}`;
-      _.assign(options, { prefix: `fixed/${yearMonth}` });
-    }
-    return AppContext.ctx.api.upload(file, options, requestConfig);
-  },
-  getVersion: (): Promise<AxiosResponse> => AppContext.ctx.api.getVersion(),
-  acquireOperationToken: (service: string): Promise<AxiosResponse> => AppContext.ctx.api.acquireOperationToken(service),
-  useOperationToken: (token: string): Promise<AxiosResponse> => AppContext.ctx.api.useOperationToken(token),
-  releaseOperationToken: (token: string): Promise<AxiosResponse> => AppContext.ctx.api.releaseOperationToken(token),
-  getExcelModel: (auth, data, options): Promise<AxiosResponse> => AppContext.ctx.api.getExcelModel(auth, data, options),
-  importExcel: (auth, data, options): Promise<AxiosResponse> => AppContext.ctx.api.importExcel(auth, data, options),
-  exportExcel: (auth, data, options): Promise<AxiosResponse> => AppContext.ctx.api.exportExcel(auth, data, options),
-  destroyKv: (data): Promise<AxiosResponse> => AppContext.ctx.api.destroyKv(data),
-};
-
 export interface ApiAdapter {
   getWxTicket(data: { type: 'admin-login'; value: string }): Promise<{ url: string }>;
 }
@@ -97,7 +72,7 @@ export class ApiAdapterImpl implements ApiAdapter {
   }
 
   getWxTicket(data): Promise<{ url: string }> {
-    return AppContext.withAuth((auth) => this.service.getWxTicket(auth, data).then((res) => res.data));
+    return Store.withAuth((auth) => this.service.getWxTicket(auth, data).then((res) => res.data));
   }
 
   upload = (
@@ -106,12 +81,12 @@ export class ApiAdapterImpl implements ApiAdapter {
     requestConfig?: AxiosRequestConfig,
   ): Promise<AxiosResponse<Asuna.Schema.UploadResponse[]>> => {
     logger.log('[upload] file', file, options);
-    const auth = AppContext.fromStore('auth');
+    const auth = Store.fromStore('auth');
     return this.service.upload(auth, file, options, requestConfig);
   };
 
   getVersion = (): Promise<AxiosResponse> => {
-    const auth = AppContext.fromStore('auth');
+    const auth = Store.fromStore('auth');
     return this.service.getVersion(auth);
   };
 
@@ -124,7 +99,7 @@ export class ApiAdapterImpl implements ApiAdapter {
   importExcel = (param, data, options): Promise<AxiosResponse> => this.service.importExcel(param, data, options);
   exportExcel = (param, data, options): Promise<AxiosResponse> => this.service.exportExcel(param, data, options);
   destroyKv = (data): Promise<AxiosResponse> => {
-    const auth = AppContext.fromStore('auth');
+    const auth = Store.fromStore('auth');
     return this.service.destroyKv(auth, data);
   };
 }

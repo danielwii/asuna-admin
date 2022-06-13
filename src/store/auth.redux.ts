@@ -4,7 +4,7 @@ import * as R from 'ramda';
 import { REHYDRATE } from 'redux-persist';
 import { call, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 
-import { authProxy } from '../adapters/auth';
+import { authProxy } from '../adapters/proxy';
 import { AppNavigator } from '../context/navigator';
 import { toErrorMessage } from '../helpers/error';
 import { createLogger } from '../logger';
@@ -40,7 +40,7 @@ function* loginSaga({ payload: { username, password }, callback }) {
   } catch (error) {
     logger.error('[loginSaga]', { error });
     try {
-      if (callback != null) callback({ error });
+      if (callback !== null) callback({ error });
     } catch (e) {
       logger.warn('[upsert] callback error', e, { e });
     }

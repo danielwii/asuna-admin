@@ -9,11 +9,10 @@ import VisualDiff from 'react-visual-diff';
 
 import { AppContext } from '../core/context';
 import { AsunaDefinitions } from '../core/definitions';
-import { TooltipContent } from '../helpers';
 import { WithDebugInfo } from '../helpers/debug';
 import { SchemaHelper } from '../schema/helper';
 import { DynamicFormTypes } from './DynamicForm/types';
-import { parseString, WithLoading, WithVariable } from './base/helper/helper';
+import { parseString, TooltipContent, WithLoading, WithVariable } from './base/helper/helper';
 import { AssetsPreview } from './base/preview-button/asset-preview';
 
 import type { EnumFilterMetaInfoOptions } from '../types';

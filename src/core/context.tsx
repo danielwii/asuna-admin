@@ -15,13 +15,13 @@ import { ISecurityService, SecurityAdapterImpl } from '../adapters/security';
 import { WsAdapter } from '../adapters/ws';
 import { GroupFormKVComponent } from '../components/KV/group';
 import { ListKVComponent } from '../components/KV/list';
-import { IStoreConnector, storeConnector } from '../store/middlewares/store-connector';
+import { storeConnector } from '../store/middlewares/store-connector';
+import { Constants } from './constants';
+import { Store } from './store';
 
-import type { AsunaDefinitions } from './definitions';
-import type { AuthState } from '../store/auth.redux';
+import type { AnyAction } from 'redux';
 import type { SharedPanesFunc } from '../store/panes.global';
-import type { RootState } from '../store/types';
-import type { AnyAction, Dispatch } from 'redux';
+import type { AsunaDefinitions } from './definitions';
 
 // --------------------------------------------------------------
 // Types
@@ -94,15 +94,8 @@ class AppContext {
     graphql: GraphqlAdapterImpl;
   };
 
-  /**
-   * 提供一种脱离 redux-connect 调用 dispatch 的方式
-   */
-  private static _dispatch: Dispatch;
   private static _subject;
-  private static _constants;
   private static _stateMachines;
-  private static _isServer = typeof window === 'undefined';
-  private static _storeConnector: IStoreConnector<RootState>;
 
   static serverSettings: object;
   static kvModels: KeyValueModelVo[];
@@ -117,8 +110,8 @@ class AppContext {
     // this._subject.subscribe({
     //   next: (action) => console.log('observer: ', action)
     // });
-    if (!AppContext._storeConnector) {
-      AppContext._storeConnector = storeConnector;
+    if (!Store.storeConnector) {
+      Store.storeConnector = storeConnector;
     }
 
     if (!this.INSTANCE) {
@@ -132,27 +125,10 @@ class AppContext {
     return AppContext.INSTANCE;
   }
 
-  public static regStore(storeConnector: IStoreConnector<RootState>, initialState?: object, force?: boolean) {
-    if (!AppContext._storeConnector || force) {
-      AppContext._storeConnector = storeConnector;
-      if (initialState) {
-        storeConnector.connect(initialState);
-      }
-    }
-  }
-
   public static globalFunc: Partial<{ panes: SharedPanesFunc }> = {};
 
-  public static regDispatch(dispatch: Dispatch): void {
-    if (!AppContext._dispatch) AppContext._dispatch = dispatch;
-  }
-
-  public static dispatch(action: AnyAction) {
-    !AppContext.isServer && AppContext._dispatch && AppContext._dispatch(action);
-  }
-
   public static actionHandler(action: AnyAction) {
-    !AppContext.isServer && AppContext._subject && AppContext._subject.next(action);
+    !(typeof window === 'undefined') && AppContext._subject && AppContext._subject.next(action);
   }
 
   /**
@@ -183,34 +159,8 @@ class AppContext {
     }
   }
 
-  public static set isServer(isServer: boolean | undefined) {
-    AppContext._isServer = !!isServer;
-  }
-
-  public static set constants(constants: any) {
-    this._constants = constants;
-  }
-
   public static set stateMachines(stateMachines: any) {
     this._stateMachines = stateMachines;
-  }
-
-  public static get isServer() {
-    return AppContext._isServer;
-  }
-
-  /**
-   * 开发模式，生产中无法激活
-   */
-  public static get isDevMode() {
-    return this.isDebugMode || AppContext.nextConfig.publicRuntimeConfig?.env !== 'production';
-  }
-
-  /**
-   * 调试模式，生产中也可以激活
-   */
-  public static get isDebugMode() {
-    return (global as any).DEBUG_MODE;
   }
 
   public static get publicConfig() {
@@ -221,20 +171,12 @@ class AppContext {
     return AppContext._context;
   }
 
-  public static get store() {
-    return AppContext._storeConnector;
-  }
-
   public static get subject() {
     return AppContext._subject;
   }
 
   public static get adapters() {
     return AppContext._context;
-  }
-
-  public static get constants() {
-    return AppContext._constants;
   }
 
   public static get stateMachines() {
@@ -248,7 +190,7 @@ class AppContext {
     }
 
     const constants = await AppContext.ctx.graphql.loadKv('app.settings', 'constants');
-    if (constants) this.constants = constants.value;
+    if (constants) Constants.constants = constants.value;
 
     const stateMachines = await AppContext.ctx.admin.stateMachines();
     if (stateMachines) this.stateMachines = stateMachines;
@@ -257,34 +199,19 @@ class AppContext {
     if (kvModels) this.kvModels = kvModels;
   }
 
-  /**
-   * 提供了直接通过 redux-store 获取数据的 api
-   * @param state
-   */
-  public static fromStore<K extends keyof RootState>(state: K): RootState[K] {
-    if (this.store && this.store.getState) {
-      return this.store.getState(state);
-    }
-    console.error('store is not available or getState not defined on state.');
-    return {} as any;
-  }
-
-  public static withAuth<T>(func: (auth: AuthState) => T): T {
-    return func(AppContext.fromStore('auth'));
-  }
-
   private static async registerIndex(register: IIndexRegister, module?: 'index'): Promise<void> {
+    const graphql = new GraphqlAdapterImpl(getConfig().publicRuntimeConfig.GRAPHQL_ENDPOINT ?? 'proxy');
     AppContext._context = {
       ...AppContext._context,
       auth: new AuthAdapter(register.createAuthService()),
       response: new ResponseAdapter(),
       api: new ApiAdapterImpl(register.createApiService()),
       security: new SecurityAdapterImpl(register.createSecurityService()),
-      models: new ModelAdapterImpl(register.modelService, register.definitions),
+      models: new ModelAdapterImpl(register.modelService, register.definitions, graphql),
       ws: new WsAdapter(),
       components: register.componentService,
       admin: new AdminAdapterImpl(register.createAdminService()),
-      graphql: new GraphqlAdapterImpl(getConfig().publicRuntimeConfig.GRAPHQL_ENDPOINT ?? 'proxy'),
+      graphql: graphql,
     };
 
     // only setup menu in index page

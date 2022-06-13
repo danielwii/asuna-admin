@@ -1,6 +1,6 @@
 import { AxiosResponse } from 'axios';
 
-import { AppContext } from '../core/context';
+import { Store } from '../core/store';
 import { createLogger } from '../logger';
 
 // --------------------------------------------------------------
@@ -35,23 +35,6 @@ export interface SecurityAdapter {
 
 const logger = createLogger('adapters:security');
 
-export const securityProxy = {
-  currentUser(configs?: IRequestConfig): Promise<AxiosResponse> {
-    return AppContext.ctx.security.currentUser(configs);
-  },
-
-  roles(configs?: IRequestConfig): Promise<AxiosResponse> {
-    return AppContext.ctx.security.roles(configs);
-  },
-
-  updatePassword(
-    data: { body: { username: string; email: string; password: string } },
-    configs?: IRequestConfig,
-  ): Promise<AxiosResponse> {
-    return AppContext.ctx.security.updatePassword(data, configs);
-  },
-};
-
 export class SecurityAdapterImpl {
   private service: ISecurityService;
 
@@ -60,12 +43,12 @@ export class SecurityAdapterImpl {
   }
 
   currentUser = (configs?: IRequestConfig) => {
-    const auth = AppContext.fromStore('auth');
+    const auth = Store.fromStore('auth');
     return this.service.currentUser(auth, configs);
   };
 
   roles = (configs?: IRequestConfig) => {
-    const auth = AppContext.fromStore('auth');
+    const auth = Store.fromStore('auth');
     return this.service.roles(auth, configs);
   };
 
@@ -73,7 +56,7 @@ export class SecurityAdapterImpl {
     data: { body: { username: string; email: string; password: string } },
     configs?: IRequestConfig,
   ) => {
-    const auth = AppContext.fromStore('auth');
+    const auth = Store.fromStore('auth');
     return this.service.updatePassword(auth, data, configs);
   };
 }

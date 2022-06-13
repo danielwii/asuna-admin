@@ -10,7 +10,8 @@ import videojs from 'video.js';
 import { valueToArrays, valueToUrl } from '../../core/url-rewriter';
 import { upload, validateFile } from '../../helpers/upload';
 import { createLogger } from '../../logger';
-import { Asuna } from '../../types';
+
+import type { Asuna } from '../../types';
 
 const logger = createLogger('components:dynamic-form:video');
 

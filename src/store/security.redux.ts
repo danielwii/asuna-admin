@@ -2,7 +2,7 @@ import { reduxAction } from 'node-buffs/dist/redux';
 import * as R from 'ramda';
 import { call, put, select, takeLatest } from 'redux-saga/effects';
 
-import { securityProxy } from '../adapters/security';
+import { securityProxy } from '../adapters/proxy';
 import { parseResponseError } from '../helpers/error';
 import { TimelineMessageBox } from '../helpers/message-box';
 import { createLogger } from '../logger';

@@ -1,8 +1,8 @@
 import * as R from 'ramda';
 
-import { AppContext } from '../core/context';
 import { createLogger } from '../logger';
-import { Asuna } from '../types';
+
+import type { Asuna } from '../types';
 
 // --------------------------------------------------------------
 // Types
@@ -15,11 +15,6 @@ export interface IMenuService {}
 // --------------------------------------------------------------
 
 const logger = createLogger('adapters:menu');
-
-export const menuProxy = {
-  init: (isSysAdmin, authorities) => AppContext.ctx.menu.init(isSysAdmin, authorities),
-  getSideMenus: () => AppContext.ctx.menu.getSideMenus(),
-};
 
 export class MenuAdapter {
   // private readonly service: IMenuService;

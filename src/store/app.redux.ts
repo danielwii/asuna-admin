@@ -2,10 +2,10 @@ import * as R from 'ramda';
 import { REHYDRATE } from 'redux-persist';
 import { call, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 
-import { actions } from '.';
-import { apiProxy } from '../adapters/api';
+import { apiProxy } from '../adapters/proxy';
 import { AppNavigator } from '../context/navigator';
 import { createLogger } from '../logger';
+import { actions } from './actions';
 import { appActions, appActionTypes, isAppModule } from './app.actions';
 import { authActions } from './auth.actions';
 import { menuSagaFunctions } from './menu.redux';
