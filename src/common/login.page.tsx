@@ -82,7 +82,6 @@ export const LoginPageView: React.VFC<ILoginPageProps> = (props) => {
 */}
           </React.Fragment>
         )}
-
         {customLogin ? customLogin(site, weChatLoginEnable) : <LoginContainer {...props} />}
       </StyledFullFlexContainer>
     </WithStyles>

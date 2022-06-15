@@ -25,13 +25,19 @@ import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/monokai.css';
 */
 
-const WithStyles = ({ children, hideCharacteristics }) => (
+/**
+ * hack了一些antd的样式，引入了一些第三方的样式
+ * @param children
+ * @param hideCharacteristics
+ * @constructor
+ */
+const WithStyles: React.FC<{ hideCharacteristics?: boolean }> = ({ children, hideCharacteristics }) => (
   <ConfigProvider locale={zhCN}>
     <NextHead>
       <title>
         {hideCharacteristics ? '' : 'Asuna '}Admin : {getConfig().publicRuntimeConfig.env}
       </title>
-      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@^3/animate.min.css" />
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@^4/animate.min.css" />
       {/*<link rel="icon" type="image/png" sizes="32x32" href="/static/icons/favicon-32x32.png" />*/}
       {/*<link rel="icon" type="image/png" sizes="16x16" href="/static/icons/favicon-16x16.png" />*/}
     </NextHead>

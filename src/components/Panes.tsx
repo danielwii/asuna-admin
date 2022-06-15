@@ -14,7 +14,7 @@ import { TenantHelper } from '../helpers/tenant';
 import { createLogger } from '../logger';
 import ModulesLoader from '../modules';
 import { TenantWelcome } from '../tenant/Welcome';
-import { ErrorInfo } from './ErrorInfo';
+import { ErrorInfo } from './base/error';
 
 const logger = createLogger('components:panes');
 

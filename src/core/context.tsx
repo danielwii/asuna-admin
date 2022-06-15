@@ -145,7 +145,7 @@ class AppContext {
         AppContext._context = {
           ...AppContext._context,
           auth: new AuthAdapter(register.createAuthService()),
-          ws: new WsAdapter(),
+          // ws: new WsAdapter(),
         };
       } else {
         await this.registerIndex(register, 'index');
@@ -216,7 +216,7 @@ class AppContext {
       api: new ApiAdapterImpl(register.createApiService()),
       security: new SecurityAdapterImpl(register.createSecurityService()),
       models: register.createModelAdapter(graphql),
-      ws: new WsAdapter(),
+      // ws: new WsAdapter(),
       components: register.componentService,
       admin: new AdminAdapterImpl(register.createAdminService()),
       graphql: graphql,

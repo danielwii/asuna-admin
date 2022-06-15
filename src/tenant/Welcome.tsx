@@ -8,8 +8,8 @@ import * as util from 'util';
 
 import { TenantInfo } from '../adapters/admin.plain';
 import { DynamicFormTypes } from '../components/DynamicForm/types';
-import { ErrorInfo } from '../components/ErrorInfo';
 import { FormModalButton } from '../components/FormModalButton';
+import { ErrorInfo } from '../components/base/error';
 import { StoreContext } from '../context/store';
 import { AppContext } from '../core/context';
 import { DebugInfo } from '../helpers/debug';

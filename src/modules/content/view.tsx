@@ -5,7 +5,7 @@ import { FoldingCube } from 'styled-spinkit';
 import * as util from 'util';
 
 import { AsunaDataView } from '../../components/AsunaDataView';
-import { ErrorInfo } from '../../components/ErrorInfo';
+import { ErrorInfo } from '../../components/base/error';
 import { DebugInfo } from '../../helpers/debug';
 import { extractModelNameFromPane, resolveModelInPane } from '../../helpers/models';
 import { TenantHelper } from '../../helpers/tenant';

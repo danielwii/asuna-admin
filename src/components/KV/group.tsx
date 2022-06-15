@@ -11,7 +11,7 @@ import { isDebugMode } from '../../core/env';
 import { KVHelper } from '../../helpers/components';
 import { createLogger } from '../../logger';
 import { EasyGroupForm, GroupFormFields } from '../EasyForm';
-import { ErrorInfo } from '../ErrorInfo';
+import { ErrorInfo } from '../base/error';
 
 const logger = createLogger('components:kv-form:group');
 

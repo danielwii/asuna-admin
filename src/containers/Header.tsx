@@ -27,12 +27,12 @@ export const HeaderRender: React.VFC<Pick<IHeaderProps, 'hideLogo'>> = (props) =
   } = {
     onSync: () => {
       consola.error('onSync...');
-      // return dispatch(appActions.heartbeat(true));
     },
     logout: () => {
+      consola.error('remove token and schemas...');
       localStorage.removeItem('token');
-      return AppNavigator.isLogin();
-      // return dispatch(authActions.logout());
+      localStorage.removeItem('schemas');
+      return AppNavigator.toLogin();
     },
     withDebugSettingsProps,
     handleAction: (action, componentName) => {
