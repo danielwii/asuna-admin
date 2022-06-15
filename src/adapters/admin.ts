@@ -2,30 +2,19 @@ import { plainToInstance } from 'class-transformer';
 import _ from 'lodash';
 import * as fp from 'lodash/fp';
 
-import { Store } from '../core/store';
 import { Draft, StateMachines, Tenant, TenantInfo } from './admin.plain';
 
 import type { AxiosResponse } from 'axios';
 import type { Json } from '../types';
 
 export interface IAdminService {
-  stateMachines(auth: { token: string | null }): Promise<AxiosResponse>;
-  tenantInfo(auth: { token: string | null }): Promise<AxiosResponse>;
-  registerTenant<T>(
-    auth: { token: string | null },
-    data: { name: string; description?: string; payload?: T },
-  ): Promise<AxiosResponse>;
-  createDraft(
-    auth: { token: string | null },
-    data: { content: Json; type: string; refId?: string },
-  ): Promise<AxiosResponse>;
-  getDrafts(auth: { token: string | null }, params: { type: string; refId: string }): Promise<AxiosResponse>;
-  publishDraft(auth: { token: string | null }, params: { id: string }): Promise<AxiosResponse>;
-  addFeedbackReply(
-    auth: { token: string | null },
-    params: { id: number },
-    data: { images?: string[]; description: string },
-  ): Promise<AxiosResponse>;
+  stateMachines(): Promise<AxiosResponse>;
+  tenantInfo(): Promise<AxiosResponse>;
+  registerTenant<T>(data: { name: string; description?: string; payload?: T }): Promise<AxiosResponse>;
+  createDraft(data: { content: Json; type: string; refId?: string }): Promise<AxiosResponse>;
+  getDrafts(params: { type: string; refId: string }): Promise<AxiosResponse>;
+  publishDraft(params: { id: string }): Promise<AxiosResponse>;
+  addFeedbackReply(params: { id: number }, data: { images?: string[]; description: string }): Promise<AxiosResponse>;
 }
 
 export interface AdminAdapter {
@@ -42,27 +31,24 @@ export class AdminAdapterImpl implements AdminAdapter {
   constructor(private readonly service: IAdminService) {}
 
   stateMachines = (): Promise<StateMachines> =>
-    Store.withAuth((auth) => this.service.stateMachines(auth).then((res) => plainToInstance(StateMachines, res.data)));
+    this.service.stateMachines().then((res) => plainToInstance(StateMachines, res.data));
 
   tenantInfo = (): Promise<TenantInfo> =>
-    Store.withAuth((auth) => this.service.tenantInfo(auth).then((res) => plainToInstance(TenantInfo, res.data)));
+    this.service.tenantInfo().then((res) => plainToInstance(TenantInfo, res.data));
 
   registerTenant = <T>(data: { name: string; description?: string; payload: T }): Promise<Tenant> =>
-    Store.withAuth((auth) => this.service.registerTenant(auth, data).then((res) => plainToInstance(Tenant, res.data)));
+    this.service.registerTenant(data).then((res) => plainToInstance(Tenant, res.data));
 
   createDraft = (data: { content: Json; type: string; refId?: string }): Promise<Draft> =>
-    Store.withAuth((auth) => this.service.createDraft(auth, data).then((res) => plainToInstance(Draft, res.data)));
+    this.service.createDraft(data).then((res) => plainToInstance(Draft, res.data));
 
   getDrafts = (params: { type: string; refId: string }): Promise<Draft[]> =>
-    Store.withAuth((auth) =>
-      this.service.getDrafts(auth, params).then((res) => _.map(res.data, (item) => plainToInstance(Draft, item))),
-    );
+    this.service.getDrafts(params).then((res) => _.map(res.data, (item) => plainToInstance(Draft, item)));
 
-  publishDraft = (params: { id: string }): Promise<void> =>
-    Store.withAuth((auth) => this.service.publishDraft(auth, params).then(fp.get('data')));
+  publishDraft = (params: { id: string }): Promise<void> => this.service.publishDraft(params).then(fp.get('data'));
 
   addFeedbackReply = (params: { id: number }, data: { images?: string[]; description: string }): Promise<any> =>
-    Store.withAuth((auth) => this.service.addFeedbackReply(auth, params, data));
+    this.service.addFeedbackReply(params, data);
 }
 
 // export const adminProxyCaller: () => AdminAdapter = () => AppContext.ctx.admin;

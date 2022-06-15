@@ -7,7 +7,6 @@ import * as R from 'ramda';
 import * as React from 'react';
 import { useMemo } from 'react';
 import { Async } from 'react-async';
-import { useLogger } from 'react-use';
 import { FoldingCube } from 'styled-spinkit';
 
 import { DebugInfo } from '../helpers/debug';
@@ -109,7 +108,7 @@ export const PanesView: React.VFC<IPanesProps> = ({
     },
   };
 
-  useLogger('PanesView', { 'panes.length': R.keys(panes).length });
+  // useLogger('<[PanesView]>', { 'panes.length': R.keys(panes).length });
 
   if (!activeKey) {
     return (

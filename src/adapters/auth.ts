@@ -1,11 +1,13 @@
 import { createLogger } from '../logger';
 
+import type { AxiosResponse } from 'axios';
+
 // --------------------------------------------------------------
 // Types
 // --------------------------------------------------------------
 
 export interface IAuthService {
-  login(username: string, password: string): Promise<any>;
+  login(username: string, password: string): Promise<AxiosResponse<{ accessToken: string; expiresIn: number }>>;
 
   logout(): Promise<any>;
 
@@ -13,7 +15,7 @@ export interface IAuthService {
 }
 
 export interface IAuthProxy {
-  login(username: string, password: string): Promise<any>;
+  login(username: string, password: string): Promise<AxiosResponse<{ accessToken: string; expiresIn: number }>>;
 
   logout(): Promise<any>;
 

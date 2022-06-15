@@ -3,17 +3,16 @@ import { ApolloClient, ApolloProvider, gql, InMemoryCache } from '@apollo/client
 import { changeAntdTheme } from 'dynamic-antd-theme';
 import _ from 'lodash';
 import 'moment/locale/zh-cn';
-import * as R from 'ramda';
 import * as React from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { connect } from 'react-redux';
+import { useAsync } from 'react-use';
 
+import { Func } from '../adapters/func';
 import { LivingLoading } from '../components/base/living-loading';
 import { AppContext, IIndexRegister, ILoginRegister, INextConfig } from '../core/context';
-import { Dispatcher } from '../core/dispatcher';
 import { MainLayout } from '../layout';
 import { createLogger } from '../logger';
-import { appActions } from '../store/app.actions';
 
 import type { RootState } from '../store/types';
 import type { AppState } from '../store/app.redux';
@@ -25,7 +24,7 @@ const logger = createLogger('pages:index', 'debug');
 // Index Component
 // --------------------------------------------------------------
 
-export interface IIndexPageProps extends ReduxProps {
+export interface IIndexPageProps /*extends ReduxProps*/ {
   auth: AuthState;
   app: AppState;
   register: ILoginRegister & IIndexRegister;
@@ -80,13 +79,40 @@ const client = new ApolloClient({
   defaultOptions: { watchQuery: { fetchPolicy: 'network-only' } },
 });
 
+export const IndexPageView: React.VFC<{ register: ILoginRegister & IIndexRegister; hideCharacteristics?: boolean }> = ({
+  register,
+  hideCharacteristics,
+}) => {
+  const state = useAsync(async () => {
+    await AppContext.setup({ register, module: 'index' }, Func);
+  }, [true]);
+
+  if (state.loading) {
+    return <LivingLoading heartbeat={true} />;
+  }
+
+  return (
+    <ApolloProvider client={client}>
+      <QueryClientProvider client={new QueryClient()}>
+        <MainLayout
+          // loading={loading}
+          // heartbeat={heartbeat}
+          // auth={auth}
+          // appInfo={appInfo}
+          hideCharacteristics={hideCharacteristics}
+        />
+      </QueryClientProvider>
+    </ApolloProvider>
+  );
+};
+
 export class IndexPage extends React.Component<IIndexPageProps> {
   constructor(props) {
     super(props);
 
-    const { dispatch, register, site } = this.props;
-    AppContext.setup({ register, module: 'index' }).then(() => dispatch(appActions.init()));
-    Dispatcher.regDispatch(dispatch);
+    const { /*dispatch,*/ register, site } = this.props;
+    AppContext.setup({ register, module: 'index' }, Func); //.then(() => dispatch(appActions.init()));
+    // Dispatcher.regDispatch(dispatch);
 
     if (site?.primaryColor) {
       changeAntdTheme(site?.primaryColor);
@@ -94,7 +120,7 @@ export class IndexPage extends React.Component<IIndexPageProps> {
   }
 
   componentDidMount() {
-    (this.state as any).renderClientSideComponent = true;
+    // (this.state as any).renderClientSideComponent = true;
   }
 
   static async getInitialProps({ req }) {
@@ -134,9 +160,9 @@ export class IndexPage extends React.Component<IIndexPageProps> {
 
   render() {
     const {
-      auth,
-      app: { loading, heartbeat },
-      appInfo,
+      // auth,
+      // app: { loading, heartbeat },
+      // appInfo,
       hideCharacteristics,
       error,
     } = this.props;
@@ -150,10 +176,10 @@ export class IndexPage extends React.Component<IIndexPageProps> {
       <ApolloProvider client={client}>
         <QueryClientProvider client={new QueryClient()}>
           <MainLayout
-            loading={loading}
-            heartbeat={heartbeat}
-            auth={auth}
-            appInfo={appInfo}
+            // loading={loading}
+            // heartbeat={heartbeat}
+            // auth={auth}
+            // appInfo={appInfo}
             hideCharacteristics={hideCharacteristics}
           />
         </QueryClientProvider>
@@ -167,15 +193,20 @@ const mapStateToProps = (state: RootState): { auth: AuthState; app: AppState } =
   app: state.app,
 });
 
+/*
 const BrowserComponent: React.FC = ({ children }) => {
   if (typeof window === 'undefined') {
     return <div />;
   }
   return children as any;
-};
+};*/
 
 export const renderIndexPage = (props: Partial<IIndexPageProps>, nextConfig: INextConfig) => {
   AppContext.init(nextConfig);
-  return <BrowserComponent>{connect(R.compose(R.merge(props), mapStateToProps))(IndexPage)}</BrowserComponent>;
-  // return connect(R.compose(R.merge(props), mapStateToProps))(IndexPage) as any;
+  // const composed = R.compose(R.mergeRight(props), mapStateToProps);
+  // console.log('composed is', { composed, component: connect(composed)(IndexPage) });
+  // return <BrowserComponent>{connect(composed)(IndexPage)}</BrowserComponent>;
+  // return IndexPage;
+  const Component = connect(mapStateToProps)(IndexPage) as any;
+  return <Component {...props} />;
 };

@@ -157,6 +157,7 @@ const modelsSagaFunctions = {
       }
     }
   },
+  /*
   *loadAllSchemas() {
     logger.log('[loadAllSchemas]', 'load all schemas in saga');
     const { token } = yield select((state: RootState) => state.auth);
@@ -174,12 +175,12 @@ const modelsSagaFunctions = {
         TimelineMessageBox.push({ key: boxId, type: 'error', message: parseResponseError(e) });
       }
     }
-  },
+  },*/
 };
 
 const modelsSagas = [
   // takeLatest / takeEvery (actionType, actionSage)
-  takeLatest(modelsActionTypes.LOAD_ALL_SCHEMAS, modelsSagaFunctions.loadAllSchemas),
+  // takeLatest(modelsActionTypes.LOAD_ALL_SCHEMAS, modelsSagaFunctions.loadAllSchemas),
   takeLatest(modelsActionTypes.REMOVE as any, modelsSagaFunctions.remove),
   takeLatest(modelsActionTypes.UPSERT as any, modelsSagaFunctions.upsert),
   takeLatest(modelsActionTypes.FETCH as any, modelsSagaFunctions.fetch),

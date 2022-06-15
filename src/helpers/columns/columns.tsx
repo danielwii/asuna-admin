@@ -10,16 +10,15 @@ import { VideoPlayer } from '../../components/DynamicForm/Videos';
 import { TooltipContent, WithFuture } from '../../components/base/helper/helper';
 import { AssetsPreview } from '../../components/base/preview-button/asset-preview';
 import { Content } from '../../components/base/styled/styled';
-import { AppContext } from '../../core/context';
-import { valueToArrays } from '../../core/url-rewriter';
+// import { AppContext } from '../../core/context';
+// import { valueToArrays } from '../../core/url-rewriter';
 import { createLogger } from '../../logger';
-import { SchemaHelper } from '../../schema/helper';
-import { Asuna } from '../../types';
 import { castModelKey } from './../cast';
 import { WithDebugInfo } from './../debug';
 import { extractValue, removePreAndSuf } from './../func';
 import { nullProtectRender } from './utils';
 
+import type { Asuna } from '../../types';
 import type { ColumnProps, ColumnType } from 'antd/es/table';
 import type { FilterDropdownProps } from 'antd/es/table/interface';
 import type { VideoJsPlayerOptions } from 'video.js';
@@ -73,15 +72,15 @@ export async function generateSearchColumnProps(
   };
 
   if (conditionType === 'list' && conditionExtras) {
-    const items = await AppContext.ctx.models
-      .uniq(conditionExtras.model, dataIndex)
-      .catch((reason) => logger.error('generateSearchColumnProps', reason));
-    if (items) {
-      return {
-        filterMultiple: false,
-        filters: _.map(items, (item) => ({ text: item, value: item })),
-      };
-    }
+    // const items = await AppContext.ctx.models
+    //   .uniq(conditionExtras.model, dataIndex)
+    //   .catch((reason) => logger.error('generateSearchColumnProps', reason));
+    // if (items) {
+    //   return {
+    //     filterMultiple: false,
+    //     filters: _.map(items, (item) => ({ text: item, value: item })),
+    //   };
+    // }
   }
 
   return {
@@ -161,26 +160,26 @@ export const columnHelper = {
         render: nullProtectRender((record) => {
           return (
             <div style={record?.isPublished === false || record?.isActive === false ? { color: 'darkred' } : {}}>
-              {record?.id ? (
-                <WithFuture
-                  future={() =>
-                    AppContext.ctx.models.batchFetch(opts.subRef, {
-                      id: record.id,
-                      relations: [opts.transformer as string],
-                    })
-                  }
-                >
-                  {(data) => (
-                    <WithDebugInfo info={{ key, title, opts, record, transformer }}>
-                      {opts.render
-                        ? opts.render(extractValue(data, transformer), data, extras)
-                        : extractValue(data, transformer)}
-                    </WithDebugInfo>
-                  )}
-                </WithFuture>
-              ) : (
-                'n/a'
-              )}
+              {/*{record?.id ? (*/}
+              {/*  <WithFuture*/}
+              {/*    future={() =>*/}
+              {/*      AppContext.ctx.models.batchFetch(opts.subRef, {*/}
+              {/*        id: record.id,*/}
+              {/*        relations: [opts.transformer as string],*/}
+              {/*      })*/}
+              {/*    }*/}
+              {/*  >*/}
+              {/*    {(data) => (*/}
+              {/*      <WithDebugInfo info={{ key, title, opts, record, transformer }}>*/}
+              {/*        {opts.render*/}
+              {/*          ? opts.render(extractValue(data, transformer), data, extras)*/}
+              {/*          : extractValue(data, transformer)}*/}
+              {/*      </WithDebugInfo>*/}
+              {/*    )}*/}
+              {/*  </WithFuture>*/}
+              {/*) : (*/}
+              {/*  'n/a'*/}
+              {/*)}*/}
             </div>
           );
         }),
@@ -213,30 +212,30 @@ export const columnHelper = {
       transformer = transformer || opts.transformer;
       let filterProps: ColumnType<string> = {};
       switch (opts.filterType) {
-        case 'list': {
-          const modelName = extras.modelName;
-          const primaryKey = AppContext.adapters.models.getPrimaryKey(modelName);
-          const relation = AppContext.adapters.models.getFormSchema(modelName)[ref];
-          const relationName = relation?.options?.selectable;
-          if (relationName) {
-            const field = opts.relationSearchField || 'name';
-            const {
-              data: { items },
-            } = await AppContext.adapters.models.loadModels(relationName, {
-              fields: [field],
-              pagination: { pageSize: 500 },
-            });
-            filterProps = {
-              filterMultiple: false,
-              // 关联筛选时的搜索 key 为了区别同一个关联的不同字段，所以会包含非主键信息，这里传递整个包括主键的搜索信息
-              filters: _.map(items, (item) => ({
-                text: `${item[primaryKey]} / ${item[field]}`,
-                value: JSON.stringify({ key: [`${ref}.${primaryKey}`], value: [item[primaryKey]] }),
-              })),
-            };
-          }
-          break;
-        }
+        // case 'list': {
+        //   const modelName = extras.modelName;
+        //   const primaryKey = AppContext.adapters.models.getPrimaryKey(modelName);
+        //   const relation = AppContext.adapters.models.getFormSchema(modelName)[ref];
+        //   const relationName = relation?.options?.selectable;
+        //   if (relationName) {
+        //     const field = opts.relationSearchField || 'name';
+        //     const {
+        //       data: { items },
+        //     } = await AppContext.adapters.models.loadModels(relationName, {
+        //       fields: [field],
+        //       pagination: { pageSize: 500 },
+        //     });
+        //     filterProps = {
+        //       filterMultiple: false,
+        //       // 关联筛选时的搜索 key 为了区别同一个关联的不同字段，所以会包含非主键信息，这里传递整个包括主键的搜索信息
+        //       filters: _.map(items, (item) => ({
+        //         text: `${item[primaryKey]} / ${item[field]}`,
+        //         value: JSON.stringify({ key: [`${ref}.${primaryKey}`], value: [item[primaryKey]] }),
+        //       })),
+        //     };
+        //   }
+        //   break;
+        // }
         case 'search': {
           filterProps = await generateSearchColumnProps(
             `${ref}.${opts.relationSearchField || 'name'}`,
@@ -366,7 +365,7 @@ export const columnHelper = {
       const value = extractValue(record, opts.transformer);
       return (
         <WithDebugInfo info={{ key, title, opts, record }}>
-          {value ? <AssetsPreview key={key} urls={valueToArrays(value)} /> : record}
+          {/*{value ? <AssetsPreview key={key} urls={valueToArrays(value)} /> : record}*/}
         </WithDebugInfo>
       );
     }),
@@ -408,29 +407,30 @@ export const columnHelper = {
     { model, title, ctx }: ModelOpts,
     extras: Asuna.Schema.RecordRenderExtras,
   ): Promise<ColumnProps<any>> => {
-    const columnInfo = model ? await SchemaHelper.getColumnInfo(model, key) : undefined;
+    // const columnInfo = model ? await AppContext.getColumnInfo(model, key) : undefined;
     return {
-      title: title ?? columnInfo?.config?.info?.name ?? key,
+      // title: title ?? columnInfo?.config?.info?.name ?? key,
       dataIndex: castModelKey(key),
       key: castModelKey(key),
       ...(await generateSearchColumnProps(castModelKey(key), ctx.onSearch, 'boolean')),
       render: (isActive, record) => {
-        const primaryKey = AppContext.adapters.models.getPrimaryKey(extras.modelName);
-        const id = _.get(record, primaryKey);
-        const component = extras.readonly ? (
+        // const primaryKey = AppContext.adapters.models.getPrimaryKey(extras.modelName);
+        // const id = _.get(record, primaryKey);
+        const component =
+                // extras.readonly ? (
           <Checkbox checked={isActive} disabled={true} />
-        ) : (
-          <Popconfirm
-            title={isActive ? `是否注销: ${id}` : `是否激活: ${id}`}
-            onConfirm={async () => {
-              // const { modelProxy } = require('../adapters');
-              await AppContext.adapters.models.upsert(extras.modelName, { body: { id, [key]: !isActive } });
-              extras.callRefresh();
-            }}
-          >
-            <Checkbox checked={isActive} />
-          </Popconfirm>
-        );
+        // ) : (
+        //   <Popconfirm
+        //     title={isActive ? `是否注销: ${id}` : `是否激活: ${id}`}
+        //     onConfirm={async () => {
+        //       // const { modelProxy } = require('../adapters');
+        //       await AppContext.adapters.models.upsert(extras.modelName, { body: { id, [key]: !isActive } });
+        //       extras.callRefresh();
+        //     }}
+        //   >
+        //     <Checkbox checked={isActive} />
+        //   </Popconfirm>
+        // );
         return extras.tips ? <Tooltip title={extras.tips}>{component}</Tooltip> : component;
       },
     };

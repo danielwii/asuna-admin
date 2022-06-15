@@ -1,4 +1,4 @@
-import withRedux from 'next-redux-wrapper';
+import { createWrapper } from 'next-redux-wrapper';
 import App from 'next/app';
 import getConfig from 'next/config';
 import Head from 'next/head';
@@ -51,7 +51,8 @@ function withReduxSaga(config) {
   };
 }
 
-export const ReduxApp = withRedux(asunaStore.configureStore, { debug: false })(
+/*
+export const ReduxApp = createWrapper(asunaStore.configureStore, { debug: false }).withRedux(
   withReduxSaga({ async: true })(
     class extends App {
       props: any;
@@ -80,3 +81,4 @@ export const ReduxApp = withRedux(asunaStore.configureStore, { debug: false })(
     },
   ),
 ) as any;
+*/

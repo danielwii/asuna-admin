@@ -4,7 +4,6 @@ import { Subscription } from 'rxjs';
 
 import { AsunaDataTable } from '../../components/AsunaDataTable';
 import { Config } from '../../config';
-import { AppContext } from '../../core/context';
 import { ActionEvent, EventBus, EventType } from '../../core/events';
 import { castModelKey } from '../../helpers/cast';
 import { DebugInfo } from '../../helpers/debug';
@@ -19,7 +18,7 @@ import type { Pane } from '../../components/Panes';
 
 const logger = createLogger('modules:content:index');
 
-interface IProps extends ReduxProps {
+interface IProps /*extends ReduxProps*/ {
   basis: { pane: Pane };
   activeKey: string;
   // models: object;
@@ -37,7 +36,7 @@ interface IState {
   editable: boolean;
   deletable: boolean;
   opts?: Asuna.Schema.TableColumnOpts<any>;
-  subscription: Subscription;
+  subscription?: Subscription;
   busSubscription: Subscription;
   rowClassName?: (record: any, index: number) => string;
 }
@@ -85,11 +84,12 @@ class ContentIndex extends React.Component<IProps, IState> {
       opts: columnOpts,
       rowClassName,
       key: activeKey,
+      /*
       subscription: AppContext.subject.subscribe({
         next: (action) => {
           logger.debug('[observer-content-index]', { modelName, activeKey, action });
         },
-      }),
+      }),*/
       busSubscription: EventBus.observable.subscribe({
         next: (action: ActionEvent) => {
           if (
@@ -107,7 +107,7 @@ class ContentIndex extends React.Component<IProps, IState> {
 
   componentWillUnmount() {
     logger.log('[componentWillUnmount]', 'destroy subscriptions');
-    this.state.subscription.unsubscribe();
+    this.state.subscription?.unsubscribe();
     this.state.busSubscription.unsubscribe();
   }
 

@@ -10,7 +10,7 @@ const PanesViewContainer: React.VFC = () => {
   const sharedPanesFunc = useSharedPanesFunc(panesStateSetter);
   AppContext.globalFunc.panes = sharedPanesFunc;
 
-  useLogger('PanesViewContainer', panesState);
+  useLogger('<[PanesViewContainer]>', panesState);
 
   return (
     <PanesView

@@ -22,7 +22,6 @@ import type { TablePaginationConfig } from 'antd/es/table/interface';
 import type { AxiosResponse } from 'axios';
 import type { AsunaDefinitions } from '../core/definitions';
 import type { RelationColumnProps } from '../helpers/columns/types';
-import type { AuthState } from '../store/auth.redux';
 import type { Asuna } from '../types';
 import type { Condition, WhereConditions } from '../types/meta';
 
@@ -44,7 +43,6 @@ export interface RestListQuery {
 
 export interface IModelService {
   loadModels: (
-    auth: { token: string | null },
     modelName: string,
     configs: {
       relations?: string[];
@@ -61,12 +59,11 @@ export interface IModelService {
    * @param modelName
    * @param data
    */
-  loadSchema: (auth: { token: string | null }, modelName: string, data) => Promise<AxiosResponse>;
+  loadSchema: (modelName: string, data) => Promise<AxiosResponse>;
 
-  loadOriginSchema: (auth: { token: string | null }, modelName: string, data) => Promise<AxiosResponse>;
+  loadOriginSchema: (modelName: string, data) => Promise<AxiosResponse>;
 
   fetch: (
-    auth: { token: string | null },
     modelName: string,
     data: {
       endpoint?: string;
@@ -79,20 +76,14 @@ export interface IModelService {
     } & Asuna.Schema.ModelConfig,
   ) => Promise<AxiosResponse>;
 
-  remove: (
-    auth: { token: string | null },
-    modelName: string,
-    data: { endpoint?: string; id: number },
-  ) => Promise<AxiosResponse>;
+  remove: (modelName: string, data: { endpoint?: string; id: number }) => Promise<AxiosResponse>;
 
   insert: (
-    auth: { token: string | null; schemas?: {} },
     modelName: string,
     data: { endpoint?: string; body: IModelBody } & Asuna.Schema.ModelConfig,
   ) => Promise<AxiosResponse>;
 
   update: (
-    auth: { token: string | null },
     modelName: any,
     data: {
       endpoint?: string;
@@ -104,25 +95,23 @@ export interface IModelService {
   ) => Promise<AxiosResponse>;
 
   loadAssociation: (
-    auth: { token: string | null },
     associationName: string,
     data: Asuna.Schema.ModelConfig & RestListQuery,
   ) => Promise<AxiosResponse | AxiosResponse[]>;
 
   loadAssociationByIds: (
-    auth: AuthState,
     associationName: string,
     data: Asuna.Schema.ModelConfig & { fields: string[]; ids: string[] | number[] },
   ) => Promise<AxiosResponse>;
 
   uniq: (
-    { auth, modelConfig }: { auth: AuthState; modelConfig: Asuna.Schema.ModelConfig },
+    { modelConfig }: { modelConfig: Asuna.Schema.ModelConfig },
     modelName: string,
     data: { column: string },
   ) => Promise<AxiosResponse>;
 
   groupCounts: (
-    { auth, modelConfig }: { auth: AuthState; modelConfig: Asuna.Schema.ModelConfig },
+    { modelConfig }: { modelConfig: Asuna.Schema.ModelConfig },
     modelName: string,
     data: { column: string; where: string },
   ) => Promise<AxiosResponse<{ [id: string]: { [name: string]: number } }>>;
@@ -261,19 +250,19 @@ export class ModelAdapterImpl implements ModelAdapter {
   };
 
   uniq(modelName: string, column: string): Promise<string[]> {
-    const auth = Store.fromStore('auth');
+    const auth = Store.fromStore();
     const modelConfig = this.getModelConfig(modelName);
-    return this.service.uniq({ auth, modelConfig }, modelName, { column }).then(fp.get('data'));
+    return this.service.uniq({ modelConfig }, modelName, { column }).then(fp.get('data'));
   }
 
   _groupCountsBatchLoader = new BatchLoader<{ modelName; column; relation; id: string }, any>(
     (keys) => {
       const { modelName, column, relation } = keys[0];
-      const auth = Store.fromStore('auth');
+      const auth = Store.fromStore();
       const modelConfig = this.getModelConfig(modelName);
       const ids = _.map(keys, fp.get('id'));
       const where = JSON.stringify({ [relation]: { $in: ids } });
-      return this.service.groupCounts({ auth, modelConfig }, modelName, { column, where }).then(fp.get('data'));
+      return this.service.groupCounts({ modelConfig }, modelName, { column, where }).then(fp.get('data'));
     },
     { extractor: (data, key) => _.get(data, key?.id) },
   );
@@ -329,7 +318,7 @@ export class ModelAdapterImpl implements ModelAdapter {
       return Promise.reject(`id must be provided.`);
     }
 
-    const auth = Store.fromStore('auth');
+    // const auth = Store.fromStore();
     const modelConfig = this.getModelConfig(modelName);
     const schema = this.getFormSchema(modelName);
     const selectableRelations = _.chain(schema)
@@ -340,19 +329,19 @@ export class ModelAdapterImpl implements ModelAdapter {
       .value();
     const relations = _.flow(_.flattenDeep, _.uniq, fp.join(','))([selectableRelations, data.relations ?? []]);
     logger.log({ schema, selectableRelations, data, relations });
-    return this.service.fetch(auth, modelName, Object.assign(data, modelConfig, { relations }));
+    return this.service.fetch(modelName, Object.assign(data, modelConfig, { relations }));
   };
 
   remove = (modelName: string, data) => {
-    const auth = Store.fromStore('auth');
-    return this.service.remove(auth, modelName, {
+    // const auth = Store.fromStore();
+    return this.service.remove(modelName, {
       ...data,
       ...this.getModelConfig(modelName),
     });
   };
 
   upsert = (modelName: string, data: { body: IModelBody }): Promise<AxiosResponse> => {
-    const auth = Store.fromStore('auth');
+    // const auth = Store.fromStore();
     // const { schemas } = Store.fromStore('models');
     logger.debug('[upsert]', 'upsert', { modelName, data });
 
@@ -373,7 +362,7 @@ export class ModelAdapterImpl implements ModelAdapter {
     logger.debug('[upsert]', 'transformed is', convertNullTransformed);
 
     if (id) {
-      return this.service.update(auth, modelName, {
+      return this.service.update(modelName, {
         id,
         primaryKey,
         ...data,
@@ -381,7 +370,7 @@ export class ModelAdapterImpl implements ModelAdapter {
         ...this.getModelConfig(modelName),
       });
     }
-    return this.service.insert(auth, modelName, {
+    return this.service.insert(modelName, {
       ...data,
       body: convertNullTransformed,
       ...this.getModelConfig(modelName),
@@ -444,7 +433,7 @@ export class ModelAdapterImpl implements ModelAdapter {
 
   getPrimaryKeys = (modelName: string): string[] => {
     const TAG = '[getPrimaryKey]';
-    const { schemas } = Store.fromStore('models');
+    const { schemas } = Store.fromStore();
     const schema: Asuna.Schema.ModelSchema[] = R.prop(modelName)(schemas as any);
     if (schema !== null) {
       const primaryKeys = _.filter(schema, (opts) => !!opts?.config?.primaryKey);
@@ -457,7 +446,7 @@ export class ModelAdapterImpl implements ModelAdapter {
   };
 
   getFormSchema = (name: string, values?: { [member: string]: any }): Asuna.Schema.FormSchemas => {
-    const { schemas } = Store.fromStore('models');
+    const { schemas } = Store.fromStore();
     if (!schemas || !name) {
       logger.error('[getFormSchema]', 'schemas or name is required.', { schemas, name });
       return {};
@@ -516,8 +505,7 @@ export class ModelAdapterImpl implements ModelAdapter {
     logger.debug('[loadModels]', { modelName, configs, modelConfig: this.getModelConfig(modelName) });
     const page = configs?.pagination?.current ?? 1;
     const size = configs?.pagination?.pageSize ?? (Config.get('DEFAULT_PAGE_SIZE') as number);
-    const auth = Store.fromStore('auth');
-    return this.service.loadModels(auth, modelName, {
+    return this.service.loadModels(modelName, {
       pagination: { page, size },
       fields: configs?.fields,
       filters: _.mapValues<Record<string, [Condition]>, WhereConditions>(
@@ -534,9 +522,8 @@ export class ModelAdapterImpl implements ModelAdapter {
     logger.debug('[loadModels2]', { modelName, configs, modelConfig: this.getModelConfig(modelName) });
     const page = configs?.pagination?.current ?? 1;
     const size = configs?.pagination?.pageSize ?? (Config.get('DEFAULT_PAGE_SIZE') as number);
-    const auth = Store.fromStore('auth');
     return this.service
-      .loadModels(auth, modelName, {
+      .loadModels(modelName, {
         pagination: { page, size },
         fields: configs?.fields,
         filters: _.mapValues<Record<string, [Condition]>, WhereConditions>(
@@ -555,8 +542,7 @@ export class ModelAdapterImpl implements ModelAdapter {
       logger.debug('[loadAssociationByIds]', { associationName, ids });
 
       const fields = this.getAssociationByName(associationName).fields;
-      const auth = Store.fromStore('auth');
-      return this.service.loadAssociationByIds(auth, associationName, {
+      return this.service.loadAssociationByIds(associationName, {
         ids,
         fields,
         ...this.getModelConfig(associationName),
@@ -576,8 +562,7 @@ export class ModelAdapterImpl implements ModelAdapter {
 
     const fields = this.getAssociationByName(associationName).fields;
     logger.debug('[loadAssociation]', { fields, associationName, associations: this.associations });
-    const auth = Store.fromStore('auth');
-    return this.service.loadAssociation(auth, associationName, {
+    return this.service.loadAssociation(associationName, {
       ...configs,
       fields,
       ...this.getModelConfig(associationName),
@@ -590,15 +575,13 @@ export class ModelAdapterImpl implements ModelAdapter {
    */
   loadSchema = async (modelName: string) => {
     return CacheHelper.cacheable(`loadSchema#${modelName}`, () => {
-      const auth = Store.fromStore('auth');
-      return this.service.loadSchema(auth, modelName, this.getModelConfig(modelName));
+      return this.service.loadSchema(modelName, this.getModelConfig(modelName));
     });
   };
 
   loadOriginSchema = async (modelName: string): Promise<Asuna.Schema.OriginSchema> => {
     return CacheHelper.cacheable(`loadOriginSchema#${modelName}`, () => {
-      const auth = Store.fromStore('auth');
-      return this.service.loadOriginSchema(auth, modelName, this.getModelConfig(modelName)).then(fp.get('data'));
+      return this.service.loadOriginSchema(modelName, this.getModelConfig(modelName)).then(fp.get('data'));
     });
   };
 

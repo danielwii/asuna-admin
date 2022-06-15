@@ -93,13 +93,6 @@ export class AsunaDefinitions<T extends Asuna.Schema.ModelOpts = {}> {
     this.#tableColumns = extend(this.#tableColumns, this.wrapTableColumns(entity as string, withStylesOpts));
   }
 
-  /**
-   * @deprecated {@see setupTableColumns}
-   */
-  addTableColumns(tableColumns: { [key in keyof T]?: Asuna.Schema.FRecordRender }): void {
-    this.#tableColumns = extend(this.#tableColumns, tableColumns);
-  }
-
   addCustomActions(model: keyof T, ...actions: React.Component[]): void {
     this.#customActions = extend(this.#customActions, { [model]: actions });
   }
@@ -114,20 +107,6 @@ export class AsunaDefinitions<T extends Asuna.Schema.ModelOpts = {}> {
 
   setupSideMenus(key: string, title: string, subMenus: Asuna.Schema.SubMenus<T>): void {
     this.#sideMenus = [...this.#sideMenus, { key, title, subMenus } as any];
-  }
-
-  /**
-   * @deprecated {@see setupSideMenus}
-   */
-  addSideMenus(
-    menus: {
-      key: string;
-      model?: string;
-      title: string;
-      subMenus: Asuna.Schema.SubMenus<T>;
-    }[],
-  ): void {
-    this.#sideMenus = [...this.#sideMenus, ...menus];
   }
 
   getModelConfig(key: keyof T): Asuna.Schema.ModelConfig {

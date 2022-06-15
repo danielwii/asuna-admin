@@ -16,9 +16,9 @@ import { parseAddressStr } from '../components/Address';
 import { DynamicFormTypes } from '../components/DynamicForm/types';
 import { TooltipContent } from '../components/base/helper/helper';
 import { AssetsPreview, PdfButton } from '../components/base/preview-button/asset-preview';
+import { AppContext } from '../core/context';
 import { valueToArrays } from '../core/url-rewriter';
 import { createLogger } from '../logger';
-import { SchemaHelper } from '../schema/helper';
 import { castModelKey } from './cast';
 import { columnHelper, generateSearchColumnProps } from './columns/columns';
 import { nullProtectRender, parseType, ParseType } from './columns/utils';
@@ -27,7 +27,6 @@ import { WithDebugInfo } from './debug';
 import { extractValue } from './func';
 
 import type { ColumnProps } from 'antd/es/table';
-import type { Asuna } from '../types';
 import type { ConditionType, ModelOpts } from './columns/types';
 
 const logger = createLogger('helpers');
@@ -60,7 +59,7 @@ export const columnHelper2 = {
     { model, title, ctx }: ModelOpts,
     opts: TextColumnOpts = {},
   ): Promise<ColumnProps<any>> => {
-    const columnInfo = model ? await SchemaHelper.getColumnInfo(model, key) : undefined;
+    const columnInfo = model ? await AppContext.getColumnInfo(model, key) : undefined;
     return {
       key,
       title: title ?? columnInfo?.config?.info?.name ?? key,
@@ -140,7 +139,7 @@ export const columnHelper2 = {
    * 生成预览小图
    */
   generateImage: async (key, { model, title }: ModelOpts, opts: CommonColumnOpts = {}): Promise<ColumnProps<any>> => {
-    const columnInfo = model ? await SchemaHelper.getColumnInfo(model, key) : undefined;
+    const columnInfo = model ? await AppContext.getColumnInfo(model, key) : undefined;
     const titleStr = title ?? columnInfo?.config?.info?.name ?? key;
     return {
       key,
@@ -166,7 +165,7 @@ export const columnHelper2 = {
       type: 'badge' | 'statistics' | 'number';
     } = { type: 'number' },
   ): Promise<ColumnProps<any>> => {
-    const columnInfo = model ? await SchemaHelper.getColumnInfo(model, key) : undefined;
+    const columnInfo = model ? await AppContext.getColumnInfo(model, key) : undefined;
     const titleStr = title ?? columnInfo?.config?.info?.name ?? key;
     return {
       key,
@@ -218,7 +217,7 @@ export const columnHelper2 = {
       };
     } = {},
   ): Promise<ColumnProps<any>> => {
-    const columnInfo = model ? await SchemaHelper.getColumnInfo(model, key) : undefined;
+    const columnInfo = model ? await AppContext.getColumnInfo(model, key) : undefined;
     const titleStr = title ?? columnInfo?.config?.info?.name ?? key;
     return {
       key,
@@ -241,7 +240,7 @@ export const columnHelper2 = {
     { model, title }: ModelOpts,
     opts: CommonColumnOpts = {},
   ): Promise<ColumnProps<any>> => {
-    const columnInfo = model ? await SchemaHelper.getColumnInfo(model, key) : undefined;
+    const columnInfo = model ? await AppContext.getColumnInfo(model, key) : undefined;
     const titleStr = title ?? columnInfo?.config?.info?.name ?? key;
     return {
       key: castModelKey(key),

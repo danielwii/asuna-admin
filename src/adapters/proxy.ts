@@ -43,9 +43,9 @@ export const apiProxy = {
   acquireOperationToken: (service: string): Promise<AxiosResponse> => AppContext.ctx.api.acquireOperationToken(service),
   useOperationToken: (token: string): Promise<AxiosResponse> => AppContext.ctx.api.useOperationToken(token),
   releaseOperationToken: (token: string): Promise<AxiosResponse> => AppContext.ctx.api.releaseOperationToken(token),
-  getExcelModel: (auth, data, options): Promise<AxiosResponse> => AppContext.ctx.api.getExcelModel(auth, data, options),
-  importExcel: (auth, data, options): Promise<AxiosResponse> => AppContext.ctx.api.importExcel(auth, data, options),
-  exportExcel: (auth, data, options): Promise<AxiosResponse> => AppContext.ctx.api.exportExcel(auth, data, options),
+  getExcelModel: (data, options): Promise<AxiosResponse> => AppContext.ctx.api.getExcelModel(data, options),
+  importExcel: (data, options): Promise<AxiosResponse> => AppContext.ctx.api.importExcel(data, options),
+  exportExcel: (data, options): Promise<AxiosResponse> => AppContext.ctx.api.exportExcel(data, options),
   destroyKv: (data): Promise<AxiosResponse> => AppContext.ctx.api.destroyKv(data),
 };
 
@@ -61,7 +61,6 @@ export const menuProxy = {
 };
 
 export const responseProxy = {
-  extract(apiResponse?: object): { items: object[]; pagination: PaginationConfig } {
-    return AppContext.ctx.response.extract(apiResponse || {});
-  },
+  extract: (apiResponse?: object): { items: object[]; pagination: PaginationConfig } =>
+    AppContext.ctx.response.extract(apiResponse || {}),
 };

@@ -53,18 +53,20 @@ export class WsAdapter {
         Dispatcher.dispatch(appActions.heartbeat());
       });
       WsAdapter.socket.on('disconnect', () => {
+        /*
         const { heartbeat } = Store.store.select((state) => state.app);
         logger.error('[disconnect]', WsAdapter.socket.id, { heartbeat });
         if (heartbeat) {
           Dispatcher.dispatch(appActions.heartbeatStop());
-        }
+        }*/
       });
       WsAdapter.socket.on('error', (error) => {
+        /*
         const { heartbeat } = Store.store.select((state) => state.app);
         logger.error('[error]', WsAdapter.socket.id, { heartbeat, error });
         if (heartbeat) {
           Dispatcher.dispatch(appActions.heartbeatStop());
-        }
+        }*/
       });
     }
   }

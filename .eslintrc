@@ -39,7 +39,6 @@
     "max-params": "warn",
     "max-depth": "warn",
     "no-unused-vars": "warn",
-    "no-undef": "off",
     "import/namespace": "off",
     "import/no-cycle": "error"
   }

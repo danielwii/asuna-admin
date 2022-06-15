@@ -2,6 +2,7 @@ import * as _ from 'lodash';
 import dynamic from 'next/dynamic';
 import * as React from 'react';
 import { useMemo } from 'react';
+import useLogger from 'react-use/lib/useLogger';
 
 import { DebugSettings } from '../components/DebugSettings';
 import { withDebugSettingsProps } from '../containers/DebugSettings';
@@ -56,14 +57,18 @@ export interface ModulesLoaderProps {
 }
 
 const ModulesIndex: React.FC<ModulesLoaderProps> = (props) => {
-  logger.log({ props });
   const { module, component } = props;
   const Component = useMemo(() => getModule(module), [module]);
+
+  useLogger('<[ModulesIndex]>', props);
 
   if (component) {
     const moduleRender = ModuleRegister.renders[component];
 
-    if (moduleRender) return moduleRender(props);
+    logger.log('render', { component, moduleRender, components: AppContext.ctx?.components });
+    if (moduleRender) {
+      return moduleRender(props);
+    }
 
     const fc = AppContext.ctx.components.load(component);
     return fc ? (

@@ -1,5 +1,6 @@
 import { Layout } from 'antd';
 import * as React from 'react';
+import { useLogger } from 'react-use';
 import styled from 'styled-components';
 
 import { ProgressBar } from '../components/ProgressBar';
@@ -11,7 +12,6 @@ import { createLogger } from '../logger';
 import WithStyles from './with-styles';
 
 const logger = createLogger('layout:main');
-const { Sider } = Layout;
 
 const StyledContentDiv = styled.div`
   background: #fff;
@@ -20,8 +20,11 @@ const StyledContentDiv = styled.div`
   min-height: 280px;
 `;
 
-const Main = ({ loading, heartbeat, auth, appInfo, hideCharacteristics }) => {
-  logger.log('status', { loading, heartbeat, auth, appInfo });
+const Main: React.VFC<{ hideCharacteristics?: boolean }> = ({ hideCharacteristics }) => {
+  // logger.log('status', { loading, heartbeat, auth, appInfo });
+
+  useLogger('Main', { hideCharacteristics });
+
   return (
     <StoreContextProvider>
       <WithStyles hideCharacteristics={hideCharacteristics}>
@@ -30,9 +33,9 @@ const Main = ({ loading, heartbeat, auth, appInfo, hideCharacteristics }) => {
           <ProgressBar />
           <HeaderRender hideLogo={hideCharacteristics} />
           <Layout>
-            <Sider theme={'light'} /*style={{ overflow: 'auto', height: '90vh', position: 'fixed', left: 0 }}*/>
+            <Layout.Sider theme={'light'} /*style={{ overflow: 'auto', height: '90vh', position: 'fixed', left: 0 }}*/>
               <SideMenuRender />
-            </Sider>
+            </Layout.Sider>
             <Layout style={{ /*marginLeft: 200,*/ padding: '.5rem' }}>
               <StyledContentDiv>
                 <PanesViewContainer />

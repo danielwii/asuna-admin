@@ -2,7 +2,6 @@ import * as _ from 'lodash';
 
 import { AppContext } from '../core/context';
 import { createLogger } from '../logger';
-import { SchemaHelper } from '../schema/helper';
 import { Asuna } from '../types';
 
 import type { Pane } from '../components/Panes';
@@ -57,7 +56,7 @@ export function resolveModelInPane(
 
 export class ModelsHelper {
   static async openCreatePane(modelName: string): Promise<void> {
-    const schema = await SchemaHelper.getSchema(modelName);
+    const schema = await AppContext.getSchema(modelName);
     const name = schema?.info?.displayName ?? modelName;
     logger.log('[create]', modelName, name, schema);
     AppContext.globalFunc.panes?.open({
@@ -68,7 +67,7 @@ export class ModelsHelper {
   }
 
   static async openEditPane(modelName: string, record: any, opts?: { id?: string; name?: string }): Promise<void> {
-    const schema = await SchemaHelper.getSchema(modelName);
+    const schema = await AppContext.getSchema(modelName);
     const name = schema?.info?.displayName ?? modelName;
     logger.log('[edit]', name, record, schema);
     AppContext.globalFunc.panes?.open({

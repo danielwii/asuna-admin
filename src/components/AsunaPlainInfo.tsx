@@ -10,7 +10,6 @@ import VisualDiff from 'react-visual-diff';
 import { AppContext } from '../core/context';
 import { AsunaDefinitions } from '../core/definitions';
 import { WithDebugInfo } from '../helpers/debug';
-import { SchemaHelper } from '../schema/helper';
 import { DynamicFormTypes } from './DynamicForm/types';
 import { parseString, TooltipContent, WithLoading, WithVariable } from './base/helper/helper';
 import { AssetsPreview } from './base/preview-button/asset-preview';
@@ -30,8 +29,8 @@ export const AsunaPlainInfo: React.VFC<AsunaPlainObjectProps> = ({ modelName, re
       Promise.props({
         record: _.isFunction(record) ? record() : record,
         compare: _.isFunction(compare) ? compare() : compare,
-        schema: SchemaHelper.getSchema(modelName),
-        formSchema: SchemaHelper.getFormSchema(modelName),
+        schema: AppContext.getSchema(modelName),
+        formSchema: AppContext.getFormSchema(modelName),
       }),
     [modelName, record, compare],
   );

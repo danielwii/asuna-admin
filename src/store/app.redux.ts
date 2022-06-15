@@ -47,8 +47,8 @@ function* init() {
     logger.log('[init]', 'call init menu...');
     yield menuSagaFunctions.init();
 
-    logger.log('[init]', 'load all schemas');
-    yield modelsSagaFunctions.loadAllSchemas();
+    // logger.log('[init]', 'load all schemas');
+    // yield modelsSagaFunctions.loadAllSchemas();
 
     yield put(appActions.initSuccess());
   } catch (e) {
@@ -66,8 +66,8 @@ function* sync() {
     yield securitySagaFunctions.getCurrentUser();
     logger.log('[sync]', 'call init menu...');
     yield menuSagaFunctions.init();
-    logger.log('[sync]', 'load all schemas');
-    yield modelsSagaFunctions.loadAllSchemas();
+    // logger.log('[sync]', 'load all schemas');
+    // yield modelsSagaFunctions.loadAllSchemas();
     yield put(appActions.syncSuccess());
   } catch (e) {
     logger.error('[sync]', e, { e });

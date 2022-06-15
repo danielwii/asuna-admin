@@ -8,7 +8,7 @@ import util from 'util';
 import { parseAddressStr } from '../../components/Address';
 import { DynamicFormTypes } from '../../components/DynamicForm/types';
 import { TooltipContent } from '../../components/base/helper/helper';
-import { SchemaHelper } from '../../schema/helper';
+import { AppContext } from '../../core/context';
 import { columnHelper, generateSearchColumnProps } from '../columns/columns';
 import { nullProtectRender, parseType } from '../columns/utils';
 import { WithDebugInfo } from '../debug';
@@ -23,7 +23,7 @@ export class ColumnsHelper {
     { model, title, ctx }: ModelOpts,
     opts: TextColumnOpts = {},
   ): Promise<ColumnProps<any>> {
-    const columnInfo = model ? await SchemaHelper.getColumnInfo(model, key) : undefined;
+    const columnInfo = model ? await AppContext.getColumnInfo(model, key) : undefined;
     return {
       key,
       title: title ?? columnInfo?.config?.info?.name ?? key,

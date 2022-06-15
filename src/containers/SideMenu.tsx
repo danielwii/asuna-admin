@@ -1,24 +1,30 @@
+import { message } from 'antd';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { useContext } from 'react';
-import { useSelector } from 'react-redux';
+import { useAsyncRetry, useEffectOnce, useLogger } from 'react-use';
 import { CubeGrid } from 'styled-spinkit';
 
-import { ISideMenuProps, SideMenu } from '../components/SideMenu';
+import { Func } from '../adapters/func';
+import { SideMenu } from '../components/SideMenu';
 import { StoreContext } from '../context/store';
 import { DebugInfo } from '../helpers/debug';
 import { TenantHelper } from '../helpers/tenant';
 import { useSharedPanesFunc, useSharedPanesGlobalValue } from '../store/panes.global';
 
-import type { RootState } from '../store/types';
-
-export const SideMenuRender: React.FC = (props) => {
+export const SideMenuRender: React.VFC = (props) => {
   // const [tenantInfo, setTenantInfo] = useState<TenantInfo>();
   const [, panesStateSetter] = useSharedPanesGlobalValue();
   const sharedPanesFunc = useSharedPanesFunc(panesStateSetter);
 
-  const states = useSelector<RootState, Pick<ISideMenuProps, 'menus'>>((state) => state.menu);
   const { store, updateStore } = useContext(StoreContext);
+  const state = useAsyncRetry(async () =>
+    Func.loadMenus().catch((reason) => {
+      message.error(`init side menus error ${reason.message}`);
+      return null;
+    }),
+  );
+  useEffectOnce(() => {});
   /*
   useEffectOnce(() => {
     TenantHelper.reloadInfo().then(info => setTenantInfo(info));
@@ -26,6 +32,8 @@ export const SideMenuRender: React.FC = (props) => {
     return () => subscription.unsubscribe();
   });
 */
+
+  useLogger('SideMenuRender', state);
 
   // --------------------------------------------------------------
   // tenant support
@@ -42,5 +50,18 @@ export const SideMenuRender: React.FC = (props) => {
       </>
     );
 
-  return <SideMenu {...props} {...states} onOpen={sharedPanesFunc.open} />;
+  return state.loading ? (
+    <div>Loading...</div>
+  ) : state.error ? (
+    <div>
+      Error: {state.error.message}
+      <button onClick={state.retry}>重新拉取</button>
+    </div>
+  ) : state.value ? (
+    <SideMenu {...props} menus={state.value?.menus} onOpen={sharedPanesFunc.open} />
+  ) : (
+    <div>
+      <button onClick={state.retry}>重新拉取</button>
+    </div>
+  );
 };

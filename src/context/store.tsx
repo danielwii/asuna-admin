@@ -2,8 +2,9 @@ import * as React from 'react';
 import { useState } from 'react';
 import { useEffectOnce } from 'react-use';
 
-import { TenantInfo } from '../adapters/admin.plain';
-import { TenantHelper } from '../helpers/tenant';
+import { AppContext } from '../core/context';
+
+import type { TenantInfo } from '../adapters/admin.plain';
 
 export type StoreContextKey = 'tenantInfo';
 
@@ -18,10 +19,14 @@ export const StoreContextProvider: React.FC = ({ children }) => {
   const updateStore = (key: StoreContextKey, value: any) => setStore({ ...store, [key]: value });
 
   useEffectOnce(() => {
+    console.log('AppContext is', AppContext.ctx);
+  });
+  /*
+  useEffectOnce(() => {
     TenantHelper.reloadInfo().then((info) => updateStore('tenantInfo', info));
     const subscription = TenantHelper.subject.subscribe((info: TenantInfo) => updateStore('tenantInfo', info));
     return () => subscription.unsubscribe();
-  });
+  });*/
 
   return <StoreContext.Provider value={{ store, updateStore }}>{children}</StoreContext.Provider>;
 };

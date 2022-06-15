@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 
 import { isJson } from '../components/base/helper/helper';
 import { createLogger } from '../logger';
-import { AppContext } from './context';
+// import { AppContext } from './context';
 
 const logger = createLogger('core:url-rewriter');
 
@@ -42,16 +42,16 @@ export function valueToUrl(
 
     let url = value;
     if (thumbnail) {
-      const template = _.get(AppContext.serverSettings?.['settings.url-resolver'], 'value.uploads', '');
-      if (!(_.isString(template) && template.includes('{{ url }}'))) {
-        logger.log('template for settings.url-resolver/value.uploads dose not exists or valid.');
-        return url;
-      }
-      try {
-        url = template.replace('{{ url }}', url);
-      } catch (e) {
-        logger.warn('using template error', { template, url });
-      }
+      // const template = _.get(AppContext.serverSettings?.['settings.url-resolver'], 'value.uploads', '');
+      // if (!(_.isString(template) && template.includes('{{ url }}'))) {
+      //   logger.log('template for settings.url-resolver/value.uploads dose not exists or valid.');
+      //   return url;
+      // }
+      // try {
+      //   url = template.replace('{{ url }}', url);
+      // } catch (e) {
+      //   logger.warn('using template error', { template, url });
+      // }
       // url += `?imageView2/2/w/${thumbnail.width || 1280}/h/${thumbnail.height ||
       //   1280}/format/jpg/interlace/1/ignore-error/1`;
     }

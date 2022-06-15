@@ -1,4 +1,3 @@
-import { Store } from '../core/store';
 import { createLogger } from '../logger';
 
 import type { AxiosRequestConfig, AxiosResponse } from 'axios';
@@ -8,13 +7,12 @@ const logger = createLogger('adapters:api');
 
 export interface IApiService {
   upload(
-    auth: { token: string | null },
     file: any,
     options: { bucket?: string; prefix?: string },
     requestConfig?: AxiosRequestConfig,
   ): Promise<AxiosResponse<Asuna.Schema.UploadResponse[]>>;
 
-  getVersion(auth: { token: string | null }): Promise<AxiosResponse>;
+  getVersion(): Promise<AxiosResponse>;
 
   /**
    * 申请 token
@@ -34,31 +32,18 @@ export interface IApiService {
    */
   releaseOperationToken(opts: { payload: { token: string } }): Promise<AxiosResponse>;
 
-  getExcelModel(
-    auth: { token: string | null },
-    data: { modelName },
-    options?: { requestConfig?: AxiosRequestConfig },
-  ): Promise<AxiosResponse>;
+  getExcelModel(data: { modelName }, options?: { requestConfig?: AxiosRequestConfig }): Promise<AxiosResponse>;
 
-  importExcel(
-    auth: { token: string | null },
-    data: { file },
-    options?: { requestConfig?: AxiosRequestConfig },
-  ): Promise<AxiosResponse>;
+  importExcel(data: { file }, options?: { requestConfig?: AxiosRequestConfig }): Promise<AxiosResponse>;
 
-  exportExcel(
-    auth: { token: string | null },
-    data: { modelName },
-    options?: { requestConfig?: AxiosRequestConfig },
-  ): Promise<AxiosResponse>;
+  exportExcel(data: { modelName }, options?: { requestConfig?: AxiosRequestConfig }): Promise<AxiosResponse>;
 
   destroyKv(
-    auth: { token: string | null },
     data: { collection: string; key: string },
     options?: { requestConfig?: AxiosRequestConfig },
   ): Promise<AxiosResponse>;
 
-  getWxTicket(auth: { token: string | null }, data: { type: 'admin-login'; value: string }): Promise<AxiosResponse>;
+  getWxTicket(data: { type: 'admin-login'; value: string }): Promise<AxiosResponse>;
 }
 
 export interface ApiAdapter {
@@ -71,9 +56,7 @@ export class ApiAdapterImpl implements ApiAdapter {
     this.service = service;
   }
 
-  getWxTicket(data): Promise<{ url: string }> {
-    return Store.withAuth((auth) => this.service.getWxTicket(auth, data).then((res) => res.data));
-  }
+  getWxTicket = (data): Promise<{ url: string }> => this.service.getWxTicket(data).then((res) => res.data);
 
   upload = (
     file,
@@ -81,25 +64,18 @@ export class ApiAdapterImpl implements ApiAdapter {
     requestConfig?: AxiosRequestConfig,
   ): Promise<AxiosResponse<Asuna.Schema.UploadResponse[]>> => {
     logger.log('[upload] file', file, options);
-    const auth = Store.fromStore('auth');
-    return this.service.upload(auth, file, options, requestConfig);
+    return this.service.upload(file, options, requestConfig);
   };
 
-  getVersion = (): Promise<AxiosResponse> => {
-    const auth = Store.fromStore('auth');
-    return this.service.getVersion(auth);
-  };
+  getVersion = (): Promise<AxiosResponse> => this.service.getVersion();
 
   acquireOperationToken = (service: string): Promise<AxiosResponse> =>
     this.service.acquireOperationToken({ payload: { service } });
   useOperationToken = (token: string): Promise<AxiosResponse> => this.service.useOperationToken({ payload: { token } });
   releaseOperationToken = (token: string): Promise<AxiosResponse> =>
     this.service.releaseOperationToken({ payload: { token } });
-  getExcelModel = (param, data, options): Promise<AxiosResponse> => this.service.getExcelModel(param, data, options);
-  importExcel = (param, data, options): Promise<AxiosResponse> => this.service.importExcel(param, data, options);
-  exportExcel = (param, data, options): Promise<AxiosResponse> => this.service.exportExcel(param, data, options);
-  destroyKv = (data): Promise<AxiosResponse> => {
-    const auth = Store.fromStore('auth');
-    return this.service.destroyKv(auth, data);
-  };
+  getExcelModel = (data, options): Promise<AxiosResponse> => this.service.getExcelModel(data, options);
+  importExcel = (data, options): Promise<AxiosResponse> => this.service.importExcel(data, options);
+  exportExcel = (data, options): Promise<AxiosResponse> => this.service.exportExcel(data, options);
+  destroyKv = (data): Promise<AxiosResponse> => this.service.destroyKv(data);
 }

@@ -20,9 +20,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "declaration": true,
-    "outDir": "dist",
-    "noEmit": true,
-    "incremental": true
+    "outDir": "dist"
   },
   "include": ["next-env.d.ts", "src/**/*.ts*", "./services/**/*.ts*", "./components/**/*.ts*", "./pages/**/*.ts*"],
   "exclude": ["**/*.spec.*", "node_modules"]

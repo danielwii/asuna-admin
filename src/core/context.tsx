@@ -9,26 +9,27 @@ import { ApiAdapterImpl, IApiService } from '../adapters/api';
 import { AuthAdapter, IAuthService } from '../adapters/auth';
 import { GraphqlAdapterImpl, KeyValueModelVo } from '../adapters/graphql';
 import { MenuAdapter } from '../adapters/menu';
-import { IModelService, ModelAdapterImpl } from '../adapters/model';
 import { ResponseAdapter } from '../adapters/response';
 import { ISecurityService, SecurityAdapterImpl } from '../adapters/security';
 import { WsAdapter } from '../adapters/ws';
-import { GroupFormKVComponent } from '../components/KV/group';
-import { ListKVComponent } from '../components/KV/list';
-import { storeConnector } from '../store/middlewares/store-connector';
+import { createLogger } from '../logger';
+import { Asuna } from '../types';
 import { Constants } from './constants';
-import { Store } from './store';
 
+import type { Func } from '../adapters/func';
+import type { ModelAdapterImpl } from '../adapters/model';
 import type { AnyAction } from 'redux';
 import type { SharedPanesFunc } from '../store/panes.global';
 import type { AsunaDefinitions } from './definitions';
+
+const logger = createLogger('core:context');
 
 // --------------------------------------------------------------
 // Types
 // --------------------------------------------------------------
 
 export interface IComponentService {
-  regGraphql: (componentName: string, renderComponent: React.FC) => void;
+  regGraphql: (componentName: string, model?: KeyValueModelVo, render?: React.VFC) => void;
   load: (componentName: string) => React.FC;
 }
 
@@ -38,19 +39,12 @@ export interface ILoginRegister {
 
 export interface IIndexRegister extends ILoginRegister {
   createAuthService: () => IAuthService;
-
-  modelService: IModelService;
-
   // createMenuService(): IMenuService;
-
   createApiService: () => IApiService;
-
   createAdminService: () => IAdminService;
-
   createSecurityService: () => ISecurityService;
-
+  createModelAdapter: (graphql: GraphqlAdapterImpl) => ModelAdapterImpl;
   definitions: AsunaDefinitions;
-
   componentService: IComponentService;
 }
 
@@ -110,9 +104,6 @@ class AppContext {
     // this._subject.subscribe({
     //   next: (action) => console.log('observer: ', action)
     // });
-    if (!Store.storeConnector) {
-      Store.storeConnector = storeConnector;
-    }
 
     if (!this.INSTANCE) {
       this.INSTANCE = new AppContext();
@@ -134,14 +125,19 @@ class AppContext {
   /**
    * 提供全局的注册方法
    * @param {ILoginRegister & IIndexRegister} moduleRegister
+   * @param func
    */
-  public static async setup(moduleRegister: ILoginRegister & IIndexRegister): Promise<void>;
+  public static async setup(moduleRegister: ILoginRegister & IIndexRegister, func: typeof Func): Promise<void>;
   /**
    * 提供基于模块的注册方法
    * @param {LoginModuleRegister | IndexModuleRegister} moduleRegister
+   * @param func
    */
-  public static async setup(moduleRegister: LoginModuleRegister | IndexModuleRegister): Promise<void>;
-  public static async setup(moduleRegister): Promise<void> {
+  public static async setup(
+    moduleRegister: LoginModuleRegister | IndexModuleRegister,
+    func: typeof Func,
+  ): Promise<void>;
+  public static async setup(moduleRegister, func: typeof Func): Promise<void> {
     if (moduleRegister.module) {
       const register = moduleRegister.register;
 
@@ -152,19 +148,18 @@ class AppContext {
           ws: new WsAdapter(),
         };
       } else {
-        await this.registerIndex(register, 'index').catch(console.error);
+        await this.registerIndex(register, 'index');
       }
     } else {
-      await this.registerIndex(moduleRegister).catch(console.error);
+      await this.registerIndex(moduleRegister);
     }
+
+    const schemas = await func.loadAllSchemas();
+    localStorage.setItem('schemas', JSON.stringify(schemas));
   }
 
   public static set stateMachines(stateMachines: any) {
     this._stateMachines = stateMachines;
-  }
-
-  public static get publicConfig() {
-    return AppContext.nextConfig.publicRuntimeConfig || {};
   }
 
   public static get ctx() {
@@ -199,6 +194,19 @@ class AppContext {
     if (kvModels) this.kvModels = kvModels;
   }
 
+  static async getFormSchema(modelName: string): Promise<Asuna.Schema.FormSchemas | undefined> {
+    return modelName ? AppContext.adapters.models.getFormSchema(modelName) : undefined;
+  }
+
+  static async getSchema(modelName: string): Promise<Asuna.Schema.OriginSchema | undefined> {
+    return modelName ? AppContext.adapters.models.loadOriginSchema(modelName) : undefined;
+  }
+
+  static async getColumnInfo(modelName: string, columnName: string): Promise<Asuna.Schema.ModelSchema | undefined> {
+    const schema = await this.getSchema(modelName);
+    return _.find(schema?.columns, (column) => column.name === columnName);
+  }
+
   private static async registerIndex(register: IIndexRegister, module?: 'index'): Promise<void> {
     const graphql = new GraphqlAdapterImpl(getConfig().publicRuntimeConfig.GRAPHQL_ENDPOINT ?? 'proxy');
     AppContext._context = {
@@ -207,7 +215,7 @@ class AppContext {
       response: new ResponseAdapter(),
       api: new ApiAdapterImpl(register.createApiService()),
       security: new SecurityAdapterImpl(register.createSecurityService()),
-      models: new ModelAdapterImpl(register.modelService, register.definitions, graphql),
+      models: register.createModelAdapter(graphql),
       ws: new WsAdapter(),
       components: register.componentService,
       admin: new AdminAdapterImpl(register.createAdminService()),
@@ -223,25 +231,14 @@ class AppContext {
       // --------------------------------------------------------------
 
       const adminMenu = register.definitions.sideMenus.find(_.matches({ key: 'admin' }));
+      logger.debug('adminMenu', { adminMenu, sideMenus: register.definitions.sideMenus });
       if (adminMenu) {
         const adminKvModels = AppContext.kvModels.filter(fp.get('formatType'));
         adminKvModels.forEach((model) => {
-          const componentName = `${model.pair.collection}#${model.pair.key}`;
-          register.componentService.regGraphql(componentName, (props) =>
-            model.formatType === 'KVGroupFieldsValue' ? (
-              // KVGroupFieldsValue
-              <GroupFormKVComponent kvCollection={model.pair.collection} kvKey={model.pair.key} />
-            ) : (
-              // LIST
-              <ListKVComponent kvCollection={model.pair.collection} kvKey={model.pair.key} />
-            ),
-          );
-          adminMenu.subMenus.push({
-            key: componentName,
-            title: model.name,
-            linkTo: 'content::blank',
-            component: componentName,
-          });
+          const component = `${model.pair.collection}#${model.pair.key}`;
+          logger.log('regGraphql', { model, component });
+          register.componentService.regGraphql(component, model);
+          adminMenu.subMenus.push({ key: component, title: model.name, linkTo: 'content::blank', component });
         });
       }
 

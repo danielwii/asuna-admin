@@ -2,7 +2,6 @@ import { InfoCircleOutlined } from '@ant-design/icons';
 import { gql, useQuery } from '@apollo/client';
 
 import { Button, Col, Divider, Row, Typography } from 'antd';
-import consola from 'consola';
 import * as _ from 'lodash';
 import React from 'react';
 import Highlight from 'react-highlight';
@@ -44,9 +43,9 @@ export function FormKVComponent(props: {
   info?: React.ReactChild;
   fields?: (state) => FormFields;
 }) {
-  consola.info('get props', props);
+  logger.log('get props', props);
   const { kvCollection: collection, kvKey: key, info, /*initialState, */ fields, ...rest } = props;
-  consola.info('useQuery', useQuery);
+  logger.log('useQuery', useQuery);
   // const { loading, error, data, refetch } = KVHelper.loadByKey(key, collection);
   const { loading, error, data, refetch } = useQuery(
     gql`
@@ -67,8 +66,7 @@ export function FormKVComponent(props: {
   const initialValues = body.values;
   const fieldValues = fields ? fields(body) : body.fields;
 
-  useLogger('FormKVComponent', props, body, { loading, error, data }, { initialValues, fieldValues });
-  logger.log('render', props, body, { loading, error, data, fields, /*initialState, */ fieldValues });
+  useLogger('<[FormKVComponent]>', props, body, { loading, error, data }, { initialValues, fieldValues });
 
   return (
     <WithLoading loading={loading} error={error} retry={refetch}>

@@ -18,7 +18,6 @@ import { DebugInfo, WithDebugInfo } from '../../helpers/debug';
 import { useAsunaDrafts } from '../../helpers/hooks';
 import { diff } from '../../helpers/utils';
 import { createLogger } from '../../logger';
-import { SchemaHelper } from '../../schema/helper';
 import { parseAddressStr } from '../Address';
 import { DrawerButton } from '../base/drawer-button/drawer-button';
 import { parseString } from '../base/helper/helper';
@@ -102,7 +101,7 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener> 
   formRef?.(form);
   const memoizedFields = useMemo(() => fields, [1]); // used to diff
   const { loading: loadingDrafts, drafts, retry } = useAsunaDrafts({ type: model, refId: _.get(fields, 'id.value') });
-  const { value: schema } = useAsync(() => SchemaHelper.getSchema(model), [model]);
+  const { value: schema } = useAsync(() => AppContext.getSchema(model), [model]);
   const [state, setState] = useSetState<Record<string, FieldDef>>(
     _.assign({}, ..._.map(fields, (field) => ({ [field.name]: { field } }))),
   );

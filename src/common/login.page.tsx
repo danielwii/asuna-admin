@@ -3,21 +3,18 @@ import { ApolloClient, gql, InMemoryCache } from '@apollo/client';
 import { changeAntdTheme } from 'dynamic-antd-theme';
 import * as _ from 'lodash';
 import * as React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useMount } from 'react-use';
 import * as shortid from 'shortid';
 import styled from 'styled-components';
 
+import { Func } from '../adapters/func';
 import { Snow } from '../components/base/weather/weather';
 import { LoginContainer } from '../containers/Login';
 import { AppContext, IIndexRegister, ILoginRegister, INextConfig } from '../core/context';
-import { Dispatcher } from '../core/dispatcher';
 import { WithStyles } from '../layout';
 import { createLogger } from '../logger';
 
 import type { NextPageContext } from 'next';
-import type { AppState } from '../store/app.redux';
-import type { RootState } from '../store/types';
 
 const logger = createLogger('common:login');
 
@@ -49,17 +46,17 @@ export type LoginInitialProps = Partial<{
   site: { logo?: string; title?: string; primaryColor?: { hex: string } };
 }>;
 
-export type ILoginPageProps = ReduxProps & {
-  app: AppState;
+export type ILoginPageProps = {
+  // app: AppState;
   register: ILoginRegister & IIndexRegister;
   hideCharacteristics?: boolean;
   customLogin?: (site, enableWeChat) => React.ReactElement;
 } & LoginInitialProps;
 
-export const LoginPageView: React.FC<ILoginPageProps> = (props) => {
-  const { dispatch, register, site } = props;
-  AppContext.setup(register);
-  Dispatcher.regDispatch(dispatch);
+export const LoginPageView: React.VFC<ILoginPageProps> = (props) => {
+  const { /*dispatch,*/ register, site } = props;
+  AppContext.setup(register, Func);
+  // Dispatcher.regDispatch(dispatch);
 
   useMount(() => {
     if (site?.primaryColor) {
@@ -156,6 +153,7 @@ export const wechatLoginGetInitial = async (ctx: NextPageContext): Promise<Login
   if ((process as any).browser) {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
+    // eslint-disable-next-line no-undef
     return __NEXT_DATA__.props.pageProps;
   }
 
@@ -208,9 +206,10 @@ export const LoginPageRender: React.FC<
     nextConfig: INextConfig;
   }
 > = (props) => {
-  AppContext.init(props.nextConfig);
-  const appState = useSelector<RootState, AppState>((state) => state.app);
-  const dispatch = useDispatch();
+  // AppContext.init(props.nextConfig);
+  // const appState = useSelector<RootState, AppState>((state) => state.app);
+  // const dispatch = useDispatch();
 
-  return <LoginPageView {...props} app={appState} dispatch={dispatch} />;
+  console.log('props is', props);
+  return <LoginPageView {...props} /*app={appState} dispatch={dispatch}*/ />;
 };

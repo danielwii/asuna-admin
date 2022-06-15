@@ -18,7 +18,7 @@ import { createStoreConnectorMiddleware } from './middlewares/store-connector';
 import { modelsCleaner, modelsReducer, modelsSagas } from './models.redux';
 import { securityReducer, securitySagas } from './security.redux';
 
-import type { MakeStore, MakeStoreOptions } from 'next-redux-wrapper';
+import type { MakeStore } from 'next-redux-wrapper';
 import type { RootState } from './types';
 
 const logger = createLogger('store');
@@ -93,64 +93,64 @@ export class AsunaStore {
     return crossSliceReducer(intermediateState, action);
   };
 
-  public configureStore: MakeStore = (preloadedState = this.initialState, opts: MakeStoreOptions): Store => {
-    logger.log('configureStore', opts);
-    // AppContext.isServer = (opts as any).isServer ?? typeof window === 'undefined';
-    let store;
-    if (typeof window === 'undefined') {
-      store = createStore<RootState, AnyAction, any, any>(
-        this.rootReducers,
-        preloadedState,
-        applyMiddleware(this.sagaMiddleware, /* this.epicMiddleware, */ this.storeConnectorMiddleware),
-      );
-    } else {
-      // enable persistence in client side
-      const persistedReducer = persistReducer(this.persistConfig, this.rootReducers);
-
-      // 在开发模式时开启日志
-      if (process.env.NODE_ENV === 'development') {
-        if (typeof localStorage !== 'undefined') {
-          localStorage.setItem('debug', '*,-socket.io*,-engine.io*');
-        }
-      } else {
-        if (typeof localStorage !== 'undefined') {
-          localStorage.removeItem('debug');
-        }
-      }
-      store = createStore<RootState, AnyAction, any, any>(
-        persistedReducer,
-        preloadedState,
-        composeWithDevTools({ trace: true, traceLimit: 25 })(
-          applyMiddleware(
-            this.sagaMiddleware,
-            this.epicMiddleware,
-            this.loggerMiddleware,
-            this.storeConnectorMiddleware,
-          ),
-        ),
-      );
-
-      store.__persistor = persistStore(store);
-
-      this.epicMiddleware.run(this.rootEpics);
-    }
-
-    /**
-     * next-redux-saga depends on `runSagaTask` and `sagaTask` being attached to the store.
-     *
-     *   `runSagaTask` is used to rerun the rootSaga on the client when in sync mode (default)
-     *   `sagaTask` is used to await the rootSaga task before sending results to the client
-     *
-     */
-    store.runSagaTask = () => {
-      store.sagaTask = this.sagaMiddleware.run(this.rootSagas);
-    };
-
-    // run the rootSaga initially
-    store.runSagaTask();
-
-    return store;
-  };
+  // public configureStore: MakeStore = (preloadedState = this.initialState, opts: MakeStoreOptions): Store => {
+  //   logger.log('configureStore', opts);
+  //   // AppContext.isServer = (opts as any).isServer ?? typeof window === 'undefined';
+  //   let store;
+  //   if (typeof window === 'undefined') {
+  //     store = createStore<RootState, AnyAction, any, any>(
+  //       this.rootReducers,
+  //       preloadedState,
+  //       applyMiddleware(this.sagaMiddleware, /* this.epicMiddleware, */ this.storeConnectorMiddleware),
+  //     );
+  //   } else {
+  //     // enable persistence in client side
+  //     const persistedReducer = persistReducer(this.persistConfig, this.rootReducers);
+  //
+  //     // 在开发模式时开启日志
+  //     if (process.env.NODE_ENV === 'development') {
+  //       if (typeof localStorage !== 'undefined') {
+  //         localStorage.setItem('debug', '*,-socket.io*,-engine.io*');
+  //       }
+  //     } else {
+  //       if (typeof localStorage !== 'undefined') {
+  //         localStorage.removeItem('debug');
+  //       }
+  //     }
+  //     store = createStore<RootState, AnyAction, any, any>(
+  //       persistedReducer,
+  //       preloadedState,
+  //       composeWithDevTools({ trace: true, traceLimit: 25 })(
+  //         applyMiddleware(
+  //           this.sagaMiddleware,
+  //           this.epicMiddleware,
+  //           this.loggerMiddleware,
+  //           this.storeConnectorMiddleware,
+  //         ),
+  //       ),
+  //     );
+  //
+  //     store.__persistor = persistStore(store);
+  //
+  //     this.epicMiddleware.run(this.rootEpics);
+  //   }
+  //
+  //   /**
+  //    * next-redux-saga depends on `runSagaTask` and `sagaTask` being attached to the store.
+  //    *
+  //    *   `runSagaTask` is used to rerun the rootSaga on the client when in sync mode (default)
+  //    *   `sagaTask` is used to await the rootSaga task before sending results to the client
+  //    *
+  //    */
+  //   store.runSagaTask = () => {
+  //     store.sagaTask = this.sagaMiddleware.run(this.rootSagas);
+  //   };
+  //
+  //   // run the rootSaga initially
+  //   store.runSagaTask();
+  //
+  //   return store;
+  // };
 }
 
 // --------------------------------------------------------------

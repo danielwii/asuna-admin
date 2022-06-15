@@ -1,6 +1,5 @@
 import { AxiosResponse } from 'axios';
 
-import { Store } from '../core/store';
 import { createLogger } from '../logger';
 
 // --------------------------------------------------------------
@@ -12,12 +11,11 @@ export interface IRequestConfig {
 }
 
 export interface ISecurityService {
-  currentUser(opts: { token: string | null }, configs?: IRequestConfig): Promise<AxiosResponse>;
+  currentUser(configs?: IRequestConfig): Promise<AxiosResponse>;
 
-  roles(opts: { token: string | null }, configs?: IRequestConfig): Promise<AxiosResponse>;
+  roles(configs?: IRequestConfig): Promise<AxiosResponse>;
 
   updatePassword(
-    opts: { token: string | null },
     data: { body: { username: string; email: string; password: string } },
     configs?: IRequestConfig,
   ): Promise<AxiosResponse>;
@@ -43,20 +41,17 @@ export class SecurityAdapterImpl {
   }
 
   currentUser = (configs?: IRequestConfig) => {
-    const auth = Store.fromStore('auth');
-    return this.service.currentUser(auth, configs);
+    return this.service.currentUser(configs);
   };
 
   roles = (configs?: IRequestConfig) => {
-    const auth = Store.fromStore('auth');
-    return this.service.roles(auth, configs);
+    return this.service.roles(configs);
   };
 
   updatePassword = (
     data: { body: { username: string; email: string; password: string } },
     configs?: IRequestConfig,
   ) => {
-    const auth = Store.fromStore('auth');
-    return this.service.updatePassword(auth, data, configs);
+    return this.service.updatePassword(data, configs);
   };
 }
