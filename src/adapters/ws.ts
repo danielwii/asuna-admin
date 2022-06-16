@@ -2,8 +2,6 @@ import getConfig from 'next/config';
 import * as Rx from 'rxjs';
 import { io, Socket } from 'socket.io-client';
 
-import { Dispatcher } from '../core/dispatcher';
-import { Store } from '../core/store';
 import { createLogger } from '../logger';
 import { appActions } from '../store/app.actions';
 
@@ -46,11 +44,11 @@ export class WsAdapter {
         logger.log('[connect]', WsAdapter.socket.id);
         WsAdapter.id = WsAdapter.socket.id;
         WsAdapter.subject.next({ id: WsAdapter.id, socket: WsAdapter.socket } as NextSocketType);
-        Dispatcher.dispatch(appActions.heartbeat());
+        // Dispatcher.dispatch(appActions.heartbeat());
       });
       WsAdapter.socket.on('reconnect', () => {
         logger.log('[reconnect]', WsAdapter.socket.id);
-        Dispatcher.dispatch(appActions.heartbeat());
+        // Dispatcher.dispatch(appActions.heartbeat());
       });
       WsAdapter.socket.on('disconnect', () => {
         /*

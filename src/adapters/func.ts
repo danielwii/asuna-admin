@@ -1,8 +1,10 @@
+import { message } from 'antd';
 import * as _ from 'lodash';
 import * as R from 'ramda';
 
-import { AppNavigator } from '../../dist/context/navigator';
+import { AppNavigator } from '../context/navigator';
 import { AppContext } from '../core/context';
+import { EventBus, EventType } from '../core/events';
 import { Store } from '../core/store';
 import { parseResponseError } from '../helpers/error';
 import { TimelineMessageBox } from '../helpers/message-box';
@@ -130,5 +132,61 @@ export class Func {
     localStorage.removeItem('token');
     localStorage.removeItem('schemas');
     return AppNavigator.toLogin();
+  }
+
+  static async fetch(modelName: string, data) {
+    const { token } = Store.fromStore();
+    const boxId = 'fetch';
+    if (token) {
+      TimelineMessageBox.push({ key: boxId, type: 'loading', message: `loading model '${modelName}'...` });
+      try {
+        const response = await AppContext.adapters.models.fetch(modelName, data);
+        TimelineMessageBox.push({ key: boxId, type: 'done', message: `load model '${modelName}' success` });
+        logger.log('[fetch]', 'response of load model is', response);
+        return response.data;
+      } catch (e) {
+        logger.warn('[fetch]', e, { e });
+        TimelineMessageBox.push({ key: boxId, type: 'error', message: parseResponseError(e) });
+      }
+    }
+  }
+
+  static async upsert(modelName: string, data) {
+    const { token } = Store.fromStore();
+    const boxId = 'upsert';
+    if (token) {
+      TimelineMessageBox.push({ key: boxId, type: 'loading', message: `upsert model '${modelName}'...` });
+      try {
+        const response = await AppContext.adapters.models.upsert(modelName, data);
+        message.success('更新/创建 成功！');
+        TimelineMessageBox.push({ key: boxId, type: 'done', message: `upsert model '${modelName}' success` });
+        logger.log('[upsert]', 'response of upsert model is', response);
+        return response.data;
+      } catch (error) {
+        logger.warn('[upsert]', error, { error });
+        TimelineMessageBox.push({ key: boxId, type: 'error', message: parseResponseError(error) });
+      }
+    }
+  }
+  static async remove(modelName: string, data) {
+    const { token } = Store.fromStore();
+    const boxId = 'remove';
+    if (token) {
+      TimelineMessageBox.push({ key: boxId, type: 'loading', message: `remove model '${modelName}'...` });
+      try {
+        const response = await AppContext.adapters.models.remove(modelName, data);
+        message.success('删除 成功！');
+        TimelineMessageBox.push({ key: boxId, type: 'done', message: `remove model '${modelName}' success` });
+        logger.log('[remove]', 'response of remove model is', response);
+        // refresh models in content index
+        EventBus.sendEvent(EventType.MODEL_DELETE, { modelName, data });
+        // const { models } = yield select((state: RootState) => state.content);
+        // yield put(contentActions.loadModels(modelName, _.get(models, `${modelName}.extras`)));
+        return response.data;
+      } catch (error) {
+        logger.warn('[remove]', error, { error });
+        TimelineMessageBox.push({ key: boxId, type: 'error', message: parseResponseError(error) });
+      }
+    }
   }
 }

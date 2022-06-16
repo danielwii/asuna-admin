@@ -11,12 +11,12 @@ import { all } from 'redux-saga/effects';
 import { AppContext } from '../core/context';
 import { createLogger } from '../logger';
 import { actionTypes } from './actions';
-import { appEpics, appReducer, appSagas } from './app.redux';
-import { authReducer, authSagas } from './auth.redux';
-import { menuReducer, menuSagas } from './menu.redux';
+// import { appEpics, appReducer, appSagas } from './app.redux';
+// import { authReducer, authSagas } from './auth.redux';
+// import { menuReducer, menuSagas } from './menu.redux';
 import { createStoreConnectorMiddleware } from './middlewares/store-connector';
-import { modelsCleaner, modelsReducer, modelsSagas } from './models.redux';
-import { securityReducer, securitySagas } from './security.redux';
+// import { modelsCleaner, modelsReducer, modelsSagas } from './models.redux';
+// import { securityReducer, securitySagas } from './security.redux';
 
 import type { MakeStore } from 'next-redux-wrapper';
 import type { RootState } from './types';
@@ -37,7 +37,7 @@ export class AsunaStore {
 
   private readonly initialState: DeepPartial<RootState>;
 
-  private rootEpics = combineEpics(...appEpics);
+  private rootEpics = combineEpics(/*...appEpics*/);
   private persistConfig = {
     key: 'root',
     storage: localForage,
@@ -65,27 +65,27 @@ export class AsunaStore {
   }
 
   private *rootSagas() {
-    yield all([...authSagas, ...menuSagas, ...modelsSagas, ...securitySagas, ...appSagas]);
+    yield all([/*...authSagas,*/ /*...menuSagas,*/ /*...modelsSagas, *//*...securitySagas,*/ /*...appSagas*/]);
   }
 
   private rootReducers = (preloadedState, action) => {
     const reducers: { [key in keyof RootState]: any } = {
-      auth: authReducer,
-      menu: menuReducer,
-      models: modelsReducer,
-      security: securityReducer,
-      app: appReducer,
+      // auth: authReducer,
+      // menu: menuReducer,
+      // models: modelsReducer,
+      // security: securityReducer,
+      // app: appReducer,
       global: (previousState = this.initialState, action) => ({ ...previousState, ...action }),
     };
 
     const combinedReducers = combineReducers(reducers);
 
     const crossSliceReducer = (preloadedState, action) => {
-      if (action.type === actionTypes.CLEAN) {
-        const cleanedState = R.compose(modelsCleaner /* , panesCleaner */)(preloadedState);
-        logger.log('[crossSliceReducer]', { preloadedState, action, cleanedState });
-        return cleanedState;
-      }
+      // if (action.type === actionTypes.CLEAN) {
+      //   const cleanedState = R.compose(modelsCleaner /* , panesCleaner */)(preloadedState);
+      //   logger.log('[crossSliceReducer]', { preloadedState, action, cleanedState });
+      //   return cleanedState;
+      // }
       return preloadedState;
     };
 

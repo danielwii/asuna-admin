@@ -70,11 +70,12 @@ export const IndexPageView: React.VFC<{ register: ILoginRegister & IIndexRegiste
   );
 };
 
+/*
 export class IndexPage extends React.Component<IIndexPageProps> {
   constructor(props) {
     super(props);
 
-    const { /*dispatch,*/ register, site } = this.props;
+    const { /!*dispatch,*!/ register, site } = this.props;
     AppContext.setup({ register, module: 'index' }, Func); //.then(() => dispatch(appActions.init()));
     // Dispatcher.regDispatch(dispatch);
 
@@ -151,19 +152,20 @@ export class IndexPage extends React.Component<IIndexPageProps> {
     );
   }
 }
-
+*/
+/*
 const mapStateToProps = (state: RootState): { auth: AuthState; app: AppState } => ({
   auth: state.auth,
   app: state.app,
 });
 
-/*
+/!*
 const BrowserComponent: React.FC = ({ children }) => {
   if (typeof window === 'undefined') {
     return <div />;
   }
   return children as any;
-};*/
+};*!/
 
 export const renderIndexPage = (props: Partial<IIndexPageProps>, nextConfig: INextConfig) => {
   AppContext.init(nextConfig);
@@ -174,3 +176,4 @@ export const renderIndexPage = (props: Partial<IIndexPageProps>, nextConfig: INe
   const Component = connect(mapStateToProps)(IndexPage) as any;
   return <Component {...props} />;
 };
+*/

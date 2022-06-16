@@ -11,10 +11,10 @@ interface GlobalState {
 }
 
 export interface RootState {
-  auth: AuthState;
-  menu: MenuState;
-  models: ModelsState;
-  security: SecurityState;
-  app: AppState;
-  global: GlobalState;
+  auth?: AuthState;
+  menu?: MenuState;
+  models?: ModelsState;
+  security?: SecurityState;
+  app?: AppState;
+  global?: GlobalState;
 }

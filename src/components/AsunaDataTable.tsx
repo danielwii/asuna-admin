@@ -8,10 +8,10 @@ import * as fp from 'lodash/fp';
 import React, { useContext, useEffect, useState } from 'react';
 import { useAsync, useLogger } from 'react-use';
 
+import { Func } from '../adapters/func';
 import { responseProxy } from '../adapters/proxy';
 import { StoreContext } from '../context/store';
 import { AppContext } from '../core/context';
-import { Dispatcher } from '../core/dispatcher';
 import { isDebugMode } from '../core/env';
 import { ActionEvent, EventBus, EventType } from '../core/events';
 import { castModelKey } from '../helpers/cast';
@@ -19,7 +19,6 @@ import { DebugInfo, WithDebugInfo } from '../helpers/debug';
 import { useAsunaModels } from '../helpers/hooks';
 import { ModelsHelper, resolveModelInPane } from '../helpers/models';
 import { createLogger } from '../logger';
-import { modelsActions } from '../store/models.redux';
 import { Asuna, Condition } from '../types';
 import { AsunaDrawerButton } from './AsunaDrawer';
 
@@ -184,12 +183,9 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = (props) => {
         content: `删除 ${modelName}？`,
         okText: '确认',
         cancelText: '取消',
-        onOk: () =>
-          Dispatcher.dispatch(
-            modelsActions.remove(modelName, record, (response) => {
-              if (/^20\d$/.test(response.status)) modal.destroy();
-            }),
-          ),
+        onOk: async () => {
+          await Func.remove(modelName, record).finally(() => modal.destroy());
+        },
       });
     },
   };

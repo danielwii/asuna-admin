@@ -2,25 +2,22 @@ import * as _ from 'lodash';
 import moment from 'moment';
 import * as R from 'ramda';
 import * as React from 'react';
-import { connect } from 'react-redux';
 import { PropagateLoader } from 'react-spinners';
 
+import { Func } from '../../adapters/func';
 import { DynamicForm, DynamicFormProps } from '../../components/DynamicForm';
 import { DynamicFormTypes } from '../../components/DynamicForm/types';
 import { AppContext } from '../../core/context';
 import { EventBus, EventType } from '../../core/events';
 import { DebugInfo } from '../../helpers/debug';
-import { isErrorResponse, reduxActionCallbackPromise, toFormErrors } from '../../helpers/error';
+import { isErrorResponse, toFormErrors } from '../../helpers/error';
 import { TenantHelper } from '../../helpers/tenant';
 import { TenantContext } from '../../helpers/tenant-context';
 import { diff } from '../../helpers/utils';
 import { createLogger } from '../../logger';
 import * as schemaHelper from '../../schema';
-import { modelsActions } from '../../store/models.redux';
 
-import type { AxiosResponse } from 'axios';
 import type { Pane } from '../../components/Panes';
-import type { RootState } from '../../store/types';
 
 const logger = createLogger('modules:content:upsert');
 
@@ -204,7 +201,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
     } else {
       // 非新增模式尝试再次拉取数据 TODO record must have property id
       const record = this.props?.basis?.pane?.data?.record;
-      const { data: entity } = await this._reloadEntity(record);
+      const entity = await this._reloadEntity(record);
       const models = this.props.models;
       originalFieldValues = R.pathOr(entity, [modelName, record?.id])(models);
       logger.debug('[componentWillMount]', { modelName, record, entity }, diff(originalFieldValues, record));
@@ -260,16 +257,12 @@ class ContentUpsert extends React.Component<IProps, IState> {
     return shouldUpdate;
   }
 
-  _reloadEntity = (record): Promise<AxiosResponse> => {
-    const { dispatch } = this.props;
+  _reloadEntity = async (record): Promise<any> => {
     const { modelName, primaryKey } = this.state;
-
-    return reduxActionCallbackPromise((callback) => {
-      if (record) {
-        logger.log('[_reloadEntity]', 'reload model...', record);
-        dispatch(modelsActions.fetch(modelName, { id: record[primaryKey], profile: 'ids' }, callback));
-      }
-    });
+    if (record) {
+      logger.log('[_reloadEntity]', 'reload model...', record);
+      return await Func.fetch(modelName, { id: record[primaryKey], profile: 'ids' });
+    }
   };
 
   /**
@@ -365,37 +358,34 @@ class ContentUpsert extends React.Component<IProps, IState> {
 */
     logger.debug('[handleFormSubmit]', { values, originalFieldValues, fields: this.state.fields });
 
-    const { dispatch, onClose } = this.props;
+    const { onClose } = this.props;
     const { modelName, isInsertMode } = this.state;
 
     const id: any = R.prop(primaryKey)(originalFieldValues as any);
 
-    dispatch(
-      modelsActions.upsert(modelName, { body: { ...values, [primaryKey]: id } }, ({ response, error }) => {
-        if (isErrorResponse(error)) {
-          const errors = toFormErrors(error.response);
-          logger.warn('[upsert callback]', { response, error, errors });
-          // if (typeof errors === 'string') {
-          //   message.error(toErrorMessage(errors));
-          // } else {
-          // }
-          this._handleFormChange(errors);
-          this.setState({ hasErrors: true });
-        } else {
-          this.setState({
-            hasErrors: false,
-            originalFieldValues: { ...originalFieldValues, ...values },
-          });
-          // FIXME 当前页面暂未切换为 update 模式，临时关闭当前页面
-          if (isInsertMode) {
-            EventBus.sendEvent(EventType.MODEL_INSERT, { modelName });
-            onClose();
-          } else {
-            EventBus.sendEvent(EventType.MODEL_UPDATE, { modelName, id });
-          }
-        }
-      }),
-    );
+    const data = Func.upsert(modelName, { body: { ...values, [primaryKey]: id } }).catch((error) => {
+      if (isErrorResponse(error)) {
+        const errors = toFormErrors(error.response);
+        logger.warn('[upsert callback]', { error, errors });
+        // if (typeof errors === 'string') {
+        //   message.error(toErrorMessage(errors));
+        // } else {
+        // }
+        this._handleFormChange(errors);
+        this.setState({ hasErrors: true });
+      }
+    });
+    this.setState({
+      hasErrors: false,
+      originalFieldValues: { ...originalFieldValues, ...values },
+    });
+    // FIXME 当前页面暂未切换为 update 模式，临时关闭当前页面
+    if (isInsertMode) {
+      EventBus.sendEvent(EventType.MODEL_INSERT, { modelName });
+      onClose();
+    } else {
+      EventBus.sendEvent(EventType.MODEL_UPDATE, { modelName, id });
+    }
   };
 
   render() {
@@ -444,6 +434,6 @@ class ContentUpsert extends React.Component<IProps, IState> {
   }
 }
 
-const mapStateToProps = (state: RootState) => R.pick(['models'])(state.models);
+// const mapStateToProps = (state: RootState) => R.pick(['models'])(state.models);
 
-export default connect(mapStateToProps)(ContentUpsert as any);
+export default ContentUpsert;

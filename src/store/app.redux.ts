@@ -8,9 +8,8 @@ import { createLogger } from '../logger';
 import { actions } from './actions';
 import { appActions, appActionTypes, isAppModule } from './app.actions';
 import { authActions } from './auth.actions';
-import { menuSagaFunctions } from './menu.redux';
-import { modelsSagaFunctions } from './models.redux';
-import { securitySagaFunctions } from './security.redux';
+// import { menuSagaFunctions } from './menu.redux';
+// import { securitySagaFunctions } from './security.redux';
 
 import type { RootState } from './types';
 
@@ -41,11 +40,11 @@ function* init() {
     logger.log('[init]', 'get version...');
     // yield heartbeat();
     logger.log('[init]', 'load all roles...');
-    yield securitySagaFunctions.loadAllRoles();
+    // yield securitySagaFunctions.loadAllRoles();
     logger.log('[init]', 'get current user...');
-    yield securitySagaFunctions.getCurrentUser();
+    // yield securitySagaFunctions.getCurrentUser();
     logger.log('[init]', 'call init menu...');
-    yield menuSagaFunctions.init();
+    // yield menuSagaFunctions.init();
 
     // logger.log('[init]', 'load all schemas');
     // yield modelsSagaFunctions.loadAllSchemas();
@@ -61,11 +60,11 @@ function* sync() {
   try {
     yield put(actions.clean());
     logger.log('[sync]', 'load all roles...');
-    yield securitySagaFunctions.loadAllRoles();
+    // yield securitySagaFunctions.loadAllRoles();
     logger.log('[sync]', 'get current user...');
-    yield securitySagaFunctions.getCurrentUser();
+    // yield securitySagaFunctions.getCurrentUser();
     logger.log('[sync]', 'call init menu...');
-    yield menuSagaFunctions.init();
+    // yield menuSagaFunctions.init();
     // logger.log('[sync]', 'load all schemas');
     // yield modelsSagaFunctions.loadAllSchemas();
     yield put(appActions.syncSuccess());
@@ -166,4 +165,4 @@ const appReducer = (previousState: AppState = initialState, action) => {
   return previousState;
 };
 
-export { appSagas, appEpics, appReducer };
+// export { appSagas, appEpics, appReducer };
