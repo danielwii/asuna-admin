@@ -1,8 +1,9 @@
+import styled from '@emotion/styled';
+
 import _ from 'lodash';
 import * as React from 'react';
-import styled from 'styled-components';
 
-const StyledLoading = styled.div`
+const StyledLoadingSC = styled.div`
   position: fixed;
   left: 0;
   right: 0;
@@ -22,10 +23,10 @@ const StyledLoading = styled.div`
 `;
 
 interface IStyledHeartbeat {
-  heartbeat: boolean | null;
+  heartbeat?: boolean;
 }
 
-const StyledHeartbeat = styled.div`
+const StyledHeartbeatSC = styled.div`
   position: absolute;
   left: 0;
   right: 0;
@@ -51,7 +52,7 @@ const StyledHeartbeat = styled.div`
 `;
 
 interface IProps {
-  heartbeat: boolean | null;
+  heartbeat?: boolean;
 }
 
 export class LivingLoading extends React.Component<IProps> {
@@ -96,14 +97,14 @@ export class LivingLoading extends React.Component<IProps> {
     const { heartbeat } = this.props;
 
     return (
-      <StyledLoading>
-        <StyledHeartbeat heartbeat={heartbeat}>
+      <StyledLoadingSC>
+        <StyledHeartbeatSC heartbeat={heartbeat}>
           {heartbeat === null
             ? 'Waiting for connection...'
             : heartbeat
             ? 'Loading from backend...'
             : 'Backend server unavailable.'}
-        </StyledHeartbeat>
+        </StyledHeartbeatSC>
         <canvas
           ref={(canvas) => {
             this.canvas = canvas;
@@ -112,7 +113,7 @@ export class LivingLoading extends React.Component<IProps> {
           Canvas Not Support?!
         </canvas>
         {/* language=CSS */}
-      </StyledLoading>
+      </StyledLoadingSC>
     );
   }
 }

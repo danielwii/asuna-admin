@@ -1,7 +1,9 @@
 import { message } from 'antd';
 import _ from 'lodash';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useLocalStorage } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
+import { FoldingCube } from 'styled-spinkit';
 
 import { authProxy, securityProxy } from '../adapters/proxy';
 import { ILoginProps, NormalLoginForm } from '../components/Login';
@@ -14,15 +16,15 @@ const logger = createLogger('containers:login');
 export const LoginContainer: React.VFC<any> = (props) => {
   const [token, setToken, removeToken] = useLocalStorage<string>('token', undefined, { raw: true });
 
-  useEffect(() => {
+  const state = useAsync(async () => {
     if (!_.isEmpty(token)) {
-      (async () => {
-        const currentUser = await securityProxy.currentUser();
-        logger.log('current user is', currentUser);
-        AppNavigator.toIndex();
-      })().catch((reason) => logger.error('[current-action]', reason));
+      const currentUser = await securityProxy.currentUser();
+      logger.log('current user is', currentUser);
+      AppNavigator.toIndex();
     }
   }, [token]);
+
+  if (state.loading) return <FoldingCube />;
 
   const actions: {
     [action in keyof Pick<ILoginProps, 'login'>]: any;

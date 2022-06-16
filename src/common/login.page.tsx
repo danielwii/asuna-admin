@@ -1,13 +1,16 @@
 import { ApolloClient, gql, InMemoryCache } from '@apollo/client';
+import useLogger from '@asuna-stack/asuna-sdk/dist/next/hooks/logger';
+import styled from '@emotion/styled';
 
 import { changeAntdTheme } from 'dynamic-antd-theme';
 import * as _ from 'lodash';
 import * as React from 'react';
-import { useMount } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
+import useMount from 'react-use/lib/useMount';
 import * as shortid from 'shortid';
-import styled from 'styled-components';
 
 import { Func } from '../adapters/func';
+import { LivingLoading } from '../components/base/living-loading';
 import { Snow } from '../components/base/weather/weather';
 import { LoginContainer } from '../containers/Login';
 import { AppContext, IIndexRegister, ILoginRegister, INextConfig } from '../core/context';
@@ -22,7 +25,7 @@ const logger = createLogger('common:login');
 // Main
 // --------------------------------------------------------------
 
-const StyledFullFlexContainer = styled.div`
+const StyledFullFlexContainerSC = styled.div`
   position: absolute;
   top: 0;
   left: 0;
@@ -55,8 +58,10 @@ export type ILoginPageProps = {
 
 export const LoginPageView: React.VFC<ILoginPageProps> = (props) => {
   const { /*dispatch,*/ register, site } = props;
-  AppContext.setup(register, Func);
   // Dispatcher.regDispatch(dispatch);
+  const state = useAsync(async () => {
+    await AppContext.setup(register, Func);
+  });
 
   useMount(() => {
     if (site?.primaryColor) {
@@ -64,13 +69,17 @@ export const LoginPageView: React.VFC<ILoginPageProps> = (props) => {
     }
   });
 
+  useLogger('<[LoginPageView]>', props, state);
+
   const { hideCharacteristics, weChatLoginEnable, customLogin } = props;
 
-  logger.log(`render ...`, props);
+  if (state.loading) {
+    return <LivingLoading heartbeat={true} />;
+  }
 
   return (
     <WithStyles hideCharacteristics>
-      <StyledFullFlexContainer>
+      <StyledFullFlexContainerSC>
         {!hideCharacteristics && (
           <React.Fragment>
             <Snow color={site?.primaryColor?.hex} />
@@ -83,70 +92,10 @@ export const LoginPageView: React.VFC<ILoginPageProps> = (props) => {
           </React.Fragment>
         )}
         {customLogin ? customLogin(site, weChatLoginEnable) : <LoginContainer {...props} />}
-      </StyledFullFlexContainer>
+      </StyledFullFlexContainerSC>
     </WithStyles>
   );
 };
-
-/*
-export class LoginPage extends React.Component<ILoginPageProps> {
-  constructor(props) {
-    super(props);
-
-    const { dispatch, register, site } = this.props;
-    AppContext.setup(register);
-    AppContext.regDispatch(dispatch);
-
-    if (site?.primaryColor) {
-      changeAntdTheme(site?.primaryColor);
-    }
-  }
-
-  componentWillUnmount() {
-    // logger.log('[componentWillUnmount]', 'destroy subscriptions');
-    // this.state.subscription?.unsubscribe();
-  }
-
-  shouldComponentUpdate(
-    nextProps: Readonly<ILoginPageProps>,
-    nextState: Readonly<{ subscription: Subscription; message?: string }>,
-    nextContext: any,
-  ): boolean {
-    // 通过 userAgent 判断 getInitialProps 有效性。
-    return !!nextProps.userAgent || diff(this.state, nextState).isDifferent;
-  }
-
-  componentDidCatch(error, info) {
-    logger.error('componentDidCatch...', error, { error, info });
-  }
-
-  render() {
-    const { hideCharacteristics, weChatLoginEnable, dispatch, site, customLogin } = this.props;
-
-    logger.log(`render ...`, this.props, this.state);
-
-    return (
-      <WithStyles hideCharacteristics>
-        <StyledFullFlexContainer>
-          {!hideCharacteristics && (
-            <React.Fragment>
-              <Snow color={site?.primaryColor?.hex} />
-              {/!*
-              <Sun />
-              <StyledLogoWrapper>
-                <LogoCanvas />
-              </StyledLogoWrapper>
-*!/}
-            </React.Fragment>
-          )}
-
-          {customLogin ? customLogin(site, weChatLoginEnable) : <LoginContainer {...this.props} />}
-        </StyledFullFlexContainer>
-      </WithStyles>
-    );
-  }
-}
-*/
 
 export const wechatLoginGetInitial = async (ctx: NextPageContext): Promise<LoginInitialProps> => {
   if ((process as any).browser) {
@@ -200,15 +149,12 @@ export const wechatLoginGetInitial = async (ctx: NextPageContext): Promise<Login
   }
 };
 
-export const LoginPageRender: React.FC<
-  Omit<ILoginPageProps, 'app' | 'dispatch'> & {
-    nextConfig: INextConfig;
-  }
-> = (props) => {
-  // AppContext.init(props.nextConfig);
-  // const appState = useSelector<RootState, AppState>((state) => state.app);
-  // const dispatch = useDispatch();
+export const LoginPageRender: React.VFC<Omit<ILoginPageProps, 'app' | 'dispatch'> & { nextConfig: INextConfig }> = (
+  props,
+) => {
+  AppContext.init(props.nextConfig);
 
-  console.log('props is', props);
+  useLogger('<[LoginPageRender]>', props);
+
   return <LoginPageView {...props} /*app={appState} dispatch={dispatch}*/ />;
 };

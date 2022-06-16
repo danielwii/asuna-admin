@@ -1,6 +1,7 @@
 import * as _ from 'lodash';
 import * as R from 'ramda';
 
+import { AppNavigator } from '../../dist/context/navigator';
 import { AppContext } from '../core/context';
 import { Store } from '../core/store';
 import { parseResponseError } from '../helpers/error';
@@ -69,6 +70,7 @@ export class Func {
         // message.error(toErrorMessage(e));
         TimelineMessageBox.push({ key: boxId, type: 'error', message: parseResponseError(e) });
         // await put(authActions.logout()); TODO
+        await Func.logout();
       }
     }
   }
@@ -122,5 +124,11 @@ export class Func {
     } catch (e) {
       logger.error('[init]', e);
     }
+  }
+  static async logout() {
+    logger.log('remove token and schemas... then logout.');
+    localStorage.removeItem('token');
+    localStorage.removeItem('schemas');
+    return AppNavigator.toLogin();
   }
 }

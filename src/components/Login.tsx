@@ -9,6 +9,7 @@ import { InputProps } from 'antd/es/input';
 import * as React from 'react';
 import { FoldingCube } from 'styled-spinkit';
 
+import { AppNavigator } from '../context/navigator';
 import { createLogger } from '../logger';
 
 const logger = createLogger('components:login');
@@ -43,10 +44,11 @@ export const NormalLoginForm: React.FC<ILoginProps> = ({ login }) => {
 
   const func = {
     onFinish: () => {
-      form.validateFields().then((values) => {
+      form.validateFields().then(async (values) => {
         const { username, password } = values;
         setLoading(true);
-        login(username, password).finally(() => setLoading(false));
+        await login(username, password).finally(() => setLoading(false));
+        AppNavigator.toIndex();
       });
     },
   };

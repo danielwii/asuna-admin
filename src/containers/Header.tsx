@@ -1,14 +1,10 @@
 import consola from 'consola';
 import * as React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 
+import { Func } from '../adapters/func';
 import { Header, IHeaderProps } from '../components/Header';
-import { AppNavigator } from '../context/navigator';
-import { AppContext } from '../core/context';
 import { useSharedPanesFunc, useSharedPanesGlobalValue } from '../store/panes.global';
 import { withDebugSettingsProps } from './DebugSettings';
-
-import type { RootState } from '../store/types';
 
 export const HeaderRender: React.VFC<Pick<IHeaderProps, 'hideLogo'>> = (props) => {
   const [, panesStateSetter] = useSharedPanesGlobalValue();
@@ -28,12 +24,7 @@ export const HeaderRender: React.VFC<Pick<IHeaderProps, 'hideLogo'>> = (props) =
     onSync: () => {
       consola.error('onSync...');
     },
-    logout: () => {
-      consola.error('remove token and schemas...');
-      localStorage.removeItem('token');
-      localStorage.removeItem('schemas');
-      return AppNavigator.toLogin();
-    },
+    logout: () => Func.logout(),
     withDebugSettingsProps,
     handleAction: (action, componentName) => {
       sharedPanesFunc.open({ key: `${action}`, title: action, linkTo: 'content::blank', component: componentName });

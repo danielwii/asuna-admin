@@ -34,42 +34,6 @@ export interface IIndexPageProps /*extends ReduxProps*/ {
   error?: object;
 }
 
-/*
-const IndexPage2: NextComponentType<NextPageContext, Promise<IIndexPageProps>, IIndexPageProps> = (props) => {
-  const { dispatch, register, site } = props;
-  AppContext.setup({ register, module: 'index' }).then(() => dispatch(appActions.init()));
-  AppContext.regDispatch(dispatch);
-
-  if (site?.primaryColor) {
-    const themeColor = generateThemeColor(site?.primaryColor.hex);
-    changeAntdTheme(themeColor);
-  }
-
-  const {
-    auth,
-    app: { loading, heartbeat },
-    appInfo,
-    hideCharacteristics,
-    error,
-  } = props;
-  logger.debug('[render]', props);
-
-  if (error) {
-    return <LivingLoading heartbeat />;
-  }
-
-  return (
-    <MainLayout
-      loading={loading}
-      heartbeat={heartbeat}
-      auth={auth}
-      appInfo={appInfo}
-      hideCharacteristics={hideCharacteristics}
-    />
-  );
-};
-*/
-
 const uri = `${process.env.API_ENDPOINT ?? ''}/graphql`;
 const client = new ApolloClient({
   cache: new InMemoryCache(),

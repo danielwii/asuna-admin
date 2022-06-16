@@ -4,16 +4,12 @@ import { Badge, Button, Dropdown, Layout, Menu, Modal, Tag } from 'antd';
 import getConfig from 'next/config';
 import * as React from 'react';
 import { useContext } from 'react';
-import { useSelector } from 'react-redux';
 import useLogger from 'react-use/lib/useLogger';
 import styled from 'styled-components';
 
 import { StoreContext } from '../context/store';
 import { Store } from '../core/store';
-import { DebugSettings, IDebugSettingsProps } from './DebugSettings';
-
-import type { AppState } from '../store/app.redux';
-import type { RootState } from '../store/types';
+import { IDebugSettingsProps } from './DebugSettings';
 
 const StyledLogoImg = styled.img`
   width: 120px;

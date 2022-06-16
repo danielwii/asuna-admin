@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import { useContext } from 'react';
 import { useAsyncRetry, useEffectOnce, useLogger } from 'react-use';
-import { CubeGrid } from 'styled-spinkit';
+import { CubeGrid, FoldingCube } from 'styled-spinkit';
 
 import { Func } from '../adapters/func';
 import { SideMenu } from '../components/SideMenu';
@@ -49,9 +49,8 @@ export const SideMenuRender: React.VFC = (props) => {
         <DebugInfo data={{ store, isTenantEnabled, hasTenantRoles, authorized }} />
       </>
     );
-
   return state.loading ? (
-    <div>Loading...</div>
+    <FoldingCube />
   ) : state.error ? (
     <div>
       Error: {state.error.message}
