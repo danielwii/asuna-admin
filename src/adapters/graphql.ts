@@ -65,14 +65,14 @@ export class GraphqlAdapterImpl {
         fetchPolicy: 'no-cache',
         query: gql`
           {
-            sys_model_schemas {
+            sys_modelSchemas {
               name
               schema
             }
           }
         `,
       })
-      .then(fp.get('data.sys_model_schemas'));
+      .then(fp.get('data.sys_modelSchemas'));
   }
 
   async loadSystemSettings() {
