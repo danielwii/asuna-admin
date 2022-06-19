@@ -1,6 +1,7 @@
+import useLogger from '@asuna-stack/asuna-sdk/dist/next/hooks/logger';
+
 import { Layout } from 'antd';
 import * as React from 'react';
-import { useLogger } from 'react-use';
 import styled from 'styled-components';
 
 import { ProgressBar } from '../components/ProgressBar';
@@ -21,8 +22,6 @@ const StyledContentDiv = styled.div`
 `;
 
 const Main: React.VFC<{ hideCharacteristics?: boolean }> = ({ hideCharacteristics }) => {
-  // logger.log('status', { loading, heartbeat, auth, appInfo });
-
   useLogger('Main', { hideCharacteristics });
 
   return (
@@ -33,7 +32,7 @@ const Main: React.VFC<{ hideCharacteristics?: boolean }> = ({ hideCharacteristic
           <ProgressBar />
           <HeaderRender hideLogo={hideCharacteristics} />
           <Layout>
-            <Layout.Sider theme={'light'} /*style={{ overflow: 'auto', height: '90vh', position: 'fixed', left: 0 }}*/>
+            <Layout.Sider theme="light" /*style={{ overflow: 'auto', height: '90vh', position: 'fixed', left: 0 }}*/>
               <SideMenuRender />
             </Layout.Sider>
             <Layout style={{ /*marginLeft: 200,*/ padding: '.5rem' }}>

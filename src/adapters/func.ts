@@ -121,7 +121,9 @@ export class Func {
           logger.warn('[init]', 'cannot found any roles');
         }
       } else {
-        logger.warn('[init]', 'cannot found current user');
+        logger.warn('[init]', 'cannot found current user info');
+        message.error('无法拉取到用户信息，请重新登录');
+        AppNavigator.toLogin();
       }
     } catch (e) {
       logger.error('[init]', e);

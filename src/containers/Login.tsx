@@ -19,8 +19,13 @@ export const LoginContainer: React.VFC<any> = (props) => {
   const state = useAsync(async () => {
     if (!_.isEmpty(token)) {
       const currentUser = await securityProxy.currentUser();
-      logger.log('current user is', currentUser);
-      AppNavigator.toIndex();
+      if (currentUser) {
+        logger.log('current user is', currentUser);
+        AppNavigator.toIndex();
+      } else {
+        logger.error('login error', currentUser);
+        message.error('登录失败');
+      }
     }
   }, [token]);
 
@@ -30,16 +35,15 @@ export const LoginContainer: React.VFC<any> = (props) => {
     [action in keyof Pick<ILoginProps, 'login'>]: any;
   } = {
     login: async (username: string, password: string) => {
+      message.info('login...');
       try {
         logger.log('[login-action]', { username, password });
         const res = await authProxy.login(username, password);
         logger.log('[login-action]', res, res.data.accessToken);
         setToken(res.data.accessToken);
       } catch (error) {
-        logger.error('[login-action]', { error });
-        if (error.response) {
-          message.error(toErrorMessage(error));
-        }
+        logger.error('[login-action]', error);
+        message.error(error.response ? toErrorMessage(error) : error.message);
       }
     },
   };

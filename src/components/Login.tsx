@@ -9,7 +9,6 @@ import { InputProps } from 'antd/es/input';
 import * as React from 'react';
 import { FoldingCube } from 'styled-spinkit';
 
-import { AppNavigator } from '../context/navigator';
 import { createLogger } from '../logger';
 
 const logger = createLogger('components:login');
@@ -47,8 +46,9 @@ export const NormalLoginForm: React.FC<ILoginProps> = ({ login }) => {
       form.validateFields().then(async (values) => {
         const { username, password } = values;
         setLoading(true);
-        await login(username, password).finally(() => setLoading(false));
-        AppNavigator.toIndex();
+        await login(username, password)
+          .then((value) => logger.log('login info is', value))
+          .finally(() => setLoading(false));
       });
     },
   };
