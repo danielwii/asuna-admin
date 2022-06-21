@@ -1,6 +1,4 @@
-import { LoadingOutlined } from '@ant-design/icons';
-
-import { Badge, Button, Dropdown, Layout, Menu, Modal, Tag } from 'antd';
+import { Button, Dropdown, Layout, Menu, Modal, Tag } from 'antd';
 import getConfig from 'next/config';
 import * as React from 'react';
 import { useContext } from 'react';
@@ -141,22 +139,18 @@ export const Header: React.FC<IHeaderProps> = (props) => {
         </Menu>
         */}
       <div className="header-user">
-        {Store.fromStore().username ? (
-          <div>
-            {store.tenantInfo?.tenant && (
-              <Tag>
-                {store.tenantInfo?.tenant?.id} / {store.tenantInfo?.tenant?.name}
-              </Tag>
-            )}{' '}
-            Welcome,&nbsp;
-            <Dropdown overlay={_renderMenu()}>
-              <a>{Store.fromStore().username}</a>
-            </Dropdown>
-            .
-          </div>
-        ) : (
-          <LoadingOutlined style={{ marginLeft: 8, fontSize: 24 }} spin />
-        )}
+        <div>
+          {store.tenantInfo?.tenant && (
+            <Tag>
+              {store.tenantInfo?.tenant?.id} / {store.tenantInfo?.tenant?.name}
+            </Tag>
+          )}{' '}
+          Welcome,&nbsp;
+          <Dropdown overlay={_renderMenu()}>
+            <a>{Store.fromStore().username ?? '*unset*'}</a>
+          </Dropdown>
+          .
+        </div>
       </div>
       {/* language=CSS */}
       <style jsx>{`

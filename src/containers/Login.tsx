@@ -39,6 +39,7 @@ export const LoginContainer: React.VFC<any> = (props) => {
       try {
         logger.log('[login-action]', { username, password });
         const res = await authProxy.login(username, password);
+        localStorage.setItem("username", username);
         logger.log('[login-action]', res, res.data.accessToken);
         setToken(res.data.accessToken);
       } catch (error) {
