@@ -7,21 +7,19 @@ import moment from 'moment';
 import * as React from 'react';
 
 import { VideoPlayer } from '../../components/DynamicForm/Videos';
-import { TooltipContent, WithFuture } from '../../components/base/helper/helper';
-import { AssetsPreview } from '../../components/base/preview-button/asset-preview';
+import { TooltipContent } from '../../components/base/helper/helper';
 import { Content } from '../../components/base/styled/styled';
-// import { AppContext } from '../../core/context';
-// import { valueToArrays } from '../../core/url-rewriter';
+import { AppContext } from '../../core/context';
 import { createLogger } from '../../logger';
 import { castModelKey } from './../cast';
 import { WithDebugInfo } from './../debug';
 import { extractValue, removePreAndSuf } from './../func';
 import { nullProtectRender } from './utils';
 
-import type { Asuna } from '../../types';
 import type { ColumnProps, ColumnType } from 'antd/es/table';
 import type { FilterDropdownProps } from 'antd/es/table/interface';
 import type { VideoJsPlayerOptions } from 'video.js';
+import type { Asuna } from '../../types';
 import type { ConditionType, ModelOpts, RelationColumnProps, SwitchConditionExtras } from './types';
 
 const logger = createLogger('helpers:columns');
@@ -407,30 +405,34 @@ export const columnHelper = {
     { model, title, ctx }: ModelOpts,
     extras: Asuna.Schema.RecordRenderExtras,
   ): Promise<ColumnProps<any>> => {
-    // const columnInfo = model ? await AppContext.getColumnInfo(model, key) : undefined;
+    logger.info(`generateSwitch: ${key}`, { key, model, title, ctx, extras });
+    const columnInfo = model ? await AppContext.getColumnInfo(model, key) : undefined;
+    const columnProps = await generateSearchColumnProps(castModelKey(key), ctx.onSearch, 'boolean');
+    logger.info(`generateSwitch: ${key}`, { columnInfo, columnProps });
     return {
-      // title: title ?? columnInfo?.config?.info?.name ?? key,
+      title: title ?? columnInfo?.config?.info?.name ?? key,
       dataIndex: castModelKey(key),
       key: castModelKey(key),
-      ...(await generateSearchColumnProps(castModelKey(key), ctx.onSearch, 'boolean')),
+      ...columnProps,
       render: (isActive, record) => {
-        // const primaryKey = AppContext.adapters.models.getPrimaryKey(extras.modelName);
-        // const id = _.get(record, primaryKey);
-        const component =
-                // extras.readonly ? (
-          <Checkbox checked={isActive} disabled={true} />
-        // ) : (
-        //   <Popconfirm
-        //     title={isActive ? `是否注销: ${id}` : `是否激活: ${id}`}
-        //     onConfirm={async () => {
-        //       // const { modelProxy } = require('../adapters');
-        //       await AppContext.adapters.models.upsert(extras.modelName, { body: { id, [key]: !isActive } });
-        //       extras.callRefresh();
-        //     }}
-        //   >
-        //     <Checkbox checked={isActive} />
-        //   </Popconfirm>
-        // );
+        const primaryKey = AppContext.adapters.models.getPrimaryKey(extras.modelName);
+        const id = _.get(record, primaryKey);
+        logger.info(`render switch: ${primaryKey}/${id}`, { isActive }, record);
+        const component = extras.readonly ? (
+          <Checkbox checked={isActive} disabled />
+        ) : (
+          <Popconfirm
+            title={isActive ? `是否注销: ${id}` : `是否激活: ${id}`}
+            onConfirm={async () => {
+              await AppContext.adapters.models.upsert(extras.modelName, {
+                body: { [primaryKey]: id, [key]: !isActive },
+              });
+              extras.callRefresh();
+            }}
+          >
+            <Checkbox checked={isActive} />
+          </Popconfirm>
+        );
         return extras.tips ? <Tooltip title={extras.tips}>{component}</Tooltip> : component;
       },
     };

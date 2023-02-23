@@ -188,8 +188,8 @@ export declare module Asuna {
       editable?: boolean;
       deletable?: boolean;
       enablePublished?: boolean;
-      renderHelp?: React.ReactChild;
-      renderActions?: (extras: RecordRenderExtras) => React.ReactChild;
+      renderHelp?: React.ReactElement | string;
+      renderActions?: (extras: RecordRenderExtras) => React.ReactElement;
       recordActions?: (actions: RecordRenderActions, extras: RecordRenderExtras) => ColumnProps<any>;
       rowClassName?: (record: any, index: number) => string;
       expandedRowRender?: (record: any, index: number, indent: number, expanded: boolean) => React.ReactNode;

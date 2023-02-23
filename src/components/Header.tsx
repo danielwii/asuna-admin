@@ -1,13 +1,16 @@
-import { Button, Dropdown, Layout, Menu, Modal, Tag } from 'antd';
+import useLogger from '@asuna-stack/asuna-sdk/dist/next/hooks/logger';
+
+import { Button, Dropdown, Layout, Modal, Tag } from 'antd';
 import getConfig from 'next/config';
 import * as React from 'react';
 import { useContext } from 'react';
-import useLogger from 'react-use/lib/useLogger';
 import styled from 'styled-components';
 
 import { StoreContext } from '../context/store';
 import { Store } from '../core/store';
-import { IDebugSettingsProps } from './DebugSettings';
+import { createLogger } from '../logger';
+
+const logger = createLogger('components:header');
 
 const StyledLogoImg = styled.img`
   width: 120px;
@@ -32,7 +35,6 @@ export interface IHeaderProps {
   onSync: () => void;
   handleAction: (action: string, componentName) => void;
   logout: () => void;
-  withDebugSettingsProps?: (fn: (props: IDebugSettingsProps) => any) => any;
 }
 
 const asuna =
@@ -57,108 +59,68 @@ const asuna =
   'yK+vrydojqOjo9mAkJugiACrrWoLBQQ0AlQOBo0AjQCVEVDZvJYBGgEqI6CyeS0DNAJURkBl81oGqEzAPwKEIs6uM' +
   'DNsAAAAAElFTkSuQmCC';
 
-export const Header: React.FC<IHeaderProps> = (props) => {
-  const { env, version, hideLogo, onSync, isAdmin, isSuperAdmin, handleAction, logout } = props;
+export const Header: React.FC<IHeaderProps> = ({
+  env,
+  version,
+  hideLogo,
+  onSync,
+  isAdmin,
+  isSuperAdmin,
+  handleAction,
+  logout,
+}) => {
   const { store, updateStore } = useContext(StoreContext);
   // const appState = useSelector<RootState, AppState>((state) => state.app);
 
-  useLogger('Header', Store.fromStore());
+  logger.debug('store is', Store.fromStore());
 
-  const _renderMenu = () => (
-    <Menu>
-      <Menu.Item>
-        {/*<a>Profile</a>*/}
-        <a onClick={onSync}>Sync Models</a>
-        {/*<Button icon="sync" onClick={onSync} />*/}
-      </Menu.Item>
-      <Menu.Divider />
-      {isAdmin && (
-        <Menu.Item>
-          <a>Settings</a>
-        </Menu.Item>
-      )}
-      {isAdmin && (
-        <Menu.Item>
-          <a>Is Admin</a>
-        </Menu.Item>
-      )}
-      {isSuperAdmin && (
-        <>
-          <Menu.Item>
-            <a>Is SuperAdmin</a>
-          </Menu.Item>
-          <Menu.Item>
-            {/* 开启 WithDebugInfo 及 KV 中的 json 预览功能等 */}
-            <a>Enable Debug Mode</a>
-          </Menu.Item>
-        </>
-      )}
-      {isSuperAdmin && <Menu.Divider />}
-      {env !== 'production' && (
-        <Menu.Item>
-          <a onClick={() => handleAction('set-logger-level', 'DebugSettings')}>Debug Settings</a>
-        </Menu.Item>
-      )}
-      {env !== 'production' && <Menu.Divider />}
-      <Menu.Item>
-        <a onClick={logout}>Logout</a>
-      </Menu.Item>
-    </Menu>
-  );
+  useLogger('<[Header]>', { env, version, hideLogo, isAdmin, isSuperAdmin });
 
   return (
-    <Layout.Header className="header">
-      {!hideLogo && (
-        <div className="logo">
-          <StyledLogoImg src={asuna} alt="mast" />
-        </div>
-      )}
+    <Layout.Header>
+      {!hideLogo && <StyledLogoImg src={asuna} alt="mast" />}
       <StyledVersion>
         {env}-v{version}::{/*{app.version}*/}
       </StyledVersion>
       <Button
         size="small"
         type="link"
-        onClick={() =>
-          Modal.info({
-            content: <pre>{JSON.stringify(getConfig(), null, 2)}</pre>,
-          })
-        }
+        onClick={() => Modal.info({ content: <pre>{JSON.stringify(getConfig(), null, 2)}</pre> })}
       >
         Environment Info
       </Button>
       {/*{appState.heartbeat ? <Badge status="processing" color="green" /> : <Badge status="processing" color="red" />}*/}
       {/*
-        <Menu
-          theme="dark"
-          mode="horizontal"
-          defaultSelectedKeys={['2']}
-          style={{ lineHeight: '64px' }}
-        >
-          <Menu.Item key="1">Home</Menu.Item>
-        </Menu>
-        */}
-      <div className="header-user">
+      <Menu
+        theme="dark"
+        mode="horizontal"
+        defaultSelectedKeys={['2']}
+        style={{ lineHeight: '64px' }}
+      >
+        <Menu.Item key="1">Home</Menu.Item>
+      </Menu>
+      */}
+      <div style={{ float: 'right', color: 'white' }}>
         <div>
           {store.tenantInfo?.tenant && (
             <Tag>
               {store.tenantInfo?.tenant?.id} / {store.tenantInfo?.tenant?.name}
             </Tag>
-          )}{' '}
+          )}
           Welcome,&nbsp;
-          <Dropdown overlay={_renderMenu()}>
+          <Dropdown
+            menu={{
+              items: [
+                { key: '1', label: 'Sync Models', onClick: onSync },
+                { key: '2', label: 'Logout', onClick: logout },
+              ],
+            }}
+          >
             <a>{Store.fromStore().username ?? '*unset*'}</a>
           </Dropdown>
           .
         </div>
       </div>
-      {/* language=CSS */}
-      <style jsx>{`
-        .header-user {
-          float: right;
-          color: white;
-        }
-      `}</style>
     </Layout.Header>
   );
 };

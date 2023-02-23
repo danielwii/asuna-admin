@@ -1,7 +1,8 @@
 import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
 import { DependencyList, useState } from 'react';
-import { useAsync, useAsyncRetry } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
+import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 
 import { Draft } from '../adapters/admin.plain';
 import { AppContext } from '../core/context';

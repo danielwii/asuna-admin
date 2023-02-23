@@ -10,12 +10,14 @@ import React, { useEffect, useState } from 'react';
 import { WithVariable } from './helper/helper';
 import { MATCH_REGEX, Preview } from './preview-button/asset-preview';
 
-const Editable: React.FC<{
-  text: string;
-  type: 'input' | 'textarea';
-  placeholder?: string;
-  editing?: boolean;
-}> = ({ text, type, placeholder, editing, children, ...props }) => {
+const Editable: React.FC<
+  React.PropsWithChildren<{
+    text: string;
+    type: 'input' | 'textarea';
+    placeholder?: string;
+    editing?: boolean;
+  }>
+> = ({ text, type, placeholder, editing, children, ...props }) => {
   // Manage the state whether to show the label or the input box. By default, label will be shown.
   // Exercise: It can be made dynamic by accepting initial state as props outside the component
   const [isEditing, setEditing] = useState(editing);

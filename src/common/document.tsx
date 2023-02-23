@@ -6,31 +6,33 @@ export class StyledDocument extends Document {
   props: any;
 
   static async getInitialProps(ctx: DocumentContext) {
-    // Step 1: Create an instance of ServerStyleSheet
     const sheet = new ServerStyleSheet();
-
     const originalRenderPage = ctx.renderPage;
-    ctx.renderPage = () =>
-      originalRenderPage({
-        enhanceApp: (App) => (props) =>
-          // Step 2: Retrieve styles from components in the page
-          sheet.collectStyles(<App {...props} />),
-      });
 
-    const initialProps: any = await Document.getInitialProps(ctx);
+    try {
+      ctx.renderPage = () =>
+        originalRenderPage({
+          enhanceApp: (App) => (props) => sheet.collectStyles(<App {...props} />),
+        });
 
-    // Step 3: Extract the styles as <style> tags
-    const styleTags = sheet.getStyleElement();
-
-    // Returns an object like: { html, head, errorHtml, chunks, styles }
-    return { ...initialProps, styles: [...initialProps.styles, ...styleTags] };
+      const initialProps = await Document.getInitialProps(ctx);
+      return {
+        ...initialProps,
+        styles: [initialProps.styles, sheet.getStyleElement()],
+      };
+    } finally {
+      sheet.seal();
+    }
   }
 
   render() {
     return (
       <Html lang="zh">
         <meta charSet="utf-8" />
-        <Head>{this.props.styleTags}</Head>
+        <Head>
+          {this.props.styleTags}
+          <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@^4/animate.min.css" />
+        </Head>
         <body>
           <Main />
           <NextScript />

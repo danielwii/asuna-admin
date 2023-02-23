@@ -1,18 +1,19 @@
 import { InfoOutlined } from '@ant-design/icons';
+import useLogger from '@asuna-stack/asuna-sdk/dist/next/hooks/logger';
 
 import { parseJSONIfCould } from '@danielwii/asuna-helper/dist/utils';
 
-import { Button, Divider, Dropdown, Menu, Modal, Skeleton, Switch, Table, Tag, Tooltip } from 'antd';
+import { Button, Divider, Dropdown, Modal, Skeleton, Switch, Table, Tag, Tooltip } from 'antd';
+import { LogLevel } from 'consola';
 import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
 import React, { useContext, useEffect, useState } from 'react';
-import { useAsync, useLogger } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 
 import { Func } from '../adapters/func';
 import { responseProxy } from '../adapters/proxy';
 import { StoreContext } from '../context/store';
 import { AppContext } from '../core/context';
-import { isDebugMode } from '../core/env';
 import { ActionEvent, EventBus, EventType } from '../core/events';
 import { castModelKey } from '../helpers/cast';
 import { DebugInfo, WithDebugInfo } from '../helpers/debug';
@@ -25,14 +26,14 @@ import { AsunaDrawerButton } from './AsunaDrawer';
 import type { SorterResult, TableCurrentDataSource, TablePaginationConfig } from 'antd/es/table/interface';
 import type { Key } from 'antd/lib/table/interface';
 
-const logger = createLogger('components:data-table');
+const logger = createLogger('<[AsunaDataTable]>', LogLevel.Trace);
 
 export interface AsunaDataTableProps {
   creatable?: Asuna.Schema.TableColumnOptCreatable;
   editable?: boolean;
   deletable?: boolean;
-  renderHelp?: React.ReactChild;
-  renderActions?: (extras: Asuna.Schema.RecordRenderExtras) => React.ReactChild;
+  renderHelp?: React.ReactElement | string;
+  renderActions?: (extras: Asuna.Schema.RecordRenderExtras) => React.ReactElement;
   expandedRowRender?: (record: any, index: number, indent: number, expanded: boolean) => React.ReactNode;
   rowClassName?: (record: any, index: number) => string;
   // models: any;
@@ -255,8 +256,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = (props) => {
     }
   }, [queryCondition, loadingAsunaModels, flag]);
 
-  if (isDebugMode) useLogger('AsunaDataTable', { flag, loadingAsunaModels, loading }, queryCondition);
-  useLogger('AsunaDataTable2', columnProps);
+  useLogger('<[AsunaDataTable]>', columnProps, { flag, loadingAsunaModels, loading }, queryCondition);
 
   if (loadingAsunaModels) {
     return <Skeleton active avatar />;
@@ -297,15 +297,20 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = (props) => {
       <Divider type="vertical" />
 
       <Dropdown
-        overlay={
-          <Menu>
-            <Menu.Item onClick={func.pinActions}>
-              <Switch size={'small'} checked={!!_.get(actionColumn, 'fixed')} />
-              <Divider type="vertical" />
-              固定 Actions
-            </Menu.Item>
-          </Menu>
-        }
+        menu={{
+          items: [
+            {
+              key: '1',
+              label: (
+                <div onClick={func.pinActions}>
+                  <Switch size="small" checked={!!_.get(actionColumn, 'fixed')} />
+                  <Divider type="vertical" />
+                  固定 Actions
+                </div>
+              ),
+            },
+          ],
+        }}
         placement="bottom"
       >
         <Button size="small">布局</Button>
@@ -369,7 +374,8 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = (props) => {
           rowKey={primaryKey}
           loading={loading}
           columns={columnProps}
-          expandedRowRender={expandedRowRender}
+          // expandedRowRender={expandedRowRender}
+          expandable={{ expandedRowRender }}
           pagination={{ ...pagination, position: ['topRight', 'bottomRight'] }}
           onChange={func.handleTableChange}
           rowClassName={rowClassName}

@@ -70,7 +70,7 @@ export const asyncLoadAssociationsDecorator = async ({
   logger.log(TAG, { fields });
 
   const relationShips = [DynamicFormTypes.Association, DynamicFormTypes.ManyToMany];
-  const associations = R.filter((field: any) => R.contains(field.type)(relationShips))(fields);
+  const associations = R.filter((field: any) => R.includes(field.type)(relationShips))(fields);
 
   if (R.not(R.isEmpty(associations))) {
     logger.debug(TAG, 'associations is', associations);

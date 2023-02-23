@@ -2,6 +2,8 @@
 
 /** @jsx jsx */
 // noinspection ES6UnusedImports
+
+import useLogger from '@asuna-stack/asuna-sdk/dist/next/hooks/logger';
 import { css, jsx } from '@emotion/react';
 
 import { Button, Card, Divider, Input, Space, Switch } from 'antd';
@@ -11,17 +13,16 @@ import { Field, FieldInputProps, FieldProps, Form, FormikErrors, FormikProps, Fo
 import _ from 'lodash';
 import React from 'react';
 import { SketchPicker } from 'react-color';
-import { useLogger } from 'react-use';
 import util from 'util';
 
 import { DebugInfo } from '../debug/debug';
-import { isPromiseAlike, WithVariable } from '../helper/helper';
+import { WithVariable, isPromiseAlike } from '../helper/helper';
 import { AsunaSelect } from '../select/select';
 import { StringArray } from '../string-array';
 import { StringTmpl } from '../string-tmpl';
 import { DynamicJsonArrayTable, ObjectJsonTableHelper } from '../table-helper/dynamic-json-array-table';
 import { DefaultFileUploaderAdapterImpl, Uploader } from '../uploader/uploader';
-import { FormField, FormFieldDef, FormFields, FormFieldType, UploadFormField } from './interfaces';
+import { FormField, FormFieldDef, FormFieldType, FormFields, UploadFormField } from './interfaces';
 
 import type { WithFormikConfig } from 'formik/dist/withFormik';
 
@@ -48,7 +49,7 @@ const BooleanInput: React.FC<{ fieldDef: FormFieldDef; field: FieldInputProps<an
       <React.Fragment>
         <label>{fieldDef.name}</label>
         <Switch
-          onChange={(checked: boolean, event: MouseEvent) =>
+          onChange={(checked: boolean) =>
             field.onChange({ target: { id: field.name, name: field.name, value: checked } })
           }
           defaultChecked={value}
@@ -172,7 +173,7 @@ const EmailTmplDataInput: React.FC<{
   (prevProps, nextProps) => prevProps.value === nextProps.value,
 );
 
-export const RenderInputComponent: React.VFC<{
+export const RenderInputComponent: React.FC<{
   form: FormikProps<FormikValues>;
   fieldDef: FormFieldDef;
   field: FieldInputProps<string | number | boolean>;
@@ -345,7 +346,7 @@ const InnerForm: React.FC<EasyFormProps & FormikProps<FormikValues>> = ({
                 )}
                 {/* <Input id={field.name} type={formField.type} {...field} value={value} /> */}
                 {formField.help && <div style={{ color: 'grey' }}>{formField.help}</div>}
-                {hasError && <div style={{ color: 'red' }}>{form.errors[formField.name]}</div>}
+                {hasError && <div style={{ color: 'red' }}>{JSON.stringify(form.errors[formField.name])}</div>}
                 <Divider dashed style={{ margin: '0.5rem 0' }} />
               </div>
             );
@@ -355,7 +356,7 @@ const InnerForm: React.FC<EasyFormProps & FormikProps<FormikValues>> = ({
     ))}
     <Divider />
     <Space>
-      <Button type="primary" htmlType="submit" onSubmit={handleSubmit} disabled={isSubmitting}>
+      <Button type="primary" htmlType="submit" onSubmit={(event) => handleSubmit(event)} disabled={isSubmitting}>
         {isSubmitting ? 'Submitting' : 'Submit'}
       </Button>
       {onReset && (

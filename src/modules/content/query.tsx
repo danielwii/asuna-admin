@@ -1,4 +1,6 @@
-import { Divider, PageHeader } from 'antd';
+import { PageHeader } from '@ant-design/pro-layout';
+
+import { Divider } from 'antd';
 import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
 import * as React from 'react';

@@ -53,9 +53,10 @@ export class AsunaDefinitions<T extends Asuna.Schema.ModelOpts = {}> {
     opts: Asuna.Schema.TableColumnOpts<any>,
   ): { [key: string]: Asuna.Schema.FRecordRender } {
     const columns = _.isFunction(opts.columns) ? opts.columns(entity) : opts.columns;
+    logger.log('wrapped column is', { entity, columns, opts });
     return {
-      [entity]: (actions, extras) =>
-        _.compact([
+      [entity]: (actions, extras) => {
+        const compacted = _.compact([
           commonColumns.primaryKeyByExtra(extras),
           ...Object.values(_.map(columns, (func, key) => func(key, actions ?? {}, extras))),
           ...Object.values(_.map(opts.customColumns, (func, key) => func(key, actions ?? {}, extras))),
@@ -63,7 +64,10 @@ export class AsunaDefinitions<T extends Asuna.Schema.ModelOpts = {}> {
           commonColumns.createdAt,
           ...[opts.enablePublished ? commonColumns.isPublished(entity, extras) : null],
           opts.recordActions ? opts.recordActions(actions, extras) : commonColumns.actions(actions),
-        ]),
+        ]);
+        logger.info('compacted column is', { entity, compacted });
+        return compacted;
+      },
     };
   }
 
@@ -91,6 +95,7 @@ export class AsunaDefinitions<T extends Asuna.Schema.ModelOpts = {}> {
     };
     this.#columnOpts[entity as string] = withStylesOpts;
     this.#tableColumns = extend(this.#tableColumns, this.wrapTableColumns(entity as string, withStylesOpts));
+    logger.info('setup table columns', { entity }, this, this.#tableColumns);
   }
 
   addCustomActions(model: keyof T, ...actions: React.Component[]): void {

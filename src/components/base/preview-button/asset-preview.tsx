@@ -13,7 +13,7 @@ import * as _ from 'lodash';
 import React, { useState } from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { tomorrow as styles } from 'react-syntax-highlighter/dist/cjs/styles/prism';
-import { useMountedState } from 'react-use';
+import useMountedState from 'react-use/lib/useMountedState';
 
 // import styles from 'prism-themes/themes/prism-synthwave84.css';
 import { WithDebugInfo } from '../debug/debug';
@@ -21,15 +21,17 @@ import { FlexCenterBox, ThumbImage } from '../styled/styled';
 
 import type { Document, Page } from 'react-pdf';
 
-export const WithModal: React.FC<{
-  title?: string;
-  renderModal: ({ state, setState, setVisible }) => React.ReactNode;
-}> = ({ title, renderModal, children }) => {
+export const WithModal: React.FC<
+  React.PropsWithChildren<{
+    title?: string;
+    renderModal: ({ state, setState, setVisible }) => React.ReactNode;
+  }>
+> = ({ title, renderModal, children }) => {
   const [visible, setVisible] = useState(false);
   const [state, setState] = useState<any>();
   return (
     <React.Fragment>
-      <Modal visible={visible} footer={null} onCancel={() => setVisible(false)} closable={false}>
+      <Modal open={visible} footer={null} onCancel={() => setVisible(false)} closable={false}>
         {renderModal({ state, setState, setVisible })}
       </Modal>
       <Tooltip title={title}>
@@ -47,12 +49,9 @@ export const WithModal: React.FC<{
   );
 };
 
-export const ImagePreview: React.FC<{ url: string; title?: string; onEdit?: (url: string) => void }> = ({
-  title,
-  url,
-  onEdit,
-  children,
-}) => {
+export const ImagePreview: React.FC<
+  React.PropsWithChildren<{ url: string; title?: string; onEdit?: (url: string) => void }>
+> = ({ title, url, onEdit, children }) => {
   const [newUrl, setUrl] = useState(url);
   const [visible, setVisible] = useState(false);
   const editView = onEdit ? (
@@ -202,7 +201,7 @@ interface IAssetPreviewState {
   loading: boolean;
 }
 
-export const AssetPreview: React.VFC<IAssetPreviewProps> = ({ url, width, height, showPdf, fullWidth }) => {
+export const AssetPreview: React.FC<IAssetPreviewProps> = ({ url, width, height, showPdf, fullWidth }) => {
   const isMounted = useMountedState();
   const [state, setState] = useState<IAssetPreviewState>({ numPages: null, pageNumber: 1, loading: true });
   const href = url;

@@ -1,11 +1,6 @@
 /** @jsxRuntime classic */
 
 /** @jsx jsx */
-import { WithVariable } from '../helper/helper';
-import { WithDebugInfo } from '../debug/debug';
-import { Loading } from '../loading';
-import { AssetsPreview, ImagePreview, WithModal } from '../preview-button/asset-preview';
-import { valueToArray, valueToString, wrapFilesToFileList } from './utils';
 import {
   CloudUploadOutlined,
   DeleteOutlined,
@@ -20,10 +15,17 @@ import {
   VerticalRightOutlined,
 } from '@ant-design/icons';
 import { css, jsx } from '@emotion/react';
+
 import { Button, Divider, Input, Radio, Tag, Upload } from 'antd';
 import * as _ from 'lodash';
 import React from 'react';
-import { useLogger } from 'react-use';
+import useLogger from '@asuna-stack/asuna-sdk/dist/next/hooks/logger';
+
+import { WithDebugInfo } from '../debug/debug';
+import { WithVariable } from '../helper/helper';
+import { Loading } from '../loading';
+import { AssetsPreview, ImagePreview, WithModal } from '../preview-button/asset-preview';
+import { valueToArray, valueToString, wrapFilesToFileList } from './utils';
 
 import type { UploadFile, UploadListType, UploadProps, UploadChangeParam, RcFile } from 'antd/es/upload/interface';
 import type { AxiosRequestConfig } from 'axios';
@@ -113,7 +115,7 @@ export const Uploader: React.FC<IUploaderProps> = ({
       adapter
         .upload(file as RcFile, {
           onUploadProgress: ({ total, loaded }) =>
-            (onProgress as any)({ percent: Number(Math.round((loaded / total) * 100).toFixed(2)) }, file), // fixme type issue
+            (onProgress as any)({ percent: total ? Number(Math.round((loaded / total) * 100).toFixed(2)) : 0 }, file), // fixme type issue
         })
         .then(([uploaded]) => {
           // const combined = func.valueToSubmit(
@@ -188,16 +190,7 @@ export const Uploader: React.FC<IUploaderProps> = ({
       const [left, right] = [fileList.slice(0, to), fileList.slice(to)];
       const moved = _.uniq([...left, ...item, ...right]);
       setFileList(moved);
-      onChange(
-        func.valueToSubmit(
-          value,
-          valueToString(
-            moved.map((file) => file.url) as any,
-            !!multiple,
-            !!jsonMode,
-          ),
-        ),
-      );
+      onChange(func.valueToSubmit(value, valueToString(moved.map((file) => file.url) as any, !!multiple, !!jsonMode)));
     },
     valueToSubmit: (value?: string | string[], uploaded?: string | string[]): string | string[] => {
       const array = valueToArray(value ?? '');

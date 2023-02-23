@@ -2,15 +2,16 @@
 
 /** @jsx jsx */
 // noinspection ES6UnusedImports
+
+import useLogger from '@asuna-stack/asuna-sdk/dist/next/hooks/logger';
 import { css, jsx } from '@emotion/react';
 
 import { Checkbox, DatePicker, Form, FormInstance, Input, InputNumber, Switch, TimePicker } from 'antd';
 import * as _ from 'lodash';
 import dynamic from 'next/dynamic';
-import React, { VoidFunctionComponent } from 'react';
+import React from 'react';
 import JSONInput from 'react-json-editor-ajrm';
 import locale from 'react-json-editor-ajrm/locale/zh-cn';
-import { useLogger } from 'react-use';
 
 import { apiProxy } from '../../../adapters/proxy';
 import { Config } from '../../../config';
@@ -93,7 +94,7 @@ type ComponentOptions = {
 export const generateComponent = (
   f,
   options: ComponentOptions,
-  Component: VoidFunctionComponent<any>,
+  Component: React.FC<any>,
   formItemLayout: IFormItemLayout = horizontalFormItemLayout,
 ) => {
   const form: FormInstance = f.form ? f.form : f;

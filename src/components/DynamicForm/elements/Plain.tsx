@@ -18,7 +18,7 @@ export function PlainImages({ options, formItemLayout }: IPlainImagesProps) {
   logger.log('[PlainImages]', { options });
   const fieldName = key || name;
   const labelName = label || name || key;
-  const assets = _.isArray(text) ? text : _.isString(text) ? text.split(',') : text;
+  const assets = (_.isArray(text) ? text : _.isString(text) ? text.split(',') : text) as any[];
   // const host = Config.get('UPLOADS_ENDPOINT', '');
   return (
     <Form.Item key={fieldName} {...(formItemLayout || horizontalFormItemLayout)} label={labelName} help={help}>

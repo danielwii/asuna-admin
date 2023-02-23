@@ -9,7 +9,8 @@ import * as R from 'ramda';
 import * as React from 'react';
 import { useMemo } from 'react';
 import { CircleLoader, ScaleLoader } from 'react-spinners';
-import { useAsync, useSetState } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
+import useSetState from 'react-use/lib/useSetState';
 import VisualDiff from 'react-visual-diff';
 import styled from 'styled-components';
 
@@ -100,7 +101,11 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener> 
   const [form] = Form.useForm();
   formRef?.(form);
   const memoizedFields = useMemo(() => fields, [1]); // used to diff
-  const { loading: loadingDrafts, drafts, retry } = useAsunaDrafts({ type: model, refId: _.get(fields, 'id.value') });
+  const {
+    loading: loadingDrafts,
+    drafts,
+    retry,
+  } = useAsunaDrafts({ type: model, refId: _.get(fields, 'id.value') as any });
   const { value: schema } = useAsync(() => AppContext.getSchema(model), [model]);
   const [state, setState] = useSetState<Record<string, FieldDef>>(
     _.assign({}, ..._.map(fields, (field) => ({ [field.name]: { field } }))),
@@ -155,7 +160,7 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener> 
       const pos = ['id'].indexOf(field.name) + 1;
       if (pos) return pos;
       if (field.name.startsWith('is')) return 10;
-      return field.options.accessible === 'readonly' ? 20 : 30;
+      return _.get(field.options, 'accessible') === 'readonly' ? 20 : 30;
     }),
     (field) => (
       <EnhancedPureElement key={field.name} field={field}>
@@ -347,7 +352,7 @@ interface IFormAnchorProps {
   fields: FormField[];
 }
 
-const FormAnchor: React.VFC<IFormAnchorProps> = ({ fields }) => {
+const FormAnchor: React.FC<IFormAnchorProps> = ({ fields }) => {
   if (R.anyPass([R.isNil, R.isEmpty])(fields)) {
     return null;
   }
@@ -386,9 +391,9 @@ interface IPureElementProps {
   field: DynamicFormField | FormField;
 }
 
-const pureLogger = consola.withScope('components:dynamic-form:pure-element');
+const pureLogger = createLogger('components:dynamic-form:pure-element');
 
-const EnhancedPureElement: React.FC<IPureElementProps> = ({ field, children }) => {
+const EnhancedPureElement: React.FC<React.PropsWithChildren<IPureElementProps>> = ({ field, children }) => {
   const hidden = (field as DynamicFormField)?.options?.accessible === 'hidden';
 
   pureLogger.log('[render]', field, { hidden });

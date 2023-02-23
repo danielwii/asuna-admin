@@ -38,7 +38,11 @@ export const commonColumns = {
   actions: columnHelper.generateActions,
 };
 
-export const defaultColumns = (actions) => [commonColumns.id, commonColumns.updatedAt, commonColumns.actions(actions)];
+export const defaultColumns = (actions, extras) => [
+  commonColumns.id(extras),
+  commonColumns.updatedAt,
+  commonColumns.actions(actions),
+];
 
 export const defaultColumnsByPrimaryKey =
   (primaryKey = 'id') =>

@@ -5,7 +5,7 @@ import { Button, Col, Divider, Row, Typography } from 'antd';
 import * as _ from 'lodash';
 import React from 'react';
 import Highlight from 'react-highlight';
-import { useLogger } from 'react-use';
+import useLogger from '@asuna-stack/asuna-sdk/dist/next/hooks/logger';
 import * as util from 'util';
 
 import { isDebugMode } from '../../core/env';
@@ -70,49 +70,51 @@ export function FormKVComponent(props: {
 
   return (
     <WithLoading loading={loading} error={error} retry={refetch}>
-      {() => (
-        <>
-          <Typography>
-            <Button onClick={() => refetch()} loading={loading}>
-              Reload
-            </Button>
-            {info && (
+      {
+        (() => (
+          <>
+            <Typography>
+              <Button onClick={() => refetch()} loading={loading}>
+                Reload
+              </Button>
+              {info && (
+                <>
+                  <Divider />
+                  <Typography.Paragraph>
+                    <InfoCircleOutlined style={{ margin: '0 0.2rem' }} />
+                    {info}
+                  </Typography.Paragraph>
+                </>
+              )}
+            </Typography>
+            <Divider />
+            <Row gutter={16}>
+              <Col span={18}>
+                <EasyForm
+                  initialValues={initialValues}
+                  fields={fieldValues}
+                  onSubmit={(values) => KVHelper.save({ key, collection }, { ...body, values }, refetch)}
+                  onClear={() => KVHelper.clear({ key, collection }, refetch)}
+                />
+              </Col>
+              {isDebugMode && (
+                <Col span={6}>
+                  <div>
+                    <h3>Preview:</h3>
+                    <Highlight className="json">{JSON.stringify(body, null, 2)}</Highlight>
+                  </div>
+                </Col>
+              )}
+            </Row>
+            {isDebugMode && (
               <>
                 <Divider />
-                <Typography.Paragraph>
-                  <InfoCircleOutlined style={{ margin: '0 0.2rem' }} />
-                  {info}
-                </Typography.Paragraph>
+                <Highlight className="json">{util.inspect(data, false, 10)}</Highlight>
               </>
             )}
-          </Typography>
-          <Divider />
-          <Row gutter={16}>
-            <Col span={18}>
-              <EasyForm
-                initialValues={initialValues}
-                fields={fieldValues}
-                onSubmit={(values) => KVHelper.save({ key, collection }, { ...body, values }, refetch)}
-                onClear={() => KVHelper.clear({ key, collection }, refetch)}
-              />
-            </Col>
-            {isDebugMode && (
-              <Col span={6}>
-                <div>
-                  <h3>Preview:</h3>
-                  <Highlight className="json">{JSON.stringify(body, null, 2)}</Highlight>
-                </div>
-              </Col>
-            )}
-          </Row>
-          {isDebugMode && (
-            <>
-              <Divider />
-              <Highlight className="json">{util.inspect(data, false, 10)}</Highlight>
-            </>
-          )}
-        </>
-      )}
+          </>
+        )) as any
+      }
     </WithLoading>
   );
 }

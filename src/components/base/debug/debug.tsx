@@ -5,7 +5,11 @@ import React, { useState } from 'react';
 import { JSONTree } from 'react-json-tree';
 import * as util from 'util';
 
-export const WithDebugInfo: React.FC<{ info: any; debug?: boolean }> = ({ info, debug, children }) => {
+export const WithDebugInfo: React.FC<React.PropsWithChildren<{ info: any; debug?: boolean }>> = ({
+  info,
+  debug,
+  children,
+}) => {
   if (debug) {
     return (
       <>
@@ -48,7 +52,7 @@ export const DebugInfo: React.FC<{
                 -
               </Button>
             </Space>
-            <JSONTree data={data} hideRoot shouldExpandNode={(keyPath, data, level) => level < lv} />
+            <JSONTree data={data} hideRoot shouldExpandNodeInitially={(keyPath, data, level) => level < lv} />
           </>
         );
     }

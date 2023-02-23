@@ -1,11 +1,12 @@
+import useLogger from '@asuna-stack/asuna-sdk/dist/next/hooks/logger';
+
 import * as React from 'react';
-import { useLogger } from 'react-use';
 
 import { PanesView } from '../components/Panes';
 import { AppContext } from '../core/context';
 import { useSharedPanesFunc, useSharedPanesGlobalValue } from '../store/panes.global';
 
-const PanesViewContainer: React.VFC = () => {
+const PanesViewContainer: React.FC = () => {
   const [panesState, panesStateSetter] = useSharedPanesGlobalValue();
   const sharedPanesFunc = useSharedPanesFunc(panesStateSetter);
   AppContext.globalFunc.panes = sharedPanesFunc;

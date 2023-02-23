@@ -1,8 +1,14 @@
+import useLogger from '@asuna-stack/asuna-sdk/dist/next/hooks/logger';
+
 import * as _ from 'lodash';
 import moment from 'moment';
 import * as R from 'ramda';
 import * as React from 'react';
+import { useEffect } from 'react';
 import { PropagateLoader } from 'react-spinners';
+import useEffectOnce from 'react-use/lib/useEffectOnce';
+import useSetState from 'react-use/lib/useSetState';
+import { useStateWithHistory } from 'react-use/lib/useStateWithHistory';
 
 import { Func } from '../../adapters/func';
 import { DynamicForm, DynamicFormProps } from '../../components/DynamicForm';
@@ -19,7 +25,8 @@ import * as schemaHelper from '../../schema';
 
 import type { Pane } from '../../components/Panes';
 
-const logger = createLogger('modules:content:upsert');
+// const logger = createLogger('modules:content:upsert');
+const logger = createLogger('<[ContentUpsert]>');
 
 // --------------------------------------------------------------
 // Build Form
@@ -31,13 +38,14 @@ interface IContentForm extends Pick<DynamicFormProps, 'onSubmit'> {
   onChange: (value) => void;
 }
 
-const ContentForm = ({ fields, ...props }: IContentForm & DynamicFormProps) => {
+const ContentForm: React.FC<IContentForm & DynamicFormProps> = ({ fields, ...props }) => {
   const mappedFields = R.map((field) => {
     // DatePicker for antd using moment instance
-    const isDate = R.contains(field.type)([DynamicFormTypes.Date, DynamicFormTypes.DateTime]);
+    const isDate = R.includes(field.type)([DynamicFormTypes.Date, DynamicFormTypes.DateTime]);
     return field.value && isDate ? { name: field.name, value: moment(field.value) } : field;
   }, fields);
-  // console.log('[ContentForm][mapPropsToFields]', props, { fields, mappedFields });
+
+  useLogger('<[ContentForm]>', props, { fields, mappedFields });
 
   return <DynamicForm fields={mappedFields} {...props} />;
 };
@@ -47,7 +55,7 @@ const ContentForm2 = Form.create<IContentForm & DynamicFormProps>({
   mapPropsToFields({ fields }) {
     const mappedFields = R.map<any, any>((field) => {
       // DatePicker for antd using moment instance
-      const isDate = R.contains(field.type)([DynamicFormTypes.Date, DynamicFormTypes.DateTime]);
+      const isDate = R.includes(field.type)([DynamicFormTypes.Date, DynamicFormTypes.DateTime]);
       if (field.value && isDate) {
         return Form.createFormField({ ...field, value: moment(field.value) });
       }
@@ -86,7 +94,7 @@ const ContentForm2 = Form.create<IContentForm & DynamicFormProps>({
 // Main
 // --------------------------------------------------------------
 
-interface IProps extends ReduxProps {
+export interface IProps extends ReduxProps {
   basis: { pane: Pane };
   // schemas: Asuna.Schema.ModelSchemas;
   models: object;
@@ -109,11 +117,295 @@ interface IState {
   /**
    * 备份的原始数据记录
    */
-  originalFieldValues?: object;
-  wrappedFormSchema?: object;
+  originalFieldValues?;
+  wrappedFormSchema?;
 }
 
-class ContentUpsert extends React.Component<IProps, IState> {
+const preDecorators: (tag: string) => R.AtLeastOneFunctionsFlow<any, any> = (tag) => [
+  schemaHelper.peek(`before-${tag}`),
+  schemaHelper.hiddenComponentDecorator,
+  schemaHelper.jsonDecorator,
+  schemaHelper.enumDecorator,
+  schemaHelper.dynamicTypeDecorator,
+  schemaHelper.peek(`after-${tag}`),
+];
+
+const asyncDecorators: (tag: string) => R.AtLeastOneFunctionsFlow<any, any> = (tag) => [
+  // TODO 目前异步数据拉取无法在页面上显示对应字段的 loading 状态
+  async (fields) => R.curry(schemaHelper.peek(`before-async-${tag}`))(fields),
+  // async fields => schemaHelper.hiddenComponentDecorator(fields),
+  schemaHelper.asyncLoadAssociationsDecorator,
+  schemaHelper.associationDecorator,
+  async (fields) => R.curry(schemaHelper.peek(`after-async-${tag}`))(fields),
+];
+
+export const ContentUpsert: React.FC<IProps> = ({ models, onClose, basis }) => {
+  // content::create::name::timestamp => name
+  const modelName = R.compose(R.nth(2) as any, R.split(/::/), R.path(['pane', 'key']))(basis) as string;
+  logger.log('model name is ', modelName);
+
+  const isInsertMode = !R.path(['pane', 'data', 'record'])(basis);
+  const primaryKey = AppContext.adapters.models.getPrimaryKey(modelName);
+
+  const [fields, setFields, stateHistory] = useStateWithHistory([] as IState['fields']);
+  const [state, setState] = useSetState<
+    Omit<IState, 'fields' | 'loadings' | 'primaryKey' | 'isInsertMode' | 'modelName'>
+  >({
+    status: 'Initializing',
+    init: true,
+    key: basis.pane.key,
+    hasErrors: false,
+  });
+  /*
+   * Insert: Init Schema
+   * Update: Init Schema -> Load Data -> Load associations
+   */
+  const [loadings, setLoadings] = useSetState<{ INIT: boolean; LOAD: boolean; ASSOCIATIONS: boolean }>({
+    INIT: true,
+    LOAD: !isInsertMode,
+    ASSOCIATIONS: true,
+  });
+
+  const _reloadEntity = async (record): Promise<any> => {
+    if (record) {
+      logger.withTag('[_reloadEntity]').log('[_reloadEntity]', 'reload model...', record);
+      return await Func.fetch(modelName, { id: record[primaryKey], profile: 'ids' });
+    }
+  };
+
+  const _handleFormChange = async (changedFields) => {
+    const scope = { logger: logger.withTag('[handleFormChange]') };
+    scope.logger.log({ changedFields, state, fields });
+    if (!R.isEmpty(changedFields)) {
+      const currentChangedFields = R.map<any, any>(R.pick(['value', 'errors']))(changedFields);
+      const changedFieldsBefore = R.mergeDeepRight(state.wrappedFormSchema as any, fields);
+      const allChangedFields = R.mergeDeepRight(changedFieldsBefore, currentChangedFields);
+      // 这里只装饰变化的 fields
+      const { fields: decoratedFields } = (R.pipe as any)(...preDecorators('LOAD'))({
+        modelName,
+        fields: allChangedFields,
+      });
+
+      const stateDiff = diff(fields, decoratedFields);
+      scope.logger.debug({
+        fields,
+        decoratedFields,
+        stateDiff,
+        currentChangedFields,
+        changedFieldsBefore,
+        allChangedFields,
+      });
+
+      const updateModeAtTheFirstTime = !isInsertMode && state.init;
+
+      const hasEnumFilter = !R.isEmpty(R.filter(R.propEq('type', DynamicFormTypes.EnumFilter), changedFields));
+      const hasSelectable = !R.isEmpty(R.filter(R.path<any>(['options', 'selectable']), changedFields));
+
+      scope.logger.debug({
+        changedFields,
+        updateModeAtTheFirstTime,
+        hasEnumFilter,
+        hasSelectable,
+        options: R.map(R.path(['options']), changedFields),
+      });
+
+      if (updateModeAtTheFirstTime || hasEnumFilter || hasSelectable) {
+        setState({ status: 'Updating' });
+        setLoadings({ ASSOCIATIONS: true });
+        scope.logger.debug('load async decorated fields', { ...decoratedFields });
+        const { fields: asyncDecoratedFields } = await R.pipeWith(
+          (f, res) => res.then(f),
+          asyncDecorators('ASSOCIATIONS'),
+        )({ modelName, fields: decoratedFields });
+        const isDifferent = diff(asyncDecoratedFields, fields).isDifferent;
+        if (isDifferent) {
+          scope.logger.debug({ asyncDecoratedFields, decoratedFields, fields });
+        }
+        setState({ status: 'Done', init: false });
+        setFields(asyncDecoratedFields);
+      } else {
+        setState({ status: 'Done' });
+        setFields(decoratedFields);
+      }
+      setLoadings({ LOAD: false, ASSOCIATIONS: false });
+    }
+  };
+
+  const _handleFormSubmit = async (values) => {
+    /*
+    const fieldPairs: any = R.compose(
+      R.pickBy((value, key) =>
+        originalFieldValues
+          ? !_.isEqual(value, originalFieldValues[key]) ||
+            // fixme SimpleJSON 类型目前 newVar 和 oldVar 一样，暂时没找到原因
+            (this.state.fields[key] as any).type === 'SimpleJSON'
+          : true,
+      ),
+      R.map<any, any>(R.prop('value')),
+    )(this.state.fields);
+*/
+    logger.debug('[handleFormSubmit]', { values, originalFieldValues: state.originalFieldValues, fields });
+
+    const id: any = R.prop(primaryKey)(state.originalFieldValues as any);
+
+    const data = Func.upsert(modelName, { body: { ...values, [primaryKey]: id } }).catch((error) => {
+      if (isErrorResponse(error)) {
+        const errors = toFormErrors(error.response);
+        logger.warn('[upsert callback]', { error, errors });
+        // if (typeof errors === 'string') {
+        //   message.error(toErrorMessage(errors));
+        // } else {
+        // }
+        _handleFormChange(errors);
+        setState({ hasErrors: true });
+      }
+    });
+    setState({
+      hasErrors: false,
+      originalFieldValues: { ...state.originalFieldValues, ...values },
+    });
+    // FIXME 当前页面暂未切换为 update 模式，临时关闭当前页面
+    if (isInsertMode) {
+      EventBus.sendEvent(EventType.MODEL_INSERT, { modelName });
+      onClose();
+    } else {
+      EventBus.sendEvent(EventType.MODEL_UPDATE, { modelName, id });
+    }
+  };
+
+  useEffectOnce(() => {
+    const scope = { logger: logger.withTag('[useEffectOnce]') };
+    (async () => {
+      // logger.log('[componentWillMount]', { props: this.props, state: this.state });
+      // const { basis } = this.props;
+      scope.logger.log('init...');
+
+      // content::create::name::timestamp => name
+      const modelName = R.compose(R.nth(2) as any, R.split(/::/), R.path(['pane', 'key']))(basis) as string;
+      scope.logger.debug('model name is ', modelName);
+
+      // --------------------------------------------------------------
+      // Build form fields with all needed data
+      // --------------------------------------------------------------
+
+      const formSchema = AppContext.adapters.models.getFormSchema(modelName);
+
+      // if (modelName === 'colleges') {
+      //   formSchema = R.pick(['id', 'name', 'name_en', 'sequences'], formSchema);
+      // }
+
+      const formFields = R.omit(['created_at', 'updated_at'])(formSchema);
+      scope.logger.debug('form fields is', formFields);
+
+      // --------------------------------------------------------------
+      // Using pre decorators instead
+      // --------------------------------------------------------------
+
+      let { fields: decoratedFields } = (R.pipe as any)(...preDecorators('INIT'))({
+        modelName,
+        fields: formFields,
+      });
+
+      scope.logger.debug('decoratedFields is', decoratedFields);
+
+      let originalFieldValues;
+
+      // INSERT-MODE: 仅在新增模式下拉取关联数据
+      if (isInsertMode) {
+        ({ fields: decoratedFields } = await R.pipeWith(
+          (f, res) => res.then(f),
+          asyncDecorators('ASSOCIATIONS'),
+        )({ modelName, fields: decoratedFields }));
+        // insert mode 隐藏 tenant 字段
+        _.set(decoratedFields['tenant'], 'options.accessible', 'hidden');
+      } else {
+        // 编辑模式尝试再次拉取数据 !!IMPORTANT!! record must have property id
+        const record = basis?.pane?.data?.record;
+        const entity = await _reloadEntity(record);
+        // const models = this.props.models;
+        originalFieldValues = R.pathOr(entity, [modelName, record?.id])(models);
+        scope.logger.debug(
+          { modelName, record, entity },
+          { originalFieldValues, record },
+          diff(originalFieldValues, record),
+        );
+      }
+
+      // 当前角色是租户的资源不显示租户字段
+      if (TenantContext.hasTenantRoles) {
+        _.set(decoratedFields['tenant'], 'options.accessible', 'hidden');
+      }
+
+      setState({
+        // 不是新增时还存在更多信息的加载操作
+        status: isInsertMode ? 'Done' : 'Loading',
+        // 包括了表单的元数据，当前页面也只需要填充这一次
+        wrappedFormSchema: formFields,
+        originalFieldValues,
+      });
+      // 填充整个页面需要的数据，这是页面初始化后第一次数据完整数据填充，并且已经包括了关联数据，但是并未包含真实的值
+      setFields(decoratedFields);
+      // 更新当前的加载状态，这里可以结束初始化和关联阶段
+      setLoadings({ INIT: false, ASSOCIATIONS: false });
+      scope.logger.success('init done', state, loadings);
+    })();
+  });
+
+  /*
+   * update 模式时第一次加载数据需要通过异步获取到的数据进行渲染。
+   * 渲染成功后则不再处理 props 的数据更新，以保证当前用户的修改不会丢失。
+   */
+  useEffect(() => {
+    if (state.init && state.originalFieldValues && fields) {
+      logger.info('trigger updates', state, fields);
+      _handleFormChange(R.map((value) => ({ value }))(state.originalFieldValues)).catch(logger.error);
+    }
+  }, [state.originalFieldValues, fields]);
+
+  TenantHelper.wrapFields(modelName, fields);
+  const isPublishedField = _.find(fields, (field) => field.name === 'isPublished') as any;
+  const auditMode = !TenantContext.enableModelPublishForCurrentUser(modelName) && !isPublishedField?.value;
+
+  // loading 仅在初次加载时渲染，否则编辑器会 lose focus
+  const noFields = R.anyPass([R.isEmpty, R.isNil])(fields);
+
+  useLogger('<[ContentUpsert]>', state, loadings, fields, { noFields }, stateHistory.history);
+
+  if (noFields || loadings.INIT || loadings.LOAD) {
+    return (
+      <React.Fragment>
+        <span>{state.status}...</span>
+        <div>
+          <PropagateLoader color="#13c2c2" />
+        </div>
+        {/* language=CSS */}
+        <style jsx>{`
+          div {
+            width: 0;
+            margin: 10rem auto;
+          }
+        `}</style>
+      </React.Fragment>
+    );
+  }
+
+  return (
+    <>
+      <ContentForm
+        model={modelName}
+        anchor
+        auditMode={auditMode}
+        fields={fields}
+        onChange={_handleFormChange}
+        onSubmit={_handleFormSubmit}
+        onClose={onClose}
+      />
+      <DebugInfo data={{ basis, state, auditMode }} divider />
+    </>
+  );
+};
+
+class ContentUpsert2 extends React.Component<IProps, IState> {
   preDecorators = (tag) => [
     schemaHelper.peek(`before-${tag}`),
     schemaHelper.hiddenComponentDecorator,
@@ -192,10 +484,10 @@ class ContentUpsert extends React.Component<IProps, IState> {
 
     // INSERT-MODE: 仅在新增模式下拉取关联数据
     if (isInsertMode) {
-      ({ fields: decoratedFields } = await (R.pipeP as any)(...this.asyncDecorators('ASSOCIATIONS'))({
-        modelName,
-        fields: decoratedFields,
-      }));
+      ({ fields: decoratedFields } = await R.pipeWith(
+        (f, res) => res.then(f),
+        asyncDecorators('ASSOCIATIONS'),
+      )({ modelName, fields: decoratedFields }));
       // insert mode 隐藏 tenant 字段
       _.set(decoratedFields['tenant'], 'options.accessible', 'hidden');
     } else {
@@ -275,7 +567,7 @@ class ContentUpsert extends React.Component<IProps, IState> {
     if (!R.isEmpty(changedFields)) {
       const { wrappedFormSchema, fields } = this.state;
 
-      const currentChangedFields = R.map(R.pick(['value', 'errors']))(changedFields);
+      const currentChangedFields = R.map<any, any>(R.pick(['value', 'errors']))(changedFields);
       const changedFieldsBefore = R.mergeDeepRight(wrappedFormSchema as any, fields);
       const allChangedFields = R.mergeDeepRight(changedFieldsBefore, currentChangedFields);
       // 这里只装饰变化的 fields
@@ -313,10 +605,10 @@ class ContentUpsert extends React.Component<IProps, IState> {
           loadings: { ...this.state.loadings, ASSOCIATIONS: true },
         });
         logger.debug('[handleFormChange]', 'load async decorated fields');
-        const { fields: asyncDecoratedFields } = await (R.pipeP as any)(...this.asyncDecorators('ASSOCIATIONS'))({
-          modelName,
-          fields: decoratedFields,
-        });
+        const { fields: asyncDecoratedFields } = await R.pipeWith(
+          (f, res) => res.then(f),
+          asyncDecorators('ASSOCIATIONS'),
+        )({ modelName, fields: decoratedFields });
         const isDifferent = diff(asyncDecoratedFields, this.state.fields).isDifferent;
         if (isDifferent) {
           logger.debug('[handleFormChange]', {

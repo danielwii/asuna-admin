@@ -1,10 +1,11 @@
 import { message } from 'antd';
+import _ from 'lodash';
 import * as R from 'ramda';
 
 import { createLogger } from '../logger';
 import { Asuna } from '../types';
 
-import type { AxiosResponse, AxiosError } from 'axios';
+import type { AxiosError, AxiosResponse } from 'axios';
 
 const logger = createLogger('helpers:errors');
 
@@ -48,19 +49,16 @@ export function toErrorMessage(e) {
 
 export function isErrorResponse(error) {
   const isError = R.pathEq(['response', 'data', 'name'], 'Error')(error);
-  const isAsuna = /^ASUNA__.+/.test(
-    R.path<any>(['response', 'data', 'code'])(error),
-  );
+  const isAsuna = /^ASUNA__.+/.test(R.path<any>(['response', 'data', 'code'])(error));
   return isError || isAsuna;
 }
 
 export function toFormErrors(response: AxiosResponse): FormError | string | null {
-  if (!response) {
-    return null;
-  }
+  console.error('[toFormErrors]', response);
+  if (!response) return null;
   if (response.data.error) {
     const { error } = response.data as Asuna.Error.ErrorResponse;
-    if (response.status === 400) {
+    if (response.status === 400 && error.errors) {
       const errorFields = R.map(
         (error: Asuna.Error.Validate): FormError => ({
           [error.property]: {
@@ -76,7 +74,7 @@ export function toFormErrors(response: AxiosResponse): FormError | string | null
       logger.log('[toFormErrors]', { response, errorFields });
       return R.mergeAll(errorFields);
     }
-    message.error(`${error.name}(${error.code}): ${error.message}`);
+    message.error(`${response.data.status}(${_.get(error, 'type')}): ${JSON.stringify(response.data.message)}`);
     return error.message;
   }
 

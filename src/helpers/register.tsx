@@ -1,4 +1,4 @@
-import consola from 'consola';
+import consola, { LogLevel } from 'consola';
 import _ from 'lodash';
 import * as React from 'react';
 
@@ -15,17 +15,17 @@ export interface IRegGraphqlProps {
   kvGql: (KVOpts: { collection: string; key: string }) => any;
 }
 
-// export const DefaultKVComponent: React.VFC = () => {};
+// export const DefaultKVComponent: React.FC = () => {};
 
 export class ComponentService implements IComponentService {
-  #components: { [key: string]: React.VFC } = {};
+  #components: { [key: string]: React.FC } = {};
 
-  reg(componentName: string, component: React.VFC): void {
+  reg(componentName: string, component: React.FC): void {
     this.#components[componentName] = component;
   }
 
-  regGraphql(componentName: string, model?: KeyValueModelVo, render?: React.VFC): void {
-    consola.info('reg graphql component', { componentName, client: _.get(AppContext.ctx, 'graphql.client') }, model);
+  regGraphql(componentName: string, model?: KeyValueModelVo, render?: React.FC): void {
+    logger.info('reg graphql component', { componentName, client: _.get(AppContext.ctx, 'graphql.client') }, model);
     this.#components[componentName] = (props) => {
       // <ApolloProvider client={AppContext.ctx.graphql.client as any /* TODO error occurred */}>
       //   {
@@ -46,7 +46,7 @@ export class ComponentService implements IComponentService {
     // </ApolloProvider>
   }
 
-  load(component: string): React.VFC {
+  load(component: string): React.FC {
     logger.log('load component', { component, components: this.#components });
     return this.#components[component];
   }

@@ -1,7 +1,7 @@
 /** @jsxRuntime classic */
 
 /** @jsx jsx */
-import { jsx, css, Global } from '@emotion/react';
+import { css, Global, jsx } from '@emotion/react';
 
 import { ConfigProvider } from 'antd';
 import zhCN from 'antd/lib/locale/zh_CN';
@@ -31,15 +31,15 @@ import 'codemirror/theme/monokai.css';
  * @param hideCharacteristics
  * @constructor
  */
-const WithStyles: React.FC<{ hideCharacteristics?: boolean }> = ({ children, hideCharacteristics }) => (
+const WithStyles: React.FC<React.PropsWithChildren<{ hideCharacteristics?: boolean }>> = ({
+  children,
+  hideCharacteristics,
+}) => (
   <ConfigProvider locale={zhCN}>
     <NextHead>
       <title>
         {hideCharacteristics ? '' : 'Asuna '}Admin : {getConfig().publicRuntimeConfig.env}
       </title>
-      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@^4/animate.min.css" />
-      {/*<link rel="icon" type="image/png" sizes="32x32" href="/static/icons/favicon-32x32.png" />*/}
-      {/*<link rel="icon" type="image/png" sizes="16x16" href="/static/icons/favicon-16x16.png" />*/}
     </NextHead>
     {children}
     <Global

@@ -1,5 +1,8 @@
+import useLogger from '@asuna-stack/asuna-sdk/dist/next/hooks/logger';
+
 import * as _ from 'lodash';
 import * as React from 'react';
+import useEffectOnce from 'react-use/lib/useEffectOnce';
 import { Subscription } from 'rxjs';
 
 import { AsunaDataTable } from '../../components/AsunaDataTable';
@@ -9,16 +12,15 @@ import { castModelKey } from '../../helpers/cast';
 import { DebugInfo } from '../../helpers/debug';
 import { extractModelNameFromPane, resolveModelInPane } from '../../helpers/models';
 import { TenantHelper } from '../../helpers/tenant';
-import { diff } from '../../helpers/utils';
 import { createLogger } from '../../logger';
 import { Asuna } from '../../types';
 
 import type { SorterResult } from 'antd/es/table/interface';
 import type { Pane } from '../../components/Panes';
 
-const logger = createLogger('modules:content:index');
+const logger = createLogger('<[ContentIndex]>');
 
-interface IProps /*extends ReduxProps*/ {
+export interface IProps /*extends ReduxProps*/ {
   basis: { pane: Pane };
   activeKey: string;
   // models: object;
@@ -41,109 +43,74 @@ interface IState {
   rowClassName?: (record: any, index: number) => string;
 }
 
-class ContentIndex extends React.Component<IProps, IState> {
-  constructor(props) {
-    super(props);
+const ContentIndex: React.FC<IProps> = ({ basis, activeKey }) => {
+  const { modelName, extraName } = extractModelNameFromPane(basis.pane);
+  const { modelConfig, primaryKey, columnOpts } = resolveModelInPane(modelName, extraName);
 
-    const { basis, activeKey } = this.props;
+  const creatableOpt = columnOpts?.creatable;
+  const rowClassName = columnOpts?.rowClassName;
+  let creatable = _.isFunction(creatableOpt) ? creatableOpt : modelConfig.creatable !== false && creatableOpt !== false;
+  const deletable = columnOpts?.deletable !== false;
+  const editable = columnOpts?.editable !== false;
 
-    logger.debug('[constructor]', { basis });
-
-    const { modelName, extraName } = extractModelNameFromPane(basis.pane);
-    const { modelConfig, primaryKey, columnOpts } = resolveModelInPane(modelName, extraName);
-
-    const creatableOpt = columnOpts?.creatable;
-    const rowClassName = columnOpts?.rowClassName;
-    const creatable = _.isFunction(creatableOpt)
-      ? creatableOpt
-      : modelConfig.creatable !== false && creatableOpt !== false;
-    const deletable = columnOpts?.deletable !== false;
-    const editable = columnOpts?.editable !== false;
-
-    logger.debug('[constructor]', { modelConfig, modelName, primaryKey, columnOpts, creatable });
-    const sorter: SorterResult<any> = {
-      columnKey: primaryKey,
-      field: primaryKey,
-      order: 'descend',
-    } as any;
-    const orderBy = Config.get('TABLE_DEFAULT_ORDER_BY');
-    if (!_.isEmpty(orderBy) && orderBy !== 'byPrimaryKey') {
-      sorter['columnKey'] = castModelKey(orderBy);
-      sorter['field'] = castModelKey(orderBy);
-    }
-
-    const resolved = TenantHelper.resolveCount(modelName);
-    const creatableForTenant = resolved && resolved.limit ? resolved.total < resolved.limit : creatable;
-
-    this.state = {
-      modelName,
-      extraName,
-      creatable: creatableForTenant,
-      editable,
-      deletable,
-      opts: columnOpts,
-      rowClassName,
-      key: activeKey,
-      /*
-      subscription: AppContext.subject.subscribe({
-        next: (action) => {
-          logger.debug('[observer-content-index]', { modelName, activeKey, action });
-        },
-      }),*/
-      busSubscription: EventBus.observable.subscribe({
-        next: (action: ActionEvent) => {
-          if (
-            _.includes([EventType.MODEL_INSERT, EventType.MODEL_UPDATE], action.type) &&
-            action.payload.modelName === modelName
-          ) {
-            logger.log('[bus-content-index]', { modelName, activeKey, action });
-            // this._refresh();
-            this.setState({});
-          }
-        },
-      }),
-    };
+  const sorter: SorterResult<any> = {
+    columnKey: primaryKey,
+    field: primaryKey,
+    order: 'descend',
+  } as any;
+  const orderBy = Config.get('TABLE_DEFAULT_ORDER_BY');
+  if (!_.isEmpty(orderBy) && orderBy !== 'byPrimaryKey') {
+    sorter['columnKey'] = castModelKey(orderBy);
+    sorter['field'] = castModelKey(orderBy);
   }
 
-  componentWillUnmount() {
-    logger.log('[componentWillUnmount]', 'destroy subscriptions');
-    this.state.subscription?.unsubscribe();
-    this.state.busSubscription.unsubscribe();
-  }
+  const resolved = TenantHelper.resolveCount(modelName);
+  const creatableForTenant = resolved && resolved.limit ? resolved.total < resolved.limit : creatable;
 
-  shouldComponentUpdate(nextProps, nextState, nextContext) {
-    logger.debug('[shouldComponentUpdate]', { nextProps, nextState, nextContext });
-    const { key } = this.state;
-    const { activeKey } = nextProps;
-    const samePane = key === activeKey;
-    const propsDiff = diff(this.props, nextProps);
-    const stateDiff = diff(this.state, nextState);
-    const shouldUpdate = samePane && (propsDiff.isDifferent || stateDiff.isDifferent);
-    logger.debug('[shouldComponentUpdate]', { key, activeKey, samePane, shouldUpdate, propsDiff, stateDiff });
-    return shouldUpdate;
-  }
+  creatable = creatableForTenant;
+  const opts = columnOpts;
+  const key = activeKey;
 
-  render() {
-    const { modelName, extraName, creatable, editable, deletable, rowClassName, opts } = this.state;
+  useEffectOnce(() => {
+    const subscription = EventBus.observable.subscribe({
+      next: (action: ActionEvent) => {
+        if (
+          _.includes([EventType.MODEL_INSERT, EventType.MODEL_UPDATE], action.type) &&
+          action.payload.modelName === modelName
+        ) {
+          logger.log('[bus-content-index]', { modelName, activeKey, action });
+          // this._refresh();
+          // this.setState({});
+          logger.warn('maybe should refresh...');
+        }
+      },
+    });
+    return () => subscription.unsubscribe();
+  });
 
-    return (
-      <>
-        <AsunaDataTable
-          modelName={modelName}
-          extraName={extraName}
-          creatable={creatable}
-          editable={editable}
-          deletable={deletable}
-          renderActions={opts?.renderActions}
-          renderHelp={opts?.renderHelp}
-          expandedRowRender={opts?.expandedRowRender}
-          // models={models}
-          rowClassName={rowClassName}
-        />
-        <DebugInfo data={{ props: this.props, state: this.state }} divider />
-      </>
-    );
-  }
-}
+  useLogger(
+    '<[ContentIndex]>',
+    { basis, activeKey },
+    { modelName, extraName, modelConfig, primaryKey, columnOpts, sorter },
+  );
+
+  return (
+    <>
+      <AsunaDataTable
+        modelName={modelName}
+        extraName={extraName}
+        creatable={creatable}
+        editable={editable}
+        deletable={deletable}
+        renderActions={opts?.renderActions}
+        renderHelp={opts?.renderHelp}
+        expandedRowRender={opts?.expandedRowRender}
+        // models={models}
+        rowClassName={rowClassName}
+      />
+      <DebugInfo data={{ modelName, extraName, modelConfig, primaryKey, columnOpts, sorter }} divider />
+    </>
+  );
+};
 
 export default ContentIndex;

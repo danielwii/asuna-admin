@@ -1,11 +1,13 @@
 /** @jsxRuntime classic */
 
 /** @jsx jsx */
+import useLogger from '@asuna-stack/asuna-sdk/dist/next/hooks/logger';
 import { css, jsx } from '@emotion/react';
 
 import _ from 'lodash';
 import React, { useRef } from 'react';
-import { createReducerContext, useLogger, useToggle } from 'react-use';
+import createReducerContext from 'react-use/lib/factory/createReducerContext';
+import useToggle from 'react-use/lib/useToggle';
 
 import { withP } from '../helper/helper';
 import { AsunaTableProps } from './interface';

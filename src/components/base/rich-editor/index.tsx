@@ -1,17 +1,17 @@
-import { FormOutlined, Html5Outlined } from '@ant-design/icons';
+import { Alert, Button, Space } from 'antd';
 
-import { Alert, Button, Divider, Radio, Space } from 'antd';
 import 'codemirror/addon/comment/comment';
 import 'codemirror/addon/display/autorefresh';
 import 'codemirror/addon/edit/matchbrackets';
 import 'codemirror/keymap/sublime';
 import 'codemirror/mode/htmlmixed/htmlmixed';
+
 // import 'codemirror/theme/monokai.css';
 import { format } from 'prettier';
 import parserHtml from 'prettier/parser-html';
 import React, { useState } from 'react';
-import { Controlled as CodeMirror } from 'react-codemirror2';
-import { useMount, useNumber, useToggle } from 'react-use';
+import useMount from 'react-use/lib/useMount';
+import useNumber from 'react-use/lib/useNumber';
 
 import { BraftRichEditor } from './braft';
 import { QuillEditor } from './quill';
@@ -21,7 +21,7 @@ export * from './braft';
 export type RichEditorProps = { value: string; onChange: (value: string) => any; validateFn; upload };
 export const RichEditor = ({ value, onChange, validateFn, upload }: RichEditorProps): JSX.Element => {
   const [tabIndex, { set }] = useNumber(2);
-  const [state, setState] = useState(format(value, { parser: 'html', plugins: [parserHtml] }));
+  const [state, setState] = useState(format(value ?? '', { parser: 'html', plugins: [parserHtml] }));
 
   useMount(() => set(0));
 
@@ -50,16 +50,18 @@ export const RichEditor = ({ value, onChange, validateFn, upload }: RichEditorPr
 
   return (
     <Space direction="vertical">
+      {/*
       <Radio.Group size="small" value={tabIndex} onChange={(e) => set(e.target.value)}>
         <Radio.Button value={0}>
           Editor <FormOutlined />
         </Radio.Button>
-        {/*<Radio.Button value={1}>QuillEditor V2 <Html5Outlined /></Radio.Button>*/}
+        <Radio.Button value={1}>QuillEditor V2 <Html5Outlined /></Radio.Button>
         <Radio.Button value={2}>
           HTML <Html5Outlined />
         </Radio.Button>
       </Radio.Group>
-      <div>{view}</div>
+*/}
+      <QuillEditor value={value} onChange={onChange} upload={upload} validateFn={validateFn} />
     </Space>
   );
 };

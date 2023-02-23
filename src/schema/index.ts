@@ -1,3 +1,4 @@
+import consola, { LogLevel } from 'consola';
 import * as _ from 'lodash';
 import * as R from 'ramda';
 
@@ -9,6 +10,7 @@ import { createLogger } from '../logger';
 
 import type { DynamicFormField, DynamicFormFieldOptions } from '../components/DynamicForm/render';
 
+// const logger = createLogger('helpers:schema');
 const logger = createLogger('helpers:schema');
 
 export * from './async';
@@ -90,7 +92,7 @@ export const dynamicTypeDecorator = ({
 /**
  * 自动通过公共 associations 填充未定义的关联
  */
-export const associationDecorator = ({ modelName, fields }: { modelName: string; fields }) => {
+export const associationDecorator = async ({ modelName, fields }: { modelName: string; fields }) => {
   const TAG = '[associationDecorator]';
   logger.log(TAG, { fields });
 

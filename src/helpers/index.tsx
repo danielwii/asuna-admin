@@ -9,7 +9,7 @@ import { Promise } from 'bluebird';
 import * as _ from 'lodash';
 import moment from 'moment';
 import * as React from 'react';
-import NumberFormat from 'react-number-format';
+import { NumericFormat } from 'react-number-format';
 import * as util from 'util';
 
 import { parseAddressStr } from '../components/Address';
@@ -21,7 +21,7 @@ import { valueToArrays } from '../core/url-rewriter';
 import { createLogger } from '../logger';
 import { castModelKey } from './cast';
 import { columnHelper, generateSearchColumnProps } from './columns/columns';
-import { nullProtectRender, parseType, ParseType } from './columns/utils';
+import { ParseType, nullProtectRender, parseType } from './columns/utils';
 import { ComponentsHelper } from './components';
 import { WithDebugInfo } from './debug';
 import { extractValue } from './func';
@@ -188,7 +188,7 @@ export const columnHelper2 = {
           );
         } else if (opts.type === 'number') {
           const value = extractValue(record, opts.transformer);
-          return <NumberFormat value={value} displayType="text" thousandSeparator />;
+          return <NumericFormat value={value} displayType="text" thousandSeparator />;
         } else {
           return <Statistic value={Number(value)} />;
         }
@@ -229,7 +229,7 @@ export const columnHelper2 = {
         const value = extractValue(record, opts.transformer);
         return (
           <WithDebugInfo info={{ key, title, record, value }}>
-            <Tag color={_.get(opts, `colorMap['${record}']`)}>{value}</Tag>
+            <Tag color={_.get(opts, `colorMap['${record}']`) as string}>{value}</Tag>
           </WithDebugInfo>
         );
       }),

@@ -1,8 +1,10 @@
-import { message } from 'antd';
+import useLogger from '@asuna-stack/asuna-sdk/dist/next/hooks/logger';
+
+import { Button, message } from 'antd';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { useContext } from 'react';
-import { useAsyncRetry, useEffectOnce, useLogger } from 'react-use';
+import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 import { CubeGrid, FoldingCube } from 'styled-spinkit';
 
 import { Func } from '../adapters/func';
@@ -12,19 +14,18 @@ import { DebugInfo } from '../helpers/debug';
 import { TenantHelper } from '../helpers/tenant';
 import { useSharedPanesFunc, useSharedPanesGlobalValue } from '../store/panes.global';
 
-export const SideMenuRender: React.VFC = (props) => {
+export const SideMenuContainer: React.FC = (props) => {
   // const [tenantInfo, setTenantInfo] = useState<TenantInfo>();
   const [, panesStateSetter] = useSharedPanesGlobalValue();
   const sharedPanesFunc = useSharedPanesFunc(panesStateSetter);
 
   const { store, updateStore } = useContext(StoreContext);
-  const state = useAsyncRetry(async () =>
+  const menuLoader = useAsyncRetry(async () =>
     Func.loadMenus().catch((reason) => {
       message.error(`init side menus error ${reason.message}`);
       return null;
     }),
   );
-  useEffectOnce(() => {});
   /*
   useEffectOnce(() => {
     TenantHelper.reloadInfo().then(info => setTenantInfo(info));
@@ -33,7 +34,7 @@ export const SideMenuRender: React.VFC = (props) => {
   });
 */
 
-  useLogger('SideMenuRender', state);
+  useLogger('<[SideMenuContainer]>', menuLoader.loading, menuLoader, store);
 
   // --------------------------------------------------------------
   // tenant support
@@ -42,6 +43,7 @@ export const SideMenuRender: React.VFC = (props) => {
   const isTenantEnabled = store.tenantInfo?.config?.enabled;
   const hasTenantRoles = !_.isEmpty(store.tenantInfo?.roles);
   const authorized = TenantHelper.authorized(store.tenantInfo);
+
   if (isTenantEnabled && hasTenantRoles && !authorized)
     return (
       <>
@@ -49,18 +51,19 @@ export const SideMenuRender: React.VFC = (props) => {
         <DebugInfo data={{ store, isTenantEnabled, hasTenantRoles, authorized }} />
       </>
     );
-  return state.loading ? (
+
+  return menuLoader.loading ? (
     <FoldingCube />
-  ) : state.error ? (
+  ) : menuLoader.error ? (
     <div>
-      Error: {state.error.message}
-      <button onClick={state.retry}>重新拉取</button>
+      Error: {menuLoader.error.message}
+      <button onClick={menuLoader.retry}>重新拉取</button>
     </div>
-  ) : state.value ? (
-    <SideMenu {...props} menus={state.value?.menus} onOpen={sharedPanesFunc.open} />
+  ) : menuLoader.value ? (
+    <SideMenu {...props} menus={menuLoader.value?.menus} onOpen={sharedPanesFunc.open} />
   ) : (
-    <div>
-      <button onClick={state.retry}>重新拉取</button>
+    <div style={{ textAlign: 'center', margin: '1rem' }}>
+      <Button onClick={menuLoader.retry}>重新拉取</Button>
     </div>
   );
 };

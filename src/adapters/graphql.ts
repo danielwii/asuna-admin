@@ -1,4 +1,4 @@
-import { ApolloClient, gql, InMemoryCache, NormalizedCacheObject } from '@apollo/client';
+import { ApolloClient, InMemoryCache, NormalizedCacheObject, gql } from '@apollo/client';
 
 import * as fp from 'lodash/fp';
 
@@ -35,10 +35,18 @@ export class GraphqlAdapterImpl {
   constructor(uri?: string) {
     // console.log('init graphql api with', uri);
     if (uri) {
-      this.client = new ApolloClient({ cache: new InMemoryCache(), uri, headers: authHeader().headers });
+      this.client = new ApolloClient({
+        cache: new InMemoryCache(),
+        uri,
+        headers: authHeader().headers,
+      });
     } else {
       logger.log('graphql uri not defined, using /graphql for default');
-      this.client = new ApolloClient({ cache: new InMemoryCache(), uri: '/graphql', headers: authHeader().headers });
+      this.client = new ApolloClient({
+        cache: new InMemoryCache(),
+        uri: '/graphql',
+        headers: authHeader().headers,
+      });
     }
     // this.client = new ApolloClient({ uri, headers: authHeader().headers });
   }
@@ -65,14 +73,14 @@ export class GraphqlAdapterImpl {
         fetchPolicy: 'no-cache',
         query: gql`
           {
-            sys_modelSchemas {
+            sys_model_schemas {
               name
               schema
             }
           }
         `,
       })
-      .then(fp.get('data.sys_modelSchemas'));
+      .then(fp.get('data.sys_model_schemas'));
   }
 
   async loadSystemSettings() {

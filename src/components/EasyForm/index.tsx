@@ -16,8 +16,8 @@ import type { FormFieldDef, FormFieldsGroup } from '../base/easy-form/interfaces
 const logger = createLogger('components:easy-form');
 
 interface FormProps<FieldsType> {
-  message?: string | React.ReactChild;
-  body?: string | React.ReactChild;
+  message?: string | React.ReactElement;
+  body?: string | React.ReactElement;
   fields: FieldsType;
 }
 
@@ -74,7 +74,7 @@ const GroupInnerForm = (props: GroupEasyFormProps & formik.FormikProps<formik.Fo
                           {/*<Input id={field.name} type={formField.type} {...field} value={value} />*/}
                           <RenderInputComponent form={form} fieldDef={fieldDef} field={field as any} value={value} />
                           {formField.help && <FormHelperText>{formField.help}</FormHelperText>}
-                          {hasError && <FormHelperText>{form.errors[formField.name]}</FormHelperText>}
+                          {hasError && <FormHelperText>{JSON.stringify(form.errors[formField.name])}</FormHelperText>}
                           <Divider type="horizontal" style={{ margin: '0.5rem 0' }} />
                         </FormControl>
                       );
@@ -86,7 +86,12 @@ const GroupInnerForm = (props: GroupEasyFormProps & formik.FormikProps<formik.Fo
             </div>
           ))}
           <antd.Divider />
-          <antd.Button type="primary" htmlType="submit" onSubmit={handleSubmit} disabled={isSubmitting}>
+          <antd.Button
+            type="primary"
+            htmlType="submit"
+            onSubmit={(event) => handleSubmit(event)}
+            disabled={isSubmitting}
+          >
             {isSubmitting ? 'Submitting' : 'Submit'}
           </antd.Button>{' '}
           {/*<antd.Button onClick={handleReset} disabled={isSubmitting}>

@@ -1,11 +1,10 @@
+import useLogger from '@asuna-stack/asuna-sdk/dist/next/hooks/logger';
+
 import * as _ from 'lodash';
 import dynamic from 'next/dynamic';
 import * as React from 'react';
 import { useMemo } from 'react';
-import useLogger from 'react-use/lib/useLogger';
 
-import { DebugSettings } from '../components/DebugSettings';
-import { withDebugSettingsProps } from '../containers/DebugSettings';
 import { AppContext } from '../core/context';
 import { DebugInfo } from '../helpers/debug';
 import { createLogger } from '../logger';
@@ -15,9 +14,7 @@ import type { Pane } from '../components/Panes';
 const logger = createLogger('modules:index');
 
 export class ModuleRegister {
-  static renders = {
-    DebugSettings: (props) => withDebugSettingsProps((innerProps) => <DebugSettings {...props} {...innerProps} />),
-  };
+  static renders = {};
 }
 
 const components = {
@@ -29,7 +26,7 @@ const components = {
   default: dynamic(() => import('./undefined')),
 };
 
-const getModule = (module: keyof typeof components) => {
+const getModule = (module: keyof typeof components): React.ComponentClass<any, any> | React.FunctionComponent<any> => {
   logger.debug('looking for module', module);
 
   if (_.has(components, module)) {

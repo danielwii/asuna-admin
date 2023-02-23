@@ -126,7 +126,7 @@ export function ListKVComponent(props: {
                   <Button
                     type="primary"
                     htmlType="submit"
-                    onSubmit={formikBag.handleSubmit}
+                    onSubmit={(event) => formikBag.handleSubmit(event)}
                     disabled={formikBag.isSubmitting}
                   >
                     {formikBag.isSubmitting ? 'Submitting' : 'Submit'}

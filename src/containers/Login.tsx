@@ -1,8 +1,8 @@
 import { message } from 'antd';
 import _ from 'lodash';
 import React from 'react';
-import { useLocalStorage } from 'react-use';
 import useAsync from 'react-use/lib/useAsync';
+import useLocalStorage from 'react-use/lib/useLocalStorage';
 import { FoldingCube } from 'styled-spinkit';
 
 import { authProxy, securityProxy } from '../adapters/proxy';
@@ -13,7 +13,7 @@ import { createLogger } from '../logger';
 
 const logger = createLogger('containers:login');
 
-export const LoginContainer: React.VFC<any> = (props) => {
+export const LoginContainer: React.FC<any> = (props) => {
   const [token, setToken, removeToken] = useLocalStorage<string>('token', undefined, { raw: true });
 
   const state = useAsync(async () => {
@@ -39,7 +39,7 @@ export const LoginContainer: React.VFC<any> = (props) => {
       try {
         logger.log('[login-action]', { username, password });
         const res = await authProxy.login(username, password);
-        localStorage.setItem("username", username);
+        localStorage.setItem('username', username);
         logger.log('[login-action]', res, res.data.accessToken);
         setToken(res.data.accessToken);
       } catch (error) {

@@ -1,13 +1,13 @@
-import { ApolloClient, gql, InMemoryCache } from '@apollo/client';
+import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
 import useLogger from '@asuna-stack/asuna-sdk/dist/next/hooks/logger';
 import styled from '@emotion/styled';
 
 import { changeAntdTheme } from 'dynamic-antd-theme';
 import * as _ from 'lodash';
+import { nanoid } from 'nanoid';
 import * as React from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import useMount from 'react-use/lib/useMount';
-import * as shortid from 'shortid';
 
 import { Func } from '../adapters/func';
 import { LivingLoading } from '../components/base/living-loading';
@@ -56,9 +56,8 @@ export type ILoginPageProps = {
   customLogin?: (site, enableWeChat) => React.ReactElement;
 } & LoginInitialProps;
 
-export const LoginPageView: React.VFC<ILoginPageProps> = (props) => {
-  const { /*dispatch,*/ register, site } = props;
-  // Dispatcher.regDispatch(dispatch);
+export const LoginPageView: React.FC<ILoginPageProps> = (props) => {
+  const { register, site } = props;
   const state = useAsync(async () => {
     await AppContext.setup(register, Func);
   });
@@ -106,7 +105,7 @@ export const wechatLoginGetInitial = async (ctx: NextPageContext): Promise<Login
   }
 
   try {
-    const tempId = shortid.generate();
+    const tempId = nanoid();
     const userAgent = ctx.req ? ctx.req.headers['user-agent'] : navigator.userAgent;
     // const host = Config.get('GRAPHQL_HOST') || 'localhost';
     // const port = process.env.PORT || 3000;
@@ -149,12 +148,10 @@ export const wechatLoginGetInitial = async (ctx: NextPageContext): Promise<Login
   }
 };
 
-export const LoginPageRender: React.VFC<Omit<ILoginPageProps, 'app' | 'dispatch'> & { nextConfig: INextConfig }> = (
-  props,
-) => {
+export const LoginPageRender: React.FC<Omit<ILoginPageProps, 'app'> & { nextConfig: INextConfig }> = (props) => {
   AppContext.init(props.nextConfig);
 
   useLogger('<[LoginPageRender]>', props);
 
-  return <LoginPageView {...props} /*app={appState} dispatch={dispatch}*/ />;
+  return <LoginPageView {...props} /*app={appState}*/ />;
 };

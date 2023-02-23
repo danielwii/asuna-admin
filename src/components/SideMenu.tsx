@@ -1,4 +1,4 @@
-import { Layout, Menu } from 'antd';
+import { Layout, Menu, MenuProps } from 'antd';
 import _ from 'lodash';
 import * as fp from 'lodash/fp';
 import * as React from 'react';
@@ -9,15 +9,21 @@ import { Asuna } from '../types';
 
 const logger = createLogger('components:side-menu');
 
-// no link exists in item any more
+// no link exists in item anymore
 const MenuItem: any | { link: string } = Menu.Item;
+type ExtraMenuItem = Required<MenuProps>['items'][number] & {
+  link?: string;
+  title?: string;
+  model?: string;
+  component?: string;
+};
 
 export interface ISideMenuProps {
   onOpen: (pane: Asuna.Schema.Pane) => void;
   menus?: Asuna.Schema.Menu[];
 }
 
-export const SideMenu: React.VFC<ISideMenuProps> = ({ menus, onOpen }) => {
+export const SideMenu: React.FC<ISideMenuProps> = ({ menus, onOpen }) => {
   const methods = {
     open: ({ key, keyPath, domEvent, item }) => {
       const {
@@ -33,6 +39,51 @@ export const SideMenu: React.VFC<ISideMenuProps> = ({ menus, onOpen }) => {
       onOpen({ key, model, title, linkTo: link, component });
     },
 
+    buildSubMenus: (menus: Asuna.Schema.Menu[]): Required<MenuProps>['items'] =>
+      menus.map((menu: Asuna.Schema.Menu) => {
+        const groups = _.groupBy(menu.subMenus, (subMenu: Asuna.Schema.ComponentSubMenu) => subMenu.group || 'default');
+        const subMenus = _.flatMap(
+          groups,
+          (groupMenus: Asuna.Schema.ComponentSubMenu, groupName: string): ExtraMenuItem[] => {
+            const subMenus = _.map<any, ExtraMenuItem>(groupMenus, (groupMenu: Asuna.Schema.ComponentSubMenu) => {
+              return {
+                key: `${menu.key}::${groupMenu.key}`,
+                label: groupMenu.title,
+                model: groupMenu.model,
+                title: groupMenu.title,
+                link: groupMenu.linkTo,
+                component: groupMenu.component,
+              };
+            });
+            if (groupName === 'default') {
+              if (
+                _.keys(_.groupBy(menu.subMenus, (subMenu: Asuna.Schema.ComponentSubMenu) => subMenu.group)).length === 1
+              ) {
+                return subMenus;
+              }
+              return [
+                {
+                  key: menu.key,
+                  label: '---',
+                  children: subMenus,
+                },
+              ];
+            }
+            return [
+              {
+                key: `${menu.key}::${groupName}`,
+                label: '2.' + groupName,
+                children: subMenus,
+              },
+            ];
+          },
+        );
+        return { key: menu.key, label: menu.title, children: subMenus };
+      }),
+    /**
+     * @deprecated remove next version
+     * @param menu
+     */
     buildSubMenu: (menu: Asuna.Schema.Menu) => (
       <Menu.SubMenu key={menu.key} title={menu.title}>
         {_.map(
@@ -90,9 +141,8 @@ export const SideMenu: React.VFC<ISideMenuProps> = ({ menus, onOpen }) => {
         // defaultSelectedKeys={['1']}
         defaultOpenKeys={['models']}
         style={{ height: '100%', borderRight: 0 }}
-      >
-        {_.map(menus, methods.buildSubMenu)}
-      </Menu>
+        items={methods.buildSubMenus(menus)}
+      />
     </Layout.Sider>
   );
 };

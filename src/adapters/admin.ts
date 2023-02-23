@@ -8,7 +8,7 @@ import type { AxiosResponse } from 'axios';
 import type { Json } from '../types';
 
 export interface IAdminService {
-  stateMachines(): Promise<AxiosResponse>;
+  // stateMachines(): Promise<AxiosResponse>;
   tenantInfo(): Promise<AxiosResponse>;
   registerTenant<T>(data: { name: string; description?: string; payload?: T }): Promise<AxiosResponse>;
   createDraft(data: { content: Json; type: string; refId?: string }): Promise<AxiosResponse>;
@@ -18,7 +18,7 @@ export interface IAdminService {
 }
 
 export interface AdminAdapter {
-  stateMachines(): Promise<StateMachines>;
+  // stateMachines(): Promise<StateMachines>;
   tenantInfo(): Promise<TenantInfo>;
   registerTenant<T = any>(data: { name: string; description?: string; payload?: T }): Promise<Tenant>;
   createDraft(data: { content: Json; type: string; refId?: string | number }): Promise<Draft>;
@@ -30,8 +30,9 @@ export interface AdminAdapter {
 export class AdminAdapterImpl implements AdminAdapter {
   constructor(private readonly service: IAdminService) {}
 
+  /*
   stateMachines = (): Promise<StateMachines> =>
-    this.service.stateMachines().then((res) => plainToInstance(StateMachines, res.data));
+    this.service.stateMachines().then((res) => plainToInstance(StateMachines, res.data));*/
 
   tenantInfo = (): Promise<TenantInfo> =>
     this.service.tenantInfo().then((res) => plainToInstance(TenantInfo, res.data));

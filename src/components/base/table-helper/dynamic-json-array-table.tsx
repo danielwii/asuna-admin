@@ -10,7 +10,7 @@ import { Button, Collapse, List } from 'antd';
 import { useFormik } from 'formik';
 import _ from 'lodash';
 import React from 'react';
-import { useLogger } from 'react-use';
+import useLogger from '@asuna-stack/asuna-sdk/dist/next/hooks/logger';
 
 import { StaticImplements, WithVariable } from '../helper/helper';
 

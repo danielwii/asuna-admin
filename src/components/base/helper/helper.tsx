@@ -10,7 +10,8 @@ import { Button, Tooltip } from 'antd';
 import { Promise } from 'bluebird';
 import _ from 'lodash';
 import React, { ReactElement, ReactNode, ValidationMap, WeakValidationMap } from 'react';
-import { useAsync } from 'react-use';
+import { useLogger } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import * as util from 'util';
 
 import { ErrorInfo } from '../error';
@@ -87,7 +88,7 @@ function TextLink({ url, text }: { url: string; text?: string }) {
   );
 }
 
-export const WithLoading: React.FC<{ loading: boolean; error: any; retry?: () => any }> = ({
+export const WithLoading: React.FC<React.PropsWithChildren<{ loading: boolean; error: any; retry?: () => any }>> = ({
   loading,
   error,
   retry,
@@ -136,37 +137,28 @@ export function WithFuture<R>({
   );
 }
 
-export function WithSuspense<R>({
+export const WithSuspense = <R extends any>({
   future,
-  fallback,
+  fallback = <Loading type="circle" />,
   children,
 }: {
   future: () => Promise<R>;
-  fallback?: React.ReactElement;
-  children: ((props: R) => React.ReactNode) | React.ReactNode;
-}): React.ReactElement {
-  const Component = React.lazy(
-    () =>
-      // eslint-disable-next-line no-async-promise-executor
-      new Promise(async (resolve) => {
-        const data = await future();
-        resolve({
-          default: () =>
-            _.isFunction(children) ? (
-              <React.Fragment>{children(data)}</React.Fragment>
-            ) : (
-              <React.Fragment>{children}</React.Fragment>
-            ),
-        } as any);
-      }),
-  );
+  fallback?: React.ReactElement | string;
+  children: (props: R) => React.ReactNode;
+}): React.ReactElement => {
+  useLogger('<[WithSuspense]>');
+
+  const Component = React.lazy(async () => {
+    const data = await future();
+    return { default: () => <React.Fragment>{children(data)}</React.Fragment> };
+  });
 
   return (
-    <React.Suspense fallback={fallback ?? <Loading type="circle" />}>
+    <React.Suspense fallback={fallback}>
       <Component />
     </React.Suspense>
   );
-}
+};
 
 export function WithVariable<V>({
   variable,

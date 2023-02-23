@@ -82,7 +82,7 @@ export const RenderedField = ({ model, schema, form, fields, field }: RenderedFi
 
   logger.log('[DynamicForm]', '[buildField]', field, { accessible: field?.options?.accessible });
 
-  // all readonly or hidden field will rendered as plain component
+  // all readonly or hidden field will be rendered as plain component
   if (_.includes(['readonly'], field?.options?.accessible)) {
     if (field.type === DynamicFormTypes.Images) {
       return (

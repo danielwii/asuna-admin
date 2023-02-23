@@ -3,7 +3,7 @@ import React from 'react';
 import { AsunaPlainInfo } from './AsunaPlainInfo';
 import { DrawerButton } from './base/drawer-button/drawer-button';
 
-export const AsunaDrawerButton: React.VFC<{
+export const AsunaDrawerButton: React.FC<{
   text: React.ReactNode;
   record: object;
   modelName: string;

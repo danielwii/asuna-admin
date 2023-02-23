@@ -1,5 +1,5 @@
 import * as React from 'react';
-import ReactCrop, { Crop } from 'react-image-crop';
+import ReactCrop, { Crop, PercentCrop, PixelCrop } from 'react-image-crop';
 import styled from 'styled-components';
 
 import { getBase64 } from '../../helpers/upload';
@@ -22,23 +22,13 @@ interface IProps {
 interface IState {
   src: string | ArrayBuffer | null;
   croppedImageUrl?: string;
-  crop: {
-    aspect?: number;
-    width?: number;
-    height?: number | null;
-    x?: number;
-    y?: number;
-  };
+  crop: PixelCrop;
 }
 
 export class ImageCrop extends React.PureComponent<IProps, IState> {
   state: IState = {
     src: null,
-    crop: {
-      width: 50,
-      x: 0,
-      y: 0,
-    },
+    crop: { width: 50, height: 50, x: 0, y: 0, unit: 'px' },
   };
 
   private fileUrl: string;
@@ -56,31 +46,29 @@ export class ImageCrop extends React.PureComponent<IProps, IState> {
     // Make the library regenerate aspect crops if loading new images.
     const { crop } = this.state;
 
-    if (crop.aspect && crop.height && crop.width) {
-      this.setState({
-        crop: { ...crop, height: null },
-      });
+    if (/*crop.aspect && */ crop.height && crop.width) {
+      this.setState({ crop: { ...crop } });
     } else {
       this.makeClientCrop(crop, pixelCrop);
     }
   };
 
-  onCropComplete = (crop, pixelCrop) => {
-    this.makeClientCrop(crop, pixelCrop);
+  onCropComplete = (crop: PixelCrop, percentageCrop: PercentCrop) => {
+    this.makeClientCrop(crop, percentageCrop);
   };
 
   onCropChange = (crop) => {
     this.setState({ crop });
   };
 
-  async makeClientCrop(crop, pixelCrop) {
+  async makeClientCrop(crop: PixelCrop, percentageCrop: PercentCrop) {
     if (this.imageRef && crop.width && crop.height) {
-      const croppedImageUrl = (await this.getCroppedImg(this.imageRef, pixelCrop, 'newFile.jpeg')) as string;
+      const croppedImageUrl = (await this.getCroppedImg(this.imageRef, crop, 'newFile.jpeg')) as string;
       this.setState({ croppedImageUrl });
     }
   }
 
-  getCroppedImg(image, pixelCrop, fileName) {
+  getCroppedImg(image, pixelCrop: PixelCrop, fileName) {
     const canvas = document.createElement('canvas');
     canvas.width = pixelCrop.width;
     canvas.height = pixelCrop.height;
@@ -133,12 +121,14 @@ export class ImageCrop extends React.PureComponent<IProps, IState> {
                   maxHeight: maxHeight || DEFAULT_MAX_HEIGHT,
                   maxWidth: maxWidth || DEFAULT_MAX_WEIGHT,
                 }}
-                src={src as string}
+                // src={src as string}
+                // onImageLoaded={this.onImageLoaded as any}
                 crop={crop as Crop}
-                onImageLoaded={this.onImageLoaded as any}
                 onComplete={this.onCropComplete}
                 onChange={this.onCropChange}
-              />
+              >
+                <img src={src as string} alt="" />
+              </ReactCrop>
             )}
           </div>
           <div>{croppedImageUrl && <CroppedImage {...this.props} src={croppedImageUrl} />}</div>

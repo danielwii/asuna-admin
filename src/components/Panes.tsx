@@ -18,8 +18,6 @@ import { ErrorInfo } from './base/error';
 
 const logger = createLogger('components:panes');
 
-const { TabPane } = Tabs;
-
 export type Pane = {
   key: string;
   linkTo: string;
@@ -45,7 +43,7 @@ interface IState {
   titles: object;
 }
 
-export const PanesView: React.VFC<IPanesProps> = ({
+export const PanesView: React.FC<IPanesProps> = ({
   onClose,
   activeKey,
   onActive,
@@ -68,21 +66,6 @@ export const PanesView: React.VFC<IPanesProps> = ({
             <Tooltip title="关闭其他">
               <Button icon={<MinusSquareOutlined />} onClick={() => onCloseWithout(activeKey)} />
             </Tooltip>
-            {/*
-            <Dropdown
-              overlay={
-                <Menu onClick={(param: ClickParam) => onCloseWithout()}>
-                  <Menu.Item key="1">关闭其他</Menu.Item>
-                  <Menu.Item key="2">关闭左侧全部</Menu.Item>
-                  <Menu.Item key="3">关闭右侧全部</Menu.Item>
-                </Menu>
-              }
-            >
-              <Button>
-                <MinusSquareOutlined />
-              </Button>
-            </Dropdown>
-*/}
             <Divider type="vertical" />
             <Tooltip title="关闭当前标签页">
               <CloseCircleOutlined onClick={() => onCloseCurrent(activeKey)} />
@@ -140,7 +123,7 @@ export const PanesView: React.VFC<IPanesProps> = ({
       onEdit={func.onEdit}
     >
       {_.map(panes, (pane: Pane) => (
-        <TabPane tab={pane.title} key={pane.key}>
+        <Tabs.TabPane tab={pane.title} key={pane.key}>
           {/*{activeKey} - {pane.key} - {title}*/}
           {/*<pre>{util.inspect(pane)}</pre>*/}
           <ModulesLoader
@@ -151,7 +134,7 @@ export const PanesView: React.VFC<IPanesProps> = ({
             onTitleChange={(newTitle) => func.onTitleChange(activeKey, newTitle)}
             component={pane.component}
           />
-        </TabPane>
+        </Tabs.TabPane>
       ))}
     </Tabs>
   );

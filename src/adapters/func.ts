@@ -87,9 +87,9 @@ export class Func {
             R.filter<any>((role) => {
               // 判断返回的是否是 ids
               if (user.roles && _.isObjectLike(user.roles[0])) {
-                return R.contains(role.id)(R.values(R.pluck('id' as any, user.roles)));
+                return R.includes(role.id)(R.values(R.pluck('id' as any, user.roles)));
               }
-              return R.contains(role.id)(user.roles);
+              return R.includes(role.id)(user.roles);
             }),
             R.propOr([], 'items'),
           )(roles);

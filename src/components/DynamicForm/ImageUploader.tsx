@@ -129,7 +129,7 @@ export class ImageUploader extends React.Component<IProps, IState> {
 
     const { onChange, urlHandler, bucket, jsonMode } = this.props;
     const uploadOpts = _.get(this.props, 'data-__field.options.uploadOpts');
-    upload(option.file, uploadOpts ?? { bucket }, { bucket }).then((uploaded) => {
+    upload(option.file, uploadOpts ?? ({ bucket } as any), { bucket }).then((uploaded) => {
       if (uploaded) {
         logger.log('[ImageUploader][customRequest]', { props: this.props, state: this.state });
         const resolvedUrl = urlHandler ? urlHandler(uploaded[0]) : `${uploaded[0]}`;

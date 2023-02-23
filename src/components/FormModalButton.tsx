@@ -1,10 +1,13 @@
-import { FormInstance, message, Modal } from 'antd';
+import { Button, Modal, message } from 'antd';
 import * as R from 'ramda';
 import React, { useState } from 'react';
+import { useLogger } from 'react-use';
+import useToggle from 'react-use/lib/useToggle';
 
 import { toErrorMessage, toFormErrors } from '../helpers/error';
 import { createLogger } from '../logger';
 import { DynamicForm } from './DynamicForm';
+import { WithSuspense } from './base/helper/helper';
 
 import type { DynamicFormField } from './DynamicForm/render';
 
@@ -35,7 +38,7 @@ const LightForm = ({ fields, ...props }) => {
 
 export interface IFormModalProps {
   title: React.ReactNode;
-  openButton: (showModal: () => void) => React.ReactChild;
+  openButton: (showModal: () => void) => React.ReactElement;
   fields?: { [key: string]: DynamicFormField };
   body?: React.ReactNode;
   footer?: ({ loading, operations, params }) => React.ReactNode;
@@ -52,9 +55,42 @@ interface IState {
   loading: boolean;
 }
 
-export const FormModalButton: React.VFC<IFormModalProps> = ({
+export const AsyncFormModalButton: React.FC<
+  Pick<IFormModalProps, 'title'> & { children: (props: { data; onClose: () => void }) => React.ReactElement } & {
+    future;
+  }
+> = ({ title, future, children }) => {
+  const [open, setOpen] = useToggle(false);
+
+  useLogger('<[FormModalButton]>', { open });
+
+  return (
+    <Button size="small" type="dashed">
+      <span onClick={() => setOpen(true)}>{title}</span>
+      {open && (
+        <WithSuspense future={future} fallback="...">
+          {(data) => children({ data, onClose: () => setOpen(false) })}
+        </WithSuspense>
+      )}
+    </Button>
+  );
+};
+
+export const FormModalButton: React.FC<IFormModalProps> = ({ openButton, ...props }) => {
+  const [state, setState] = useState({ visible: false });
+
+  useLogger('<[FormModalButton]>', state);
+
+  return (
+    <>
+      {openButton(() => setState({ visible: true }))}
+      {state.visible && <FormModal onClose={() => setState({ visible: false })} {...props} />}
+    </>
+  );
+};
+
+export const FormModal: React.FC<Omit<IFormModalProps, 'openButton'> & { onClose: () => void }> = ({
   fields,
-  openButton,
   title,
   footer,
   body,
@@ -62,9 +98,10 @@ export const FormModalButton: React.VFC<IFormModalProps> = ({
   onRefresh,
   onSubmit,
   onChange,
+  onClose,
 }) => {
   let formRef;
-  const [state, setState] = useState<IState>(() => ({ visible: false, loading: false, fields: fields }));
+  const [state, setState] = useState<Omit<IState, 'visible'>>(() => ({ loading: false, fields: fields }));
 
   const func = {
     handleOk: () => {
@@ -76,7 +113,6 @@ export const FormModalButton: React.VFC<IFormModalProps> = ({
             const response = await onSubmit!(values).finally(() => onRefresh && onRefresh());
             logger.log('response is', response);
             setState({
-              visible: false,
               loading: false,
               fields: R.map<any, any>((field) => ({ ...field, value: undefined }))(state.fields as any) as any,
             });
@@ -90,6 +126,7 @@ export const FormModalButton: React.VFC<IFormModalProps> = ({
         })
         .catch((reason) => {
           logger.error('[FormModal][handleOk]', 'error occurred in form', reason);
+          setState({ ...state, loading: false });
         });
     },
     handleFormChange: (changedFields) => {
@@ -104,7 +141,10 @@ export const FormModalButton: React.VFC<IFormModalProps> = ({
       ? onOperations({
           loading: state.loading,
           updateState: (state: Partial<IState>) => setState(state as IState),
-          handleCancel: () => setState({ ...state, visible: false }),
+          handleCancel: () => {
+            onClose();
+            // setState({ ...state, visible: false });
+          },
         })
       : {};
 
@@ -117,41 +157,46 @@ export const FormModalButton: React.VFC<IFormModalProps> = ({
             params: state.params,
             operations: {
               handleOk: func.handleOk,
-              handleCancel: () => setState({ ...state, visible: false }),
+              handleCancel: () => {
+                onClose();
+                // setState({ ...state, visible: false });
+              },
               ...extraOperations,
             },
           }),
         }
       : null;
 
+  useLogger('<[FormModalButton]>', state, { onClose });
+
   return (
-    <>
-      {openButton(() => setState({ ...state, visible: true }))}
-      <Modal
-        title={title}
-        visible={state.visible}
-        onOk={func.handleOk}
-        confirmLoading={state.loading}
-        onCancel={() => setState({ ...state, visible: false })}
-        {...renderFooterOpts}
-      >
-        {body}
-        {fields && (
-          <LightForm
-            formRef={(form) => (formRef = form)}
-            /*
-            wrappedComponentRef={inst => {
-              console.log('wrappedComponentRef', inst);
-              return (this.form = inst?.props?.form);
-            }}
+    <Modal
+      open
+      title={title}
+      onOk={func.handleOk}
+      confirmLoading={state.loading}
+      onCancel={() => {
+        onClose();
+        // setState({ ...state, visible: false });
+      }}
+      {...renderFooterOpts}
+    >
+      {body}
+      {fields && (
+        <LightForm
+          formRef={(form) => (formRef = form)}
+          /*
+      wrappedComponentRef={inst => {
+        console.log('wrappedComponentRef', inst);
+        return (this.form = inst?.props?.form);
+      }}
 */
-            delegate
-            fields={fields}
-            onSubmit={func.handleOk}
-            onChange={func.handleFormChange}
-          />
-        )}
-      </Modal>
-    </>
+          delegate
+          fields={fields}
+          onSubmit={func.handleOk}
+          onChange={func.handleFormChange}
+        />
+      )}
+    </Modal>
   );
 };

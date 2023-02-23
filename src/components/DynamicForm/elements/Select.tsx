@@ -4,9 +4,9 @@ import { Divider, FormInstance, Input, Select } from 'antd';
 import _ from 'lodash';
 import * as R from 'ramda';
 import React from 'react';
-import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc';
+import { SortableContainer, SortableElement, arrayMove } from 'react-sortable-hoc';
 
-import { generateComponent, horizontalFormItemLayout, IFormItemLayout } from '.';
+import { IFormItemLayout, generateComponent, horizontalFormItemLayout } from '.';
 import { AppContext } from '../../../core/context';
 import { createLogger } from '../../../logger';
 
@@ -65,7 +65,7 @@ export const uniqueItems = (...items: Item[][]): Item[] => {
   if (allItems && _.isArray(allItems)) {
     const first = _.head(allItems);
     if (_.isArray(first)) {
-      result = R.filter(rNotNil)(R.uniqBy(R.prop<any>(0), allItems));
+      result = R.filter(rNotNil)(R.uniqBy(R.prop<any>(0), allItems)) as any[];
     } else if (_.isObject(first)) {
       const uniqBy = R.uniqBy((item: any) => {
         return R.prop('id', item) || R.prop('key', item) || R.prop(_.head(R.keys(item)) as string, item);
@@ -247,7 +247,7 @@ export function generateSelect<T>(
     _onChange = (value: any | any[]) => {
       logger.log('[MixedSelect]', '[onChange]', { value, items: this._getAllItems() });
       const exists: Item[] = value
-        ? R.filter((item) => R.contains(R.prop('id', item as any), value) as any)(this._getAllItems())
+        ? R.filter((item) => R.includes(R.prop('id', item as any), value) as any)(this._getAllItems())
         : [];
       logger.log('[MixedSelect]', '[onChange]', { exists });
 

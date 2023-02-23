@@ -8,7 +8,7 @@ import * as util from 'util';
 
 import { isDebugMode, isDevMode } from '../core/env';
 
-export const WithDebugInfo: React.FC<{ info: any }> = ({ info, children }) => {
+export const WithDebugInfo: React.FC<React.PropsWithChildren<{ info: any }>> = ({ info, children }) => {
   if (isDevMode) {
     return (
       <>
@@ -44,7 +44,7 @@ export const DebugInfo: React.FC<{ data: any; divider?: boolean; type?: 'json' |
           <>
             <Button type="dashed" size="small" onClick={() => setLevel(lv + 1)} children="+" />{' '}
             <Button type="dashed" size="small" onClick={() => setLevel(lv - 1)} children="-" />
-            <JSONTree data={data} hideRoot shouldExpandNode={(keyPath, data, level) => level < lv} />
+            <JSONTree data={data} hideRoot shouldExpandNodeInitially={(keyPath, data, level) => level < lv} />
           </>
         );
     }

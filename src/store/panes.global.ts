@@ -1,10 +1,10 @@
 import _ from 'lodash';
 import * as R from 'ramda';
-import { createGlobalState } from 'react-use';
+import createGlobalState from 'react-use/lib/factory/createGlobalState';
 
-import type { Asuna } from '../types';
 import type { IHookStateSetAction } from 'react-use/lib/misc/hookState';
 import type { Pane } from '../components/Panes';
+import type { Asuna } from '../types';
 
 export interface PanesState {
   activeKey?: string;
@@ -55,7 +55,7 @@ export const useSharedPanesFunc = (setter: (state: IHookStateSetAction<PanesStat
     setter((state) => {
       if (key) {
         const panes = R.pick([key])(state.panes);
-        return R.merge(state, { panes });
+        return R.mergeRight(state, { panes });
       }
       return { panes: {} };
     }),
@@ -63,7 +63,7 @@ export const useSharedPanesFunc = (setter: (state: IHookStateSetAction<PanesStat
     setter((state) => {
       if (key) {
         const { nextPanes, nextKey } = popToNext(key, state.panes, key);
-        return R.merge(state, { activeKey: nextKey, panes: nextPanes });
+        return R.mergeRight(state, { activeKey: nextKey, panes: nextPanes });
       }
       return { panes: {} };
     }),

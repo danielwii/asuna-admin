@@ -121,6 +121,7 @@ export interface IModelService {
 // Main
 // --------------------------------------------------------------
 
+// const logger = createLogger('adapters:models');
 const logger = createLogger('adapters:models');
 
 export interface ModelListConfig {
@@ -206,7 +207,7 @@ export class ModelAdapterImpl implements ModelAdapter {
       // --------------------------------------------------------------
       // plain types
       // --------------------------------------------------------------
-      [_.conforms({ name: R.contains<any[]>(R.__, plainKeys) }), _.constant(DynamicFormTypes.Plain)],
+      [_.conforms({ name: R.includes<any[]>(R.__, plainKeys) }), _.constant(DynamicFormTypes.Plain)],
       // --------------------------------------------------------------
       // association types
       // --------------------------------------------------------------
@@ -324,7 +325,7 @@ export class ModelAdapterImpl implements ModelAdapter {
     const selectableRelations = _.chain(schema)
       .pickBy(fp.get('options.selectable'))
       // .pickBy(_.flow([fp.get('options.accessible'), fp.negate(fp.eq('hidden'))]))
-      .pickBy((opts) => !_.includes(_.get(opts, 'options.accessible'), ['hidden']))
+      .pickBy((opts) => !_.includes(_.get(opts, 'options.accessible'), 'hidden'))
       .keys()
       .value();
     const relations = _.flow(_.flattenDeep, _.uniq, fp.join(','))([selectableRelations, data.relations ?? []]);
@@ -396,7 +397,7 @@ export class ModelAdapterImpl implements ModelAdapter {
 
     return _.map(columns, (column: RelationColumnProps) => {
       // 不检测不包含在 schema 中且不属于模型的列名
-      const isRelationKey = (column.key as string).includes('.');
+      const isRelationKey = _.includes(column.key as string, '.');
       const isActionKey = _.includes(['action'], column.key);
       return column.key && !formSchema[column.key] && !isActionKey && !isRelationKey
         ? // 标记 schema 中不存在的列 TODO maybe custom

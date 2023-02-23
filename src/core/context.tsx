@@ -18,7 +18,6 @@ import { Constants } from './constants';
 
 import type { Func } from '../adapters/func';
 import type { ModelAdapterImpl } from '../adapters/model';
-import type { AnyAction } from 'redux';
 import type { SharedPanesFunc } from '../store/panes.global';
 import type { AsunaDefinitions } from './definitions';
 
@@ -29,7 +28,7 @@ const logger = createLogger('core:context');
 // --------------------------------------------------------------
 
 export interface IComponentService {
-  regGraphql: (componentName: string, model?: KeyValueModelVo, render?: React.VFC) => void;
+  regGraphql: (componentName: string, model?: KeyValueModelVo, render?: React.FC) => void;
   load: (componentName: string) => React.FC;
 }
 
@@ -89,7 +88,7 @@ class AppContext {
   };
 
   private static _subject;
-  private static _stateMachines;
+  // private static _stateMachines;
 
   static serverSettings: object;
   static kvModels: KeyValueModelVo[];
@@ -118,9 +117,11 @@ class AppContext {
 
   public static globalFunc: Partial<{ panes: SharedPanesFunc }> = {};
 
+  /*
   public static actionHandler(action: AnyAction) {
     !(typeof window === 'undefined') && AppContext._subject && AppContext._subject.next(action);
   }
+*/
 
   /**
    * 提供全局的注册方法
@@ -138,6 +139,7 @@ class AppContext {
     func: typeof Func,
   ): Promise<void>;
   public static async setup(moduleRegister, func: typeof Func): Promise<void> {
+    logger.info('setup moduleRegister: ', moduleRegister);
     if (moduleRegister.module) {
       const register = moduleRegister.register;
 
@@ -158,9 +160,9 @@ class AppContext {
     localStorage.setItem('schemas', JSON.stringify(schemas));
   }
 
-  public static set stateMachines(stateMachines: any) {
-    this._stateMachines = stateMachines;
-  }
+  // public static set stateMachines(stateMachines: any) {
+  //   this._stateMachines = stateMachines;
+  // }
 
   public static get ctx() {
     return AppContext._context;
@@ -174,21 +176,25 @@ class AppContext {
     return AppContext._context;
   }
 
-  public static get stateMachines() {
-    return AppContext._stateMachines;
-  }
+  // public static get stateMachines() {
+  //   return AppContext._stateMachines;
+  // }
 
   public static async syncSettings() {
+    logger.info('load system settings...');
     const settings = await AppContext.ctx.graphql.loadSystemSettings();
+    logger.success('loaded system settings...', settings);
     if (settings) {
       this.serverSettings = Object.assign({}, ...settings.map((setting) => ({ [setting.key]: setting })));
     }
 
+    logger.info('load constants...');
     const constants = await AppContext.ctx.graphql.loadKv('app.settings', 'constants');
+    logger.success('loaded constants...', constants);
     if (constants) Constants.constants = constants.value;
 
-    const stateMachines = await AppContext.ctx.admin.stateMachines();
-    if (stateMachines) this.stateMachines = stateMachines;
+    // const stateMachines = await AppContext.ctx.admin.stateMachines();
+    // if (stateMachines) this.stateMachines = stateMachines;
 
     const kvModels = await AppContext.ctx.graphql.loadKvModels();
     if (kvModels) this.kvModels = kvModels;
@@ -208,6 +214,7 @@ class AppContext {
   }
 
   private static async registerIndex(register: IIndexRegister, module?: 'index'): Promise<void> {
+    logger.info('register index module:', module);
     const graphql = new GraphqlAdapterImpl(getConfig().publicRuntimeConfig.GRAPHQL_ENDPOINT ?? 'proxy');
     AppContext._context = {
       ...AppContext._context,
@@ -224,6 +231,7 @@ class AppContext {
 
     // only setup menu in index page
     if (module === 'index') {
+      logger.info('sync settings...');
       await this.syncSettings();
 
       // --------------------------------------------------------------

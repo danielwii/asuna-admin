@@ -4,14 +4,14 @@ import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
 import moment from 'moment';
 import React from 'react';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import VisualDiff from 'react-visual-diff';
 
 import { AppContext } from '../core/context';
 import { AsunaDefinitions } from '../core/definitions';
 import { WithDebugInfo } from '../helpers/debug';
 import { DynamicFormTypes } from './DynamicForm/types';
-import { parseString, TooltipContent, WithLoading, WithVariable } from './base/helper/helper';
+import { TooltipContent, WithLoading, WithVariable, parseString } from './base/helper/helper';
 import { AssetsPreview } from './base/preview-button/asset-preview';
 
 import type { EnumFilterMetaInfoOptions } from '../types';
@@ -22,7 +22,7 @@ export interface AsunaPlainObjectProps {
   compare?: any | (() => Promise<any>);
 }
 
-export const AsunaPlainInfo: React.VFC<AsunaPlainObjectProps> = ({ modelName, record, compare }) => {
+export const AsunaPlainInfo: React.FC<AsunaPlainObjectProps> = ({ modelName, record, compare }) => {
   const fields = AppContext.adapters.models.getFormSchema(modelName);
   const { value, loading, error } = useAsync(
     () =>

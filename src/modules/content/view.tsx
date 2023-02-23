@@ -1,6 +1,8 @@
+import useLogger from '@asuna-stack/asuna-sdk/dist/next/hooks/logger';
+
 import * as _ from 'lodash';
 import * as React from 'react';
-import { useAsync, useLogger } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { FoldingCube } from 'styled-spinkit';
 import * as util from 'util';
 
@@ -24,7 +26,7 @@ const ContentView: React.FC<ModulesLoaderProps> = ({ module, basis: { pane } }) 
 
   const { loading, value, error } = useAsync(() => TenantHelper.resolveBindModel());
 
-  useLogger('ContentView', { modelName, extraName, value, modelConfig, primaryKey, columnOpts });
+  useLogger('<[ContentView]>', { modelName, extraName, value, modelConfig, primaryKey, columnOpts });
 
   if (loading) return <FoldingCube />;
   if (error)

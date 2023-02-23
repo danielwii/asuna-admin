@@ -2,7 +2,7 @@ import { Button, Col, Descriptions, Divider, Popconfirm, Row, Statistic } from '
 import { Promise } from 'bluebird';
 import * as _ from 'lodash';
 import React, { useContext, useState } from 'react';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { FoldingCube } from 'styled-spinkit';
 import * as util from 'util';
 
@@ -29,7 +29,7 @@ async function createFirstModel(tenantInfo?: TenantInfo): Promise<void> {
   }
 }
 
-export const TenantWelcome: React.VFC = (props) => {
+export const TenantWelcome: React.FC = (props) => {
   const [count, reload] = useState(0);
   const { store } = useContext(StoreContext);
   const { value, error, loading } = useAsync(async () => {
@@ -67,7 +67,7 @@ export const TenantWelcome: React.VFC = (props) => {
       <>
         {contactInfo}
         <ErrorInfo>
-          <pre>{util.inspect(parseResponseError(error))}</pre>
+          <pre>{util.inspect(parseResponseError(error as any))}</pre>
           <Divider />
           <pre>{util.inspect({ store }, { depth: 10 })}</pre>
         </ErrorInfo>

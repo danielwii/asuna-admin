@@ -5,7 +5,7 @@ import * as _ from 'lodash';
 import { join } from 'path';
 import * as R from 'ramda';
 import * as React from 'react';
-import ReactCrop, { Crop, PixelCrop } from 'react-image-crop';
+import ReactCrop, { Crop, PercentCrop, PixelCrop } from 'react-image-crop';
 import * as util from 'util';
 
 import { valueToUrl } from '../../core/url-rewriter';
@@ -32,8 +32,8 @@ type Tag = {
 };
 
 type CropInfo = {
-  crop: Crop;
-  pixelCrop: PixelCrop;
+  crop: PixelCrop;
+  percentageCrop: PercentCrop;
 };
 
 interface IProps {
@@ -54,7 +54,13 @@ interface IState {
   crop: Crop;
 }
 
-const DEFAULT_CROP = { width: 50, x: 0, y: 0 };
+const DEFAULT_CROP: Crop = {
+  width: 50,
+  x: 0,
+  y: 0,
+  height: 50,
+  unit: 'px',
+};
 
 export class ImageTrivia extends React.Component<IProps, IState> {
   state: IState = {
@@ -90,25 +96,25 @@ export class ImageTrivia extends React.Component<IProps, IState> {
     // Make the library regenerate aspect crops if loading new images.
     const { crop } = this.state;
 
-    if (crop.aspect && crop.height && crop.width) {
+    if (/*crop.aspect && */ crop.height && crop.width) {
       this.setState({ crop: { ...crop, height: null as any } }, () => {
         logger.log('[onImageLoaded] done', this.state);
       });
     }
   };
 
-  onCropComplete = (crop: Crop, pixelCrop: PixelCrop) => {
+  onCropComplete = (crop: PixelCrop, percentageCrop: PercentCrop) => {
     const { value } = this.props;
     const { updateIndex } = this.state;
     const tags = value?.tags || [];
     if (_.isNil(updateIndex)) {
       const latest = tags.length;
       this.setState({ updateIndex: latest });
-      this._updateTagInfo(latest, { positionInfo: { crop, pixelCrop } });
+      this._updateTagInfo(latest, { positionInfo: { crop, percentageCrop } });
     } else {
-      this._updateTagInfo(updateIndex, { positionInfo: { crop, pixelCrop } });
+      this._updateTagInfo(updateIndex, { positionInfo: { crop, percentageCrop } });
     }
-    logger.log('[onCropComplete]', { crop, pixelCrop, tags });
+    logger.log('[onCropComplete]', { crop, percentageCrop, tags });
   };
 
   onCropChange = (crop: Crop) => {
@@ -137,7 +143,7 @@ export class ImageTrivia extends React.Component<IProps, IState> {
     const { onChange, value } = this.props;
     if (value && value.tags) {
       const tags = _.get(value, 'tags') || [];
-      tags[index] = tags[index] ? { ...tags[index], ...tag } : ((tag as any) as Tag);
+      tags[index] = tags[index] ? { ...tags[index], ...tag } : (tag as any as Tag);
       onChange!({ ...value, tags });
     } else {
       onChange!(R.mergeDeepRight(value as ImageWithTags, { tags: [tag] } as any));
@@ -180,12 +186,14 @@ export class ImageTrivia extends React.Component<IProps, IState> {
                 maxHeight: maxHeight || DEFAULT_MAX_HEIGHT,
                 maxWidth: maxWidth || DEFAULT_MAX_WEIGHT,
               }}
-              src={url}
+              // src={url}
+              // onImageLoaded={this.onImageLoaded as any}
               crop={crop}
-              onImageLoaded={this.onImageLoaded as any}
               onComplete={this.onCropComplete}
               onChange={this.onCropChange}
-            />
+            >
+              <img src={url} alt="" />
+            </ReactCrop>
           )}
           {/* language=CSS */}
           <style jsx>{`

@@ -1,9 +1,12 @@
-import { Button, Collapse, Descriptions, Empty, PageHeader, Tag, Tooltip } from 'antd';
+import { PageHeader } from '@ant-design/pro-layout';
+import useLogger from '@asuna-stack/asuna-sdk/dist/next/hooks/logger';
+
+import { Button, Collapse, Descriptions, Empty, Tag, Tooltip } from 'antd';
 import { Promise } from 'bluebird';
 import * as _ from 'lodash';
 import moment from 'moment';
 import * as React from 'react';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { FoldingCube } from 'styled-spinkit';
 import * as util from 'util';
 
@@ -139,6 +142,8 @@ export const AsunaDataView: React.FC<AsunaDataViewProps> = ({
   </Suspense>
 */
 
+  useLogger('<[AsunaDataView]>', { vars, leftVars, columnOpts, customColumnOpts });
+
   return (
     <div>
       {/*<pre>{util.inspect(_.omit(originSchemas, 'columns'), { depth: 10 })}</pre>*/}
@@ -156,7 +161,7 @@ export const AsunaDataView: React.FC<AsunaDataViewProps> = ({
         tags={publishedTag as any}
         // tags={[<>{publishedTag}</>]}
         {...(vars.cover ? { avatar: { src: vars.cover, size: 'large' } } : null)}
-        extra={actionColumn?.render?.(data, data, 0)}
+        extra={actionColumn?.render?.(data, data, 0) as any}
         // extra={[
         //   actionColumn?.render?.(data, data, 0),
         //   // <Button key="3">Operation</Button>,
@@ -214,7 +219,7 @@ export const AsunaDataView: React.FC<AsunaDataViewProps> = ({
             {_.map(leftVars, (value, label: string) => {
               const schemaLabel = _.get(schemas, `${label}.options.label`, '') || label;
               return (
-                <Descriptions.Item key={label} label={schemaLabel}>
+                <Descriptions.Item key={label} label={schemaLabel as any}>
                   <WithDebugInfo info={{ schema: schemas[label], value }}>
                     {renderValue({ value, type: schemas[label]?.type })}
                   </WithDebugInfo>
@@ -256,7 +261,7 @@ function renderValue({
   value: any;
   textFn?: (value) => string;
   type?: DynamicFormTypes;
-}): React.ReactChild {
+}): React.ReactElement {
   const text = textFn ? textFn(value) : value;
   if (typeof value === 'boolean') {
     // return <Switch checked={value} onClick={undefined} size="small" />;

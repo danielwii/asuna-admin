@@ -1,6 +1,8 @@
+import useLogger from '@asuna-stack/asuna-sdk/dist/next/hooks/logger';
+
 import React, { useState } from 'react';
-import { useLogger, useMount } from 'react-use';
 import ReactQuill from 'react-quill';
+import useMount from 'react-use/lib/useMount';
 
 interface IProps {
   validateFn;
@@ -14,7 +16,7 @@ export const QuillEditor = ({ value, onChange, validateFn, upload }: IProps) => 
 
   useMount(() => {});
 
-  useLogger('<QuillEditor>', editor);
+  useLogger('<[QuillEditor]>', editor);
 
   return (
     <>

@@ -12,7 +12,7 @@ axios
     // language=GraphQL
     query: `
       {
-        sys_modelSchemas {
+        sys_model_schemas {
           name
           schema
         }
@@ -20,7 +20,7 @@ axios
     `,
   })
   .then((response) => {
-    const data = _.get(response.data, 'data.sys_modelSchemas');
+    const data = _.get(response.data, 'data.sys_model_schemas');
     const schemas = _.map(data, (current) => ({
       [current.name]: current.schema.map((v) => {
         console.log(v.name, v.config.type);

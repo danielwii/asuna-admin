@@ -13,7 +13,7 @@ import { createLogger } from '../logger';
 
 const logger = createLogger('components:login');
 
-const FormInput: React.VFC<
+const FormInput: React.FC<
   { name: string; required: boolean; message: string } & Pick<InputProps, 'type' | 'prefix' | 'placeholder'>
 > = ({ name, required, message, type, prefix, placeholder }) => (
   <Form.Item name={name} rules={[{ required, message }]}>
