@@ -1,5 +1,5 @@
 import { InfoOutlined } from '@ant-design/icons';
-import useLogger from '@asuna-stack/asuna-sdk/dist/next/hooks/logger';
+import useLogger from '@danielwii/asuna-helper/dist/logger/hooks';
 
 import { parseJSONIfCould } from '@danielwii/asuna-helper/dist/utils';
 

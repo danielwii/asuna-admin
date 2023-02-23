@@ -1,5 +1,5 @@
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
-import useLogger from '@asuna-stack/asuna-sdk/dist/next/hooks/logger';
+import useLogger from '@danielwii/asuna-helper/dist/logger/hooks';
 
 import 'moment/locale/zh-cn';
 

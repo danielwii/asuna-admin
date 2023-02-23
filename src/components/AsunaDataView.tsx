@@ -1,5 +1,5 @@
 import { PageHeader } from '@ant-design/pro-layout';
-import useLogger from '@asuna-stack/asuna-sdk/dist/next/hooks/logger';
+import useLogger from '@danielwii/asuna-helper/dist/logger/hooks';
 
 import { Button, Collapse, Descriptions, Empty, Tag, Tooltip } from 'antd';
 import { Promise } from 'bluebird';

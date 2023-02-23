@@ -1,4 +1,4 @@
-const { ApolloServer } = require('apollo-server-koa');
+const { ApolloServer } = require('@apollo/server');
 const LRU = require('lru-cache');
 
 const typeDefsLoader = require('./typeDefs');

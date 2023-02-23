@@ -3,7 +3,7 @@
 /** @jsx jsx */
 // noinspection ES6UnusedImports
 
-import useLogger from '@asuna-stack/asuna-sdk/dist/next/hooks/logger';
+import useLogger from '@danielwii/asuna-helper/dist/logger/hooks';
 import { css, jsx } from '@emotion/react';
 
 import { Button, Card, Divider, Input, Space, Switch } from 'antd';

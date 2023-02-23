@@ -3,7 +3,7 @@ import { MinusCircleOutlined } from '@ant-design/icons';
 import { Button, Divider, Input, Space } from 'antd';
 import _ from 'lodash';
 import * as React from 'react';
-import useLogger from '@asuna-stack/asuna-sdk/dist/next/hooks/logger';
+import useLogger from '@danielwii/asuna-helper/dist/logger/hooks';
 
 import { parseArray } from './helper/helper';
 

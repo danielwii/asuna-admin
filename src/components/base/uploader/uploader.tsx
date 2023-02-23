@@ -19,7 +19,7 @@ import { css, jsx } from '@emotion/react';
 import { Button, Divider, Input, Radio, Tag, Upload } from 'antd';
 import * as _ from 'lodash';
 import React from 'react';
-import useLogger from '@asuna-stack/asuna-sdk/dist/next/hooks/logger';
+import useLogger from '@danielwii/asuna-helper/dist/logger/hooks';
 
 import { WithDebugInfo } from '../debug/debug';
 import { WithVariable } from '../helper/helper';

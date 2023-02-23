@@ -4,7 +4,7 @@ import { Button, Divider, Input, Tag } from 'antd';
 import _ from 'lodash';
 import { TweenOneGroup } from 'rc-tween-one';
 import * as React from 'react';
-import useLogger from '@asuna-stack/asuna-sdk/dist/next/hooks/logger';
+import useLogger from '@danielwii/asuna-helper/dist/logger/hooks';
 
 import { parseArray } from './helper/helper';
 

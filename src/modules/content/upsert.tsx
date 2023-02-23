@@ -1,4 +1,4 @@
-import useLogger from '@asuna-stack/asuna-sdk/dist/next/hooks/logger';
+import useLogger from '@danielwii/asuna-helper/dist/logger/hooks';
 
 import * as _ from 'lodash';
 import moment from 'moment';

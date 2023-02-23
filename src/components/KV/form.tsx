@@ -5,7 +5,7 @@ import { Button, Col, Divider, Row, Typography } from 'antd';
 import * as _ from 'lodash';
 import React from 'react';
 import Highlight from 'react-highlight';
-import useLogger from '@asuna-stack/asuna-sdk/dist/next/hooks/logger';
+import useLogger from '@danielwii/asuna-helper/dist/logger/hooks';
 import * as util from 'util';
 
 import { isDebugMode } from '../../core/env';
