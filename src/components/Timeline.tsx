@@ -1,4 +1,7 @@
 import { ArrowDownOutlined, ArrowUpOutlined } from '@ant-design/icons';
+
+import useLogger from '@danielwii/asuna-helper/dist/logger/hooks';
+
 import { Badge, Col, Row, Statistic, Tag, Timeline } from 'antd';
 import moment from 'moment';
 import { default as React, useState } from 'react';
@@ -14,6 +17,22 @@ export interface ExchangeItem {
   extra?: JSON;
 }
 
+export const ActivityTimeline: React.FC<{
+  item;
+  typeResolver?: (type: string) => string;
+  typeColorResolver?: (type: string) => string | undefined;
+  extraResolver?: (extra: any) => React.ReactNode;
+}> = ({ item, typeResolver, typeColorResolver, extraResolver }) => {
+  // useLogger('<[ActivityTimeline]>', { item, typeResolver, typeColorResolver, extraResolver });
+  return (
+    <div>
+      <Tag>{typeResolver ? typeResolver(item.operation) : item.operation}</Tag>
+      From <Tag>{item.from}</Tag> To <Tag>{item.to}</Tag>
+      {item.reason && <div>Reason: {item.reason}</div>}
+    </div>
+  );
+};
+
 export function ExchangeTimeline({
   item,
   typeResolver,
@@ -23,7 +42,7 @@ export function ExchangeTimeline({
   item: ExchangeItem;
   typeResolver?: (type: string) => string;
   typeColorResolver?: (type: string) => string | undefined;
-  extraResolver?: (extra: any) => React.ReactChild;
+  extraResolver?: (extra: any) => React.ReactNode;
 }) {
   const [state, setState] = useState({});
 

@@ -1,17 +1,27 @@
 /** @jsxRuntime classic */
 
 /** @jsx jsx */
-import { SelectOutlined } from '@ant-design/icons';
+import { SelectOutlined, SyncOutlined } from '@ant-design/icons';
 // noinspection ES6UnusedImports
 import { css, jsx } from '@emotion/react';
 
-import { Button, Divider, Drawer, Empty, Popover, Skeleton, Timeline } from 'antd';
+import useLogger from '@danielwii/asuna-helper/dist/logger/hooks';
+
+import { Button, Divider, Drawer, Empty, Popover, Skeleton, Switch, Timeline } from 'antd';
+import { TimelineItemProps } from 'antd/es/timeline/TimelineItem';
 import * as _ from 'lodash';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import useAsyncRetry from 'react-use/lib/useAsyncRetry';
+import useInterval from 'react-use/lib/useInterval';
+import useToggle from 'react-use/lib/useToggle';
 import styled from 'styled-components';
+
+import { createLogger } from '../../../logger';
 
 import type { PopoverProps } from 'antd/es';
 import type { BaseButtonProps } from 'antd/es/button/button';
+
+const logger = createLogger('components:drawer-button');
 
 type RenderComponentType = React.FC<{ refreshFlag: number; openChildrenDrawer?: any }>;
 export type RenderChildrenComponentType = React.FC<{ item: any }>;
@@ -96,27 +106,30 @@ export const DrawerButton: React.FC<
   const RenderComponent: RenderComponentType = render ?? ((<React.Fragment />) as any);
   const RenderChildrenComponent: RenderChildrenComponentType = renderChildrenDrawer ?? ((<React.Fragment />) as any);
 
+  // useLogger('<[DrawerButton]>', { visible, childrenDrawer, childrenItem });
+
   return (
     <React.Fragment>
       {popoverProps ? <Popover {...popoverProps}>{_renderButton}</Popover> : _renderButton}
-      <Drawer title={title || text} width={width ?? 520} closable={false} onClose={_onClose} open={visible}>
-        <div
-          css={css`
-            margin-bottom: 2rem;
-          `}
-        >
-          {children}
-        </div>
-        {render && (
-          <RenderComponent
-            refreshFlag={refreshFlag}
-            openChildrenDrawer={(item) => {
-              setChildrenItem(item);
-              setChildrenVisible(true);
-            }}
-          />
-        )}
-        {/* <Button type="primary" onClick={this.showChildrenDrawer}>
+      {visible && (
+        <Drawer title={title || text} width={width ?? 520} closable={false} onClose={_onClose} open>
+          <div
+            css={css`
+              margin-bottom: 2rem;
+            `}
+          >
+            {children}
+          </div>
+          {render && (
+            <RenderComponent
+              refreshFlag={refreshFlag}
+              openChildrenDrawer={(item) => {
+                setChildrenItem(item);
+                setChildrenVisible(true);
+              }}
+            />
+          )}
+          {/* <Button type="primary" onClick={this.showChildrenDrawer}>
             Two-level drawer
           </Button>
           <Drawer
@@ -128,56 +141,78 @@ export const DrawerButton: React.FC<
           >
             This is two-level drawer
           </Drawer> */}
-        <StyledButton>
-          {extraButtons && (
-            <React.Fragment>
-              {extraButtons}
-              <Divider type="vertical" />
-            </React.Fragment>
+          <StyledButton>
+            {extraButtons && (
+              <React.Fragment>
+                {extraButtons}
+                <Divider type="vertical" />
+              </React.Fragment>
+            )}
+            {render && (
+              <React.Fragment>
+                <Button type="primary" onClick={() => setRefreshFlag(refreshFlag + 1)}>
+                  刷新
+                </Button>
+                <Divider type="vertical" />
+              </React.Fragment>
+            )}
+            <Button onClick={_onClose}>关闭</Button>
+            &nbsp;
+          </StyledButton>
+          {renderChildrenDrawer && (
+            <Drawer width={520} closable={false} onClose={_onChildrenClose} open={childrenDrawer}>
+              <RenderChildrenComponent item={childrenItem} />
+            </Drawer>
           )}
-          {render && (
-            <React.Fragment>
-              <Button type="primary" onClick={() => setRefreshFlag(refreshFlag + 1)}>
-                刷新
-              </Button>
-              <Divider type="vertical" />
-            </React.Fragment>
-          )}
-          <Button onClick={_onClose}>关闭</Button>
-          &nbsp;
-        </StyledButton>
-        {renderChildrenDrawer && (
-          <Drawer width={520} closable={false} onClose={_onChildrenClose} open={childrenDrawer}>
-            <RenderChildrenComponent item={childrenItem} />
-          </Drawer>
-        )}
-      </Drawer>
+        </Drawer>
+      )}
     </React.Fragment>
   );
 };
 
-export interface HistoryTimelineProps {
+export const HistoryTimeline: React.FC<{
   dataLoader: () => Promise<{ items: any[] }>;
-  render: (history) => React.ReactChild;
-}
+  render: (item: any) => TimelineItemProps;
+  autoRefresh?: boolean;
+}> = ({ dataLoader, render, autoRefresh }) => {
+  const [enabled, toggle] = useToggle(autoRefresh ?? false);
+  const state = useAsyncRetry(async () => await dataLoader());
 
-export const HistoryTimeline: React.FC<HistoryTimelineProps> = ({ dataLoader, render }) => {
-  const [state, setState] = useState<{ loading: boolean; fields: any[] }>({
-    loading: true,
-    fields: [],
-  });
+  useInterval(() => enabled && state.retry(), autoRefresh ? 5000 : null);
+  useLogger('<[HistoryTimeline]>', state, { autoRefresh, isEmpty: _.isEmpty(state.value?.items) });
 
-  useEffect(() => {
-    (async () => {
-      const data = await dataLoader();
-      if (data) setState({ loading: false, fields: data.items });
-    })();
-  });
+  if (!state.value && state.loading) return <Skeleton active />;
+  if (_.isEmpty(state.value?.items)) return <Empty />;
 
-  if (state.loading) return <Skeleton active />;
-  if (_.isEmpty(state.fields)) return <Empty />;
+  const items = state.value!.items.map(render);
 
-  return <Timeline>{state.fields.map(render)}</Timeline>;
+  return (
+    <>
+      {autoRefresh && (
+        <div>
+          <div>
+            <Switch
+              checkedChildren={
+                <div>
+                  <SyncOutlined spin={enabled} /> in 5s
+                </div>
+              }
+              unCheckedChildren={<span>自动刷新</span>}
+              defaultChecked={enabled}
+              onClick={toggle}
+            />{' '}
+            {!enabled && (
+              <Button size="small" type="primary" onClick={() => state.retry()} loading={state.loading}>
+                刷新
+              </Button>
+            )}
+          </div>
+          <Divider style={{ margin: '0.5rem 0' }} dashed />
+        </div>
+      )}
+      <Timeline mode="left" items={items} />
+    </>
+  );
 };
 
 const StyledButton = styled.div`

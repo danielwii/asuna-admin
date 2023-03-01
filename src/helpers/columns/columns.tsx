@@ -1,6 +1,6 @@
 import { LinkOutlined, SearchOutlined } from '@ant-design/icons';
 
-import { Button, Checkbox, Divider, Input, Popconfirm, Space, Tooltip } from 'antd';
+import { Button, Card, Checkbox, Divider, Input, Popconfirm, Popover, Space, Tooltip } from 'antd';
 import { Promise } from 'bluebird';
 import * as _ from 'lodash';
 import moment from 'moment';
@@ -196,10 +196,11 @@ export const columnHelper = {
       title: string,
       opts: {
         ref?: string;
-        transformer?: keyof RelationSchema | ((record) => React.ReactChild);
+        transformer?: keyof RelationSchema | ((record) => React.ReactElement | string);
         filterType?: 'list' | 'search';
         relationSearchField?: string;
-        render?: (content, record?, extras?: Asuna.Schema.RecordRenderExtras) => React.ReactNode;
+        render?: (content, record: RelationSchema, extras?: Asuna.Schema.RecordRenderExtras) => React.ReactNode;
+        popInfo?: boolean | { modelName: string }; // TODO
       },
     ) =>
     async (
@@ -209,12 +210,12 @@ export const columnHelper = {
     ): Promise<RelationColumnProps> => {
       let ref;
       let transformer;
-      if (!opts.ref && !opts.transformer) {
+      if (!opts.ref || !opts.transformer) {
         [ref, transformer] = key.split('.');
       }
 
-      ref = ref || opts.ref || key;
-      transformer = transformer || opts.transformer;
+      ref = ref ?? opts.ref ?? key;
+      transformer = transformer ?? opts.transformer;
       let filterProps: ColumnType<string> = {};
       switch (opts.filterType) {
         // case 'list': {
@@ -251,18 +252,52 @@ export const columnHelper = {
         }
       }
 
+      let renderInfoCard: (record) => React.ReactElement;
+      if (opts.popInfo) {
+        if (_.isBoolean(opts.popInfo)) {
+          renderInfoCard = (record) => (
+            <Card>
+              {_.map(record, (value, label) => (
+                <p key={label}>
+                  {label}: {value}
+                </p>
+              ))}
+            </Card>
+          );
+        } else {
+          const modelName = _.get(opts.popInfo, 'modelName');
+          const schema = await AppContext.ctx.models.loadOriginSchema(modelName);
+          renderInfoCard = (record) => (
+            <Card>
+              {_.map(record, (value, label) => (
+                <p key={label}>
+                  {_.find(schema.columns, (column) => column.name === label)?.config.info?.name ?? label}: {value}
+                </p>
+              ))}
+            </Card>
+          );
+        }
+      }
+
       return {
         key: key as string,
         title,
         relation: ref,
         dataIndex: ref,
         ...filterProps,
-        render: nullProtectRender((record) => {
+        render: nullProtectRender((record: RelationSchema & { isPublished?: boolean; isActive?: boolean }) => {
           const content = extractValue(record, transformer);
+          const view = opts.render ? (
+            opts.render(content, record, extras)
+          ) : (
+            <Button type="dashed" size="small">
+              {content}
+            </Button>
+          );
           return (
             <WithDebugInfo info={{ key, title, opts, record, content, transformer }}>
               <div style={record?.isPublished === false || record?.isActive === false ? { color: 'darkred' } : {}}>
-                {opts.render ? opts.render(content, record, extras) : content}
+                {opts.popInfo ? <Popover content={renderInfoCard(record)}>{view}</Popover> : view}
               </div>
             </WithDebugInfo>
           );

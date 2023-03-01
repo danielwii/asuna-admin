@@ -55,14 +55,14 @@ interface IState {
   loading: boolean;
 }
 
-export const AsyncFormModalButton: React.FC<
+export const AsyncModalButton: React.FC<
   Pick<IFormModalProps, 'title'> & { children: (props: { data; onClose: () => void }) => React.ReactElement } & {
     future;
   }
 > = ({ title, future, children }) => {
   const [open, setOpen] = useToggle(false);
 
-  useLogger('<[FormModalButton]>', { open });
+  useLogger('<[AsyncModalButton]>', { open });
 
   return (
     <Button size="small" type="dashed">

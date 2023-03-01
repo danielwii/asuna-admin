@@ -1,6 +1,6 @@
 import { LoadingOutlined } from '@ant-design/icons';
 
-import { notification, Timeline } from 'antd';
+import { Timeline, notification } from 'antd';
 import { differenceInSeconds } from 'date-fns';
 import * as _ from 'lodash';
 import { nanoid } from 'nanoid';
@@ -36,19 +36,19 @@ export class TimelineMessageBox {
 
   private static render = () => {
     return (
-      <Timeline>
-        {TimelineMessageBox.messages.map((message) =>
-          message.type !== 'loading' ? (
-            <Timeline.Item key={message.key} color={message.type === 'done' ? 'green' : 'red'}>
-              <div>{_.isObject(message.content) ? <pre>{util.inspect(message.content)}</pre> : message.content}</div>
-            </Timeline.Item>
-          ) : (
-            <Timeline.Item key={message.key} dot={<LoadingOutlined style={{ fontSize: '16px' }} />}>
-              <div>{_.isObject(message.content) ? <pre>{util.inspect(message.content)}</pre> : message.content}</div>
-            </Timeline.Item>
-          ),
+      <Timeline
+        items={TimelineMessageBox.messages.map((message) =>
+          message.type !== 'loading'
+            ? {
+                color: message.type === 'done' ? 'green' : 'red',
+                children: _.isObject(message.content) ? <pre>{util.inspect(message.content)}</pre> : message.content,
+              }
+            : {
+                dot: <LoadingOutlined style={{ fontSize: '16px' }} />,
+                children: _.isObject(message.content) ? <pre>{util.inspect(message.content)}</pre> : message.content,
+              },
         )}
-      </Timeline>
+      />
     );
   };
 
