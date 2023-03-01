@@ -1,10 +1,9 @@
 import { InfoOutlined } from '@ant-design/icons';
-import useLogger from '@danielwii/asuna-helper/dist/logger/hooks';
 
+import useLogger from '@danielwii/asuna-helper/dist/logger/hooks';
 import { parseJSONIfCould } from '@danielwii/asuna-helper/dist/utils';
 
 import { Button, Divider, Dropdown, Modal, Skeleton, Switch, Table, Tag, Tooltip } from 'antd';
-import { LogLevel } from 'consola';
 import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
 import React, { useContext, useEffect, useState } from 'react';
@@ -26,7 +25,7 @@ import { AsunaDrawerButton } from './AsunaDrawer';
 import type { SorterResult, TableCurrentDataSource, TablePaginationConfig } from 'antd/es/table/interface';
 import type { Key } from 'antd/lib/table/interface';
 
-const logger = createLogger('<[AsunaDataTable]>', LogLevel.Trace);
+const logger = createLogger('<[AsunaDataTable]>');
 
 export interface AsunaDataTableProps {
   creatable?: Asuna.Schema.TableColumnOptCreatable;
@@ -44,7 +43,7 @@ export interface AsunaDataTableProps {
 
 type QueryConditionType = {
   pagination?: TablePaginationConfig;
-  filters?: Record<string, (Key | boolean)[] | null>;
+  filters?: Record<string, any>;
   sorter?: SorterResult<any> | SorterResult<any>[];
 };
 
@@ -144,7 +143,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = (props) => {
       sorter?: SorterResult<RecordType> | SorterResult<RecordType>[],
       extra?: TableCurrentDataSource<RecordType>,
     ): void {
-      logger.log('[handleTableChange]', { pagination, filters, sorter, extra });
+      logger.log('[handleTableChange]', { pagination, filters, sorter, extra }, new Error());
       const { availableSorter, transformedFilters, transformedSorter } = func.transformQueryCondition({
         pagination,
         filters,
@@ -204,7 +203,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = (props) => {
       },
     });
     return () => {
-      logger.log('unsubscribe', subscription);
+      logger.log('[effect] unsubscribe', subscription);
       subscription.unsubscribe();
     };
   }, [modelName]);
@@ -212,17 +211,29 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = (props) => {
   const ctx: Asuna.Schema.TableContext = {
     onSearch: ({ searchText, searchedColumn }) => {
       logger.log('onSearch', { searchText, searchedColumn });
-      setQueryCondition({ ...queryCondition, filters: { ...queryCondition.filters, [searchedColumn]: [searchText] } });
+      setQueryCondition({
+        ...queryCondition,
+        filters: {
+          ...queryCondition.filters,
+          [searchedColumn]: _.isArray(searchText) ? searchText : [searchText],
+        },
+      });
     },
   };
   const {
     loading: loadingAsunaModels,
     columnProps,
     relations,
-  } = useAsunaModels(modelName, { callRefresh: func.createRefresher(queryCondition), extraName, actions, ctx }, [
+  } = useAsunaModels(
     modelName,
-    queryCondition,
-  ]);
+    {
+      callRefresh: func.createRefresher(queryCondition),
+      extraName,
+      actions,
+      ctx,
+    },
+    [modelName, queryCondition],
+  );
 
   const { primaryKey } = resolveModelInPane(modelName, extraName);
 
@@ -240,7 +251,8 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = (props) => {
 
   // 直接从 remote 拉取，未来需要将 models 中缓存的数据清除
   const { loading } = useAsync(async () => {
-    // console.log(`remote[effect]`, { loadingAsunaModels, flag }, queryCondition);
+    if (loadingAsunaModels) return;
+    logger.info(`[async-effect]`, { loadingAsunaModels, flag }, queryCondition);
     const { transformedFilters, transformedSorter } = func.transformQueryCondition(queryCondition);
     const value = await AppContext.adapters.models
       .loadModels(modelName, {
@@ -251,12 +263,12 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = (props) => {
       })
       .then(fp.get('data'));
     if (value) {
-      logger.log(`remote[effect]`, { value });
+      logger.log(`[async-effect]`, { value });
       setItems(value);
     }
   }, [queryCondition, loadingAsunaModels, flag]);
 
-  useLogger('<[AsunaDataTable]>', columnProps, { flag, loadingAsunaModels, loading }, queryCondition);
+  useLogger('<[AsunaDataTable]>', columnProps, { flag, loadingAsunaModels, loading }, queryCondition, items);
 
   if (loadingAsunaModels) {
     return <Skeleton active avatar />;
@@ -350,6 +362,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = (props) => {
                   // const column = _.find(columns, column => column.key === key);
                   // if (column) column.filteredValue = null;
 
+                  logger.info('~~filter', queryCondition);
                   const filters = _.omit(queryCondition.filters, key);
                   setQueryCondition({ pagination: queryCondition.pagination, filters, sorter: queryCondition.sorter });
                   func.handleTableChange(queryCondition.pagination, filters);

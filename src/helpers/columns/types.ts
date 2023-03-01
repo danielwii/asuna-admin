@@ -10,6 +10,7 @@ export type ConditionType = 'like' | 'boolean' | 'list';
 export interface SwitchConditionExtras {
   model: string;
   relationSearchField?: string;
+  items?: string[]; // for list condition
 }
 export interface ModelOpts {
   model: string;
@@ -32,5 +33,5 @@ export interface TextColumnOpts {
    * @param content
    * @param record
    */
-  render?: (content, record?) => React.ReactChild;
+  render?: (content, record?) => React.ReactElement | string;
 }

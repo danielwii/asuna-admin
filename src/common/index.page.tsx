@@ -1,8 +1,10 @@
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
+
 import useLogger from '@danielwii/asuna-helper/dist/logger/hooks';
 
 import 'moment/locale/zh-cn';
 
+import getConfig from 'next/config';
 import * as React from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import useAsync from 'react-use/lib/useAsync';
@@ -41,7 +43,7 @@ export const IndexPageView: React.FC<{ register: ILoginRegister & IIndexRegister
   hideCharacteristics,
 }) => {
   const state = useAsync(async () => {
-    logger.info('setup app context ...');
+    logger.info('setup app context ...', getConfig());
     try {
       await AppContext.setup({ register, module: 'index' }, Func);
     } catch (e) {

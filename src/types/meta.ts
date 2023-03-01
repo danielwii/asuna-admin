@@ -108,6 +108,10 @@ export interface JSONMetaInfoOptions extends MetaInfoBaseOptions {
 export interface AddressMetaInfoOptions extends MetaInfoBaseOptions {
   type: 'Address';
 }
+export interface GenerateMetaInfoOptions extends MetaInfoBaseOptions {
+  type: 'Generate';
+  extra: { auto: boolean; length: number };
+}
 
 export interface STIMetaInfoOptions extends MetaInfoBaseOptions {
   type: 'EnumFilter';
@@ -123,6 +127,7 @@ export type MetaInfoOptions =
   | AddressMetaInfoOptions
   | NormalMetaInfoOptions
   | EnumFilterMetaInfoOptions
+  | GenerateMetaInfoOptions
   | JSONMetaInfoOptions;
 
 /**

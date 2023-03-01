@@ -1,11 +1,13 @@
 import { Paper } from '@material-ui/core';
 
+import useLogger from '@danielwii/asuna-helper/dist/logger/hooks';
+
 import { Affix, Anchor, Button, Col, Divider, Form, FormInstance, List, Popconfirm, Row, Tag } from 'antd';
-import consola from 'consola';
 import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
 import moment from 'moment';
 import * as R from 'ramda';
+import { FieldData } from 'rc-field-form/lib/interface';
 import * as React from 'react';
 import { useMemo } from 'react';
 import { CircleLoader, ScaleLoader } from 'react-spinners';
@@ -162,11 +164,14 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener> 
       if (field.name.startsWith('is')) return 10;
       return _.get(field.options, 'accessible') === 'readonly' ? 20 : 30;
     }),
-    (field) => (
-      <EnhancedPureElement key={field.name} field={field}>
-        <RenderedField model={model} schema={schema} form={form} fields={fields} field={field} />
-      </EnhancedPureElement>
-    ),
+    (field) => {
+      // FIXME render 4 times
+      return (
+        <EnhancedPureElement key={field.name} field={field}>
+          <RenderedField model={model} schema={schema} form={form} fields={fields} field={field} />
+        </EnhancedPureElement>
+      );
+    },
   );
 
   const renderedDrafts = loadingDrafts ? (
@@ -228,8 +233,10 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener> 
           <Col span={anchor ? 18 : 24}>
             <Form
               form={form}
-              // onFinish={(values) => console.log('onFinish', values)}
-              onFieldsChange={(values) => console.log('onFieldsChange', ...values)}
+              onFinish={(values) => logger.success('form.onFinish', ...values)}
+              onFinishFailed={(errorInfo) => logger.success('form.onFinishFailed', errorInfo)}
+              onFieldsChange={(changedFields, allFields) => logger.debug('form.onFieldsChange', changedFields, allFields)}
+              onValuesChange={(changedValues, allValues) => logger.log('form.onValuesChange', changedValues, allValues)}
             >
               {/* {_.map(fieldGroups, this.buildFieldGroup)} */}
               {/* {_.map(fields, this.buildField)} */}
@@ -391,12 +398,10 @@ interface IPureElementProps {
   field: DynamicFormField | FormField;
 }
 
-const pureLogger = createLogger('components:dynamic-form:pure-element');
-
 const EnhancedPureElement: React.FC<React.PropsWithChildren<IPureElementProps>> = ({ field, children }) => {
   const hidden = (field as DynamicFormField)?.options?.accessible === 'hidden';
 
-  pureLogger.log('[render]', field, { hidden });
+  useLogger('components:dynamic-form:pure-element', field, { hidden });
 
   if (hidden) return null;
 

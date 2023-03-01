@@ -1,4 +1,3 @@
-import consola, { LogLevel } from 'consola';
 import _ from 'lodash';
 import * as React from 'react';
 
@@ -25,7 +24,7 @@ export class ComponentService implements IComponentService {
   }
 
   regGraphql(componentName: string, model?: KeyValueModelVo, render?: React.FC): void {
-    logger.info('reg graphql component', { componentName, client: _.get(AppContext.ctx, 'graphql.client') }, model);
+    logger.debug('reg graphql component', { componentName, client: _.get(AppContext.ctx, 'graphql.client') }, model);
     this.#components[componentName] = (props) => {
       // <ApolloProvider client={AppContext.ctx.graphql.client as any /* TODO error occurred */}>
       //   {

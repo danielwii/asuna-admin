@@ -10,7 +10,6 @@ import * as R from 'ramda';
 import { GraphqlAdapterImpl } from '../adapters/graphql';
 import { DynamicFormTypes } from '../components/DynamicForm/types';
 import { Config } from '../config';
-import { CacheHelper } from '../core/cache.helper';
 import { Store } from '../core/store';
 import { castModelKey } from '../helpers/cast';
 import { defaultColumns, defaultColumnsByPrimaryKey } from '../helpers/columns/common';
@@ -235,7 +234,7 @@ export class ModelAdapterImpl implements ModelAdapter {
           _.cond<typeof basicType, any>([
             [() => /^(VARCHAR.*|String)$/i.test(basicType), () => DynamicFormTypes.Input],
             [
-              () => /^(INTEGER|FLOAT|Number|Numeric|Decimal|Double.*)$/i.test(basicType),
+              () => /^(int4|INTEGER|FLOAT|Number|Numeric|Decimal|Double.*)$/i.test(basicType),
               () => DynamicFormTypes.InputNumber,
             ],
             [() => /^TEXT$/i.test(basicType), () => DynamicFormTypes.TextArea],
@@ -430,37 +429,37 @@ export class ModelAdapterImpl implements ModelAdapter {
     return { model: {}, table: defaultColumns, columns: {} };
   };
 
-  getPrimaryKey = (modelName: string): string => _.head(this.getPrimaryKeys(modelName)) || 'id';
+  getPrimaryKey = _.memoize((modelName: string): string => _.head(this.getPrimaryKeys(modelName)) || 'id');
 
-  getPrimaryKeys = (modelName: string): string[] => {
-    const TAG = '[getPrimaryKey]';
+  getPrimaryKeys = _.memoize((modelName: string): string[] => {
+    const TAG = '[getPrimaryKeys]';
     const { schemas } = Store.fromStore();
     const schema: Asuna.Schema.ModelSchema[] = R.prop(modelName)(schemas as any);
     if (schema !== null) {
       const primaryKeys = _.filter(schema, (opts) => !!opts?.config?.primaryKey);
-      // logger.debug(TAG, modelName, 'primaryKeys is', primaryKeys);
+      logger.info(TAG, modelName, 'primaryKeys is', primaryKeys, schema);
       if (primaryKeys.length) {
         return _.map(primaryKeys as any[], fp.get('name'));
       }
     }
     return ['id']; // by default
-  };
+  });
 
-  getFormSchema = (name: string, values?: { [member: string]: any }): Asuna.Schema.FormSchemas => {
+  getFormSchema = _.memoize((name: string, values?: { [member: string]: any }): Asuna.Schema.FormSchemas => {
     const { schemas } = Store.fromStore();
     if (!schemas || !name) {
       logger.error('[getFormSchema]', 'schemas or name is required.', { schemas, name });
       return {};
     }
     const schema = R.prop(name)(schemas);
-    logger.log('[getFormSchema]', name, schema);
+    logger.debug('[getFormSchema]', name, schema);
 
     if (!schema) {
       logger.error('[getFormSchema]', 'schema is required.', { schemas, name });
       return {};
     }
 
-    logger.log('[getFormSchema]', 'schema is', schema, 'name is', name);
+    logger.debug('[getFormSchema]', 'schema is', schema, 'name is', name);
     return R.compose(
       R.mergeAll as any,
       R.map((formatted: Asuna.Schema.FormSchema) => ({ [formatted.name]: formatted })),
@@ -488,7 +487,7 @@ export class ModelAdapterImpl implements ModelAdapter {
         };
       }),
     )(schema) as { [member: string]: Asuna.Schema.FormSchema };
-  };
+  });
 
   getAssociationByName = (associationName: string, modelName?: string): Required<Asuna.Schema.Association> => {
     const primaryKey = this.getPrimaryKey(associationName);
@@ -503,7 +502,7 @@ export class ModelAdapterImpl implements ModelAdapter {
    * @see loadModels2
    */
   loadModels = (modelName: string, configs: ModelListConfig = {}): Promise<AxiosResponse> => {
-    logger.debug('[loadModels]', { modelName, configs, modelConfig: this.getModelConfig(modelName) });
+    logger.info('[loadModels]', { modelName, configs, modelConfig: this.getModelConfig(modelName) });
     const page = configs?.pagination?.current ?? 1;
     const size = configs?.pagination?.pageSize ?? (Config.get('DEFAULT_PAGE_SIZE') as number);
     return this.service.loadModels(modelName, {
@@ -511,7 +510,13 @@ export class ModelAdapterImpl implements ModelAdapter {
       fields: configs?.fields,
       filters: _.mapValues<Record<string, [Condition]>, WhereConditions>(
         configs?.filters,
-        _.flow((filter) => (_.isArray(filter) ? filter[0] : filter), parseJSONIfCould),
+        _.flow((filter) => {
+          if (_.isArray(filter)) {
+            return _.isObject(filter[0]) ? filter[0] : { $in: filter };
+          } else {
+            return filter;
+          }
+        }, parseJSONIfCould),
       ),
       sorter: configs?.sorter,
       relations: configs?.relations,
@@ -574,17 +579,12 @@ export class ModelAdapterImpl implements ModelAdapter {
    * @deprecated {@see loadOriginSchema}
    * @param modelName
    */
-  loadSchema = async (modelName: string) => {
-    return CacheHelper.cacheable(`loadSchema#${modelName}`, () => {
-      return this.service.loadSchema(modelName, this.getModelConfig(modelName));
-    });
-  };
+  loadSchema = _.memoize((modelName: string) => this.service.loadSchema(modelName, this.getModelConfig(modelName)));
 
-  loadOriginSchema = async (modelName: string): Promise<Asuna.Schema.OriginSchema> => {
-    return CacheHelper.cacheable(`loadOriginSchema#${modelName}`, () => {
-      return this.service.loadOriginSchema(modelName, this.getModelConfig(modelName)).then(fp.get('data'));
-    });
-  };
+  loadOriginSchema = _.memoize(
+    (modelName: string): Promise<Asuna.Schema.OriginSchema> =>
+      this.service.loadOriginSchema(modelName, this.getModelConfig(modelName)).then(fp.get('data')),
+  );
 
   async loadOriginSchemas(): Promise<{ [name: string]: Asuna.Schema.OriginSchema }> {
     if (this.graphql.client) {

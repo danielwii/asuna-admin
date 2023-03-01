@@ -200,6 +200,7 @@ export const columnHelper2 = {
     { model, title, ctx }: ModelOpts,
     opts: {
       transformer?: (value) => string;
+      searchType?: ConditionType;
       colorMap?: {
         [key: string]:
           | null
@@ -219,17 +220,19 @@ export const columnHelper2 = {
   ): Promise<ColumnProps<any>> => {
     const columnInfo = model ? await AppContext.getColumnInfo(model, key) : undefined;
     const titleStr = title ?? columnInfo?.config?.info?.name ?? key;
+    const enumData = _.get(columnInfo, 'config.info.enumData');
     return {
       key,
       title: titleStr,
       dataIndex: key,
       sorter: true,
-      // ...generateSearchColumnProps(key, opts.searchType),
+      ...(await generateSearchColumnProps(key, ctx.onSearch, opts.searchType, { model, items: _.keys(opts.colorMap) })),
       render: nullProtectRender((record) => {
         const value = extractValue(record, opts.transformer);
+        const title = _.get(enumData, value);
         return (
-          <WithDebugInfo info={{ key, title, record, value }}>
-            <Tag color={_.get(opts, `colorMap['${record}']`) as string}>{value}</Tag>
+          <WithDebugInfo info={{ key, title, record, value, opts }}>
+            {<Tag color={_.get(opts, `colorMap['${record}']`) as string}>{title ? `${value}-${title}` : value}</Tag>}
           </WithDebugInfo>
         );
       }),

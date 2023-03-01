@@ -1,3 +1,5 @@
+import useLogger from '@danielwii/asuna-helper/dist/logger/hooks';
+
 import { List, Tooltip } from 'antd';
 import { Promise } from 'bluebird';
 import * as _ from 'lodash';
@@ -34,6 +36,8 @@ export const AsunaPlainInfo: React.FC<AsunaPlainObjectProps> = ({ modelName, rec
       }),
     [modelName, record, compare],
   );
+
+  useLogger('<[AsunaPlainInfo]>', { modelName, record, compare });
 
   return (
     <WithLoading loading={loading} error={error}>

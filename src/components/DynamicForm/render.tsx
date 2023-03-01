@@ -1,3 +1,5 @@
+import useLogger from '@danielwii/asuna-helper/dist/logger/hooks';
+
 import * as _ from 'lodash';
 import * as R from 'ramda';
 import * as React from 'react';
@@ -8,9 +10,14 @@ import { WithDebugInfo } from '../../helpers/debug';
 import { createLogger } from '../../logger';
 import { Asuna, MetaInfoOptions } from '../../types';
 import {
+  GenerateOptions,
+  HiddenOptions,
+  InputOptions,
+  PlainOptions,
   generateAuthorities,
   generateCheckbox,
   generateDateTime,
+  generateGenerate,
   generateHidden,
   generateInput,
   generateInputNumber,
@@ -20,17 +27,14 @@ import {
   generateSwitch,
   generateTextArea,
   generateVideo,
-  HiddenOptions,
-  InputOptions,
-  PlainOptions,
 } from './elements';
 import { generateAddress } from './elements/Address';
 import { generateFile, generateFiles } from './elements/Files';
 import { generateImage, generateImages, generateRichImage } from './elements/Image';
 import { generateKVArray } from './elements/KVArray';
 import { PlainImages } from './elements/Plain';
-import { generateSelect, Item } from './elements/Select';
-import { generateStringArray, StringArrayOptions } from './elements/StringArray';
+import { Item, generateSelect } from './elements/Select';
+import { StringArrayOptions, generateStringArray } from './elements/StringArray';
 import { DynamicFormTypes } from './types';
 
 import type { FormInstance } from 'antd';
@@ -41,6 +45,8 @@ const logger = createLogger('components:dynamic-form:render');
 export type DynamicFormFieldOptions = Partial<MetaInfoOptions> & {
   required?: boolean;
   tooltip?: string;
+  label?: string;
+  // name?: string;
 };
 
 export type DynamicFormField = {
@@ -62,12 +68,13 @@ interface RenderedFieldProps {
   field: DynamicFormField;
 }
 
-export const RenderedField = ({ model, schema, form, fields, field }: RenderedFieldProps) => {
+export const RenderedField: React.FC<RenderedFieldProps> = ({ model, schema, form, fields, field }) => {
   field.options = field.options || {};
   const options: DeepPartial<
     DynamicFormField['options'] &
       HiddenOptions &
       PlainOptions &
+      GenerateOptions &
       InputOptions &
       // SelectOptions & // will cause never type issue
       StringArrayOptions
@@ -80,7 +87,7 @@ export const RenderedField = ({ model, schema, form, fields, field }: RenderedFi
   };
   const defaultAssociation = { name: 'name', value: 'id', fields: ['id', 'name'] };
 
-  logger.log('[DynamicForm]', '[buildField]', field, { accessible: field?.options?.accessible });
+  useLogger(`RenderedField(key=${field.name})`, { field, options, accessible: field?.options?.accessible });
 
   // all readonly or hidden field will be rendered as plain component
   if (_.includes(['readonly'], field?.options?.accessible)) {
@@ -128,6 +135,8 @@ export const RenderedField = ({ model, schema, form, fields, field }: RenderedFi
       return generateStringTmpl(form, options);
     case DynamicFormTypes.JSON:
     // return generateTextArea(form, options);
+    case DynamicFormTypes.Generate:
+      return generateGenerate({ form, fields, field }, options as DynamicFormField['options'] & GenerateOptions);
     case DynamicFormTypes.TextArea:
       return generateTextArea({ form, fields, field }, options);
     case DynamicFormTypes.DateTime:
@@ -262,7 +271,7 @@ export const RenderedField = ({ model, schema, form, fields, field }: RenderedFi
       return <div>association({util.inspect(field)}) need foreignOpts.</div>;
     }
     case DynamicFormTypes.SimpleJSON: // TODO json-type is string-array
-      logger.debug('[DynamicForm]', '[buildField][SimpleJSON]', field, options);
+      logger.info('[DynamicForm]', '[buildField][SimpleJSON]', field, options);
       if ((options as any).jsonType === 'kv-array') {
         return generateKVArray(form, { ...(options as any), items: field.value });
       }

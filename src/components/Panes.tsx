@@ -121,11 +121,10 @@ export const PanesView: React.FC<IPanesProps> = ({
       activeKey={activeKey}
       type="editable-card"
       onEdit={func.onEdit}
-    >
-      {_.map(panes, (pane: Pane) => (
-        <Tabs.TabPane tab={pane.title} key={pane.key}>
-          {/*{activeKey} - {pane.key} - {title}*/}
-          {/*<pre>{util.inspect(pane)}</pre>*/}
+      items={_.map(panes, (pane: Pane) => ({
+        key: pane.key,
+        label: pane.title,
+        children: (
           <ModulesLoader
             module={pane.linkTo || (pane.key as any)}
             activeKey={activeKey}
@@ -134,8 +133,8 @@ export const PanesView: React.FC<IPanesProps> = ({
             onTitleChange={(newTitle) => func.onTitleChange(activeKey, newTitle)}
             component={pane.component}
           />
-        </Tabs.TabPane>
-      ))}
-    </Tabs>
+        ),
+      }))}
+    />
   );
 };

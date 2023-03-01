@@ -1,4 +1,5 @@
 import { PageHeader } from '@ant-design/pro-layout';
+
 import useLogger from '@danielwii/asuna-helper/dist/logger/hooks';
 
 import { Button, Collapse, Descriptions, Empty, Tag, Tooltip } from 'antd';
@@ -18,7 +19,7 @@ import { Asuna } from '../types';
 import { DynamicFormTypes } from './DynamicForm/types';
 import { AssetPreview, AssetsPreview } from './base/preview-button/asset-preview';
 
-const logger = createLogger('components:data-view');
+const logger = createLogger('<[AsunaDataView]>');
 
 export interface DataViewColumnProps<EntitySchema> {
   title?: keyof EntitySchema;

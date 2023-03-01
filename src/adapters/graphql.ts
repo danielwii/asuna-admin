@@ -33,7 +33,7 @@ export class GraphqlAdapterImpl {
   public client: ApolloClient<NormalizedCacheObject>;
   // public serverClient: ApolloClient<InMemoryCache>;
   constructor(uri?: string) {
-    // console.log('init graphql api with', uri);
+    logger.info('init graphql api with', { uri });
     if (uri) {
       this.client = new ApolloClient({
         cache: new InMemoryCache(),

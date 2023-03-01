@@ -53,7 +53,7 @@ export class AsunaDefinitions<T extends Asuna.Schema.ModelOpts = {}> {
     opts: Asuna.Schema.TableColumnOpts<any>,
   ): { [key: string]: Asuna.Schema.FRecordRender } {
     const columns = _.isFunction(opts.columns) ? opts.columns(entity) : opts.columns;
-    logger.log('wrapped column is', { entity, columns, opts });
+    logger.debug('wrapped column is', { entity, columns, opts });
     return {
       [entity]: (actions, extras) => {
         const compacted = _.compact([
@@ -95,7 +95,7 @@ export class AsunaDefinitions<T extends Asuna.Schema.ModelOpts = {}> {
     };
     this.#columnOpts[entity as string] = withStylesOpts;
     this.#tableColumns = extend(this.#tableColumns, this.wrapTableColumns(entity as string, withStylesOpts));
-    logger.info('setup table columns', { entity }, this, this.#tableColumns);
+    logger.debug('setup table columns', { entity }, this, this.#tableColumns);
   }
 
   addCustomActions(model: keyof T, ...actions: React.Component[]): void {
@@ -118,7 +118,7 @@ export class AsunaDefinitions<T extends Asuna.Schema.ModelOpts = {}> {
     // 存在 extra 的配置时从 extra 中获取，否则获取默认配置
     const table = this.#extraTableColumns[key as string] || this.#tableColumns[key];
     const model = this.#modelColumns[key];
-    logger.log('getModelConfig', { key, table, model });
+    logger.debug('getModelConfig', { key, table, model });
     if (!table) logger.warn('[getModelConfig]', key, 'should set table');
     // if (!model) logger.warn('[getModelConfig]', key, 'should set model');
     return { ...this.#modelOpts[key], table, model };

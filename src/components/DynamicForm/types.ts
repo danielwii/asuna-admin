@@ -32,6 +32,7 @@ export enum DynamicFormTypes {
   EnumFilter = 'EnumFilter',
   StringTmpl = 'StringTmpl',
   SimpleJSON = 'SimpleJSON',
+  Generate = 'Generate',
   SortPosition = 'SortPosition',
   RichImage = 'RichImage',
   RichText = 'RichText',

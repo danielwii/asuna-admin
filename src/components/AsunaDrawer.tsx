@@ -1,3 +1,5 @@
+import useLogger from '@danielwii/asuna-helper/dist/logger/hooks';
+
 import React from 'react';
 
 import { AsunaPlainInfo } from './AsunaPlainInfo';
@@ -9,6 +11,8 @@ export const AsunaDrawerButton: React.FC<{
   modelName: string;
   extra?: React.ReactNode;
 }> = ({ text, modelName, record, extra }) => {
+  // useLogger('<[AsunaDrawerButton]>', { text, modelName, extra }, record);
+
   return (
     <DrawerButton
       text={text}

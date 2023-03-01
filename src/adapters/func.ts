@@ -112,8 +112,8 @@ export class Func {
           const authorities = R.reduce(R.mergeWith(R.or), {})(authoritiesList);
           logger.debug('[init]', 'current authorities is', authorities);
 
-          const menus = await menuProxy.init(isSysAdmin, authorities);
-          logger.log('[init]', 'init sage, menus is', menus);
+          const menus = menuProxy.init(isSysAdmin, authorities);
+          logger.log('[init]', 'menus is', menus);
 
           return { menus };
           // await put({ type: menuActionTypes.INIT_SUCCESS, payload: { menus } });

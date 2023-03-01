@@ -15,7 +15,7 @@ export function extractModelNameFromPane(pane: Pane): { modelName: string; extra
   if (!modelName || !extraName) {
     throw new Error(`modelName must exists in pane ${JSON.stringify(pane)}`);
   }
-  if (modelName !== extraName) logger.log({ pane, modelName, extraName });
+  if (modelName !== extraName) logger.log('extractModelNameFromPane', { pane, modelName, extraName });
   return { modelName, extraName };
 }
 
@@ -41,7 +41,7 @@ export function resolveModelInPane(
   const primaryKey = _.head(primaryKeys) || 'id';
   const schemas = AppContext.adapters.models.getFormSchema(modelName);
 
-  logger.log({
+  logger.log('resolveModelInPane', {
     modelName,
     extraName,
     modelConfig,

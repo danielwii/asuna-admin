@@ -3,15 +3,19 @@
 /** @jsx jsx */
 // noinspection ES6UnusedImports
 
-import useLogger from '@danielwii/asuna-helper/dist/logger/hooks';
 import { css, jsx } from '@emotion/react';
 
+import useLogger from '@danielwii/asuna-helper/dist/logger/hooks';
+
 import { Checkbox, DatePicker, Form, FormInstance, Input, InputNumber, Switch, TimePicker } from 'antd';
+import { LogLevel } from 'consola';
 import * as _ from 'lodash';
+import { nanoid } from 'nanoid';
 import dynamic from 'next/dynamic';
-import React from 'react';
+import React, { useState } from 'react';
 import JSONInput from 'react-json-editor-ajrm';
 import locale from 'react-json-editor-ajrm/locale/zh-cn';
+import useEffectOnce from 'react-use/lib/useEffectOnce';
 
 import { apiProxy } from '../../../adapters/proxy';
 import { Config } from '../../../config';
@@ -20,10 +24,11 @@ import { WithVariable } from '../../base/helper/helper';
 import { StringTmpl } from '../../base/string-tmpl';
 import { Authorities } from '../Authorities';
 import { VideoUploader } from '../Videos';
+import { DynamicFormField } from '../render';
 
 import type { FormComponentProps } from './interfaces';
 
-const logger = createLogger('components:dynamic-form:elements');
+const logger = createLogger('components:dynamic-form:elements', LogLevel.Trace);
 
 export interface IFormItemLayout {
   labelCol?: { offset?: number; span?: number };
@@ -88,7 +93,9 @@ type ComponentOptions = {
   labelName: string;
   opts?: any; // GetFieldDecoratorOptions;
   help?: string;
+  // 字段的描述信息
   extra?: React.ReactNode;
+  initialValue?: any;
 };
 
 export const generateComponent = (
@@ -99,12 +106,10 @@ export const generateComponent = (
 ) => {
   const form: FormInstance = f.form ? f.form : f;
   const field = f.field ? f.field : f;
-  const { fieldName, labelName, opts, help } = options;
+  const { fieldName, labelName, opts, help, initialValue } = options;
   if (fieldName) {
-    logger.debug('[generateComponent]', options);
     const name = options.fieldName ?? options.name;
-    // const value = form.getFieldValue(name);
-    // console.log('<[generateComponent]>', { name, value }, options);
+    logger.debug('[generateComponent]', { name, initialValue }, options);
     return (
       <Form.Item
         key={fieldName}
@@ -114,6 +119,7 @@ export const generateComponent = (
         {...(help ? { help: <div dangerouslySetInnerHTML={{ __html: help }} /> } : null)}
         {...(opts || {})}
         extra={options.extra}
+        initialValue={initialValue}
       >
         <Component field={field} />
       </Form.Item>
@@ -205,6 +211,31 @@ export const generateInput = (
     component,
     formItemLayout,
   );
+};
+
+export type GenerateOptions = DynamicFormField['options'] & {
+  extra: { auto: boolean; length: number };
+};
+
+export const generateGenerate = (
+  { form, field, fields }: { form: FormInstance; fields; field },
+  options: DynamicFormField['options'] & GenerateOptions,
+  formItemLayout: IFormItemLayout = horizontalFormItemLayout,
+) => {
+  const { name, label, required = false, extra } = options;
+  const fieldName = name!;
+  const labelName = label || name!;
+
+  logger.info('[generateGenerate]', { name, label, required, extra }, field);
+
+  const Component: React.FC<FormComponentProps> = (props) => {
+    const [token] = useState(() => field.value ?? nanoid(extra.length ?? 32));
+    useEffectOnce(() => props.onChange(token));
+
+    return <div style={{ wordBreak: 'break-all' }}>{props.value}</div>;
+  };
+
+  return generateComponent({ form, field, fields }, { name, label, fieldName, labelName }, Component, formItemLayout);
 };
 
 const TextAreaHOC: React.FC<Partial<FormComponentProps>> = (props) => (

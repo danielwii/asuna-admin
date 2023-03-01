@@ -1,6 +1,9 @@
+import useLogger from '@danielwii/asuna-helper/dist/logger/hooks';
+
+import _ from 'lodash';
 import * as React from 'react';
 
-import { generateComponent, horizontalFormItemLayout, IFormItemLayout } from '.';
+import { IFormItemLayout, generateComponent, horizontalFormItemLayout } from '.';
 import { createLogger } from '../../../logger';
 import { WithVariable } from '../../base/helper/helper';
 import { IStringArrayProps, StringArray } from '../../base/string-array';
@@ -19,10 +22,12 @@ export type StringArrayOptions = {
 };
 
 const StringArrayHOC: React.FC<Partial<IStringArrayProps>> = (props) => {
-  // useLogger(`StringArray(key=${StringArrayHOC.name})`, props);
+  useLogger(`StringArray(key=${StringArrayHOC.name})`, props);
   return (
     <WithVariable /*key={props.id}*/ variable={props as IStringArrayProps}>
-      {(props) => <StringArray {...props} onChange={(items) => props.onChange(items)} />}
+      {(props) => (
+        <StringArray {...props} items={_.get(props, 'value') as any} onChange={(items) => props.onChange([...items])} />
+      )}
     </WithVariable>
   );
 };
@@ -35,6 +40,8 @@ export function generateStringArray(
   const fieldName = key || name;
   const labelName = label || name || key;
   logger.debug('[generateStringArray]', { items });
+
+  useLogger(`generateStringArray(key=${fieldName})`, { items });
 
   return generateComponent(
     form,

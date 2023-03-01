@@ -8,7 +8,6 @@ import * as React from 'react';
 
 import { VideoPlayer } from '../../components/DynamicForm/Videos';
 import { TooltipContent } from '../../components/base/helper/helper';
-import { Content } from '../../components/base/styled/styled';
 import { AppContext } from '../../core/context';
 import { createLogger } from '../../logger';
 import { castModelKey } from './../cast';
@@ -47,6 +46,8 @@ export async function generateSearchColumnProps(
       switch (conditionType) {
         case 'like':
           return removePreAndSuf(selectedKeys[0].$like, '%', '%');
+        // case 'list':
+        //   return removePreAndSuf(selectedKeys[0].$like, '%', '%');
         default:
           return selectedKeys[0];
       }
@@ -65,8 +66,9 @@ export async function generateSearchColumnProps(
   }
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
+    logger.info('handleSearch', { selectedKeys, confirm, dataIndex });
     confirm();
-    onSearch({ searchText: selectedKeys[0], searchedColumn: dataIndex });
+    onSearch({ searchText: selectedKeys, searchedColumn: dataIndex });
   };
 
   if (conditionType === 'list' && conditionExtras) {
@@ -79,17 +81,22 @@ export async function generateSearchColumnProps(
     //     filters: _.map(items, (item) => ({ text: item, value: item })),
     //   };
     // }
+    return {
+      filterMultiple: true,
+      filters: _.map(conditionExtras.items, (item) => ({ text: item, value: item })),
+    };
   }
 
   return {
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }: FilterDropdownProps) => (
-      <Content>
+      <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
         <Input
           addonBefore={conditionType}
           placeholder={`搜索 '${dataIndex}' ...`}
           value={getSelectedKey(selectedKeys)}
           onChange={(e) => setSelectedKeys(e.target.value ? getSelectedValue(e.target.value) : [])}
           onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+          style={{ marginBottom: 8, display: 'block' }}
         />
         <Divider type="horizontal" style={{ margin: '0.2rem 0' }} />
         <Space>
@@ -105,7 +112,7 @@ export async function generateSearchColumnProps(
             重置
           </Button>
         </Space>
-      </Content>
+      </div>
     ),
     filterIcon: (filtered) => <SearchOutlined style={{ color: filtered ? '#1890ff' : 'inherit' }} />,
   };

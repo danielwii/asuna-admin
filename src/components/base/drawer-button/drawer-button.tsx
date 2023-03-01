@@ -10,8 +10,8 @@ import * as _ from 'lodash';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-import type { BaseButtonProps } from 'antd/es/button/button';
 import type { PopoverProps } from 'antd/es';
+import type { BaseButtonProps } from 'antd/es/button/button';
 
 type RenderComponentType = React.FC<{ refreshFlag: number; openChildrenDrawer?: any }>;
 export type RenderChildrenComponentType = React.FC<{ item: any }>;
@@ -99,7 +99,7 @@ export const DrawerButton: React.FC<
   return (
     <React.Fragment>
       {popoverProps ? <Popover {...popoverProps}>{_renderButton}</Popover> : _renderButton}
-      <Drawer title={title || text} width={width ?? 520} closable={false} onClose={_onClose} visible={visible}>
+      <Drawer title={title || text} width={width ?? 520} closable={false} onClose={_onClose} open={visible}>
         <div
           css={css`
             margin-bottom: 2rem;
@@ -144,9 +144,10 @@ export const DrawerButton: React.FC<
             </React.Fragment>
           )}
           <Button onClick={_onClose}>关闭</Button>
+          &nbsp;
         </StyledButton>
         {renderChildrenDrawer && (
-          <Drawer width={520} closable={false} onClose={_onChildrenClose} visible={childrenDrawer}>
+          <Drawer width={520} closable={false} onClose={_onChildrenClose} open={childrenDrawer}>
             <RenderChildrenComponent item={childrenItem} />
           </Drawer>
         )}
@@ -184,7 +185,7 @@ const StyledButton = styled.div`
   bottom: 0;
   width: 100%;
   border-top: 1px solid #e8e8e8;
-  padding: 10px 16px;
+  padding: 10px 0;
   text-align: right;
   left: 0;
   background: #fff;
