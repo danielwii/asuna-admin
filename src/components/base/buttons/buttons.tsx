@@ -18,6 +18,7 @@ export interface NormalButton {
   onClick: () => Promise<any>;
 }
 export interface ModalButton {
+  width?: number;
   builder: ({ onOk, cancel }) => React.ReactNode;
 }
 export type AdvancedButton<T> = DefaultButton & T;
@@ -68,11 +69,12 @@ export const AdvancedButton: React.FC<AdvancedButton<NormalButton | ModalButton>
 
   const modal = isModalButton(props) ? (
     <Modal
-      title="Basic Modal"
-      visible={visible}
+      title={props.title}
+      open={visible}
       onCancel={func.hideModal}
       okButtonProps={{ hidden: true }}
       cancelButtonProps={{ hidden: true }}
+      width={props.width}
     >
       {props.builder({ onOk: handleOk, cancel: func.hideModal })}
     </Modal>

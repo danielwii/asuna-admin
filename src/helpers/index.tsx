@@ -188,7 +188,11 @@ export const columnHelper2 = {
           );
         } else if (opts.type === 'number') {
           const value = extractValue(record, opts.transformer);
-          return <NumericFormat value={value} displayType="text" thousandSeparator />;
+          return (
+            <Tag>
+              <NumericFormat value={value * 1000} displayType="text" thousandSeparator />
+            </Tag>
+          );
         } else {
           return <Statistic value={Number(value)} />;
         }
@@ -205,6 +209,9 @@ export const columnHelper2 = {
         [key: string]:
           | null
           | 'magenta'
+          | 'yellow'
+          | 'gray'
+          | 'black'
           | 'red'
           | 'volcano'
           | 'orange'
@@ -232,7 +239,7 @@ export const columnHelper2 = {
         const title = _.get(enumData, value);
         return (
           <WithDebugInfo info={{ key, title, record, value, opts }}>
-            {<Tag color={_.get(opts, `colorMap['${record}']`) as string}>{title ? `${value}-${title}` : value}</Tag>}
+            {<Tag color={_.get(opts, `colorMap['${record}']`) as string}>{title ? `${title}/${value}` : value}</Tag>}
           </WithDebugInfo>
         );
       }),

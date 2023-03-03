@@ -57,7 +57,7 @@ export function useAsunaModels(
     loading: true,
   });
   useAsync(async () => {
-    logger.log('[useAsunaModels] getColumns ...', { modelName, extraName });
+    logger.info('[useAsunaModels][async-effect] getColumns ...', { modelName, extraName });
     // const hasGraphAPI = _.find(await AppContext.ctx.graphql.loadGraphs(), schema => schema === `sys_${modelName}`);
     // extraName 是作为 key 重复时的一个别名，这里假定 modelName 一定是 model 的原名，所以忽略 extraName
     const columnProps = await AppContext.ctx.models
@@ -67,7 +67,7 @@ export function useAsunaModels(
         return {} as any;
       });
 
-    logger.log('useAsunaModels loadOriginSchema ...', columnProps);
+    logger.log('[useAsunaModels][async-effect] loadOriginSchema ...', columnProps);
     const schemas = await AppContext.ctx.models.loadOriginSchema(modelName);
 
     setState({ columnProps, schemas, loading: false });

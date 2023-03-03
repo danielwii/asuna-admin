@@ -9,16 +9,16 @@ export const nullProtectRender =
 
 export type ParseType =
   // TODO move to shared types
-  | 'ActivityStatus'
-  | 'ApplyStatus'
-  | 'ApplyStatusAction'
-  | 'EnrollmentStatus'
-  | 'EnrollmentStatusAction'
-  | 'Experience'
-  | 'InteractionType'
+  // | 'ActivityStatus'
+  // | 'ApplyStatus'
+  // | 'ApplyStatusAction'
+  // | 'EnrollmentStatus'
+  // | 'EnrollmentStatusAction'
+  // | 'Experience'
+  // | 'InteractionType'
   // Common Types
-  | 'Degree'
-  | 'Sex';
+  // | 'Degree'
+  | 'Sex' | string;
 
 export function parseType(key: ParseType, name: string | null): string {
   if (!name) return '';

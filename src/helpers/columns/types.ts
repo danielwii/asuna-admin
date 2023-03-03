@@ -18,6 +18,7 @@ export interface ModelOpts {
   ctx: Asuna.Schema.TableContext;
 }
 export interface TextColumnOpts {
+  copyable?: boolean;
   mode?: 'html' | 'json' | 'text' | 'button';
   /**
    * 用提供的转换器来转译

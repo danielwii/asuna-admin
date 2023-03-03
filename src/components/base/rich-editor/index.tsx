@@ -1,22 +1,21 @@
-import { Alert, Button, Space } from 'antd';
-
-import 'codemirror/addon/comment/comment';
-import 'codemirror/addon/display/autorefresh';
-import 'codemirror/addon/edit/matchbrackets';
-import 'codemirror/keymap/sublime';
-import 'codemirror/mode/htmlmixed/htmlmixed';
-
+// import 'codemirror/addon/comment/comment';
+// import 'codemirror/addon/display/autorefresh';
+// import 'codemirror/addon/edit/matchbrackets';
+// import 'codemirror/keymap/sublime';
+// import 'codemirror/mode/htmlmixed/htmlmixed';
 // import 'codemirror/theme/monokai.css';
+
+import { FormOutlined, Html5Outlined } from '@ant-design/icons';
+
+import { Alert, Button, Radio, Space } from 'antd';
 import { format } from 'prettier';
 import parserHtml from 'prettier/parser-html';
 import React, { useState } from 'react';
 import useMount from 'react-use/lib/useMount';
 import useNumber from 'react-use/lib/useNumber';
 
-import { BraftRichEditor } from './braft';
-import { QuillEditor } from './quill';
-
-export * from './braft';
+const LazyQuillEditor = React.lazy(() => import('./quill'));
+const LazyTinyMCE = React.lazy(() => import('./tinymce'));
 
 export type RichEditorProps = { value: string; onChange: (value: string) => any; validateFn; upload };
 export const RichEditor = ({ value, onChange, validateFn, upload }: RichEditorProps): JSX.Element => {
@@ -29,11 +28,17 @@ export const RichEditor = ({ value, onChange, validateFn, upload }: RichEditorPr
     typeof window !== 'undefined' ? (
       <>
         <div style={{ display: tabIndex === 0 ? 'inherit' : 'none' }}>
-          <BraftRichEditor value={value} onChange={onChange} upload={upload} validateFn={validateFn} />
+          <React.Suspense>
+            <LazyQuillEditor value={value} onChange={onChange} upload={upload} validateFn={validateFn} />
+          </React.Suspense>
         </div>
-        {tabIndex === 1 && <QuillEditor value={value} onChange={onChange} upload={upload} validateFn={validateFn} />}
+        {tabIndex === 1 && (
+          <React.Suspense>
+            <LazyTinyMCE value={value} onChange={onChange} upload={upload} validateFn={validateFn} />
+          </React.Suspense>
+        )}
         <div style={{ display: tabIndex === 2 ? 'inherit' : 'none' }}>
-          <Alert type="info" showIcon message="HTML 模式下必须手动点击更新后才可进行提交操作" />
+          <Alert type="info" showIcon message="Not implemented" />
           {/*
           <CodeMirror
             value={state}
@@ -50,18 +55,30 @@ export const RichEditor = ({ value, onChange, validateFn, upload }: RichEditorPr
 
   return (
     <Space direction="vertical">
-      {/*
       <Radio.Group size="small" value={tabIndex} onChange={(e) => set(e.target.value)}>
         <Radio.Button value={0}>
-          Editor <FormOutlined />
+          Legacy <FormOutlined />
         </Radio.Button>
-        <Radio.Button value={1}>QuillEditor V2 <Html5Outlined /></Radio.Button>
-        <Radio.Button value={2}>
-          HTML <Html5Outlined />
+        <Radio.Button value={1}>
+          Cloud <Html5Outlined />
+        </Radio.Button>
+        <Radio.Button disabled>
+          HTML(TBD) <Html5Outlined />
         </Radio.Button>
       </Radio.Group>
-*/}
-      <QuillEditor value={value} onChange={onChange} upload={upload} validateFn={validateFn} />
+
+      {/*<AdvancedButton
+        title="编辑"
+        width={1200}
+        builder={({ onOk, cancel }) => (
+          <InlineEditor value={value} onChange={onChange} upload={upload} validateFn={validateFn} />
+        )}
+      >
+        Edit
+      </AdvancedButton>*/}
+      {/*<QuillEditor value={value} onChange={onChange} upload={upload} validateFn={validateFn} />*/}
+      {/*<InlineEditor value={value} onChange={onChange} upload={upload} validateFn={validateFn} />*/}
+      {view}
     </Space>
   );
 };

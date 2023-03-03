@@ -233,9 +233,11 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener> 
           <Col span={anchor ? 18 : 24}>
             <Form
               form={form}
-              onFinish={(values) => logger.success('form.onFinish', ...values)}
-              onFinishFailed={(errorInfo) => logger.success('form.onFinishFailed', errorInfo)}
-              onFieldsChange={(changedFields, allFields) => logger.debug('form.onFieldsChange', changedFields, allFields)}
+              // onFinish={(values) => logger.success('form.onFinish', ...values)}
+              // onFinishFailed={(errorInfo) => logger.success('form.onFinishFailed', errorInfo)}
+              onFieldsChange={(changedFields, allFields) =>
+                logger.debug('form.onFieldsChange', changedFields, allFields)
+              }
               onValuesChange={(changedValues, allValues) => logger.log('form.onValuesChange', changedValues, allValues)}
             >
               {/* {_.map(fieldGroups, this.buildFieldGroup)} */}
@@ -355,11 +357,7 @@ export const DynamicForm: React.FC<DynamicFormProps & AntdFormOnChangeListener> 
   );
 };
 
-interface IFormAnchorProps {
-  fields: FormField[];
-}
-
-const FormAnchor: React.FC<IFormAnchorProps> = ({ fields }) => {
+const FormAnchor: React.FC<{ fields: FormField[] }> = ({ fields }) => {
   if (R.anyPass([R.isNil, R.isEmpty])(fields)) {
     return null;
   }
