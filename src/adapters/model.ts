@@ -1,4 +1,5 @@
 import { parseJSONIfCould } from '@danielwii/asuna-helper/dist/utils';
+import { ApiResponse } from '@danielwii/asuna-shared';
 
 import { message } from 'antd';
 import { Promise } from 'bluebird';
@@ -17,12 +18,12 @@ import { TenantContext } from '../helpers/tenant-context';
 import { BatchLoader } from '../helpers/utils';
 import { createLogger } from '../logger';
 
+import type { Condition, WhereConditions } from '@danielwii/asuna-shared';
 import type { TablePaginationConfig } from 'antd/es/table/interface';
 import type { AxiosResponse } from 'axios';
 import type { AsunaDefinitions } from '../core/definitions';
 import type { RelationColumnProps } from '../helpers/columns/types';
 import type { Asuna } from '../types';
-import type { Condition, WhereConditions } from '../types/meta';
 
 // --------------------------------------------------------------
 // Types
@@ -76,6 +77,11 @@ export interface IModelService {
   ) => Promise<AxiosResponse>;
 
   remove: (modelName: string, data: { endpoint?: string; id: number }) => Promise<AxiosResponse>;
+
+  viewProtectedField: (
+    modelName: string,
+    data: { endpoint?: string; id: number | string; field: string },
+  ) => Promise<AxiosResponse>;
 
   insert: (
     modelName: string,
@@ -606,5 +612,13 @@ export class ModelAdapterImpl implements ModelAdapter {
       const allResponse = await Promise.props(callable);
       return Object.assign({}, ..._.map(allResponse, (response, name) => ({ [name]: (response as any).data })));
     }
+  }
+
+  async loadProtectedField(
+    modelName: string,
+    id: string | number,
+    field: string,
+  ): Promise<ApiResponse<{ value: string }>> {
+    return this.service.viewProtectedField(modelName, { id, field }).then(fp.get('data'));
   }
 }

@@ -8,7 +8,6 @@ import * as util from 'util';
 import { AppContext } from '../../core/context';
 import { WithDebugInfo } from '../../helpers/debug';
 import { createLogger } from '../../logger';
-import { Asuna, MetaInfoOptions } from '../../types';
 import {
   GenerateOptions,
   HiddenOptions,
@@ -37,8 +36,9 @@ import { Item, generateSelect } from './elements/Select';
 import { StringArrayOptions, generateStringArray } from './elements/StringArray';
 import { DynamicFormTypes } from './types';
 
+import type { EnumFilterMetaInfoOptions, MetaInfoOptions } from '@danielwii/asuna-shared';
 import type { FormInstance } from 'antd';
-import type { EnumFilterMetaInfoOptions } from '../../types/meta';
+import type { Asuna } from '../../types';
 
 const logger = createLogger('components:dynamic-form:render');
 

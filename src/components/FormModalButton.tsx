@@ -110,7 +110,10 @@ export const FormModal: React.FC<Omit<IFormModalProps, 'openButton'> & { onClose
         .then(async (values) => {
           setState({ ...state, loading: true });
           try {
-            const response = await onSubmit!(values).finally(() => onRefresh && onRefresh());
+            const response = await onSubmit!(values).finally(() => {
+              onRefresh && onRefresh();
+              onClose && onClose();
+            });
             logger.log('response is', response);
             setState({
               loading: false,

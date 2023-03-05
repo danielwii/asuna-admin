@@ -15,7 +15,7 @@ export const ModalButtonBuilder: React.FC<{ handleOk: () => void; builder: () =>
       <Button type="primary" onClick={_show}>
         Open Modal
       </Button>
-      <Modal title="Basic Modal" visible={visible} onOk={handleOk} onCancel={_handleCancel}>
+      <Modal title="Basic Modal" open={visible} onOk={handleOk} onCancel={_handleCancel}>
         {builder()}
       </Modal>
     </div>

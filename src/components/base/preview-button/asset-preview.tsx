@@ -76,7 +76,7 @@ export const ImagePreview: React.FC<
   ) : null;
   return (
     <React.Fragment>
-      <Modal visible={visible} footer={null} onCancel={() => setVisible(false)} closable={false}>
+      <Modal open={visible} footer={null} onCancel={() => setVisible(false)} closable={false}>
         <div
           css={css`
             display: flex;

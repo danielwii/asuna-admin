@@ -4,15 +4,16 @@
 // noinspection ES6UnusedImports
 import { css, jsx } from '@emotion/react';
 
+import useLogger from '@danielwii/asuna-helper/dist/logger/hooks';
+import { StaticImplements } from '@danielwii/asuna-helper/dist/types';
 import { parseJSONIfCould } from '@danielwii/asuna-helper/dist/utils';
 
 import { Button, Collapse, List } from 'antd';
 import { useFormik } from 'formik';
 import _ from 'lodash';
 import React from 'react';
-import useLogger from '@danielwii/asuna-helper/dist/logger/hooks';
 
-import { StaticImplements, WithVariable } from '../helper/helper';
+import { WithVariable } from '../helper/helper';
 
 export type FieldOpts = (
   name: string,

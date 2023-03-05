@@ -1,13 +1,14 @@
 import { LinkOutlined, SearchOutlined } from '@ant-design/icons';
 
-import { Button, Card, Checkbox, Divider, Input, Popconfirm, Popover, Space, Tooltip } from 'antd';
+import { Badge, Button, Card, Checkbox, Divider, Input, Popconfirm, Popover, Space, Tooltip } from 'antd';
+import { PresetStatusColorType } from 'antd/es/_util/colors';
 import { Promise } from 'bluebird';
 import * as _ from 'lodash';
 import moment from 'moment';
 import * as React from 'react';
 
 import { VideoPlayer } from '../../components/DynamicForm/Videos';
-import { TooltipContent } from '../../components/base/helper/helper';
+import { AsunaContent } from '../../components/base/helper/helper';
 import { AppContext } from '../../core/context';
 import { createLogger } from '../../logger';
 import { castModelKey } from './../cast';
@@ -200,7 +201,8 @@ export const columnHelper = {
         filterType?: 'list' | 'search';
         relationSearchField?: string;
         render?: (content, record: RelationSchema, extras?: Asuna.Schema.RecordRenderExtras) => React.ReactNode;
-        popInfo?: boolean | { modelName: string }; // TODO
+        popInfo?: boolean | { modelName: string };
+        badge?: (value) => PresetStatusColorType;
       },
     ) =>
     async (
@@ -271,7 +273,8 @@ export const columnHelper = {
             <Card>
               {_.map(record, (value, label) => (
                 <p key={label}>
-                  {_.find(schema.columns, (column) => column.name === label)?.config.info?.name ?? label}: {value}
+                  {_.find(schema.columns, (column) => column.name === label)?.config.info?.name ?? label}:{' '}
+                  {_.isString(value) ? value : JSON.stringify(value, null, 2)}
                 </p>
               ))}
             </Card>
@@ -287,18 +290,35 @@ export const columnHelper = {
         ...filterProps,
         render: nullProtectRender((record: RelationSchema & { isPublished?: boolean; isActive?: boolean }) => {
           const content = extractValue(record, transformer);
+          let prefix: React.ReactNode = '';
+          if (opts.badge) {
+            const status = opts.badge(_.get(record, 'status'));
+            prefix = <Badge status={status} />;
+          }
           const view = opts.render ? (
             opts.render(content, record, extras)
           ) : (
-            <Button type="dashed" size="small">
-              {content}
-            </Button>
+            <span
+              style={{
+                cursor: 'pointer',
+                textDecoration: 'underline',
+                textDecorationStyle: 'dashed',
+              }}
+            >
+              {prefix} {content}
+            </span>
           );
           return (
             <WithDebugInfo info={{ key, title, opts, record, content, transformer }}>
-              <div style={record?.isPublished === false || record?.isActive === false ? { color: 'darkred' } : {}}>
-                {opts.popInfo ? <Popover content={renderInfoCard(record)}>{view}</Popover> : view}
-              </div>
+              <span style={record?.isPublished === false || record?.isActive === false ? { color: 'darkred' } : {}}>
+                {opts.popInfo ? (
+                  <Popover style={{ display: 'inline' }} content={renderInfoCard(record)}>
+                    {view}
+                  </Popover>
+                ) : (
+                  view
+                )}
+              </span>
             </WithDebugInfo>
           );
         }),
@@ -432,7 +452,7 @@ export const columnHelper = {
         return (
           <React.Fragment>
             <VideoPlayer key={key} {...videoJsOptions} />
-            <TooltipContent value={value} link />
+            <AsunaContent value={value} link />
           </React.Fragment>
         );
       }

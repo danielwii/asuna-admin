@@ -79,9 +79,11 @@ export const Header: React.FC<IHeaderProps> = ({
   return (
     <Layout.Header>
       {!hideLogo && <StyledLogoImg src={asuna} alt="mast" />}
-      <StyledVersion>
-        {env}-v{version}::{/*{app.version}*/}
-      </StyledVersion>
+      {env && version && (
+        <StyledVersion>
+          {env}-v{version}::{/*{app.version}*/}
+        </StyledVersion>
+      )}{' '}
       <Button
         size="small"
         type="link"

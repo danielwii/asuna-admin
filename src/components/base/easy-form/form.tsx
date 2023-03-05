@@ -3,8 +3,9 @@
 /** @jsx jsx */
 // noinspection ES6UnusedImports
 
-import useLogger from '@danielwii/asuna-helper/dist/logger/hooks';
 import { css, jsx } from '@emotion/react';
+
+import useLogger from '@danielwii/asuna-helper/dist/logger/hooks';
 
 import { Button, Card, Divider, Input, Space, Switch } from 'antd';
 import { Promise } from 'bluebird';
@@ -326,33 +327,31 @@ const InnerForm: React.FC<EasyFormProps & FormikProps<FormikValues>> = ({
   >
     {message && <h1>{message}</h1>}
     {_.map(fields, (formField: FormField, key: string) => (
-      <div key={key}>
-        <div>{key}</div>
-        <Field key={key} name={key}>
-          {({ field, form }: FieldProps<string | number | boolean, FormikValues>) => {
-            const hasError = !!(form.touched[formField.name] && form.errors[formField.name]);
-            const value = field.value ?? formField.defaultValue;
-            return (
-              <div key={field.name}>
-                {!_.has(customFieldsRender, formField.type) ? (
-                  <RenderInputComponent
-                    form={form}
-                    fieldDef={{ field: formField, name: formField.name }}
-                    field={field}
-                    value={value}
-                  />
-                ) : (
-                  customFieldsRender?.[formField.type]({ form, formField, field, value })
-                )}
-                {/* <Input id={field.name} type={formField.type} {...field} value={value} /> */}
-                {formField.help && <div style={{ color: 'grey' }}>{formField.help}</div>}
-                {hasError && <div style={{ color: 'red' }}>{JSON.stringify(form.errors[formField.name])}</div>}
-                <Divider dashed style={{ margin: '0.5rem 0' }} />
-              </div>
-            );
-          }}
-        </Field>
-      </div>
+      <Field key={key} name={key}>
+        {({ field, form }: FieldProps<string | number | boolean, FormikValues>) => {
+          const hasError = !!(form.touched[formField.name] && form.errors[formField.name]);
+          const value = field.value ?? formField.defaultValue;
+          return (
+            <div key={field.name}>
+              <div>- {key} -</div>
+              {!_.has(customFieldsRender, formField.type) ? (
+                <RenderInputComponent
+                  form={form}
+                  fieldDef={{ field: formField, name: formField.name }}
+                  field={field}
+                  value={value}
+                />
+              ) : (
+                customFieldsRender?.[formField.type]({ form, formField, field, value })
+              )}
+              {/* <Input id={field.name} type={formField.type} {...field} value={value} /> */}
+              {formField.help && <div style={{ color: 'grey' }}>{formField.help}</div>}
+              {hasError && <div style={{ color: 'red' }}>{JSON.stringify(form.errors[formField.name])}</div>}
+              <Divider dashed style={{ margin: '0.5rem 0' }} />
+            </div>
+          );
+        }}
+      </Field>
     ))}
     <Divider />
     <Space>

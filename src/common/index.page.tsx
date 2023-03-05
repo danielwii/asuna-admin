@@ -4,9 +4,10 @@ import useLogger from '@danielwii/asuna-helper/dist/logger/hooks';
 
 import 'moment/locale/zh-cn';
 
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
 import getConfig from 'next/config';
 import * as React from 'react';
-import { QueryClient, QueryClientProvider } from 'react-query';
 import useAsync from 'react-use/lib/useAsync';
 
 import { Func } from '../adapters/func';
@@ -20,6 +21,8 @@ const logger = createLogger('pages:index');
 // --------------------------------------------------------------
 // Index Component
 // --------------------------------------------------------------
+
+const queryClient = new QueryClient();
 
 export interface IIndexPageProps {
   register: ILoginRegister & IIndexRegister;
@@ -59,7 +62,7 @@ export const IndexPageView: React.FC<{ register: ILoginRegister & IIndexRegister
 
   return (
     <ApolloProvider client={client}>
-      <QueryClientProvider client={new QueryClient()}>
+      <QueryClientProvider client={queryClient}>
         <MainLayout
           // loading={loading}
           // heartbeat={heartbeat}

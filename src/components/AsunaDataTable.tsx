@@ -1,13 +1,15 @@
-import { InfoOutlined } from '@ant-design/icons';
+import { InfoOutlined, SyncOutlined } from '@ant-design/icons';
 
 import useLogger from '@danielwii/asuna-helper/dist/logger/hooks';
 import { parseJSONIfCould } from '@danielwii/asuna-helper/dist/utils';
 
-import { Button, Divider, Dropdown, Modal, Skeleton, Switch, Table, Tag, Tooltip } from 'antd';
+import { Button, Divider, Dropdown, Modal, Skeleton, Space, Switch, Table, Tag, Tooltip } from 'antd';
 import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
 import React, { useContext, useEffect, useState } from 'react';
 import useAsync from 'react-use/lib/useAsync';
+import useInterval from 'react-use/lib/useInterval';
+import useToggle from 'react-use/lib/useToggle';
 
 import { Func } from '../adapters/func';
 import { responseProxy } from '../adapters/proxy';
@@ -19,9 +21,10 @@ import { DebugInfo, WithDebugInfo } from '../helpers/debug';
 import { useAsunaModels } from '../helpers/hooks';
 import { ModelsHelper, resolveModelInPane } from '../helpers/models';
 import { createLogger } from '../logger';
-import { Asuna, Condition } from '../types';
+import { Asuna } from '../types';
 import { AsunaDrawerButton } from './AsunaDrawer';
 
+import type { Condition } from '@danielwii/asuna-shared';
 import type { SorterResult, TableCurrentDataSource, TablePaginationConfig } from 'antd/es/table/interface';
 import type { Key } from 'antd/lib/table/interface';
 
@@ -61,6 +64,8 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = (props) => {
     onView,
     expandedRowRender,
   } = props;
+  const [autoRefresh, toggleAutoRefresh] = useToggle(false);
+  useInterval(() => func.refresh(), autoRefresh ? 5000 : null);
   const [queryCondition, setQueryCondition] = useState<QueryConditionType>({
     sorter: { field: 'updatedAt', order: 'descend' },
   });
@@ -71,7 +76,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = (props) => {
 
   const actions = (text, record, extras) => (
     <WithDebugInfo info={{ text, record, extras }}>
-      <span>
+      <Space split={<Divider type="vertical" />}>
         {/*{extras && extras(auth)}*/}
         {editable ? (
           <Button size="small" type="dashed" onClick={() => func.edit(text, record)}>
@@ -79,16 +84,13 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = (props) => {
           </Button>
         ) : (
           <AsunaDrawerButton text="View" modelName={modelName} record={record} />
-        )}{' '}
-        {isDeletableSystemRecord(record) && deletable && (
-          <>
-            <Divider type="vertical" />
-            <Button size="small" type="primary" danger onClick={() => func.remove(text, record)}>
-              删除
-            </Button>
-          </>
         )}
-      </span>
+        {isDeletableSystemRecord(record) && deletable && (
+          <Button size="small" type="primary" danger onClick={() => func.remove(text, record)}>
+            删除
+          </Button>
+        )}
+      </Space>
     </WithDebugInfo>
   );
 
@@ -143,7 +145,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = (props) => {
       sorter?: SorterResult<RecordType> | SorterResult<RecordType>[],
       extra?: TableCurrentDataSource<RecordType>,
     ): void {
-      logger.log('[handleTableChange]', { pagination, filters, sorter, extra }, new Error());
+      logger.log('[handleTableChange]', { pagination, filters, sorter, extra });
       const { availableSorter, transformedFilters, transformedSorter } = func.transformQueryCondition({
         pagination,
         filters,
@@ -290,9 +292,36 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = (props) => {
           <Divider type="vertical" />
         </>
       )}
-      <Button size="small" onClick={() => func.refresh()}>
-        刷新
-      </Button>
+      <Dropdown.Button
+        size="small"
+        style={{ display: 'inline' }}
+        onClick={() => func.refresh()}
+        type={autoRefresh ? 'primary' : 'default'}
+        menu={{
+          items: [
+            {
+              key: 'auto-refresh',
+              label: (
+                <Switch
+                  unCheckedChildren="自动刷新"
+                  checkedChildren="点击关闭"
+                  onClick={toggleAutoRefresh}
+                  checked={autoRefresh}
+                />
+              ),
+            },
+          ],
+          onClick: () => {},
+        }}
+      >
+        {autoRefresh ? (
+          <>
+            <SyncOutlined spin={autoRefresh} /> in 5s
+          </>
+        ) : (
+          '刷新'
+        )}
+      </Dropdown.Button>
 
       <Divider type="vertical" />
 

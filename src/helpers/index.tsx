@@ -14,7 +14,7 @@ import * as util from 'util';
 
 import { parseAddressStr } from '../components/Address';
 import { DynamicFormTypes } from '../components/DynamicForm/types';
-import { TooltipContent } from '../components/base/helper/helper';
+import { AsunaContent } from '../components/base/helper/helper';
 import { AssetsPreview, PdfButton } from '../components/base/preview-button/asset-preview';
 import { AppContext } from '../core/context';
 import { valueToArrays } from '../core/url-rewriter';
@@ -108,7 +108,7 @@ export const columnHelper2 = {
             'n/a'
           );
         } else {
-          view = opts.render ? opts.render(extracted, record) : <TooltipContent value={extracted} />;
+          view = opts.render ? opts.render(extracted, record) : <AsunaContent value={extracted} />;
         }
 
         return (
@@ -188,11 +188,7 @@ export const columnHelper2 = {
           );
         } else if (opts.type === 'number') {
           const value = extractValue(record, opts.transformer);
-          return (
-            <Tag>
-              <NumericFormat value={value * 1000} displayType="text" thousandSeparator />
-            </Tag>
-          );
+          return <Tag>{value ? <NumericFormat value={value} displayType="text" thousandSeparator /> : ''}</Tag>;
         } else {
           return <Statistic value={Number(value)} />;
         }

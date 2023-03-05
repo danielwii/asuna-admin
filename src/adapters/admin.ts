@@ -4,8 +4,8 @@ import * as fp from 'lodash/fp';
 
 import { Draft, StateMachines, Tenant, TenantInfo } from './admin.plain';
 
+import type { Json } from '@danielwii/asuna-shared';
 import type { AxiosResponse } from 'axios';
-import type { Json } from '../types';
 
 export interface IAdminService {
   // stateMachines(): Promise<AxiosResponse>;

@@ -176,7 +176,7 @@ export class ImageUploader extends React.Component<IProps, IState> {
         >
           {fileList && fileList.length >= fileSize ? null : uploadButton}
         </Upload>
-        <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>
+        <Modal open={previewVisible} footer={null} onCancel={this.handleCancel}>
           <img style={{ width: '100%' }} src={previewImage} alt="" />
         </Modal>
         <Input.TextArea

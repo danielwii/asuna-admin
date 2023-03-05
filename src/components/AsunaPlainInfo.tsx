@@ -13,10 +13,10 @@ import { AppContext } from '../core/context';
 import { AsunaDefinitions } from '../core/definitions';
 import { WithDebugInfo } from '../helpers/debug';
 import { DynamicFormTypes } from './DynamicForm/types';
-import { TooltipContent, WithLoading, WithVariable, parseString } from './base/helper/helper';
+import { AsunaContent, WithLoading, WithVariable, parseString } from './base/helper/helper';
 import { AssetsPreview } from './base/preview-button/asset-preview';
 
-import type { EnumFilterMetaInfoOptions } from '../types';
+import type { EnumFilterMetaInfoOptions } from '@danielwii/asuna-shared';
 
 export interface AsunaPlainObjectProps {
   modelName: string;
@@ -129,8 +129,8 @@ export const AsunaPlainInfo: React.FC<AsunaPlainObjectProps> = ({ modelName, rec
                     break;
                   }
                   case DynamicFormTypes.File: {
-                    value = <TooltipContent value={value as any} link />;
-                    before = before && <TooltipContent value={before as any} link />;
+                    value = <AsunaContent value={value as any} link />;
+                    before = before && <AsunaContent value={before as any} link />;
                     break;
                   }
                 }

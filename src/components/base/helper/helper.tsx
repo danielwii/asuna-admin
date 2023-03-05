@@ -6,7 +6,7 @@ import { css, jsx } from '@emotion/react';
 
 import { parseJSONIfCould } from '@danielwii/asuna-helper/dist/utils';
 
-import { Button, Tooltip } from 'antd';
+import { Button, Typography } from 'antd';
 import { Promise } from 'bluebird';
 import _ from 'lodash';
 import React, { ReactElement, ReactNode, ValidationMap, WeakValidationMap } from 'react';
@@ -16,11 +16,6 @@ import * as util from 'util';
 
 import { ErrorInfo } from '../error';
 import { Loading } from '../loading';
-
-/* class decorator */
-export function StaticImplements<T>() {
-  return (constructor: T) => {};
-}
 
 export interface CustomFC<P = {}, R = () => React.ReactNode> {
   propTypes?: WeakValidationMap<P>;
@@ -62,31 +57,24 @@ export function castToArrays(value: string): string[] {
 //   return value ? (_.isArray(value) ? value : castToArrays(value)) : [];
 // }
 
-export function TooltipContent({ value, link }: { value: any; link?: boolean }) {
-  let component = _.isObject(value) ? util.inspect(value) : value;
-  const length = 30;
-  if (typeof value === 'string' && value.length > length) {
-    const shortValue = `${value.slice(0, length)}...`;
-    if (link) {
-      return <TextLink url={value} text={shortValue} />;
-    }
-    component = (
-      <Tooltip title={value}>
-        <div style={{ maxWidth: '15rem' }}>{shortValue}</div>
-      </Tooltip>
-    );
-    return <React.Fragment>{component}</React.Fragment>;
-  }
-  return link ? <TextLink url={component} text={component} /> : <React.Fragment>{component}</React.Fragment>;
-}
-
-function TextLink({ url, text }: { url: string; text?: string }) {
-  return (
-    <a href={url} target="_blank">
-      {text || url}
-    </a>
+export const AsunaContent: React.FC<{ value: any; link?: boolean }> = ({ value, link }) => {
+  const parsed = _.isObject(value) ? util.inspect(value) : value;
+  // TODO add link icon to open in new tab
+  // const isLink = /^(https?:\/\/\S+)/gi.test(parsed);
+  return link ? (
+    <Typography.Link href={parsed} target="_blank">
+      {parsed}
+    </Typography.Link>
+  ) : (
+    <Typography.Paragraph
+      copyable={parsed ? { text: parsed } : false}
+      ellipsis={{ rows: 3, expandable: true, symbol: '更多', tooltip: value }}
+      style={{ cursor: 'pointer' }}
+    >
+      {value}
+    </Typography.Paragraph>
   );
-}
+};
 
 export const WithLoading: React.FC<React.PropsWithChildren<{ loading: boolean; error: any; retry?: () => any }>> = ({
   loading,

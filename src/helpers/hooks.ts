@@ -1,3 +1,4 @@
+import { LogLevel } from 'consola';
 import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
 import { DependencyList, useState } from 'react';
@@ -11,7 +12,7 @@ import { Asuna } from '../types';
 
 import type { RelationColumnProps } from './columns/types';
 
-const logger = createLogger('helpers:hooks');
+const logger = createLogger('helpers:hooks', LogLevel.Trace);
 
 export function useAsunaDrafts(
   params: { type: string; refId: string },
@@ -51,11 +52,11 @@ export function useAsunaModels(
     oneToManyRelations: Asuna.Schema.ModelSchema[];
   };
 } {
-  const [state, setState] = useState<{ columnProps: RelationColumnProps[]; schemas; loading: boolean }>({
+  const [state, setState] = useState<{ columnProps: RelationColumnProps[]; schemas; loading: boolean }>(() => ({
     columnProps: [],
     schemas: {},
     loading: true,
-  });
+  }));
   useAsync(async () => {
     logger.info('[useAsunaModels][async-effect] getColumns ...', { modelName, extraName });
     // const hasGraphAPI = _.find(await AppContext.ctx.graphql.loadGraphs(), schema => schema === `sys_${modelName}`);
@@ -71,7 +72,7 @@ export function useAsunaModels(
     const schemas = await AppContext.ctx.models.loadOriginSchema(modelName);
 
     setState({ columnProps, schemas, loading: false });
-  }, deps);
+  }, [modelName, ...(deps ?? [])]);
 
   const relations = _.flow([fp.mapValues(fp.get('relation')), _.values, _.compact, _.uniq])(state.columnProps);
 

@@ -178,7 +178,7 @@ export const HistoryTimeline: React.FC<{
   const [enabled, toggle] = useToggle(autoRefresh ?? false);
   const state = useAsyncRetry(async () => await dataLoader());
 
-  useInterval(() => enabled && state.retry(), autoRefresh ? 5000 : null);
+  useInterval(() => state.retry(), enabled ? 5000 : null);
   useLogger('<[HistoryTimeline]>', state, { autoRefresh, isEmpty: _.isEmpty(state.value?.items) });
 
   if (!state.value && state.loading) return <Skeleton active />;

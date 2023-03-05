@@ -8,8 +8,8 @@ export const columnCreator: (
   columnOpts?: TextColumnOpts,
 ) => Asuna.Schema.ColumnPropsCreator =
   (modelOpts, columnOpts) =>
-  (key, actions, { ctx }) =>
-    ColumnsHelper.generate(key, { ...modelOpts, ctx }, columnOpts);
+  (key, actions, { ctx, callRefresh }) =>
+    ColumnsHelper.generate(key, { ...modelOpts, ctx, callRefresh }, columnOpts);
 
 export const fpColumnCreator = (title?: string, columnOpts?: TextColumnOpts) => (model: string) =>
   columnCreator({ model, title }, columnOpts);

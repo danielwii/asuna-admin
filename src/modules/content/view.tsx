@@ -6,7 +6,7 @@ import useAsync from 'react-use/lib/useAsync';
 import { FoldingCube } from 'styled-spinkit';
 import * as util from 'util';
 
-import { AsunaDataView } from '../../components/AsunaDataView';
+import { AsunaDataViewHOC } from '../../components/AsunaDataView';
 import { ErrorInfo } from '../../components/base/error';
 import { DebugInfo } from '../../helpers/debug';
 import { extractModelNameFromPane, resolveModelInPane } from '../../helpers/models';
@@ -45,7 +45,7 @@ const ContentView: React.FC<ModulesLoaderProps> = ({ module, basis: { pane } }) 
 
   return (
     <>
-      <AsunaDataView modelName={modelName} extraName={extraName} data={value} withActions />
+      <AsunaDataViewHOC modelName={modelName} extraName={extraName} data={value} withActions />
       {/*<AsunaDataView modelName={modelName} extraName={extraName} data={viewRecord} onBack={() => setViewRecord(null)} />*/}
       <DebugInfo data={{ value, pane, fields }} divider type="util" />
     </>

@@ -2,21 +2,24 @@ import { PageHeader } from '@ant-design/pro-layout';
 
 import useLogger from '@danielwii/asuna-helper/dist/logger/hooks';
 
-import { Button, Collapse, Descriptions, Empty, Tag, Tooltip } from 'antd';
+import { Button, Collapse, Descriptions, Divider, Empty, Tag, Tooltip, Typography } from 'antd';
 import { Promise } from 'bluebird';
 import * as _ from 'lodash';
 import moment from 'moment';
 import * as React from 'react';
+import { useMemo } from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import { FoldingCube } from 'styled-spinkit';
 import * as util from 'util';
 
+import { ProtectedFieldViewer } from '../helpers/columns/generator';
 import { WithDebugInfo } from '../helpers/debug';
 import { useAsunaModels } from '../helpers/hooks';
 import { ModelsHelper, resolveModelInPane } from '../helpers/models';
 import { createLogger } from '../logger';
-import { Asuna } from '../types';
+import { Asuna } from '../types/asuna';
 import { DynamicFormTypes } from './DynamicForm/types';
+import { ActivityTimeline } from './Timeline';
 import { AssetPreview, AssetsPreview } from './base/preview-button/asset-preview';
 
 const logger = createLogger('<[AsunaDataView]>');
@@ -26,8 +29,9 @@ export interface DataViewColumnProps<EntitySchema> {
   cover?: keyof EntitySchema;
 }
 
-export interface AsunaDataViewProps {
-  data?: JSON;
+export interface AsunaDataView {
+  data: JSON;
+  activity?: JSON;
   modelName: string;
   withActions?: boolean;
   extraName?: string;
@@ -36,7 +40,16 @@ export interface AsunaDataViewProps {
   onBack?: () => void;
 }
 
-export const AsunaDataView: React.FC<AsunaDataViewProps> = ({
+const Content: React.FC<React.PropsWithChildren<{ extra: React.ReactNode }>> = ({ children, extra }) => {
+  return (
+    <div className="content" style={{ display: 'flex' }}>
+      <div className="main">{children}</div>
+      <div className="extra">{extra}</div>
+    </div>
+  );
+};
+
+const AsunaDataView: React.FC<AsunaDataView> = ({
   cover,
   title,
   modelName,
@@ -44,19 +57,19 @@ export const AsunaDataView: React.FC<AsunaDataViewProps> = ({
   onBack,
   data,
   withActions,
+  activity,
 }) => {
-  if (!data) {
-    return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />;
-  }
-
-  const actions = withActions
-    ? (text, record, extras) => (
-        <span>
-          <Button size="small" type="dashed" onClick={() => ModelsHelper.openEditPane(modelName, record)}>
-            编辑
-          </Button>
-          {/*{extras && extras(auth)}*/}
-          {/*          {editable ? (
+  const { primaryKey, columnOpts, schemas } = useMemo(() => resolveModelInPane(modelName), [modelName]);
+  const { columnProps, relations } = useAsunaModels(modelName, {
+    actions: withActions
+      ? null
+      : (text, record, extras) => (
+          <span>
+            <Button size="small" type="dashed" onClick={() => ModelsHelper.openEditPane(modelName, record)}>
+              编辑
+            </Button>
+            {/*{extras && extras(auth)}*/}
+            {/*          {editable ? (
             <Button size="small" type="dashed" onClick={() => _edit(text, record)}>
               Edit
             </Button>
@@ -66,7 +79,7 @@ export const AsunaDataView: React.FC<AsunaDataViewProps> = ({
             </Button>
           )}{' '}
           */}
-          {/*
+            {/*
           {isDeletableSystemRecord(record) && deletable && (
             <>
               <Divider type="vertical" />
@@ -76,44 +89,40 @@ export const AsunaDataView: React.FC<AsunaDataViewProps> = ({
             </>
           )}
 */}
-        </span>
-      )
-    : null;
-
-  const ctx: Asuna.Schema.TableContext = {
-    onSearch: ({ searchText, searchedColumn }) => {
-      logger.warn('onSearch', { searchText, searchedColumn });
+          </span>
+        ),
+    extraName,
+    ctx: {
+      onSearch: ({ searchText, searchedColumn }) => {
+        logger.warn('onSearch', { searchText, searchedColumn });
+      },
     },
-  };
-  const { columnProps, relations, originSchemas } = useAsunaModels(modelName, { actions, extraName, ctx });
-  const actionColumn = _.find(columnProps, (column) => column.key === 'action');
-  const Content = ({ children, extra }) => {
-    return (
-      <div className="content" style={{ display: 'flex' }}>
-        <div className="main">{children}</div>
-        <div className="extra">{extra}</div>
-      </div>
-    );
-  };
+  });
+  const { actionColumn, vars, leftVars, publishedTag } = useMemo(() => {
+    const actionColumn = _.find(columnProps, (column) => column.key === 'action');
 
-  const { modelConfig, primaryKey, columnOpts, schemas } = resolveModelInPane(modelName);
-  const vars = {
-    title: _.get(data, title || columnOpts?.columnProps?.dataView?.title || 'title'),
-    id: _.get(data, primaryKey),
-    cover: _.get(data, cover || columnOpts?.columnProps?.dataView?.cover || 'cover'),
-    createdAt: _.get(data, 'createdAt'),
-    updatedAt: _.get(data, 'updatedAt'),
-    updatedBy: _.get(data, 'updatedBy'),
-  };
-  const leftVars = _.omit(data, _.flatten([_.keys(vars), primaryKey, relations]) as string[]);
-  const publishedTag = _.has(data, 'isPublished')
-    ? renderValue({ value: data['isPublished'], textFn: (value) => (value ? '已发布' : '未发布') })
-    : null;
+    const vars = {
+      title: _.get(data, title || columnOpts?.columnProps?.dataView?.title || 'title'),
+      id: _.get(data, primaryKey),
+      cover: _.get(data, cover || columnOpts?.columnProps?.dataView?.cover || 'cover'),
+      createdAt: _.get(data, 'createdAt'),
+      updatedAt: _.get(data, 'updatedAt'),
+      createdBy: _.get(data, 'createdBy'),
+      updatedBy: _.get(data, 'updatedBy'),
+      version: _.get(data, 'version'),
+    };
+    const leftVars = _.omit(data, _.flatten([_.keys(vars), primaryKey, relations]) as string[]);
+    const publishedTag = _.has(data, 'isPublished')
+      ? renderValue({ value: data['isPublished'], textFn: (value) => (value ? '已发布' : '未发布') })
+      : null;
 
-  const customColumnOpts = useAsync(
-    async () => await Promise.props(_.mapValues(columnOpts?.customColumns, (columnOpt) => (columnOpt as any)())),
-    [columnOpts?.customColumns],
-  );
+    return { actionColumn, vars, leftVars, publishedTag };
+  }, [columnOpts, primaryKey, relations]);
+  const customColumnOpts = useAsync(async () => {
+    return Promise.props(_.mapValues(columnOpts?.customColumns, (columnOpt) => (columnOpt as any)()));
+  }, [columnOpts?.customColumns]);
+
+  const id = _.get(data, primaryKey);
 
   /*
   const CustomColumnsFuture = React.lazy(
@@ -143,10 +152,10 @@ export const AsunaDataView: React.FC<AsunaDataViewProps> = ({
   </Suspense>
 */
 
-  useLogger('<[AsunaDataView]>', { vars, leftVars, columnOpts, customColumnOpts });
+  useLogger('<[AsunaDataView]>', { vars, leftVars, columnOpts, customColumnOpts, activity });
 
   return (
-    <div>
+    <>
       {/*<pre>{util.inspect(_.omit(originSchemas, 'columns'), { depth: 10 })}</pre>*/}
       {/*<pre>{util.inspect(data)}</pre>*/}
       {/*<pre>{util.inspect(schemas)}</pre>*/}
@@ -199,24 +208,75 @@ export const AsunaDataView: React.FC<AsunaDataViewProps> = ({
             </>
           }
         >
-          <Descriptions size="small" column={2}>
+          <Descriptions size="small" column={3}>
             <Descriptions.Item label="创建时间" key="createdAt">
               <Tooltip title={vars.createdAt}>
-                <>
+                <div style={{ cursor: 'pointer' }}>
                   {moment(vars.createdAt).calendar()}
                   <div>{moment(vars.createdAt).fromNow()}</div>
-                </>
+                </div>
               </Tooltip>
             </Descriptions.Item>
             <Descriptions.Item label="更新时间" key="updatedAt">
               <Tooltip title={vars.updatedAt}>
-                <>
+                <div style={{ cursor: 'pointer' }}>
                   {moment(vars.updatedAt).calendar()}
                   <div>{moment(vars.updatedAt).fromNow()}</div>
-                </>
+                </div>
               </Tooltip>
             </Descriptions.Item>
+            <Descriptions.Item label="Version" key="version">
+              {vars.version}
+            </Descriptions.Item>
+            <Descriptions.Item label="createdBy" key="createdBy">
+              {vars.createdBy}
+            </Descriptions.Item>
+            <Descriptions.Item label="updatedBy" key="updatedBy">
+              {vars.updatedBy}
+            </Descriptions.Item>
+          </Descriptions>
+          {activity && (
+            <Descriptions title="Latest Activity" size="small" column={2} style={{ marginTop: '1rem' }}>
+              <Descriptions.Item>
+                <WithDebugInfo info={{ activity: activity }}>
+                  {moment(activity['createdAt']).calendar()}
+                  <Divider type="vertical" />
+                  <ActivityTimeline item={activity} />
+                </WithDebugInfo>
+              </Descriptions.Item>
+            </Descriptions>
+          )}
 
+          {_.map(
+            _.groupBy(
+              _.filter(schemas, (schema) => _.includes(_.keys(leftVars), schema.name)),
+              'options.group.name',
+            ),
+            (schemas, groupName) => (
+              <Descriptions
+                key={groupName}
+                bordered
+                title={groupName === 'undefined' ? 'Info' : groupName}
+                size="small"
+                column={2}
+                style={{ marginTop: '1rem' }}
+              >
+                {_.map(schemas, (schema) => {
+                  const label = schema.options.label ?? schema.options.name ?? schema.name;
+                  const value = _.get(leftVars, schema.name);
+                  return (
+                    <Descriptions.Item key={label} label={label}>
+                      <WithDebugInfo info={{ schema: schemas[label], value }}>
+                        {renderValue({ value, schema: schema ?? schemas[label], modelName, id: vars.id })}
+                      </WithDebugInfo>
+                    </Descriptions.Item>
+                  );
+                })}
+              </Descriptions>
+            ),
+          )}
+          <Descriptions title="Others" size="small" column={2} style={{ marginTop: '1rem' }}>
+            {/*
             {_.map(leftVars, (value, label: string) => {
               const schemaLabel = _.get(schemas, `${label}.options.label`, '') || label;
               return (
@@ -226,7 +286,7 @@ export const AsunaDataView: React.FC<AsunaDataViewProps> = ({
                   </WithDebugInfo>
                 </Descriptions.Item>
               );
-            })}
+            })}*/}
 
             {customColumnOpts.loading ? (
               <FoldingCube />
@@ -234,11 +294,12 @@ export const AsunaDataView: React.FC<AsunaDataViewProps> = ({
               _.map(customColumnOpts.value, (columnOpt, label) => (
                 <Descriptions.Item key={columnOpt.key} label={columnOpt.title}>
                   {columnOpt.render(data[columnOpt.relation], data[columnOpt.relation], 0)}
+                  {/*
                   <WithDebugInfo info={{ label, columnOpt }}>
-                    {/*<div>value: {_.get(data, columnOpt.key)}</div>*/}
-                    {/*<pre>{util.inspect({ label, columnOpt })}</pre>*/}
+                    <div>value: {_.get(data, columnOpt.key)}</div>
+                    <pre>{util.inspect({ label, columnOpt })}</pre>
                     {columnOpt.render(data, data, 0)}
-                  </WithDebugInfo>
+                  </WithDebugInfo>*/}
                 </Descriptions.Item>
               ))
             )}
@@ -250,20 +311,28 @@ export const AsunaDataView: React.FC<AsunaDataViewProps> = ({
           {/*<Panel header="This is panel header 3" key="3">{text}</Panel>*/}
         </Collapse>
       </PageHeader>
-    </div>
+    </>
   );
 };
 
 function renderValue({
   value,
   textFn,
-  type,
+  schema,
+  modelName,
+  id,
 }: {
   value: any;
   textFn?: (value) => string;
-  type?: DynamicFormTypes;
+  schema?: Asuna.Schema.FormSchema;
+  modelName?: string;
+  id?: string | number;
 }): React.ReactElement {
   const text = textFn ? textFn(value) : value;
+  const type = _.get(schema, 'type');
+  logger.debug('renderValue', { value, text, type, schema });
+  const isProtected = schema?.options.protected;
+  if (isProtected && modelName && id) return <ProtectedFieldViewer modelName={modelName} id={id} field={schema.name} />;
   if (typeof value === 'boolean') {
     // return <Switch checked={value} onClick={undefined} size="small" />;
     return value ? <Tag color="green">{`${text}`}</Tag> : <Tag color="red">{`${text}`}</Tag>;
@@ -291,9 +360,14 @@ function renderValue({
       </Tooltip>
     );
   } else if (_.isNull(value)) {
-    return <Tag>null</Tag>;
+    return <Tag />;
   } else if (_.isObject(value)) {
     return <pre>{util.inspect({ value, type })}</pre>;
   }
-  return value;
+  return <Typography.Paragraph copyable>{value}</Typography.Paragraph>;
 }
+
+export const AsunaDataViewHOC: React.FC<AsunaDataView> = ({ data, ...rest }) => {
+  if (!data) return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />;
+  return <AsunaDataView data={data!} {...rest} />;
+};

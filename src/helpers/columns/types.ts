@@ -1,3 +1,4 @@
+import { PresetStatusColorType } from 'antd/es/_util/colors';
 import * as React from 'react';
 
 import type { ColumnProps } from 'antd/es/table';
@@ -16,9 +17,9 @@ export interface ModelOpts {
   model: string;
   title?: string;
   ctx: Asuna.Schema.TableContext;
+  callRefresh?: () => void;
 }
 export interface TextColumnOpts {
-  copyable?: boolean;
   mode?: 'html' | 'json' | 'text' | 'button';
   /**
    * 用提供的转换器来转译
@@ -35,4 +36,5 @@ export interface TextColumnOpts {
    * @param record
    */
   render?: (content, record?) => React.ReactElement | string;
+  badge?: (value) => PresetStatusColorType;
 }
