@@ -261,7 +261,7 @@ export const columnHelper = {
             <Card>
               {_.map(record, (value, label) => (
                 <p key={label}>
-                  {label}: {value}
+                  {label}: {_.isString(value) ? value : JSON.stringify(value, null, 2)}
                 </p>
               ))}
             </Card>

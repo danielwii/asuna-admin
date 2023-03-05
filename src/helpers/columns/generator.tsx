@@ -74,7 +74,7 @@ export class ColumnsHelper {
     opts: TextColumnOpts = {},
   ): Promise<ColumnProps<any>> {
     const columnInfo = model ? await AppContext.getColumnInfo(model, key) : undefined;
-    const isProtected = columnInfo?.config.info.protected;
+    const isProtected = columnInfo?.config.info?.protected;
     logger.info('generate', { key, model, title, ctx, opts, columnInfo, isProtected });
     return {
       key,
