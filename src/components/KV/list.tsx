@@ -5,7 +5,7 @@ import { Button, Col, Divider, Row, Typography } from 'antd';
 import { Field, FieldProps, Form, Formik, FormikValues } from 'formik';
 import _ from 'lodash';
 import React, { useEffect, useState } from 'react';
-import Highlight from 'react-highlight';
+import Highlight, { HighlightProps } from 'react-highlight';
 import { FoldingCube } from 'styled-spinkit';
 import * as util from 'util';
 
@@ -13,11 +13,13 @@ import { isDebugMode } from '../../core/env';
 import { KVHelper } from '../../helpers/components';
 import { WithDebugInfo } from '../../helpers/debug';
 import { createLogger } from '../../logger';
-import { DynamicJsonArrayTable, ObjectArrayJsonTableHelper } from '../base/table-helper/dynamic-json-array-table';
 
 import type { FormFieldDef, FormFields } from '../base/easy-form/interfaces';
+import { DynamicJsonArrayTable, ObjectArrayJsonTableHelper } from '../base/table-helper/dynamic-json-array-table';
 
 const logger = createLogger('components:kv-form:form');
+
+const HighlightComponent: React.FC<React.PropsWithChildren<HighlightProps>> = Highlight as any;
 
 export function ListKVComponent(props: {
   kvCollection?: string;
@@ -140,7 +142,7 @@ export function ListKVComponent(props: {
           <Col span={6}>
             <div>
               <h3>Preview:</h3>
-              <Highlight className="json">{JSON.stringify(body, null, 2)}</Highlight>
+              <HighlightComponent className="json">{JSON.stringify(body, null, 2)}</HighlightComponent>
             </div>
           </Col>
         )}
@@ -148,7 +150,7 @@ export function ListKVComponent(props: {
       {isDebugMode && (
         <React.Fragment>
           <Divider />
-          <Highlight className="json">{util.inspect(data, false, 10)}</Highlight>
+          <HighlightComponent className="json">{util.inspect(data, false, 10)}</HighlightComponent>
         </React.Fragment>
       )}
     </React.Fragment>

@@ -5,7 +5,7 @@ import { Divider, Popconfirm } from 'antd';
 import * as formik from 'formik';
 import _ from 'lodash';
 import * as React from 'react';
-import Highlight from 'react-highlight';
+import Highlight, { HighlightProps } from 'react-highlight';
 
 import { isDebugMode } from '../../core/env';
 import { createLogger } from '../../logger';
@@ -14,6 +14,7 @@ import { RenderInputComponent } from '../base/easy-form/form';
 import type { FormFieldDef, FormFieldsGroup } from '../base/easy-form/interfaces';
 
 const logger = createLogger('components:easy-form');
+const HighlightComponent: React.FC<React.PropsWithChildren<HighlightProps>> = Highlight as any;
 
 interface FormProps<FieldsType> {
   message?: string | React.ReactElement;
@@ -120,9 +121,9 @@ const GroupInnerForm = (props: GroupEasyFormProps & formik.FormikProps<formik.Fo
         <antd.Col span={6}>
           <div>
             <h3>Preview:</h3>
-            <Highlight className="json">
+            <HighlightComponent className="json">
               {JSON.stringify({ touched, errors, isSubmitting, message, body, values, fieldValues }, null, 2)}
-            </Highlight>
+            </HighlightComponent>
           </div>
         </antd.Col>
       )}

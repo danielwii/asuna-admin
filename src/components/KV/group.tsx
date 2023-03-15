@@ -3,17 +3,18 @@ import { InfoCircleOutlined } from '@ant-design/icons';
 import { Button, Divider, Typography } from 'antd';
 import * as _ from 'lodash';
 import React, { useEffect, useState } from 'react';
-import Highlight from 'react-highlight';
+import Highlight, { HighlightProps } from 'react-highlight';
 import { FoldingCube } from 'styled-spinkit';
 import * as util from 'util';
 
 import { isDebugMode } from '../../core/env';
 import { KVHelper } from '../../helpers/components';
 import { createLogger } from '../../logger';
-import { EasyGroupForm, GroupFormFields } from '../EasyForm';
 import { ErrorInfo } from '../base/error';
+import { EasyGroupForm, GroupFormFields } from '../EasyForm';
 
 const logger = createLogger('components:kv-form:group');
+const HighlightComponent: React.FC<React.PropsWithChildren<HighlightProps>> = Highlight as any;
 
 type GroupFormBody = { form: GroupFormFields; values: object };
 
@@ -110,7 +111,7 @@ export function GroupFormKVComponent(props: {
       {isDebugMode && (
         <>
           <Divider />
-          <Highlight className="json">{util.inspect(data, false, 10)}</Highlight>
+          <HighlightComponent className="json">{util.inspect(data, false, 10)}</HighlightComponent>
         </>
       )}
     </>

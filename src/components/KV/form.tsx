@@ -4,7 +4,7 @@ import { gql, useQuery } from '@apollo/client';
 import { Button, Col, Divider, Row, Typography } from 'antd';
 import * as _ from 'lodash';
 import React from 'react';
-import Highlight from 'react-highlight';
+import Highlight, { HighlightProps } from 'react-highlight';
 import useLogger from '@danielwii/asuna-helper/dist/logger/hooks';
 import * as util from 'util';
 
@@ -17,7 +17,7 @@ import { WithLoading } from '../base/helper/helper';
 import type { FormFields } from '../base/easy-form/interfaces';
 
 const logger = createLogger('components:kv-form:form');
-
+const HighlightComponent: React.FC<React.PropsWithChildren<HighlightProps>> = Highlight as any;
 export function FormKVComponent(props: {
   kvCollection?: string;
   kvKey: string;
@@ -101,7 +101,7 @@ export function FormKVComponent(props: {
                 <Col span={6}>
                   <div>
                     <h3>Preview:</h3>
-                    <Highlight className="json">{JSON.stringify(body, null, 2)}</Highlight>
+                    <HighlightComponent className="json">{JSON.stringify(body, null, 2)}</HighlightComponent>
                   </div>
                 </Col>
               )}
@@ -109,7 +109,7 @@ export function FormKVComponent(props: {
             {isDebugMode && (
               <>
                 <Divider />
-                <Highlight className="json">{util.inspect(data, false, 10)}</Highlight>
+                <HighlightComponent className="json">{util.inspect(data, false, 10)}</HighlightComponent>
               </>
             )}
           </>
