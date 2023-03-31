@@ -106,6 +106,7 @@ const ContentIndex: React.FC<IProps> = ({ basis, activeKey }) => {
         renderHelp={opts?.renderHelp}
         expandedRowRender={opts?.expandedRowRender}
         // models={models}
+        defaultFilter={opts?.defaultFilter}
         rowClassName={rowClassName}
       />
       <DebugInfo data={{ modelName, extraName, modelConfig, primaryKey, columnOpts, sorter }} divider />

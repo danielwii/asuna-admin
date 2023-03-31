@@ -42,6 +42,7 @@ export interface AsunaDataTableProps {
   modelName: string;
   extraName?: string;
   onView?: (text: any, record: any) => void;
+  defaultFilter?: Record<string, any>;
 }
 
 type QueryConditionType = {
@@ -63,11 +64,13 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = (props) => {
     extraName,
     onView,
     expandedRowRender,
+    defaultFilter,
   } = props;
   const [autoRefresh, toggleAutoRefresh] = useToggle(false);
   useInterval(() => func.refresh(), autoRefresh ? 5000 : null);
   const [queryCondition, setQueryCondition] = useState<QueryConditionType>({
     sorter: { field: 'updatedAt', order: 'descend' },
+    filters: defaultFilter,
   });
   const { store } = useContext(StoreContext);
   // 用于刷新页面的一个标记

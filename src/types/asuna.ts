@@ -188,6 +188,7 @@ export declare module Asuna {
       editable?: boolean;
       deletable?: boolean;
       enablePublished?: boolean;
+      defaultFilter?: Record<keyof EntitySchema, any>;
       renderHelp?: React.ReactElement | string;
       renderActions?: (extras: RecordRenderExtras) => React.ReactElement;
       recordActions?: (actions: RecordRenderActions, extras: RecordRenderExtras) => ColumnProps<any>;
