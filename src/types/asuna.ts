@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import type { MetaInfoOptions } from '@danielwii/asuna-shared';
+import type { Condition, MetaInfoOptions } from '@danielwii/asuna-shared';
 import type { ColumnProps } from 'antd/es/table';
 import type { DataViewColumnProps } from '../components/AsunaDataView';
 import type { DynamicFormTypes } from '../components/DynamicForm/types';
@@ -188,7 +188,7 @@ export declare module Asuna {
       editable?: boolean;
       deletable?: boolean;
       enablePublished?: boolean;
-      defaultFilter?: Record<keyof EntitySchema, any>;
+      defaultFilter?: { [key in keyof EntitySchema]: Condition };
       renderHelp?: React.ReactElement | string;
       renderActions?: (extras: RecordRenderExtras) => React.ReactElement;
       recordActions?: (actions: RecordRenderActions, extras: RecordRenderExtras) => ColumnProps<any>;
