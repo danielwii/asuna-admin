@@ -10,5 +10,5 @@ export const isDebugMode = (global as any).DEBUG_MODE;
  */
 export const isDevMode =
   (global as any).DEBUG_MODE ||
-  getConfig().publicRuntimeConfig?.env !== 'production' ||
+  // getConfig().publicRuntimeConfig?.env !== 'production' ||
   process.env.NODE_ENV !== 'production';

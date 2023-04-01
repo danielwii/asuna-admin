@@ -240,7 +240,7 @@ export class ModelAdapterImpl implements ModelAdapter {
           _.cond<typeof basicType, any>([
             [() => /^(VARCHAR.*|String)$/i.test(basicType), () => DynamicFormTypes.Input],
             [
-              () => /^(int4|INTEGER|FLOAT|Number|Numeric|Decimal|Double.*)$/i.test(basicType),
+              () => /^(int|int4|INTEGER|FLOAT|Number|Numeric|Decimal|Double.*)$/i.test(basicType),
               () => DynamicFormTypes.InputNumber,
             ],
             [() => /^TEXT$/i.test(basicType), () => DynamicFormTypes.TextArea],
