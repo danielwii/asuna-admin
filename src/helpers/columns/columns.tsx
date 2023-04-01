@@ -1,6 +1,7 @@
 import { LinkOutlined, SearchOutlined } from '@ant-design/icons';
+import { css } from '@emotion/css';
 
-import { Badge, Button, Card, Checkbox, Divider, Input, Popconfirm, Popover, Space, Tooltip } from 'antd';
+import { Badge, Button, Card, Checkbox, Divider, Input, Popconfirm, Popover, Space, Tag, Tooltip } from 'antd';
 import { PresetStatusColorType } from 'antd/es/_util/colors';
 import { Promise } from 'bluebird';
 import * as _ from 'lodash';
@@ -299,11 +300,15 @@ export const columnHelper = {
             opts.render(content, record, extras)
           ) : (
             <span
-              style={{
-                cursor: 'pointer',
-                textDecoration: 'underline',
-                textDecorationStyle: 'dashed',
-              }}
+              className={css(
+                record
+                  ? css`
+                      cursor: pointer;
+                      text-decoration: underline;
+                      text-decoration-style: dashed;
+                    `
+                  : null,
+              )}
             >
               {prefix} {content}
             </span>
@@ -311,12 +316,16 @@ export const columnHelper = {
           return (
             <WithDebugInfo info={{ key, title, opts, record, content, transformer }}>
               <span style={record?.isPublished === false || record?.isActive === false ? { color: 'darkred' } : {}}>
-                {opts.popInfo ? (
-                  <Popover style={{ display: 'inline' }} content={renderInfoCard(record)}>
-                    {view}
-                  </Popover>
+                {record ? (
+                  opts.popInfo ? (
+                    <Popover style={{ display: 'inline' }} content={renderInfoCard(record)}>
+                      {view}
+                    </Popover>
+                  ) : (
+                    view
+                  )
                 ) : (
-                  view
+                  <Tag />
                 )}
               </span>
             </WithDebugInfo>

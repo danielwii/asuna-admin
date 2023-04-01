@@ -8,4 +8,7 @@ export const isDebugMode = (global as any).DEBUG_MODE;
 /**
  * 开发模式，生产中无法激活
  */
-export const isDevMode = (global as any).DEBUG_MODE || getConfig().publicRuntimeConfig?.env !== 'production';
+export const isDevMode =
+  (global as any).DEBUG_MODE ||
+  getConfig().publicRuntimeConfig?.env !== 'production' ||
+  process.env.NODE_ENV !== 'production';

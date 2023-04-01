@@ -217,6 +217,8 @@ export const columnHelper2 = {
           | 'cyan'
           | 'blue'
           | 'geekblue'
+          | 'indigo'
+          | 'silver'
           | 'purple';
       };
     } = {},
@@ -235,7 +237,17 @@ export const columnHelper2 = {
         const title = _.get(enumData, value);
         return (
           <WithDebugInfo info={{ key, title, record, value, opts }}>
-            {<Tag color={_.get(opts, `colorMap['${record}']`) as string}>{title ? `${title}/${value}` : value}</Tag>}
+            {
+              <Tag color={_.get(opts, `colorMap['${record}']`) as string}>
+                {value}
+                {title && (
+                  <>
+                    <br />
+                    {title}
+                  </>
+                )}
+              </Tag>
+            }
           </WithDebugInfo>
         );
       }),

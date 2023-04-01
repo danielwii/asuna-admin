@@ -7,6 +7,7 @@ import { useContext } from 'react';
 import styled from 'styled-components';
 
 import { StoreContext } from '../context/store';
+import { isDevMode } from '../core/env';
 import { Store } from '../core/store';
 import { createLogger } from '../logger';
 
@@ -87,7 +88,13 @@ export const Header: React.FC<IHeaderProps> = ({
       <Button
         size="small"
         type="link"
-        onClick={() => Modal.info({ content: <pre>{JSON.stringify(getConfig(), null, 2)}</pre> })}
+        onClick={() =>
+          Modal.info({
+            content: (
+              <pre>{JSON.stringify({ isDevMode, NODE_ENV: process.env.NODE_ENV, config: getConfig() }, null, 2)}</pre>
+            ),
+          })
+        }
       >
         Environment Info
       </Button>
