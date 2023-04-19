@@ -180,7 +180,7 @@ export declare module Asuna {
     ) => ColumnProps<any> | Promise<ColumnProps<any>>;
 
     type TableContext = {
-      onSearch: (data: { searchText: string; searchedColumn: string }) => void;
+      onSearch: (data: { searchText: any; searchedColumn: string }) => void;
     };
 
     type TableColumnOpts<EntitySchema> = {

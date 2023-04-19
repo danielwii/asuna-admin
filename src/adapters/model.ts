@@ -517,6 +517,7 @@ export class ModelAdapterImpl implements ModelAdapter {
       filters: _.mapValues<Record<string, [Condition]>, WhereConditions>(
         configs?.filters,
         _.flow((filter) => {
+          logger.log('[loadModels]', 'filter is', filter);
           if (_.isArray(filter)) {
             return _.isObject(filter[0]) ? filter[0] : { $in: filter };
           } else {

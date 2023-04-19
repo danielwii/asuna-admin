@@ -1,9 +1,23 @@
 import { LinkOutlined, SearchOutlined } from '@ant-design/icons';
 import { css } from '@emotion/css';
 
-import { Badge, Button, Card, Checkbox, Divider, Input, Popconfirm, Popover, Space, Tag, Tooltip } from 'antd';
+import {
+  Badge,
+  Button,
+  Card,
+  Checkbox,
+  DatePicker,
+  Divider,
+  Input,
+  Popconfirm,
+  Popover,
+  Space,
+  Tag,
+  Tooltip,
+} from 'antd';
 import { PresetStatusColorType } from 'antd/es/_util/colors';
 import { Promise } from 'bluebird';
+import dayjs from 'dayjs';
 import * as _ from 'lodash';
 import moment from 'moment';
 import * as React from 'react';
@@ -24,6 +38,11 @@ import type { Asuna } from '../../types';
 import type { ConditionType, ModelOpts, RelationColumnProps, SwitchConditionExtras } from './types';
 
 const logger = createLogger('helpers:columns');
+
+const InlineState: React.FC<{ children: (params) => React.ReactElement }> = ({ children }) => {
+  const [state, setState] = React.useState();
+  return children({ state, setState });
+};
 
 export async function generateSearchColumnProps(
   dataIndex: string,
@@ -386,27 +405,75 @@ export const columnHelper = {
       return renderLink(record);
     }),
   }),
-  generateCalendar: (key, title, transformer?): ColumnProps<any> => ({
-    key: castModelKey(key),
-    title,
-    dataIndex: castModelKey(key),
-    sorter: true,
-    render: nullProtectRender((record) => {
-      const value = extractValue(record, transformer);
-      if (value) {
-        const content = moment(record).calendar();
-        return (
-          <Tooltip title={value}>
-            <React.Fragment>
-              {content}
-              <div>({moment(record).fromNow()})</div>
-            </React.Fragment>
-          </Tooltip>
-        );
-      }
-      return record;
+  generateCalendar:
+    (extras: Asuna.Schema.RecordRenderExtras) =>
+    (key, title, transformer?): ColumnProps<any> => ({
+      key: castModelKey(key),
+      title,
+      dataIndex: castModelKey(key),
+      sorter: true,
+      // filterSearch: true,
+      // filterMode: 'menu',
+      filterDropdown: (props) => (
+        <WithDebugInfo info={{ props, extras, key, title }}>
+          <InlineState>
+            {({ state, setState }) => (
+              <WithDebugInfo info={state}>
+                <DatePicker.RangePicker
+                  showTime={{ format: 'HH:mm' }}
+                  format="YYYY-MM-DD HH:mm"
+                  defaultValue={state ?? [null, dayjs(new Date())]}
+                  onChange={setState}
+                />
+                <Divider type="horizontal" style={{ margin: '0.2rem 0' }} />
+                <Space>
+                  <Button
+                    type="primary"
+                    disabled={!state}
+                    onClick={() => {
+                      logger.log('search', { state, key });
+                      // props.confirm(state);
+                      extras.ctx.onSearch({
+                        searchText: {
+                          $between: [
+                            _.get(state, '[0]')?.format('YYYY-MM-DD HH:mm'),
+                            _.get(state, '[1]')?.format('YYYY-MM-DD HH:mm'),
+                          ],
+                        },
+                        searchedColumn: key,
+                      });
+                      props.close();
+                    }}
+                    icon={<SearchOutlined />}
+                    size="small"
+                  >
+                    搜索
+                  </Button>
+                  <Button onClick={props.clearFilters} size="small">
+                    重置
+                  </Button>
+                </Space>
+              </WithDebugInfo>
+            )}
+          </InlineState>
+        </WithDebugInfo>
+      ),
+      render: nullProtectRender((record) => {
+        const value = extractValue(record, transformer);
+        if (value) {
+          const content = moment(record).calendar();
+          return (
+            <Tooltip title={value}>
+              <React.Fragment>
+                {content}
+                <div>({moment(record).fromNow()})</div>
+              </React.Fragment>
+            </Tooltip>
+          );
+        }
+        return record;
+      }),
     }),
-  }),
   /**
    * 生成动作按钮
    * @param actions 最终的渲染函数

@@ -31,8 +31,8 @@ export const commonColumns = {
     columnHelper.fpGenerateRelation('category', '分类', { transformer: 'name', filterType: 'list' }),
   fpEduType: fpColumnCreator('类型'),
   fpUpdatedBy: fpColumnCreator('Updated By', { searchType: 'list' }),
-  createdAt: columnHelper.generateCalendar('createdAt', '创建时间'),
-  updatedAt: columnHelper.generateCalendar('updatedAt', '更新时间'),
+  createdAt: (extras) => columnHelper.generateCalendar(extras)('createdAt', '创建时间'),
+  updatedAt: (extras) => columnHelper.generateCalendar(extras)('updatedAt', '更新时间'),
   isPublished: (model: string, extras: Asuna.Schema.RecordRenderExtras) =>
     ColumnsHelper.fpGenerateSwitch('isPublished', { model, title: '发布', ctx: extras.ctx }, extras),
   actions: columnHelper.generateActions,
@@ -40,7 +40,7 @@ export const commonColumns = {
 
 export const defaultColumns = (actions, extras) => [
   commonColumns.id(extras),
-  commonColumns.updatedAt,
+  commonColumns.updatedAt(extras),
   commonColumns.actions(actions),
 ];
 
@@ -49,6 +49,6 @@ export const defaultColumnsByPrimaryKey =
   (actions, extras) =>
     [
       commonColumns.primaryKey(primaryKey, primaryKey.toUpperCase(), extras),
-      commonColumns.updatedAt,
+      commonColumns.updatedAt(extras),
       commonColumns.actions(actions),
     ];
