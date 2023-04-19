@@ -1,4 +1,4 @@
-import { FormControl, FormHelperText } from '@material-ui/core';
+import { FormControl, FormHelperText } from '@mui/material';
 
 import * as antd from 'antd';
 import { Divider, Popconfirm } from 'antd';

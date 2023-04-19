@@ -4,6 +4,7 @@ import useLogger from '@danielwii/asuna-helper/dist/logger/hooks';
 
 import 'moment/locale/zh-cn';
 
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import getConfig from 'next/config';
@@ -32,7 +33,7 @@ export interface IIndexPageProps {
   error?: object;
 }
 
-const uri = `${process.env.API_ENDPOINT ?? ''}/graphql`;
+const uri = `${process.env.API_ENDPOINT ?? ''}/proxy/graphql`;
 const client = new ApolloClient({
   cache: new InMemoryCache(),
   uri,
@@ -40,6 +41,8 @@ const client = new ApolloClient({
   queryDeduplication: false,
   defaultOptions: { watchQuery: { fetchPolicy: 'network-only' } },
 });
+
+const theme = createTheme();
 
 export const IndexPageView: React.FC<{ register: ILoginRegister & IIndexRegister; hideCharacteristics?: boolean }> = ({
   register,
@@ -61,16 +64,18 @@ export const IndexPageView: React.FC<{ register: ILoginRegister & IIndexRegister
   }
 
   return (
-    <ApolloProvider client={client}>
-      <QueryClientProvider client={queryClient}>
-        <MainLayout
-          // loading={loading}
-          // heartbeat={heartbeat}
-          // auth={auth}
-          // appInfo={appInfo}
-          hideCharacteristics={hideCharacteristics}
-        />
-      </QueryClientProvider>
-    </ApolloProvider>
+    <ThemeProvider theme={theme}>
+      <ApolloProvider client={client}>
+        <QueryClientProvider client={queryClient}>
+          <MainLayout
+            // loading={loading}
+            // heartbeat={heartbeat}
+            // auth={auth}
+            // appInfo={appInfo}
+            hideCharacteristics={hideCharacteristics}
+          />
+        </QueryClientProvider>
+      </ApolloProvider>
+    </ThemeProvider>
   );
 };

@@ -215,7 +215,8 @@ class AppContext {
 
   private static async registerIndex(register: IIndexRegister, module?: 'index'): Promise<void> {
     logger.info('register index module:', module);
-    const graphql = new GraphqlAdapterImpl(getConfig().publicRuntimeConfig.GRAPHQL_ENDPOINT ?? 'proxy/graphql');
+    const uri = getConfig().publicRuntimeConfig.GRAPHQL_ENDPOINT ?? 'proxy/graphql';
+    const graphql = new GraphqlAdapterImpl(uri);
     AppContext._context = {
       ...AppContext._context,
       auth: new AuthAdapter(register.createAuthService()),

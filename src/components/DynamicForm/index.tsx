@@ -1,4 +1,4 @@
-import { Paper } from '@material-ui/core';
+import { Paper } from '@mui/material';
 
 import useLogger from '@danielwii/asuna-helper/dist/logger/hooks';
 

@@ -1,5 +1,5 @@
 import { CloseCircleOutlined, CloseSquareOutlined, MinusSquareOutlined } from '@ant-design/icons';
-import { Tooltip } from '@material-ui/core';
+import { Tooltip } from '@mui/material';
 
 import { Button, Divider, Tabs } from 'antd';
 import * as _ from 'lodash';

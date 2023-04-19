@@ -3,7 +3,7 @@
 /** @jsx jsx */
 import { useQuery, gql } from '@apollo/client';
 import { css, jsx } from '@emotion/react';
-import { createStyles, Theme } from '@material-ui/core';
+import { createStyles, Theme } from '@mui/material';
 
 import { Avatar, Tooltip } from 'antd';
 import * as _ from 'lodash';
