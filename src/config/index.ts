@@ -80,7 +80,7 @@ const defaultConfiguration: ConfigOpts = {
   TABLE_DEFAULT_ORDER_BY: 'byPrimaryKey',
 
   API_RESPONSE_ASSOCIATION_MODE: 'ids',
-  DEFAULT_PAGE_SIZE: 25,
+  DEFAULT_PAGE_SIZE: 100,
 
   UPLOADS_ENDPOINT: '/uploads',
   // IMAGE_HOST: 'uploads/',

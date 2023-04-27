@@ -330,6 +330,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = (props) => {
       <Divider type="vertical" />
 
       {/* TODO 导入导出按钮，目前接口已经实现，但是暂未集成 */}
+      {/*
       <Button.Group size="small">
         <Button onClick={_import} disabled={true}>
           导入
@@ -340,6 +341,7 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = (props) => {
       </Button.Group>
 
       <Divider type="vertical" />
+      */}
 
       <Dropdown
         menu={{
