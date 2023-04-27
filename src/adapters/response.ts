@@ -38,7 +38,7 @@ export class ResponseAdapter {
       showSizeChanger: true,
       showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
       current: page,
-      pageSize: size ?? 25,
+      pageSize: size ?? 100,
       total: totalElements,
       pageSizeOptions: ['10', '25', '50', '100'],
       size: 'small',

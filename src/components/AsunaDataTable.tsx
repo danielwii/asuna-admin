@@ -148,7 +148,8 @@ export const AsunaDataTable: React.FC<AsunaDataTableProps> = (props) => {
       sorter?: SorterResult<RecordType> | SorterResult<RecordType>[],
       extra?: TableCurrentDataSource<RecordType>,
     ): void {
-      logger.log('[handleTableChange]', { pagination, filters, sorter, extra });
+      logger.log('[handleTableChange]', { pagination, filters, sorter, extra, defaultFilter });
+      // _.assign(filters, defaultFilter);
       const { availableSorter, transformedFilters, transformedSorter } = func.transformQueryCondition({
         pagination,
         filters,
