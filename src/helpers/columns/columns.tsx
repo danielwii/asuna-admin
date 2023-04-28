@@ -221,7 +221,7 @@ export const columnHelper = {
         filterType?: 'list' | 'search';
         relationSearchField?: string;
         render?: (content, record: RelationSchema, extras?: Asuna.Schema.RecordRenderExtras) => React.ReactNode;
-        popInfo?: boolean | { modelName: string };
+        popInfo?: boolean | { modelName: string; render?: (record) => any };
         badge?: (value) => PresetStatusColorType;
       },
     ) =>
@@ -289,16 +289,19 @@ export const columnHelper = {
         } else {
           const modelName = _.get(opts.popInfo, 'modelName');
           const schema = await AppContext.ctx.models.loadOriginSchema(modelName);
-          renderInfoCard = (record) => (
-            <Card>
-              {_.map(record, (value, label) => (
-                <p key={label}>
-                  {_.find(schema.columns, (column) => column.name === label)?.config.info?.name ?? label}:{' '}
-                  {_.isString(value) ? value : JSON.stringify(value, null, 2)}
-                </p>
-              ))}
-            </Card>
-          );
+          renderInfoCard = (record) => {
+            const parsed = (opts.popInfo as any).render ? (opts.popInfo as any)!.render!(record) : record;
+            return (
+              <Card>
+                {_.map(parsed, (value, label) => (
+                  <p key={label}>
+                    {_.find(schema.columns, (column) => column.name === label)?.config.info?.name ?? label}:{' '}
+                    {_.isString(value) ? value : JSON.stringify(value, null, 2)}
+                  </p>
+                ))}
+              </Card>
+            );
+          };
         }
       }
 
