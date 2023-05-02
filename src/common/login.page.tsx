@@ -1,6 +1,7 @@
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
-import useLogger from '@danielwii/asuna-helper/dist/logger/hooks';
 import styled from '@emotion/styled';
+
+import useLogger from '@danielwii/asuna-helper/dist/logger/hooks';
 
 import { changeAntdTheme } from 'dynamic-antd-theme';
 import * as _ from 'lodash';
@@ -111,12 +112,9 @@ export const wechatLoginGetInitial = async (ctx: NextPageContext): Promise<Login
     // const port = process.env.PORT || 3000;
     // logger.log(`call http://${host}:${port}/s-graphql`);
 
-    const uri = `${process.env.API_ENDPOINT ?? ''}/graphql`;
-    logger.log(`call ${uri}`);
     const client = new ApolloClient({
       cache: new InMemoryCache(),
-      // uri: `http://${host}:${port}/s-graphql`,
-      uri,
+      uri: '/proxy/graphql',
       headers: { 'X-ApiKey': 'todo:app-key-001' }, // todo temp auth
     });
     const { data } = await client.query({

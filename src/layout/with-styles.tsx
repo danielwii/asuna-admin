@@ -1,11 +1,10 @@
 /** @jsxRuntime classic */
 
 /** @jsx jsx */
-import { css, Global, jsx } from '@emotion/react';
+import { Global, css, jsx } from '@emotion/react';
 
 import { ConfigProvider } from 'antd';
 import zhCN from 'antd/lib/locale/zh_CN';
-import getConfig from 'next/config';
 import NextHead from 'next/head';
 import * as React from 'react';
 
@@ -38,7 +37,7 @@ const WithStyles: React.FC<React.PropsWithChildren<{ hideCharacteristics?: boole
   <ConfigProvider locale={zhCN}>
     <NextHead>
       <title>
-        {hideCharacteristics ? '' : 'Asuna '}Admin : {getConfig().publicRuntimeConfig.env}
+        {hideCharacteristics ? '' : 'Asuna '}Admin : {process.env.NODE_ENV}
       </title>
     </NextHead>
     {children}

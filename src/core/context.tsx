@@ -1,6 +1,5 @@
 import * as _ from 'lodash';
 import * as fp from 'lodash/fp';
-import getConfig from 'next/config';
 import * as React from 'react';
 import { Subject } from 'rxjs';
 
@@ -215,8 +214,7 @@ class AppContext {
 
   private static async registerIndex(register: IIndexRegister, module?: 'index'): Promise<void> {
     logger.info('register index module:', module);
-    const uri = getConfig().publicRuntimeConfig.GRAPHQL_ENDPOINT ?? 'proxy/graphql';
-    const graphql = new GraphqlAdapterImpl(uri);
+    const graphql = new GraphqlAdapterImpl('/proxy/graphql');
     AppContext._context = {
       ...AppContext._context,
       auth: new AuthAdapter(register.createAuthService()),

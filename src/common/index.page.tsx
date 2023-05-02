@@ -7,7 +7,6 @@ import 'moment/locale/zh-cn';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-import getConfig from 'next/config';
 import * as React from 'react';
 import useAsync from 'react-use/lib/useAsync';
 
@@ -33,10 +32,9 @@ export interface IIndexPageProps {
   error?: object;
 }
 
-const uri = `${process.env.API_ENDPOINT ?? ''}/proxy/graphql`;
 const client = new ApolloClient({
   cache: new InMemoryCache(),
-  uri,
+  uri: '/proxy/graphql',
   headers: { 'X-ApiKey': 'todo:app-key-001' }, // todo temp auth
   queryDeduplication: false,
   defaultOptions: { watchQuery: { fetchPolicy: 'network-only' } },
@@ -49,7 +47,7 @@ export const IndexPageView: React.FC<{ register: ILoginRegister & IIndexRegister
   hideCharacteristics,
 }) => {
   const state = useAsync(async () => {
-    logger.info('setup app context ...', getConfig());
+    logger.info('setup app context ...');
     try {
       await AppContext.setup({ register, module: 'index' }, Func);
     } catch (e) {

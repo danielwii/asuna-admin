@@ -1,4 +1,3 @@
-import getConfig from 'next/config';
 import * as Rx from 'rxjs';
 import { Socket, io } from 'socket.io-client';
 
@@ -25,8 +24,8 @@ export class WsAdapter {
     this.port = opts.port;
     this.namespace = opts.namespace || 'admin';
 
-    if (!(typeof window === 'undefined') && !WsAdapter.socket && getConfig().publicRuntimeConfig.WS_ENDPOINT) {
-      const url = `${getConfig().publicRuntimeConfig.WS_ENDPOINT}/${this.namespace}`;
+    if (!(typeof window === 'undefined') && !WsAdapter.socket) {
+      const url = `/ws/${this.namespace}`;
       const options = {
         path: `/socket.io/admin`,
         namespace: this.namespace,

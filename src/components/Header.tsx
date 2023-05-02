@@ -1,7 +1,6 @@
 import useLogger from '@danielwii/asuna-helper/dist/logger/hooks';
 
 import { Button, Dropdown, Layout, Modal, Tag } from 'antd';
-import getConfig from 'next/config';
 import * as React from 'react';
 import { useContext } from 'react';
 import styled from 'styled-components';
@@ -90,9 +89,7 @@ export const Header: React.FC<IHeaderProps> = ({
         type="link"
         onClick={() =>
           Modal.info({
-            content: (
-              <pre>{JSON.stringify({ isDevMode, NODE_ENV: process.env.NODE_ENV, config: getConfig() }, null, 2)}</pre>
-            ),
+            content: <pre>{JSON.stringify({ isDevMode, NODE_ENV: process.env.NODE_ENV }, null, 2)}</pre>,
           })
         }
       >

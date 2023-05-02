@@ -1,5 +1,3 @@
-import getConfig from 'next/config';
-
 /**
  * 调试模式，生产中也可以激活
  */
