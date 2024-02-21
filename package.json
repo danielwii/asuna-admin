@@ -54,7 +54,7 @@
     "@tinymce/tinymce-react": "^4.3.0",
     "antd": "^5.4.6",
     "apollo": "^2.34.0",
-    "axios": "^1.4.0",
+    "axios": "^1.6.0",
     "bluebird": "^3.7.2",
     "china-division": "^2.6.1",
     "class-transformer": "^0.5.1",
